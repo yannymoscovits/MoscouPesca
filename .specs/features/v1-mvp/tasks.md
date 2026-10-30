@@ -923,10 +923,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Com rAF falso, um salto de 5 s gera `tick(0.1)`, não `tick(5)`
-- [ ] Pausado → nenhum `tick` nem desenho
-- [ ] A 60 Hz, o desenho roda 30 vezes por segundo
-- [ ] Gate check passes: `npm test`
+- [x] Com rAF falso, um salto de 5 s gera `tick(0.1)`, não `tick(5)`
+- [x] Pausado → nenhum `tick` nem desenho
+- [x] A 60 Hz, o desenho roda 30 vezes por segundo
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
