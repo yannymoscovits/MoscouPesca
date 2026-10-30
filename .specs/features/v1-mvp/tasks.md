@@ -439,12 +439,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Comprar com saldo → desconta uma vez; comprar de novo o mesmo item → perfil igual (EQUIP-03)
-- [ ] Saldo menor → `{ ok: false, missing }` com o valor exato que falta (EQUIP-04)
-- [ ] Equipar item não possuído → perfil igual; possuído → passa a ser o equipado (EQUIP-05)
-- [ ] Nenhuma sequência de compras deixa o saldo negativo (EQUIP-06)
-- [ ] Usar uma isca em 100 arremessos não a remove do perfil (EQUIP-08)
-- [ ] Gate check passes: `npm test`
+- [x] Comprar com saldo → desconta uma vez; comprar de novo o mesmo item → perfil igual (EQUIP-03)
+- [x] Saldo menor → `{ ok: false, missing }` com o valor exato que falta (EQUIP-04)
+- [x] Equipar item não possuído → perfil igual; possuído → passa a ser o equipado (EQUIP-05)
+- [x] Nenhuma sequência de compras deixa o saldo negativo (EQUIP-06)
+- [x] Usar uma isca em 100 arremessos não a remove do perfil (EQUIP-08)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
