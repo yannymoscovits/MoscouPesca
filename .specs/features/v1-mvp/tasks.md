@@ -193,10 +193,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Manifest com `name` "MoscouFishing", `display: fullscreen`, `orientation: portrait`, ícones provisórios 192/512 e maskable
-- [ ] `<meta name="robots" content="noindex">`, `public/robots.txt` com `Disallow: /` e `public/_headers` com `X-Robots-Tag: noindex`
-- [ ] e2e `e2e/pwa.spec.ts`: manifest com os campos acima (INST-05); meta `noindex` presente (INST-09); após o service worker ativar, recarregar com `context.setOffline(true)` abre a página (INST-06)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] Manifest com `name` "MoscouFishing", `display: fullscreen`, `orientation: portrait`, ícones provisórios 192/512 e maskable
+- [x] `<meta name="robots" content="noindex">`, `public/robots.txt` com `Disallow: /` e `public/_headers` com `X-Robots-Tag: noindex`
+- [x] e2e `e2e/pwa.spec.ts`: manifest com os campos acima (INST-05); meta `noindex` presente (INST-09); após o service worker ativar, recarregar com `context.setOffline(true)` abre a página (INST-06)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full
