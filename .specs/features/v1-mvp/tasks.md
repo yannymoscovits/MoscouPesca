@@ -988,10 +988,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste: 412 px → escala 2; 360 px → escala 2; 600 px → escala 3; a cena lógica é sempre 180 × 400 e fica centralizada, com as laterais preenchidas pelo cenário
-- [ ] Teste: `toLogical` converte cliques nos cantos e no centro da cena com erro de no máximo 1 px lógico; a ponta da vara fica em (90, 370)
-- [ ] `draw` com todos os estados da pesca roda sem erro num canvas do happy-dom (contexto falso)
-- [ ] Gate check passes: `npm test`
+- [x] Teste: 412 px → escala 2; 360 px → escala 2; 600 px → escala 3; a cena lógica é sempre 180 × 400 e fica centralizada, com as laterais preenchidas pelo cenário
+- [x] Teste: `toLogical` converte cliques nos cantos e no centro da cena com erro de no máximo 1 px lógico; a ponta da vara fica em (90, 370)
+- [x] `draw` com todos os estados da pesca roda sem erro num canvas do happy-dom (contexto falso)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
