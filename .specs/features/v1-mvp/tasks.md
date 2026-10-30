@@ -875,9 +875,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] `update` notifica todos os inscritos uma vez; cancelar a inscrição para de notificar
-- [ ] `useGame` re-renderiza só quando o valor selecionado muda (teste com happy-dom)
-- [ ] Gate check passes: `npm test`
+- [x] `update` notifica todos os inscritos uma vez; cancelar a inscrição para de notificar
+- [x] `useGame` re-renderiza só quando o valor selecionado muda (teste com happy-dom)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
