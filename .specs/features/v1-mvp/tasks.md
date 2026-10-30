@@ -783,10 +783,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Mesma semente → mesmo resultado
-- [ ] Episódio de teste com 1 objetivo "pegar 3 peixes" e campeonato trivial: 3 capturas registradas e tempo total igual à soma dos tempos dos arremessos simulados
-- [ ] Linha do tempo registra objetivo cumprido, item ao alcance do saldo, espécie nova e recorde, com o minuto de cada um
-- [ ] Gate check passes: `npm test`
+- [x] Mesma semente → mesmo resultado
+- [x] Episódio de teste com 1 objetivo "pegar 3 peixes" e campeonato trivial: 3 capturas registradas e tempo total igual à soma dos tempos dos arremessos simulados
+- [x] Linha do tempo registra objetivo cumprido, item ao alcance do saldo, espécie nova e recorde, com o minuto de cada um
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
