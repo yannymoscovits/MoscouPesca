@@ -1362,12 +1362,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: tela inicial com título, subtítulo e os 3 botões na ordem do mockup; "Ajustes" abre a tela de ajustes (ACES-02)
-- [ ] Os e2e de INST-01 a INST-04 continuam passando sem mudança nas asserções
-- [ ] e2e: na tela inicial, botões com no mínimo 56 × 56 px e todos na metade de baixo, textos com no mínimo 18 px e axe sem violação de contraste (ACES-05 a ACES-08)
-- [ ] Print do Pixel 7 comparado lado a lado com o mockup, no relatório
-- [ ] Os nomes dos tokens de cor de `theme.css` não mudam, só os valores, para não quebrar as telas de outras tarefas
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: tela inicial com título, subtítulo e os 3 botões na ordem do mockup; "Ajustes" abre a tela de ajustes (ACES-02)
+- [x] Os e2e de INST-01 a INST-04 continuam passando sem mudança nas asserções
+- [x] e2e: na tela inicial, botões com no mínimo 56 × 56 px e todos na metade de baixo, textos com no mínimo 18 px e axe sem violação de contraste (ACES-05 a ACES-08)
+- [x] Print do Pixel 7 comparado lado a lado com o mockup, no relatório
+- [x] Os nomes dos tokens de cor de `theme.css` não mudam, só os valores, para não quebrar as telas de outras tarefas
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

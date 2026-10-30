@@ -4,26 +4,27 @@
    Cada par de cor abaixo traz o contraste medido. */
 
 :root {
-  /* Fundo azul-noite com texto creme: 14,2:1. Texto secundário: 11,6:1. */
-  --bg: #0f2742;
-  --bg-raised: #173a5e; /* creme sobre ele: 10,9:1 */
-  --ink: #fff8e7;
-  --ink-soft: #d7e3f0;
+  /* Paleta do mockup da tela inicial (docs/arte/mockups/tela-inicial.png).
+     Fundo azul-marinho com texto creme: 15,0:1. Texto secundário (cinza-azulado): 9,1:1. */
+  --bg: #01224b;
+  --bg-raised: #1b3d6c; /* creme sobre ele: 10,3:1; texto secundário: 6,3:1 */
+  --ink: #fcf9f1;
+  --ink-soft: #b5c6e1;
 
-  /* Papel das caixas de diálogo e das fichas: tinta escura sobre creme, 16,1:1. */
-  --paper: #fff8e7;
-  --paper-ink: #1b1b2f;
+  /* Papel das caixas de diálogo e das fichas: tinta escura sobre creme, 16,8:1. */
+  --paper: #fcf9f1;
+  --paper-ink: #0a1830;
 
   /* Botão principal amarelo com tinta escura: 11,8:1. */
-  --accent: #ffd23f;
-  --accent-ink: #1b1b2f;
+  --accent: #fecd42;
+  --accent-ink: #0a1830;
 
-  /* Botão secundário azul com texto branco: 5,2:1. */
-  --secondary: #2f6fb3;
+  /* Botão secundário azul com texto branco: 5,8:1. */
+  --secondary: #1266ba;
   --secondary-ink: #ffffff;
 
   /* Contorno "pixel" de botões, caixas e retratos. */
-  --outline: #1b1b2f;
+  --outline: #000c22;
 
   --font-title: 'Pixelify Sans', system-ui, sans-serif;
   --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -152,7 +153,7 @@ ul {
   font: 700 28px / 1.1 var(--font-title);
 }
 
-/* Desabilitado: sem sombra e com contorno tracejado; texto creme suave sobre azul, 8,9:1. */
+/* Desabilitado: sem sombra e com contorno tracejado; texto secundário sobre marinho, 6,3:1. */
 .btn:disabled {
   background: var(--bg-raised);
   color: var(--ink-soft);
@@ -195,38 +196,150 @@ ul {
   box-shadow: 0 6px 0 var(--outline);
 }
 
-/* ---------- Tela inicial ---------- */
+/* ---------- Tela inicial (mockup e logo do usuário) ---------- */
 
+/* O fundo do mar fica atrás de tudo e não pega toque. */
+.title-scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.title-screen .screen__top {
+  gap: 10px;
+}
+
+/* Peixe do logo: 34 × 17 pixels de 5 px. */
 .logo-fish {
-  position: relative;
-  width: 112px;
-  height: 56px;
-  margin-bottom: 8px;
-  border: 4px solid var(--outline);
-  border-radius: 50% 60% 60% 50%;
-  background: var(--accent);
+  width: 170px;
+  height: 85px;
   animation: nadar 2.4s ease-in-out infinite;
 }
 
-.logo-fish::before {
-  /* rabo */
-  content: '';
-  position: absolute;
-  left: -34px;
-  top: 6px;
-  border: 18px solid transparent;
-  border-right: 26px solid var(--accent);
+/* "Moscou" creme e "Fishing" amarelo, com contorno grosso e sombra embaixo. */
+.logo-title {
+  font: 700 54px / 1.1 var(--font-title);
+  font-size: min(54px, 12.5vw);
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-shadow:
+    3px 0 0 var(--outline),
+    -3px 0 0 var(--outline),
+    0 3px 0 var(--outline),
+    0 -3px 0 var(--outline),
+    3px 3px 0 var(--outline),
+    -3px 3px 0 var(--outline),
+    3px -3px 0 var(--outline),
+    -3px -3px 0 var(--outline),
+    0 7px 0 var(--outline);
 }
 
-.logo-fish::after {
-  /* olho */
+.logo-title__moscou {
+  color: var(--ink);
+}
+
+/* Slogan: uma linha centrada, com um traço fino de cada lado. Azul bem claro sobre o marinho, 12,3:1. */
+.tagline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 360px);
+  color: #d9e4f5;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.tagline::before,
+.tagline::after {
+  content: '';
+  flex: 1 1 0;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.title-screen .screen__actions {
+  gap: 14px;
+  padding-inline: 34px;
+  padding-bottom: max(var(--safe-bottom), 13vh);
+}
+
+/* Botões: ícone, texto e seta; borda clara, beirada escura embaixo e quadradinhos nos cantos. */
+.title-btn {
+  --edge: #0b4f99;
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px 1fr 12px;
+  align-items: center;
+  gap: 22px;
+  min-height: 64px;
+  padding: 8px 22px;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  font-size: 22px;
+  text-align: left;
+  box-shadow:
+    0 5px 0 var(--edge),
+    0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
+.title-btn:active {
+  box-shadow: 0 2px 0 var(--edge);
+}
+
+/* Creme sobre marinho, 10,3:1. */
+.title-btn--navy {
+  --edge: #0e2547;
+  background: var(--bg-raised);
+  color: var(--ink);
+}
+
+.title-btn.btn--big {
+  --edge: #d99a1c;
+  min-height: 76px;
+  font-size: 30px;
+}
+
+.title-btn::before,
+.title-btn::after {
   content: '';
   position: absolute;
-  right: 20px;
-  top: 14px;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.title-btn::before {
+  top: 5px;
+  right: 5px;
+  box-shadow:
+    -4px 0 0 rgba(255, 255, 255, 0.35),
+    0 4px 0 rgba(255, 255, 255, 0.35);
+}
+
+.title-btn::after {
+  bottom: 5px;
+  left: 5px;
+  box-shadow:
+    4px 0 0 rgba(255, 255, 255, 0.35),
+    0 -4px 0 rgba(255, 255, 255, 0.35);
+}
+
+.title-btn__icon {
+  width: 30px;
+  height: 30px;
+}
+
+.title-btn__chevron {
   width: 12px;
-  height: 12px;
-  background: var(--outline);
+  height: 20px;
+}
+
+.title-btn:not(.btn--big) .title-btn__chevron {
+  color: #a9cdf5;
 }
 
 @keyframes nadar {
@@ -346,7 +459,7 @@ ul {
   flex: 1 1 0;
 }
 
-/* Opção desligada: azul-escuro com texto creme (10,9:1); ligada: amarelo com tinta escura. */
+/* Opção desligada: marinho com texto creme (10,3:1); ligada: amarelo com tinta escura. */
 .btn--toggle {
   background: var(--bg-raised);
   color: var(--ink);
