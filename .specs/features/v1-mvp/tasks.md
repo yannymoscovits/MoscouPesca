@@ -967,9 +967,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Quadro certo para tempo e fps dados (ex.: 4 quadros a 8 fps, t = 0,3 s → quadro 2)
-- [ ] Imagem que falha ao carregar → `draw` usa o retângulo de fallback sem lançar erro
-- [ ] Gate check passes: `npm test`
+- [x] Quadro certo para tempo e fps dados (ex.: 4 quadros a 8 fps, t = 0,3 s → quadro 2)
+- [x] Imagem que falha ao carregar → `draw` usa o retângulo de fallback sem lançar erro
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
