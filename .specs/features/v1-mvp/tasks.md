@@ -761,10 +761,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep3`, inclusive força e fôlego das espécies entre 1 e 10
-- [ ] Teste: `index.ts` lista os episódios em ordem, com o 3º sendo Vera Cruz, Ilha de Itaparica (EPI-01)
-- [ ] `rules.test.ts` ganha a regra das irmãs: nenhuma fala da Lu ou da Geane contém "Adilson", e cada uma tem pelo menos uma fala com "Xô" (HUMOR-09)
-- [ ] Gate check passes: `npm test`
+- [x] Os testes de regras e de consistência de conteúdo passam incluindo o `ep3`, inclusive força e fôlego das espécies entre 1 e 10
+- [x] Teste: `index.ts` lista os episódios em ordem, com o 3º sendo Vera Cruz, Ilha de Itaparica (EPI-01)
+- [x] `rules.test.ts` ganha a regra das irmãs: nenhuma fala da Lu ou da Geane contém "Adilson", e cada uma tem pelo menos uma fala com "Xô" (HUMOR-09)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

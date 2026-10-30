@@ -27,4 +27,10 @@ export const characters = [
   { id: 'capenga', name: 'Capenga', epithet: 'O Homem que Conversa com a Maré', portraits: portraits('capenga') },
   // O Edvaldo do passado, de cabelo preto. O roteiro não dá apelido para ele: este vem do título da cena 3.
   { id: 'edvaldo-jovem', name: 'Edvaldo', epithet: 'O Cunhado de Cabelo Preto', portraits: portraits('edvaldo-jovem') },
+  // Episódio 3 (docs/historia/episodio-3.md). Lu e Geane sempre chamam o Adilson de "Xô" (HUMOR-09).
+  // Marcus e Julia só aplaudem na torcida, sem falas, e não entram no elenco.
+  { id: 'lu', name: 'Lu', epithet: 'Trabalha, Fuma e Ainda Acha Tempo de Pescar', portraits: portraits('lu') },
+  { id: 'geane', name: 'Geane', epithet: 'A Canceriana que Já Viu Disco Voador', portraits: portraits('geane') },
+  { id: 'louise', name: 'Louise', epithet: 'A Sobrinha Preferida (Ele Nega, Mas É)', portraits: portraits('louise') },
+  { id: 'lucca', name: 'Lucca', epithet: 'O Xodó do Xô', portraits: portraits('lucca') },
 ] satisfies Character[];

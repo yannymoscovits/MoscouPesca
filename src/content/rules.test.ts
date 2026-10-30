@@ -29,6 +29,7 @@ describe('o verificador de palavra inteira', () => {
     expect(hasWord('Oi, PAI!', 'pai')).toBe(true);
     expect(hasWord('Ih, Adilsinho', 'Adilson')).toBe(false);
     expect(hasWord('Ih, Adilson', 'Adilson')).toBe(true);
+    expect(hasWord('XÔ! Vim descansar', 'Xô')).toBe(true);
   });
 });
 
@@ -62,6 +63,26 @@ describe('todos os episódios', () => {
     );
     for (const [i, set] of attracted.entries()) expect(set, baits[i].id).not.toBe('');
     expect(new Set(attracted).size).toBe(baits.length);
+  });
+
+  it('HUMOR-09: nenhuma fala da Lu ou da Geane contém "Adilson", e cada uma chama ele de "Xô" em pelo menos uma fala', () => {
+    const lines = episodes.flatMap(allLines);
+    for (const sister of ['lu', 'geane']) {
+      const hers = lines.filter((l) => l.speaker === sister);
+      for (const l of hers) expect(hasWord(l.text, 'Adilson'), l.text).toBe(false);
+      expect(hers.filter((l) => hasWord(l.text, 'Xô')).length, sister).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('nenhum texto põe "Tio" ou "Tia" antes do nome de um personagem', () => {
+    const firstNames = characters.map((c) => c.name.split(' ')[0]).join('|');
+    const tioName = new RegExp(`(?<!\\p{L})[Tt]i[oa]\\s+(?:${firstNames})(?!\\p{L})`, 'u');
+    const texts = [
+      ...characters.flatMap((c) => [c.name, c.epithet]),
+      ...episodes.flatMap((ep) => [...allLines(ep).map((l) => l.text), ep.letter.text]),
+    ];
+    for (const text of texts) expect(tioName.test(text), text).toBe(false);
+    expect(tioName.test('Bora, tia Lu!')).toBe(true);
   });
 });
 
