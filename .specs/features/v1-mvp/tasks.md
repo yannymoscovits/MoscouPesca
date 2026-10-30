@@ -945,10 +945,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] `pointerdown`/`pointerup` → `pressStart`/`pressEnd`; `pointerup` em `Idle` → `tapWater(x, y)` lógico
-- [ ] Segundo dedo é ignorado enquanto o primeiro está na tela (ACES-09)
-- [ ] `contextmenu` é cancelado
-- [ ] Gate check passes: `npm test`
+- [x] `pointerdown`/`pointerup` → `pressStart`/`pressEnd`; `pointerup` em `Idle` → `tapWater(x, y)` lógico
+- [x] Segundo dedo é ignorado enquanto o primeiro está na tela (ACES-09)
+- [x] `contextmenu` é cancelado
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
