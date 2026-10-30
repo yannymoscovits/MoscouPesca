@@ -57,7 +57,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Elenco do Episódio 2 | Viagem no tempo em Jacuípe: o Adilson pesca com a Ninha (como ele chama a filha que pediu o jogo), criança; a Lavínia aparece só como a piranha que viajou no tempo. Rivais: Tininho (dono da casa de Jacuípe, super pai), Denise (mãe do Adilson, delegada, farrista, chama ele de "JUNIORRRR") e Didi (pai do Adilson, médico, dava injeção, Bahia em Salvador e Corinthians em São Paulo). Tininho, Denise e Didi já faleceram: aparecem só no passado. Personagem local: Capenga | Definido pelo usuário; a viagem no tempo foi a forma proposta de colocar o usuário criança na história | y |
 | Elenco do Episódio 3 | Ele pescava sozinho em Vera Cruz; as irmãs dele invadem a pescaria: Lu (fuma, bebe e trabalha demais; mãe de Marcus, Louise e Julia) e Geane (canceriana, dramática, acredita em E.T.). Louise, a sobrinha preferida dele, e o filho dela, Lucca, que ele adora. Rivais: Lu, Geane e Louise. Sem personagem local | Definido pelo usuário | y |
 | Episódio 4 | O Adilson trabalha com energia eólica e presta serviços ao Grupo IK; num parque eólico do Alto Sertão, o vento é tão forte que os peixes voam. Com ele, o Márcio (funcionário 01, faz-tudo e muito amigo dele). Aparece o Sr. Higashi (chefe da Ninha), com a piada de botar GPS em tudo. Rivais: Márcio, Sr. Higashi e Edvaldo | Pedido do usuário: algo lúdico com peixe voador, ligado ao trabalho dele | y |
-| Elenco do Episódio 5 | A grande final reúne todo mundo dos episódios anteriores num barco (Márcio de capitão). Todos torcem pelo Adilson, acreditam na melhora dele e pedem que ele não desista. Entram a Ninha adulta (nerd de TI) e a Ângela, companheira dela. Didi, Denise e Tininho aparecem só como lembrança leve, na fala de quem está no barco. Rivais: Jane, Lavínia e Ninha (adulta). Chefão: o Marlim-azul, que o Adilson solta de volta no mar. Sem personagem local novo | Pedido do usuário: uma final com todo mundo, acreditando na melhora dele | y |
+| Elenco do Episódio 5 | A grande final reúne todo mundo dos episódios anteriores num barco (Márcio de capitão). Todos torcem pelo Adilson, acreditam na melhora dele e pedem que ele não desista. Entram a Ninha adulta (nerd de TI), a Ângela, companheira dela, e o Ruan, o Cervero, namorado da Lavínia, que aparece no mar ao lado da Piranha Lavínia. Didi, Denise e Tininho aparecem só como lembrança leve, na fala de quem está no barco. Rivais: Jane, Lavínia e Ninha (adulta). Chefão: o Marlim-azul, que o Adilson solta de volta no mar. Sem personagem local novo | Pedido do usuário: uma final com todo mundo, acreditando na melhora dele | y |
 | Varas e iscas | Bambu no início e 2 varas novas por episódio (11 no total), Força e Alcance de 1 a 10; 1 isca nova por episódio | Equipamento evolui junto com os 5 episódios | n |
 | Espécies do Episódio 1 | Tilápia, Traíra, Curimatã, Piau, Tambaqui, Tucunaré, Pirarucu Lendário (raro; lenda inspirada no pirarucu de ~90 kg pego no sangradouro da vizinha Barragem de Ceraíma em 2022) e Piranha Lavínia (especial) | Usuário: usar os peixes mais famosos de Guanambi, o básico | y |
 | Espécies dos episódios 2 a 5 | Ep. 2, Rio Jacuípe: Tilápia, Traíra, Tainha, Robalo-peva, Carapeba; Ponte da Cetrel: Robalo-flecha, Pescada-amarela, Vermelho, Baiacu, Camurupim (raro) · Ep. 3, Vera Cruz: Xaréu, Guaricema, Agulhinha, Cioba, Budião, Garoupa (raro) · Ep. 4, Parque dos Ventos (espécies fantasiosas): Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador, Dourado-dos-Ventos (raro) · Ep. 5, alto-mar: Dourado-do-mar, Cavala, Atum, Olho-de-boi, Marlim-azul (raro) | Peixes mais conhecidos de cada lugar, seguindo o critério do usuário para Guanambi; no Rio Jacuípe, guia de pesca cita robalo-peva, traíra e tainha | n |
@@ -76,6 +76,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Mira do arremesso | Tocar no ponto da água; a isca vai até lá, limitada pelo alcance da vara | Um toque, sem barra de força que exige timing | n |
 | Formato do torneio | 8 arremessos, sem cronômetro; vale a soma dos 3 peixes mais pesados | Sem pressão de tempo; dá para pausar quando a enfermagem chegar | n |
 | Empate no campeonato | O Adilson fica à frente do rival com a mesma pontuação | Decidido na implementação (T15); a spec não definia | n |
+| Interpretações das telas (T34 a T40) | A pergunta de dificuldade aparece no primeiro toque em "Jogar" (a tela inicial abre antes); "FISGAR!" ocupa a metade de baixo = inteiro abaixo do meio, com pelo menos 1/4 da altura e 80% da largura, acima da linha Pausar/Menu; "repetir a instrução" (TUTO-07) = o balão reaparece e a seta pisca; a primeira captura de uma espécie também mostra "Novo recorde!"; uma cena da história espera a ficha do peixe fechar | Pontos que a spec não fixava | y |
 | Inscrição no campeonato | Não é objetivo: o campeonato libera sozinho depois do último objetivo (CAMP-01) | Não existe evento de inscrição; o Episódio 1 ficou com 6 objetivos, dentro de PROG-02 | y |
 | Ficha da Piranha Lavínia | Mostra "Valor: inestimável" no lugar do valor em R$ (o saldo recebe o valor normal) | Piada do roteiro; exceção visual a PESCA-15 | y |
 | Tamanho da cena | Cena lógica de 180 × 400 px com a ponta da vara em (90, 370); telas mais largas centralizam a cena e completam as laterais com o cenário; a cena fica ancorada embaixo, e em telas mais baixas que 400 × escala a parte de cima (água mais distante) é cortada, ficando visível todo ponto de arremesso em telas a partir de 660 px de altura | As zonas e o alcance das varas são medidos nessa cena (T20) | y |
@@ -417,7 +418,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| INST-01 | P1: Instalar e abrir | - | Pending |
+| INST-01 | P1: Instalar e abrir | T34 | Implementing |
 | INST-02 | P1: Instalar e abrir | T27, T34 | Implementing |
 | INST-03 | P1: Instalar e abrir | T27, T34 | Implementing |
 | INST-04 | P1: Instalar e abrir | T27, T34 | Implementing |
@@ -431,7 +432,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | PESCA-03 | P1: Pescar com um dedo | T8 | Implementing |
 | PESCA-04 | P1: Pescar com um dedo | T9 | Implementing |
 | PESCA-05 | P1: Pescar com um dedo | T9 | Implementing |
-| PESCA-06 | P1: Pescar com um dedo | - | Pending |
+| PESCA-06 | P1: Pescar com um dedo | T37 | Implementing |
 | PESCA-07 | P1: Pescar com um dedo | T26, T29, T37 | Implementing |
 | PESCA-08 | P1: Pescar com um dedo | T9 | Implementing |
 | PESCA-09 | P1: Pescar com um dedo | T9 | Implementing |
@@ -444,7 +445,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | PESCA-16 | P1: Pescar com um dedo | T11 | Implementing |
 | PESCA-17 | P1: Pescar com um dedo | T11, T29 | Implementing |
 | TUTO-01 | P1: Tutorial da primeira pescaria | T17 | Implementing |
-| TUTO-02 | P1: Tutorial da primeira pescaria | - | Pending |
+| TUTO-02 | P1: Tutorial da primeira pescaria | T40 | Implementing |
 | TUTO-03 | P1: Tutorial da primeira pescaria | T17 | Implementing |
 | TUTO-04 | P1: Tutorial da primeira pescaria | T17 | Implementing |
 | TUTO-05 | P1: Tutorial da primeira pescaria | T17 | Implementing |
@@ -462,8 +463,8 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | EQUIP-08 | P1: Varas, iscas e loja | T13 | Implementing |
 | EQUIP-09 | P1: Varas, iscas e loja | T55, T41 | Implementing |
 | HIST-01 | P1: História dos 5 episódios | T16, T39 | Implementing |
-| HIST-02 | P1: História dos 5 episódios | - | Pending |
-| HIST-03 | P1: História dos 5 episódios | - | Pending |
+| HIST-02 | P1: História dos 5 episódios | T39 | Implementing |
+| HIST-03 | P1: História dos 5 episódios | T39 | Implementing |
 | HIST-04 | P1: História dos 5 episódios | T16, T36 | Implementing |
 | HIST-05 | P1: História dos 5 episódios | T16 | Implementing |
 | HIST-06 | P1: História dos 5 episódios | T23 | Implementing |
@@ -480,7 +481,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | HUMOR-09 | P1: Pegada cômica nos personagens | T57 | Implementing |
 | CAMP-01 | P1: Campeonatos | T16, T43 | Implementing |
 | CAMP-02 | P1: Campeonatos | T24, T43 | Implementing |
-| CAMP-03 | P1: Campeonatos | - | Pending |
+| CAMP-03 | P1: Campeonatos | T36, T43 | Implementing |
 | CAMP-04 | P1: Campeonatos | T15 | Implementing |
 | CAMP-05 | P1: Campeonatos | T15, T43 | Implementing |
 | CAMP-06 | P1: Campeonatos | T15, T44 | Implementing |
@@ -502,8 +503,8 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | PROG-04 | P1: Progressão longa | - | Pending |
 | PROG-05 | P1: Progressão longa | - | Pending |
 | SAVE-01 | P1: Pausa e progresso salvo | T26, T38 | Implementing |
-| SAVE-02 | P1: Pausa e progresso salvo | - | Pending |
-| SAVE-03 | P1: Pausa e progresso salvo | - | Pending |
+| SAVE-02 | P1: Pausa e progresso salvo | T38 | Implementing |
+| SAVE-03 | P1: Pausa e progresso salvo | T36 | Implementing |
 | SAVE-04 | P1: Pausa e progresso salvo | T25, T29 | Implementing |
 | SAVE-05 | P1: Pausa e progresso salvo | T25, T47 | Implementing |
 | SAVE-06 | P1: Pausa e progresso salvo | T15, T29 | Implementing |
@@ -511,14 +512,14 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | SAVE-08 | P1: Pausa e progresso salvo | T19, T25 | Implementing |
 | SAVE-09 | P1: Pausa e progresso salvo | T19 | Implementing |
 | SAVE-10 | P1: Pausa e progresso salvo | T25 | Implementing |
-| ACES-01 | P1: Conforto e acessibilidade | - | Pending |
+| ACES-01 | P1: Conforto e acessibilidade | T35 | Implementing |
 | ACES-02 | P1: Conforto e acessibilidade | T18, T35 | Implementing |
 | ACES-03 | P1: Conforto e acessibilidade | T10 | Implementing |
 | ACES-04 | P1: Conforto e acessibilidade | T18, T35 | Implementing |
-| ACES-05 | P1: Conforto e acessibilidade | - | Pending |
-| ACES-06 | P1: Conforto e acessibilidade | - | Pending |
-| ACES-07 | P1: Conforto e acessibilidade | - | Pending |
-| ACES-08 | P1: Conforto e acessibilidade | - | Pending |
+| ACES-05 | P1: Conforto e acessibilidade | T34, T48 | Implementing |
+| ACES-06 | P1: Conforto e acessibilidade | T34, T48 | Implementing |
+| ACES-07 | P1: Conforto e acessibilidade | T34, T48 | Implementing |
+| ACES-08 | P1: Conforto e acessibilidade | T34, T48 | Implementing |
 | ACES-09 | P1: Conforto e acessibilidade | T31, T48 | Implementing |
 | ACES-10 | P1: Conforto e acessibilidade | T26, T38 | Implementing |
 | ALBUM-01 | P2: Álbum de peixes | T14 | Implementing |
@@ -534,7 +535,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 113 total, todos mapeados no tasks.md; 90 em implementação
+**Coverage:** 113 total, todos mapeados no tasks.md; 103 em implementação
 
 ---
 

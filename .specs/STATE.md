@@ -37,10 +37,10 @@
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute, Fase 7 (lote 7: T34 a T40, telas da pescaria, com sub-agente)
-- **Completed**: Fases 1 a 6 (até `09b707d`); 285 testes unitários e 6 e2e passando; roteiros e cartas dos 5 episódios prontos e aprovados
-- **In-progress** (file:line): lote 7 rodando em sub-agente
-- **Next step**: Quando o lote 7 terminar, o jogo fica jogável no celular (episódios 1 a 3, sem arte); disparar a Fase 8 (telas do jogo).
+- **Phase / Task**: Execute, Fase 8 (lote 8: T74, T41 a T46 e T62, telas do jogo, com sub-agente)
+- **Completed**: Fases 1 a 7 (até `b8ac69b`); jogo jogável nos episódios 1 a 3 sem arte; 291 testes unitários e 40 e2e passando
+- **In-progress** (file:line): lote 8 rodando em sub-agente
+- **Next step**: Quando o lote 8 terminar, disparar as Fases 9 e 10 (episódios 4 e 5, calibragem, sala de troféus, jornada completa e acessibilidade).
 - **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (fases de arte).
 - **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`

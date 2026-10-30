@@ -112,7 +112,7 @@ T36 → T40
 ### Phase 8: Telas do jogo
 
 ```
-T41, T42, T45, T46, T62 (independentes)
+T74, T41, T42, T45, T46, T62 (independentes)
 T43 → T44
 ```
 
@@ -1170,6 +1170,28 @@ T53 → T54
 
 ### Phase 8 tasks
 
+#### T74: Criar o menu do jogo
+
+**What**: `MenuScreen`, aberto pelo botão "Menu" da pesca: Voltar a pescar, Mapa, Loja, Álbum, Troféus, Mensagens, Campeonato e Ajustes. Hoje o botão "Menu" volta para a tela inicial.
+**Where**: `src/ui/MenuScreen.tsx`
+**Depends on**: T34
+**Reuses**: `.screen`, `.btn`, `useNav()` e `ScreenId` de `src/ui/context.ts`
+**Requirement**: - (navegação que dá acesso às telas de EQUIP-*, ALBUM-03, CAMP-10, EPI-03, EPI-04 e TROF-01)
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: o botão "Menu" da pesca abre o menu; "Voltar a pescar" volta para a pesca no local atual
+- [ ] e2e: cada botão leva à tela certa; telas que ainda não existem nesta fase ficam desabilitadas e são ligadas pelas tarefas delas
+- [ ] e2e: botões com no mínimo 56 × 56 px, todos na metade de baixo (ACES-06, ACES-08)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): cria o menu do jogo`
+
+---
+
 #### T41: Criar a loja
 
 **What**: Tela `Shop` com varas (barras de Força e Alcance) e iscas, botão "Comprar" e "Equipar".
@@ -1317,6 +1339,7 @@ T53 → T54
 - [ ] e2e: perfil novo → só Poço do Magro liberada; Rio Jacuípe e Ponte da Cetrel com cadeado e "Vença a GuanambiCup" (EPI-03)
 - [ ] e2e: com o Episódio 1 vencido, os dois locais de Jacuípe aparecem liberados; tocar na Ponte da Cetrel abre a pesca com o cenário e os peixes de água salgada (EPI-04, EPI-08)
 - [ ] e2e: recarregar o jogo volta ao último local de pesca (EPI-07)
+- [ ] Viajar pelo Mapa com uma cena pendente (ex.: `ep1-vitoria`) não descarta a cena: o Mapa espera a cena terminar ou o controlador guarda a cena (risco apontado na Fase 7)
 - [ ] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
@@ -1351,7 +1374,7 @@ T53 → T54
 
 #### T59: Cadastrar o Episódio 5: Alto-mar da Bahia
 
-**What**: Pacote `ep5` completo a partir de `docs/historia/episodio-5.md`: local e zonas (Alto-mar da Bahia, com o barco da família); Dourado-do-mar, Cavala, Atum, Olho-de-boi e Marlim-azul (raro, o chefão), com descrição engraçada; 2 varas (Vara Oceano e Vara Lendária) e 1 isca novas; roteiro com todo mundo a bordo (Márcio de capitão), 7 objetivos, o marlim solto de volta no mar, a lembrança leve do Didi, da Denise e do Tininho falada pelos vivos e o encerramento final com a frase de cada um (`chapter.closingScene`, HIST-10); Copa Adilson Moscovits com os rivais Jane, Lavínia e Ninha adulta; carta de todo mundo transcrita de `docs/historia/cartas.md`. Os personagens novos (`ninha-adulta` e Ângela) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep5` completo a partir de `docs/historia/episodio-5.md`: local e zonas (Alto-mar da Bahia, com o barco da família); Dourado-do-mar, Cavala, Atum, Olho-de-boi e Marlim-azul (raro, o chefão), com descrição engraçada; 2 varas (Vara Oceano e Vara Lendária) e 1 isca novas; roteiro com todo mundo a bordo (Márcio de capitão), 7 objetivos, o marlim solto de volta no mar, a lembrança leve do Didi, da Denise e do Tininho falada pelos vivos e o encerramento final com a frase de cada um (`chapter.closingScene`, HIST-10); Copa Adilson Moscovits com os rivais Jane, Lavínia e Ninha adulta; carta de todo mundo transcrita de `docs/historia/cartas.md`. Os personagens novos (`ninha-adulta`, Ângela e Ruan, o Cervero) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep5.ts`
 **Depends on**: T23, T24
 **Reuses**: estrutura de `episodes/ep1.ts`, roteiro de `docs/historia/episodio-5.md`
@@ -1454,7 +1477,7 @@ T53 → T54
 
 - [ ] Em todas as telas: nenhum texto com `font-size` computado < 18 px (ACES-05)
 - [ ] Todo `button` e alvo clicável com caixa ≥ 56 × 56 px (ACES-06)
-- [ ] axe sem violações de `color-contrast` (ACES-07)
+- [ ] axe sem violações de `color-contrast` (ACES-07); texto atrás de overlay modal semitransparente fica fora da regra, porque é escurecido de propósito
 - [ ] Todo botão de ação com o topo abaixo da metade da altura da tela (ACES-08)
 - [ ] Nenhum handler de `dblclick`, gesto ou multitoque registrado; jornada concluída só com toques simples (ACES-09)
 - [ ] Gate check passes: `npm test && npm run test:e2e`
@@ -1725,7 +1748,7 @@ T53 → T54
 
 #### T52: Gerar os retratos da família
 
-**What**: Retratos de 96 × 96 px dos 17 personagens da família (Adilson, Jane, Lavínia, Edvaldo, Ricardo, Bem, Kris, Ninha criança, Ninha adulta, Ângela, Tininho, Denise, Didi, Lu, Geane, Louise e Lucca) nas 4 expressões, a partir das fotos de `Fotos/` e das notas de `docs/arte/personagens.md` (o Edvaldo também de cabelo preto, para o passado).
+**What**: Retratos de 96 × 96 px dos 18 personagens da família (Adilson, Jane, Lavínia, Edvaldo, Ricardo, Bem, Kris, Ninha criança, Ninha adulta, Ângela, Ruan/Cervero, Tininho, Denise, Didi, Lu, Geane, Louise e Lucca) nas 4 expressões, a partir das fotos de `Fotos/` e das notas de `docs/arte/personagens.md` (o Edvaldo também de cabelo preto, para o passado).
 **Where**: `src/assets/portraits/`
 **Depends on**: T39
 **Reuses**: `characters.ts`
@@ -1734,7 +1757,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 68 retratos, mais o Edvaldo jovem (ou só normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
+- [ ] 72 retratos, mais o Edvaldo jovem (ou só normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
 - [ ] Fotos não saem da máquina: só as descrições em texto vão para o PixelLab
 - [ ] Usuário aprova cada retrato nos prints dos cartões de apresentação
 - [ ] Gate check passes: build
@@ -1848,7 +1871,7 @@ T34 → T39 → T40
 T36 → T40
 
 Fase 8
-T41, T42, T45, T46, T62 (independentes)
+T74, T41, T42, T45, T46, T62 (independentes)
 T43 → T44
 
 Fase 9
@@ -1881,7 +1904,7 @@ T53 → T54
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
 
-**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (7) · Fases 9 e 10 (6) · Fase 11 (6) · Fases 12 e 13 (10).
+**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (6) · Fase 11 (6) · Fases 12 e 13 (10).
 
 ---
 
@@ -1933,6 +1956,7 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T38 | `src/ui/Overlays.tsx` | ⚠️ OK (coeso) |
 | T39 | `src/ui/DialogBox.tsx` | ⚠️ OK (coeso) |
 | T40 | `src/ui/TutorialCoach.tsx` | ✅ Granular |
+| T74 | `src/ui/MenuScreen.tsx` | ✅ Granular |
 | T41 | `src/ui/Shop.tsx` | ✅ Granular |
 | T42 | `src/ui/Album.tsx` | ✅ Granular |
 | T43 | `src/ui/Tournament.tsx` | ⚠️ OK (coeso) |
@@ -2013,6 +2037,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T38 | T36 | T36 → T38 | ✅ Match |
 | T39 | T34 | T34 → T39 | ✅ Match |
 | T40 | T36, T39 | T36 → T40, T39 → T40 | ✅ Match |
+| T74 | T34 (fase 7) | - | ✅ Match |
 | T41 | T34 (fase 7) | - | ✅ Match |
 | T42 | T37 (fase 7) | - | ✅ Match |
 | T43 | T36 (fase 7), T39 (fase 7) | - | ✅ Match |
@@ -2091,6 +2116,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T38 | Telas | e2e | e2e | ✅ OK |
 | T39 | Telas | e2e | e2e | ✅ OK |
 | T40 | Telas | e2e | e2e | ✅ OK |
+| T74 | Telas | e2e | e2e | ✅ OK |
 | T41 | Telas | e2e | e2e | ✅ OK |
 | T42 | Telas | e2e | e2e | ✅ OK |
 | T43 | Telas | e2e | e2e | ✅ OK |
