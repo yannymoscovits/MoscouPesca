@@ -66,7 +66,7 @@ graph TD
 - **Location**: `src/app/store.ts`
 - **Interfaces**:
   - `getState(): GameState`
-  - `update(fn: (s: GameState) => GameState): void`: aplica a mudança, notifica e agenda o salvamento quando houve evento salvável
+  - `update(fn: (s: GameState) => GameState): void`: aplica a mudança e notifica; quem salva é o `GameController`, que sabe quais mudanças são eventos salváveis (T29)
   - `subscribe(listener: () => void): () => void`
   - `useGame<T>(selector: (s: GameState) => T): T`: hook Preact
 - **Dependencies**: nenhuma além de Preact hooks
@@ -226,7 +226,7 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
   - `mount(canvas: HTMLCanvasElement): void`
   - `draw(s: FishingViewState, t: number): void`
   - `toLogical(clientX: number, clientY: number): Point`
-- Escala inteira fixa: 2× (3× em telas a partir de 540 px CSS de largura). A cena lógica tem 180 × 400 px, com a ponta da vara em (90, 370); zonas e alcance das varas usam essas coordenadas (T20). Telas mais largas centralizam a cena e completam as laterais com o cenário, com `imageSmoothingEnabled = false` e `image-rendering: pixelated`. Os retratos dos diálogos ficam no HTML, em resolução maior (96 × 96 px de arte), para mostrar as expressões.
+- Escala inteira fixa: 2× (3× em telas a partir de 540 px CSS de largura). A cena lógica tem 180 × 400 px, com a ponta da vara em (90, 370); zonas e alcance das varas usam essas coordenadas (T20). Telas mais largas centralizam a cena e completam as laterais com o cenário; a cena fica ancorada embaixo (T33), com `imageSmoothingEnabled = false` e `image-rendering: pixelated`. Os retratos dos diálogos ficam no HTML, em resolução maior (96 × 96 px de arte), para mostrar as expressões.
 - `sprites.ts`: carrega as folhas de sprite do PixelLab e anima por quadros.
 
 ### InputController

@@ -752,7 +752,7 @@ T53 → T54
 
 #### T57: Cadastrar o Episódio 3: Vera Cruz, Ilha de Itaparica
 
-**What**: Pacote `ep3` completo a partir de `docs/historia/episodio-3.md`: local e zonas (Vera Cruz, Ilha de Itaparica); Xaréu, Guaricema, Agulhinha, Cioba, Budião e Garoupa (rara), com descrição engraçada; 2 varas (Vara Baía e Vara Pedra Fina) e 1 isca novas; roteiro com abertura na fila do ferry, 7 objetivos, a Lavínia pirraçando o Adilsinho e encerramento; Copa Itaparica com os rivais Lu, Geane e Louise e suas provocações; carta `{{PENDENTE}}`. Os personagens novos (Lu, Geane, Louise e Lucca) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep3` completo a partir de `docs/historia/episodio-3.md`: local e zonas (Vera Cruz, Ilha de Itaparica); Xaréu, Guaricema, Agulhinha, Cioba, Budião e Garoupa (rara), com descrição engraçada; 2 varas (Vara Baía e Vara Pedra Fina) e 1 isca novas; roteiro com abertura na fila do ferry, 7 objetivos, a Lavínia pirraçando o Adilsinho e encerramento; Copa Itaparica com os rivais Lu, Geane e Louise e suas provocações; carta `{{PENDENTE}}` (já feita; T39 troca pela carta aprovada das irmãs). Os personagens novos (Lu, Geane, Louise e Lucca) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep3.ts`
 **Depends on**: T23, T24
 **Reuses**: estrutura de `episodes/ep1.ts`, roteiro de `docs/historia/episodio-3.md`
@@ -1136,6 +1136,8 @@ T53 → T54
 - [ ] e2e: a fala só avança com toque; 30 s parado não avança (HIST-03)
 - [ ] `DialogLine.speaker` aceita `null` (narração: sem retrato, em itálico) e lista de personagens (fala conjunta: retratos lado a lado); e2e cobre os dois casos
 - [ ] Conteúdo dos episódios 2 e 3 ganha as narrações dos roteiros (ex.: "Jacuípe, muitos anos atrás.", "Presente.") e a fala conjunta do Didi e da Denise volta a ser uma só, como no roteiro: "Amamos você meu filho, segura firme!"
+- [ ] A fala do Didi "Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho." entra no final do `ep2` (aprovada pelo usuário); o teste que garantia a ausência dela passa a garantir a presença
+- [ ] A carta do `ep3` deixa de ser `{{PENDENTE}}`: transcrever a carta aprovada da Lu e da Geane de `docs/historia/cartas.md`
 - [ ] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
@@ -1327,7 +1329,7 @@ T53 → T54
 
 #### T58: Cadastrar o Episódio 4: Parque dos Ventos
 
-**What**: Pacote `ep4` completo a partir de `docs/historia/episodio-4.md`: local e zonas (Parque dos Ventos, açude no pé das torres eólicas); espécies fantasiosas Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (raro), com descrição engraçada; 2 varas (Vara Hélice e Vara Torre) e 1 isca novas; roteiro com 7 objetivos, a Lavínia como piranha-pipa e encerramento; Copa dos Ventos com os rivais Márcio, Sr. Higashi e Edvaldo e suas provocações; carta `{{PENDENTE}}`. Os personagens novos (Márcio e Sr. Higashi) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep4` completo a partir de `docs/historia/episodio-4.md`: local e zonas (Parque dos Ventos, açude no pé das torres eólicas); espécies fantasiosas Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (raro), com descrição engraçada; 2 varas (Vara Hélice e Vara Torre) e 1 isca novas; roteiro com 7 objetivos, a Lavínia como piranha-pipa e encerramento; Copa dos Ventos com os rivais Márcio, Sr. Higashi e Edvaldo e suas provocações; carta do Márcio transcrita de `docs/historia/cartas.md`. Os personagens novos (Márcio e Sr. Higashi) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep4.ts`
 **Depends on**: T23, T24
 **Reuses**: estrutura de `episodes/ep1.ts`, roteiro de `docs/historia/episodio-4.md`
@@ -1349,10 +1351,10 @@ T53 → T54
 
 #### T59: Cadastrar o Episódio 5: Alto-mar da Bahia
 
-**What**: Pacote `ep5` completo: local e zonas (Alto-mar da Bahia); Dourado-do-mar, Cavala, Atum, Olho-de-boi e Marlim-azul (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um mestre de barco como personagem local e encerramento, sendo o encerramento final da história o `chapter.closingScene` do episódio (HIST-10); Copa Adilson Moscovits com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep5` completo a partir de `docs/historia/episodio-5.md`: local e zonas (Alto-mar da Bahia, com o barco da família); Dourado-do-mar, Cavala, Atum, Olho-de-boi e Marlim-azul (raro, o chefão), com descrição engraçada; 2 varas (Vara Oceano e Vara Lendária) e 1 isca novas; roteiro com todo mundo a bordo (Márcio de capitão), 7 objetivos, o marlim solto de volta no mar, a lembrança leve do Didi, da Denise e do Tininho falada pelos vivos e o encerramento final com a frase de cada um (`chapter.closingScene`, HIST-10); Copa Adilson Moscovits com os rivais Jane, Lavínia e Ninha adulta; carta de todo mundo transcrita de `docs/historia/cartas.md`. Os personagens novos (`ninha-adulta` e Ângela) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep5.ts`
 **Depends on**: T23, T24
-**Reuses**: estrutura de `episodes/ep1.ts`
+**Reuses**: estrutura de `episodes/ep1.ts`, roteiro de `docs/historia/episodio-5.md`
 **Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08, HIST-10 (conteúdo)
 **Tools**: MCP: NONE · Skill: `commit-bee`
 
@@ -1361,7 +1363,7 @@ T53 → T54
 - [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 5º sendo Alto-mar da Bahia (EPI-01)
 - [ ] A espécie rara é limitada pela isca nova e pela força da vara, não pelo alcance (que já chega a 10)
-- [ ] Roteiro de `docs/historia/episodio-5.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
+- [ ] Teste: a carta do `ep5` existe e não contém `{{PENDENTE}}`; Didi, Denise e Tininho não têm falas no `ep5` (só são citados por quem está no barco)
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
@@ -1702,7 +1704,7 @@ T53 → T54
 
 #### T51: Gerar o Adilson na cena
 
-**What**: Sprites do Adilson na margem: parado, arremessando, recolhendo e posando com o peixe.
+**What**: Sprites do Adilson na margem (gordinho, de cabelo branco): parado, arremessando, recolhendo e posando com o peixe, nos caminhos que o renderizador já espera: `src/assets/adilson/{parado,arremessando,recolhendo,posando}.png`, 4 quadros cada.
 **Where**: `src/assets/adilson/`
 **Depends on**: T33
 **Reuses**: descrição a partir das fotos em `Fotos/`
@@ -1723,7 +1725,7 @@ T53 → T54
 
 #### T52: Gerar os retratos da família
 
-**What**: Retratos de 96 × 96 px dos 15 personagens da família (Adilson, Jane, Lavínia, Edvaldo, Ricardo, Bem, Kris, Ninha criança, Tininho, Denise, Didi, Lu, Geane, Louise e Lucca) nas 4 expressões, a partir das fotos de `Fotos/` e das notas de `docs/arte/personagens.md` (o Edvaldo também de cabelo preto, para o passado).
+**What**: Retratos de 96 × 96 px dos 17 personagens da família (Adilson, Jane, Lavínia, Edvaldo, Ricardo, Bem, Kris, Ninha criança, Ninha adulta, Ângela, Tininho, Denise, Didi, Lu, Geane, Louise e Lucca) nas 4 expressões, a partir das fotos de `Fotos/` e das notas de `docs/arte/personagens.md` (o Edvaldo também de cabelo preto, para o passado).
 **Where**: `src/assets/portraits/`
 **Depends on**: T39
 **Reuses**: `characters.ts`
@@ -1732,7 +1734,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 60 retratos, mais o Edvaldo jovem (ou só normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
+- [ ] 68 retratos, mais o Edvaldo jovem (ou só normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
 - [ ] Fotos não saem da máquina: só as descrições em texto vão para o PixelLab
 - [ ] Usuário aprova cada retrato nos prints dos cartões de apresentação
 - [ ] Gate check passes: build
@@ -1745,7 +1747,7 @@ T53 → T54
 
 #### T72: Gerar os personagens de fora da família
 
-**What**: Retratos de 96 × 96 px, nas 4 expressões, do Capenga, do Márcio, do Sr. Higashi e do mestre de barco.
+**What**: Retratos de 96 × 96 px, nas 4 expressões, do Capenga, do Márcio e do Sr. Higashi.
 **Where**: `src/assets/portraits/locais/`
 **Depends on**: T52
 **Reuses**: estilo dos retratos da família
@@ -1754,7 +1756,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 16 retratos no estilo dos da família
+- [ ] 12 retratos no estilo dos da família
 - [ ] Prints dos cartões de apresentação conferidos
 - [ ] Gate check passes: build
 

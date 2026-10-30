@@ -37,10 +37,10 @@
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute, Fase 6 (lote 6: T25 a T33, plataforma, app e desenho, com sub-agente)
-- **Completed**: Fases 1 a 5 (até `313a298`); 205 testes unitários e 3 e2e passando; episódios 1 a 3 no conteúdo; roteiros 1 a 4; cartas 1 e 2 prontas, 3 em rascunho
-- **In-progress** (file:line): lote 6 rodando em sub-agente
-- **Next step**: Quando o lote 6 terminar, disparar a Fase 7 (telas da pescaria).
-- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (fases de arte); roteiro do episódio 5 e cartas 4 e 5 pendentes; carta 3 aguardando a versão final do usuário; fala opcional do Didi aguardando o usuário; descrições de Márcio e Sr. Higashi.
+- **Phase / Task**: Execute, Fase 7 (lote 7: T34 a T40, telas da pescaria, com sub-agente)
+- **Completed**: Fases 1 a 6 (até `09b707d`); 285 testes unitários e 6 e2e passando; roteiros e cartas dos 5 episódios prontos e aprovados
+- **In-progress** (file:line): lote 7 rodando em sub-agente
+- **Next step**: Quando o lote 7 terminar, o jogo fica jogável no celular (episódios 1 a 3, sem arte); disparar a Fase 8 (telas do jogo).
+- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (fases de arte).
 - **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`

@@ -57,7 +57,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Elenco do Episódio 2 | Viagem no tempo em Jacuípe: o Adilson pesca com a Ninha (como ele chama a filha que pediu o jogo), criança; a Lavínia aparece só como a piranha que viajou no tempo. Rivais: Tininho (dono da casa de Jacuípe, super pai), Denise (mãe do Adilson, delegada, farrista, chama ele de "JUNIORRRR") e Didi (pai do Adilson, médico, dava injeção, Bahia em Salvador e Corinthians em São Paulo). Tininho, Denise e Didi já faleceram: aparecem só no passado. Personagem local: Capenga | Definido pelo usuário; a viagem no tempo foi a forma proposta de colocar o usuário criança na história | y |
 | Elenco do Episódio 3 | Ele pescava sozinho em Vera Cruz; as irmãs dele invadem a pescaria: Lu (fuma, bebe e trabalha demais; mãe de Marcus, Louise e Julia) e Geane (canceriana, dramática, acredita em E.T.). Louise, a sobrinha preferida dele, e o filho dela, Lucca, que ele adora. Rivais: Lu, Geane e Louise. Sem personagem local | Definido pelo usuário | y |
 | Episódio 4 | O Adilson trabalha com energia eólica e presta serviços ao Grupo IK; num parque eólico do Alto Sertão, o vento é tão forte que os peixes voam. Com ele, o Márcio (funcionário 01, faz-tudo e muito amigo dele). Aparece o Sr. Higashi (chefe da Ninha), com a piada de botar GPS em tudo. Rivais: Márcio, Sr. Higashi e Edvaldo | Pedido do usuário: algo lúdico com peixe voador, ligado ao trabalho dele | y |
-| Elenco do Episódio 5 | Jane, Edvaldo, Ricardo, Bem e Kris voltam como rivais e coadjuvantes, mais um mestre de barco como personagem local | Mantém a família no centro; o usuário pode incluir mais parentes | n |
+| Elenco do Episódio 5 | A grande final reúne todo mundo dos episódios anteriores num barco (Márcio de capitão). Todos torcem pelo Adilson, acreditam na melhora dele e pedem que ele não desista. Entram a Ninha adulta (nerd de TI) e a Ângela, companheira dela. Didi, Denise e Tininho aparecem só como lembrança leve, na fala de quem está no barco. Rivais: Jane, Lavínia e Ninha (adulta). Chefão: o Marlim-azul, que o Adilson solta de volta no mar. Sem personagem local novo | Pedido do usuário: uma final com todo mundo, acreditando na melhora dele | y |
 | Varas e iscas | Bambu no início e 2 varas novas por episódio (11 no total), Força e Alcance de 1 a 10; 1 isca nova por episódio | Equipamento evolui junto com os 5 episódios | n |
 | Espécies do Episódio 1 | Tilápia, Traíra, Curimatã, Piau, Tambaqui, Tucunaré, Pirarucu Lendário (raro; lenda inspirada no pirarucu de ~90 kg pego no sangradouro da vizinha Barragem de Ceraíma em 2022) e Piranha Lavínia (especial) | Usuário: usar os peixes mais famosos de Guanambi, o básico | y |
 | Espécies dos episódios 2 a 5 | Ep. 2, Rio Jacuípe: Tilápia, Traíra, Tainha, Robalo-peva, Carapeba; Ponte da Cetrel: Robalo-flecha, Pescada-amarela, Vermelho, Baiacu, Camurupim (raro) · Ep. 3, Vera Cruz: Xaréu, Guaricema, Agulhinha, Cioba, Budião, Garoupa (raro) · Ep. 4, Parque dos Ventos (espécies fantasiosas): Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador, Dourado-dos-Ventos (raro) · Ep. 5, alto-mar: Dourado-do-mar, Cavala, Atum, Olho-de-boi, Marlim-azul (raro) | Peixes mais conhecidos de cada lugar, seguindo o critério do usuário para Guanambi; no Rio Jacuípe, guia de pesca cita robalo-peva, traíra e tainha | n |
@@ -70,7 +70,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Apelidos cômicos nos cartões | Propostos pelo agente em `docs/historia/episodio-1.md` | O usuário troca o que quiser | n |
 | Retratos da família | O usuário manda fotos em `Fotos/` (fora do git); o agente descreve cada pessoa em texto, junto com as notas do usuário em `docs/arte/personagens.md`, e o PixelLab gera a partir da descrição. As fotos não vão para o PixelLab nem para o repositório | Preferência do usuário por fotos; privacidade da família | y |
 | Personagens da família e textos da história | Ficam num arquivo de conteúdo com o marcador `{{PENDENTE}}` até o usuário enviar | Permite programar em paralelo; o build de publicação barra marcador pendente (HIST-07) | n |
-| Cartas dos campeonatos | Uma carta por campeonato (5), escritas episódio a episódio com o usuário; a do Episódio 1 (GuanambiCup) está pronta em `docs/historia/cartas.md` | Pedido do usuário: "vamos por episódios" | y |
+| Cartas dos campeonatos | Uma carta por campeonato (5), escritas episódio a episódio com o usuário; as 5 estão prontas e aprovadas em `docs/historia/cartas.md` | Pedido do usuário: "vamos por episódios" | y |
 | Nome do campeonato do Episódio 1 | "GuanambiCup" | Escolhido pelo usuário. O nome do Adilson continua no subtítulo do jogo e na grande final "Copa Adilson Moscovits", a final do Episódio 5 | y |
 | Moeda | "R$" fictício | Familiar para ele; não é dinheiro real | n |
 | Mira do arremesso | Tocar no ponto da água; a isca vai até lá, limitada pelo alcance da vara | Um toque, sem barra de força que exige timing | n |
@@ -78,7 +78,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Empate no campeonato | O Adilson fica à frente do rival com a mesma pontuação | Decidido na implementação (T15); a spec não definia | n |
 | Inscrição no campeonato | Não é objetivo: o campeonato libera sozinho depois do último objetivo (CAMP-01) | Não existe evento de inscrição; o Episódio 1 ficou com 6 objetivos, dentro de PROG-02 | y |
 | Ficha da Piranha Lavínia | Mostra "Valor: inestimável" no lugar do valor em R$ (o saldo recebe o valor normal) | Piada do roteiro; exceção visual a PESCA-15 | y |
-| Tamanho da cena | Cena lógica de 180 × 400 px com a ponta da vara em (90, 370); telas mais largas centralizam a cena e completam as laterais com o cenário | As zonas e o alcance das varas são medidos nessa cena (T20) | y |
+| Tamanho da cena | Cena lógica de 180 × 400 px com a ponta da vara em (90, 370); telas mais largas centralizam a cena e completam as laterais com o cenário; a cena fica ancorada embaixo, e em telas mais baixas que 400 × escala a parte de cima (água mais distante) é cortada, ficando visível todo ponto de arremesso em telas a partir de 660 px de altura | As zonas e o alcance das varas são medidos nessa cena (T20) | y |
 | Rivais dos campeonatos | 3 rivais por campeonato, com pontuação fixa calibrada pela PROG-05 | Desafio real que ele consegue vencer; tentativas ilimitadas | n |
 | Dificuldade | Perguntada na primeira abertura (Tranquilo ou Desafio) e mudável em Ajustes | A disposição dele pode variar de um dia para o outro | n |
 | Iscas | Compradas uma vez, uso ilimitado | Evita ficar sem isca e ter que controlar estoque | n |
@@ -418,9 +418,9 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
 | INST-01 | P1: Instalar e abrir | - | Pending |
-| INST-02 | P1: Instalar e abrir | - | Pending |
-| INST-03 | P1: Instalar e abrir | - | Pending |
-| INST-04 | P1: Instalar e abrir | - | Pending |
+| INST-02 | P1: Instalar e abrir | T27, T34 | Implementing |
+| INST-03 | P1: Instalar e abrir | T27, T34 | Implementing |
+| INST-04 | P1: Instalar e abrir | T27, T34 | Implementing |
 | INST-05 | P1: Instalar e abrir | T3 | Implementing |
 | INST-06 | P1: Instalar e abrir | T3, T47 | Implementing |
 | INST-07 | P1: Instalar e abrir | - | Pending |
@@ -432,7 +432,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | PESCA-04 | P1: Pescar com um dedo | T9 | Implementing |
 | PESCA-05 | P1: Pescar com um dedo | T9 | Implementing |
 | PESCA-06 | P1: Pescar com um dedo | - | Pending |
-| PESCA-07 | P1: Pescar com um dedo | - | Pending |
+| PESCA-07 | P1: Pescar com um dedo | T26, T29, T37 | Implementing |
 | PESCA-08 | P1: Pescar com um dedo | T9 | Implementing |
 | PESCA-09 | P1: Pescar com um dedo | T9 | Implementing |
 | PESCA-10 | P1: Pescar com um dedo | T10 | Implementing |
@@ -501,16 +501,16 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | PROG-03 | P1: Progressão longa | T23, T56 a T59 | Implementing |
 | PROG-04 | P1: Progressão longa | - | Pending |
 | PROG-05 | P1: Progressão longa | - | Pending |
-| SAVE-01 | P1: Pausa e progresso salvo | - | Pending |
+| SAVE-01 | P1: Pausa e progresso salvo | T26, T38 | Implementing |
 | SAVE-02 | P1: Pausa e progresso salvo | - | Pending |
 | SAVE-03 | P1: Pausa e progresso salvo | - | Pending |
-| SAVE-04 | P1: Pausa e progresso salvo | - | Pending |
-| SAVE-05 | P1: Pausa e progresso salvo | - | Pending |
+| SAVE-04 | P1: Pausa e progresso salvo | T25, T29 | Implementing |
+| SAVE-05 | P1: Pausa e progresso salvo | T25, T47 | Implementing |
 | SAVE-06 | P1: Pausa e progresso salvo | T15, T29 | Implementing |
-| SAVE-07 | P1: Pausa e progresso salvo | - | Pending |
+| SAVE-07 | P1: Pausa e progresso salvo | T25 | Implementing |
 | SAVE-08 | P1: Pausa e progresso salvo | T19, T25 | Implementing |
 | SAVE-09 | P1: Pausa e progresso salvo | T19 | Implementing |
-| SAVE-10 | P1: Pausa e progresso salvo | - | Pending |
+| SAVE-10 | P1: Pausa e progresso salvo | T25 | Implementing |
 | ACES-01 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-02 | P1: Conforto e acessibilidade | T18, T35 | Implementing |
 | ACES-03 | P1: Conforto e acessibilidade | T10 | Implementing |
@@ -519,13 +519,13 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | ACES-06 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-07 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-08 | P1: Conforto e acessibilidade | - | Pending |
-| ACES-09 | P1: Conforto e acessibilidade | - | Pending |
-| ACES-10 | P1: Conforto e acessibilidade | - | Pending |
+| ACES-09 | P1: Conforto e acessibilidade | T31, T48 | Implementing |
+| ACES-10 | P1: Conforto e acessibilidade | T26, T38 | Implementing |
 | ALBUM-01 | P2: Álbum de peixes | T14 | Implementing |
 | ALBUM-02 | P2: Álbum de peixes | T14, T37 | Implementing |
 | ALBUM-03 | P2: Álbum de peixes | - | Pending |
-| TELA-01 | P2: Tela acesa durante a pesca | - | Pending |
-| TELA-02 | P2: Tela acesa durante a pesca | - | Pending |
+| TELA-01 | P2: Tela acesa durante a pesca | T26, T36 | Implementing |
+| TELA-02 | P2: Tela acesa durante a pesca | T26 | Implementing |
 | HUMOR-05 | P2: Celebração exagerada | - | Pending |
 | HUMOR-06 | P2: Celebração exagerada | - | Pending |
 | TROF-01 | P2: Sala de troféus | - | Pending |
@@ -534,7 +534,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 113 total, todos mapeados no tasks.md; 77 em implementação
+**Coverage:** 113 total, todos mapeados no tasks.md; 90 em implementação
 
 ---
 
