@@ -580,10 +580,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] JSON inválido, campo faltando ou tipo errado → `null`
-- [ ] Perfil v1 válido → igual na saída
-- [ ] Migração de teste v0 (fixture) → v1 mantendo saldo, itens, progresso, troféus e mensagens (SAVE-09)
-- [ ] Gate check passes: `npm test`
+- [x] JSON inválido, campo faltando ou tipo errado → `null`
+- [x] Perfil v1 válido → igual na saída
+- [x] Migração de teste v0 (fixture) → v1 mantendo saldo, itens, progresso, troféus e mensagens (SAVE-09)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

@@ -1,0 +1,88 @@
+// Validação e migração do perfil salvo (design.md, "SaveService"; parte pura).
+// O I/O com o localStorage fica em src/platform/save.ts.
+
+import type { Profile } from '../content/types';
+
+export const CURRENT_VERSION = 1;
+
+/** Converte um salvamento da versão N para a N + 1. */
+export type Migration = (old: unknown) => unknown;
+
+/** Passos da cadeia, pela versão de origem. A v1 é a primeira: o passo 1 → 2 entra aqui quando existir. */
+export const MIGRATIONS: Readonly<Record<number, Migration>> = {};
+
+type Obj = Record<string, unknown>;
+
+const isObj = (x: unknown): x is Obj => typeof x === 'object' && x !== null && !Array.isArray(x);
+const isStr = (x: unknown): x is string => typeof x === 'string';
+const isNum = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
+const isBool = (x: unknown): x is boolean => typeof x === 'boolean';
+const isStrList = (x: unknown) => Array.isArray(x) && x.every(isStr);
+const isEpisodeId = (x: unknown) => x === 1 || x === 2 || x === 3 || x === 4 || x === 5;
+const isRecordOf = (x: unknown, keyOk: (k: string) => boolean, valueOk: (v: unknown) => boolean) =>
+  isObj(x) && Object.entries(x).every(([k, v]) => keyOk(k) && valueOk(v));
+
+const isLoadout = (x: unknown) => isObj(x) && isStrList(x.owned) && isStr(x.equipped);
+
+const isSettings = (x: unknown) =>
+  isObj(x) && (x.difficulty === null || x.difficulty === 'tranquilo' || x.difficulty === 'desafio') && isBool(x.vibration);
+
+const isEpisodeStory = (x: unknown) => isObj(x) && isNum(x.objectiveIndex) && isNum(x.progress) && isBool(x.won);
+
+const isStory = (x: unknown) =>
+  isObj(x) &&
+  isRecordOf(x.episodes, (k) => isEpisodeId(Number(k)), isEpisodeStory) &&
+  isStrList(x.scenesSeen) &&
+  (x.pendingScene === null || isStr(x.pendingScene));
+
+const isCatch = (x: unknown) => isObj(x) && isStr(x.species) && isNum(x.kg);
+
+const isTournament = (x: unknown) =>
+  x === null || (isObj(x) && isStr(x.id) && isNum(x.castsLeft) && Array.isArray(x.catches) && x.catches.every(isCatch));
+
+function isProfile(x: unknown): x is Profile {
+  return (
+    isObj(x) &&
+    x.version === CURRENT_VERSION &&
+    Number.isInteger(x.money) &&
+    (x.money as number) >= 0 &&
+    isLoadout(x.rods) &&
+    isLoadout(x.baits) &&
+    isSettings(x.settings) &&
+    isStory(x.story) &&
+    Array.isArray(x.unlockedEpisodes) &&
+    x.unlockedEpisodes.every(isEpisodeId) &&
+    isStr(x.currentLocation) &&
+    isBool(x.tutorialDone) &&
+    isStrList(x.charactersIntroduced) &&
+    isTournament(x.tournament) &&
+    isStrList(x.trophies) &&
+    isStrList(x.messagesUnlocked) &&
+    isRecordOf(x.album, () => true, (v) => isObj(v) && isNum(v.recordKg)) &&
+    isStr(x.seenVersion)
+  );
+}
+
+/** SAVE-09: leva um salvamento antigo até a versão atual, passo a passo; null se não der para ler (SAVE-08). */
+export function migrate(raw: unknown, steps: Readonly<Record<number, Migration>> = MIGRATIONS): Profile | null {
+  let data = raw;
+  while (isObj(data) && isNum(data.version) && data.version < CURRENT_VERSION) {
+    const from = data.version;
+    const step = steps[from];
+    if (!step) return null;
+    data = step(data);
+    if (!isObj(data) || !isNum(data.version) || data.version <= from) return null; // cada passo avança a versão
+  }
+  return isProfile(data) ? data : null;
+}
+
+/** Lê o texto de um slot: JSON inválido, campo faltando ou tipo errado → null (SAVE-08). */
+export function parseProfile(text: string, steps: Readonly<Record<number, Migration>> = MIGRATIONS): Profile | null {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  return migrate(raw, steps);
+}
