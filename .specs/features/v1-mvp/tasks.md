@@ -853,10 +853,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Evento recebido → `canPrompt()` verdadeiro e `prompt()` chama o `prompt` do evento uma vez (INST-02)
-- [ ] Sem evento → `canPrompt()` falso, o que leva à instrução do menu (INST-03)
-- [ ] `display-mode: standalone` → `isStandalone()` verdadeiro (INST-04)
-- [ ] Gate check passes: `npm test`
+- [x] Evento recebido → `canPrompt()` verdadeiro e `prompt()` chama o `prompt` do evento uma vez (INST-02)
+- [x] Sem evento → `canPrompt()` falso, o que leva à instrução do menu (INST-03)
+- [x] `display-mode: standalone` → `isStandalone()` verdadeiro (INST-04)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
