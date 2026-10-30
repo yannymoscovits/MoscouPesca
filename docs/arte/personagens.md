@@ -21,3 +21,5 @@
 | Geane | sem foto | Irmã do Adilson; bem gorda, de cabelo preto e pele branca; dramática, olhando pro céu procurando E.T. |
 | Louise | sem foto | Sobrinha preferida do Adilson; parecida com a Lu, mas mais nova (loira clara); advogada, de terninho |
 | Lucca | sem foto | Filho da Louise, criança; loiro claro e gordinho |
+| Márcio | sem foto | Funcionário 01 do Adilson, o faz-tudo; uniforme de trabalho de parque eólico. Falta descrição |
+| Sr. Higashi | sem foto | Chefe da Ninha; sempre com um aparelho de GPS na mão. Falta descrição |

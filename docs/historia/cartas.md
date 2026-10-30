@@ -44,11 +44,27 @@ Ninha
 
 P.S.: a gente ainda volta pra Jacuípe. Sempre que a maré deixar.
 
-## Episódio 3: Copa Itaparica
+## Episódio 3: Copa Itaparica (rascunho, da Lu e da Geane)
 
-{{PENDENTE}}
+Xô,
 
-## Episódio 4: Torneio da Amazônia
+Campeão da Copa Itaparica! A gente sabe que você foi pra Vera Cruz pra pescar em paz. Desculpa. Não deu pra deixar.
+
+Aqui é a Lu, escrevendo entre uma reunião e outra (e um cigarrinho, mas não conta pra ninguém). Quando o Xô some, todo mundo já sabe: foi pescar. E quando volta, o peixe é sempre maior na história do que no balde.
+
+Aqui é a Geane. Eu chorei quando você ganhou, chorei quando a Lu acendeu o cigarro e chorei porque sim. Sou canceriana, Xô. E os E.T. mandaram avisar que, lá de cima, dá pra ver direitinho: o maior pescador da Bahia é você.
+
+A Louise mandou dizer que, juridicamente, o troféu é seu, sem direito a recurso. O Lucca quer saber quando vai pescar outro peixe grandão com você. E o Marcus e a Julia gritaram tanto na torcida que espantaram metade dos peixes da ilha.
+
+Xô, a gente cresceu brigando, rindo e dividindo tudo. Agora a gente divide a torcida: tá todo mundo aqui, esperando você voltar pra ilha com a gente. Dessa vez a gente promete: pescaria em paz. (Mentira.)
+
+Com amor das suas irmãs,
+Lu e Geane
+(e Louise, Lucca, Marcus e Julia)
+
+P.S. da Geane: se aparecer uma luz estranha no céu hoje à noite, sou eu mandando energia. Ou um E.T. Os dois servem.
+
+## Episódio 4: Copa dos Ventos
 
 {{PENDENTE}}
 
