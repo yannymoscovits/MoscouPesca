@@ -416,9 +416,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] `src/domain/balance.test.ts`: em 200 sementes, com cada vara e no Desafio, 100% das brigas duram entre 8 e 40 s
-- [ ] O mesmo jogador simulado arrebenta a linha em menos de 10% das brigas no Desafio
-- [ ] Gate check passes: `npm test`
+- [x] `src/domain/balance.test.ts`: em 200 sementes, com cada vara e no Desafio, 100% das brigas duram entre 8 e 40 s
+- [x] O mesmo jogador simulado arrebenta a linha em menos de 10% das brigas no Desafio
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
