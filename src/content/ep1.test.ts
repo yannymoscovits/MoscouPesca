@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { START_BAIT, START_LOCATION, START_ROD } from '../domain/profile';
+import { record } from '../domain/album';
+import { newProfile, START_BAIT, START_LOCATION, START_ROD } from '../domain/profile';
+import { buy } from '../domain/shop';
+import { currentObjective, isTournamentUnlocked, onEvent } from '../domain/story';
 import { FISH_POWER, FISH_STAMINA } from '../domain/tuning';
-import { ep1 } from './episodes/ep1';
+import { ep1, tutorial } from './episodes/ep1';
 import { episodes } from './index';
+import type { GameEvent, Profile, SceneId } from './types';
 
 const byName = (name: string) => ep1.species.find((sp) => sp.name === name);
 const zoneSpecies = () => ep1.locations.flatMap((l) => l.zones.flatMap((z) => z.species));
@@ -103,5 +107,107 @@ describe('Episódio 1: varas e iscas', () => {
   it('toda espécie aparece em pelo menos uma zona', () => {
     const inZones = new Set(zoneSpecies());
     for (const sp of ep1.species) expect(inZones.has(sp.id), sp.id).toBe(true);
+  });
+});
+
+/** Aplica o efeito do evento (compra, álbum) e depois a história, como o controller fará. */
+function play(p: Profile, e: GameEvent): { p: Profile; scene?: SceneId } {
+  let next = p;
+  if (e.type === 'Caught') next = { ...p, album: record(p.album, e.species, e.kg).album };
+  if (e.type === 'Bought') {
+    const item = [...ep1.rods, ...ep1.baits].find((i) => i.id === e.item)!;
+    next = buy(p, item);
+  }
+  const out = onEvent(next, e, ep1);
+  return { p: { ...next, story: out.progress }, scene: out.sceneToShow };
+}
+
+function playAll(p: Profile, events: GameEvent[]): { p: Profile; scenes: SceneId[] } {
+  const scenes: SceneId[] = [];
+  for (const e of events) {
+    const out = play(p, e);
+    p = out.p;
+    if (out.scene) scenes.push(out.scene);
+  }
+  return { p, scenes };
+}
+
+const fish = (species: string, kg = 1): GameEvent => ({ type: 'Caught', species, kg });
+const bought = (item: string): GameEvent => ({ type: 'Bought', item });
+const rich = (): Profile => ({ ...newProfile(), money: 10_000 });
+
+describe('Episódio 1: roteiro', () => {
+  it('HIST-06: os objetivos de "Tirando a Ferrugem" seguem a ordem do roteiro', () => {
+    expect(ep1.chapter.title).toBe('Tirando a Ferrugem');
+    expect(ep1.chapter.objectives.map((o) => o.text)).toEqual([
+      'Pegar 3 peixes',
+      'Comprar a Vara de Fibra',
+      'Pegar a Piranha Lavínia',
+      'Comprar a Vara de Carbono',
+      'Pegar o Pirarucu Lendário',
+      'Registrar no álbum todas as espécies do Poço do Magro',
+    ]);
+  });
+
+  it('HIST-05: jogando na ordem do roteiro, cada objetivo mostra a sua cena e o último libera a GuanambiCup', () => {
+    const others = ['traira', 'curimata', 'piau', 'tambaqui', 'tucunare'];
+    const { p, scenes } = playAll(rich(), [
+      { type: 'GameStarted' },
+      fish('tilapia'),
+      fish('tilapia'),
+      fish('tilapia'), // o do tutorial e mais dois: 3 peixes
+      bought('fibra'),
+      bought('carne'),
+      fish('piranha-lavinia', 0.8),
+      bought('carbono'),
+      fish('pirarucu-lendario', 30),
+      ...others.map((id) => fish(id)),
+    ]);
+    expect(scenes).toEqual([
+      'ep1-abertura',
+      'ep1-piranha',
+      'ep1-loja',
+      'ep1-piranha-fisgada',
+      'ep1-lenda',
+      'ep1-pegou-lenda',
+      'ep1-album',
+    ]);
+    expect(currentObjective(p.story, ep1)).toBeNull();
+    expect(isTournamentUnlocked(p.story, ep1)).toBe(true);
+  });
+
+  it('HIST-05: com o álbum faltando uma espécie, o campeonato continua bloqueado', () => {
+    const { p } = playAll(rich(), [
+      fish('tilapia'),
+      fish('tilapia'),
+      fish('tilapia'),
+      bought('fibra'),
+      fish('piranha-lavinia', 0.8),
+      bought('carbono'),
+      fish('pirarucu-lendario', 30),
+      ...['traira', 'curimata', 'piau', 'tambaqui'].map((id) => fish(id)), // falta o tucunaré
+    ]);
+    expect(currentObjective(p.story, ep1)?.text).toBe('Registrar no álbum todas as espécies do Poço do Magro');
+    expect(isTournamentUnlocked(p.story, ep1)).toBe(false);
+  });
+
+  it('HIST-05: a Vara de Fibra comprada antes da hora cumpre o objetivo no evento seguinte', () => {
+    const { p, scenes } = playAll(rich(), [
+      bought('fibra'),
+      fish('tilapia'),
+      fish('tilapia'),
+      fish('tilapia'),
+      fish('piau'),
+    ]);
+    expect(scenes).toEqual(['ep1-piranha', 'ep1-loja']);
+    expect(currentObjective(p.story, ep1)?.text).toBe('Pegar a Piranha Lavínia');
+  });
+
+  it('TUTO-03: as falas da Jane existem para os 6 passos do tutorial', () => {
+    expect(Object.keys(tutorial).sort()).toEqual(['cast', 'done', 'hook', 'reel', 'release', 'wait']);
+    for (const line of Object.values(tutorial)) {
+      expect(line.speaker).toBe('jane');
+      expect(line.text.trim()).not.toBe('');
+    }
   });
 });

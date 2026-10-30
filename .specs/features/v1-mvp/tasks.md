@@ -691,10 +691,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste: toda fala aponta para personagem existente; toda cena citada por objetivo existe; objetivos na ordem do roteiro
-- [ ] Teste: as falas dos 6 passos do tutorial existem
-- [ ] `src/content/rules.test.ts`, sobre todos os episódios de `src/content/index.ts` (palavras inteiras: "pai" não casa com "paixão"): 6 a 8 objetivos por episódio, um da espécie rara e um do álbum completo (PROG-02, PROG-03); nenhuma fala da Lavínia contém "Adilson" nem "pai", e cada episódio tem uma cena com fala dela contendo "Adilsinho" (HUMOR-07, HUMOR-08)
-- [ ] Gate check passes: `npm test`
+- [x] Teste: toda fala aponta para personagem existente; toda cena citada por objetivo existe; objetivos na ordem do roteiro
+- [x] Teste: as falas dos 6 passos do tutorial existem
+- [x] `src/content/rules.test.ts`, sobre todos os episódios de `src/content/index.ts` (palavras inteiras: "pai" não casa com "paixão"): 6 a 8 objetivos por episódio, um da espécie rara e um do álbum completo (PROG-02, PROG-03); nenhuma fala da Lavínia contém "Adilson" nem "pai", e cada episódio tem uma cena com fala dela contendo "Adilsinho" (HUMOR-07, HUMOR-08)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

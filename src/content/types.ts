@@ -136,6 +136,14 @@ export interface Episode {
   letter: Message;
 }
 
+// SPEC_DEVIATION: o design não diz onde ficam as cenas do roteiro nem a fala da derrota.
+// Reason: o pacote do episódio precisa levar as cenas que o capítulo cita; um tipo que
+// estende o Episode evita mudar o que o domínio já recebe.
+export interface EpisodeContent extends Episode {
+  scenes: Scene[]; // abertura, cenas dos objetivos, encerramento e derrota
+  defeatScene: SceneId; // mostrada junto com "Tentar de novo" (CAMP-09)
+}
+
 // ---------- Perfil (o que é salvo) ----------
 
 export interface TournamentRun {

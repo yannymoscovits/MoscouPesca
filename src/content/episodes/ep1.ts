@@ -1,7 +1,23 @@
 // Episódio 1: Tirando a Ferrugem, na Barragem do Poço do Magro (Guanambi, BA).
 // Fonte: docs/historia/episodio-1.md. Números de peso, preço e força são iniciais; T61 calibra.
 
-import type { Bait, Episode, Location, Rod, Species } from '../types';
+import type { TutorialStep } from '../../domain/tutorial';
+import type {
+  Bait,
+  CharacterId,
+  DialogLine,
+  EpisodeContent,
+  Expression,
+  GameEvent,
+  Location,
+  Objective,
+  Profile,
+  Rod,
+  RodId,
+  Scene,
+  Species,
+  SpeciesId,
+} from '../types';
 
 const sprite = (id: string) => `src/assets/fish/ep1/${id}.png`;
 
@@ -145,14 +161,145 @@ const baits = [
   { id: 'carne', name: 'Isca de Carne', price: 60, episode: 1 },
 ] satisfies Bait[];
 
+const say = (speaker: CharacterId, expression: Expression, text: string): DialogLine => ({ speaker, expression, text });
+
+const scenes = [
+  {
+    id: 'ep1-abertura', // cena 1
+    lines: [
+      say('jane', 'normal', 'Adilson, a família inteira se juntou e organizou um torneio. A GuanambiCup!'),
+      say('adilson', 'rindo', 'Um torneio? Então já pode ir gravando o meu nome no troféu.'),
+      say('jane', 'bravo', 'Calma. Antes você tira a ferrugem. Toma, achei a sua vara de bambu no fundo do armário.'),
+      say('jane', 'rindo', 'Tá mais torta que os causos que você conta.'),
+      say('adilson', 'rindo', 'Torta nada. Na mão de um pegador, qualquer vara vira profissional.'),
+      say('jane', 'bravo', 'Pegador? Você pegou foi gripe no ano passado.'),
+    ],
+  },
+  {
+    id: 'ep1-piranha', // cena 3
+    lines: [
+      say('lavinia', 'rindo', 'Ih, Adilsinho, roubei sua minhoca. Desse jeito o troféu é meu!'),
+      say('adilson', 'chocado', 'Lavínia?! Que que você tá fazendo dentro da represa?'),
+      say('lavinia', 'rindo', 'Treinando. A GuanambiCup é minha!'),
+    ],
+  },
+  {
+    id: 'ep1-loja', // cena 4
+    lines: [
+      say('edvaldo', 'rindo', 'Essa vara de bambu é do tempo de Cabral, seu Adilson.'),
+      say('edvaldo', 'normal', 'Pra você eu faço preço de família: o mesmo de todo mundo.'),
+      say('edvaldo', 'normal', 'Ah, e se quiser pegar aquela piranha atrevida, tenho Isca de Carne aqui.'),
+    ],
+  },
+  {
+    // cena 5; a linha "Ficha: Lavínia, a Piranha · 0,80 kg" é a ficha do peixe, que a pesca já mostra
+    id: 'ep1-piranha-fisgada',
+    lines: [
+      say('lavinia', 'chocado', 'Tá bom, tá bom, Adilsinho! Me solta que eu te conto onde ficam os peixes grandes!'),
+      say('adilson', 'rindo', 'Agora sim, tô pronto.'),
+    ],
+  },
+  {
+    id: 'ep1-lenda', // cena 6
+    lines: [
+      say('edvaldo', 'normal', 'Carbono! Agora sim, seu Adilson. Com essa dá pra tentar o bicho.'),
+      say('adilson', 'chocado', 'Que bicho?'),
+      say(
+        'edvaldo',
+        'rindo',
+        'O Pirarucu Lendário. Dizem que saiu um de 90 quilos pelo sangradouro de Ceraíma, e que o primo dele mora aqui no Poço do Magro.',
+      ),
+      say('lavinia', 'rindo', 'Esse aí nem eu encaro, Adilsinho. Boa sorte!'),
+    ],
+  },
+  {
+    id: 'ep1-pegou-lenda', // cena 7
+    lines: [
+      say('adilson', 'rindo', 'Agora quero ver alguém dizer que é causo!'),
+      say('jane', 'chocado', 'Tira foto, tira foto! Senão ninguém acredita.'),
+      say('adilson', 'rindo', 'Falei que eu era pegador.'),
+      say('jane', 'rindo', 'Pegador de peixe, Adilson. Só de peixe.'),
+      say('lavinia', 'bravo', 'Sorte de principiante, Adilsinho.'),
+    ],
+  },
+  {
+    id: 'ep1-album', // cena 8
+    lines: [say('jane', 'rindo', 'Todos os peixes da represa no álbum. Agora pode se inscrever, campeão.')],
+  },
+  {
+    id: 'ep1-vitoria', // cena 10; depois dela vêm a carta e o aviso do Episódio 2
+    lines: [
+      say('jane', 'rindo', 'Tá bom, você ganhou. Mas o peixe de 5 quilos daquele causo continua sendo mentira.'),
+      say('jane', 'bravo', 'E pode tirar esse sorriso de pegador da cara.'),
+    ],
+  },
+  {
+    id: 'ep1-derrota', // "Se perder o torneio"
+    lines: [say('ricardo', 'rindo', 'Faltou ritmo, Adilson! Bora de novo?')],
+  },
+] satisfies Scene[];
+
+const caught = (id: SpeciesId) => (e: GameEvent) => e.type === 'Caught' && e.species === id;
+// A compra conta pela vara possuída: comprada antes da hora, cumpre no evento seguinte em vez de travar.
+const owns = (id: RodId) => (_e: GameEvent, p: Profile) => p.rods.owned.includes(id);
+const albumComplete = (_e: GameEvent, p: Profile) => species.every((sp) => p.album[sp.id] !== undefined);
+
+// SPEC_DEVIATION: o roteiro tem 7 objetivos; o 7º, "se inscrever na GuanambiCup", não entra na lista.
+// Reason: o campeonato só libera depois do último objetivo (CAMP-01) e nenhum evento marca a inscrição;
+// com ele na lista, o torneio nunca liberaria. A cena 8 já convida a se inscrever.
+const objectives = [
+  {
+    id: 'pegar-3-peixes',
+    text: 'Pegar 3 peixes', // o peixe do tutorial já conta (TUTO-08)
+    done: (e) => e.type === 'Caught',
+    count: 3,
+    sceneOnDone: 'ep1-piranha',
+  },
+  { id: 'comprar-fibra', text: 'Comprar a Vara de Fibra', done: owns('fibra'), sceneOnDone: 'ep1-loja' },
+  {
+    id: 'pegar-piranha',
+    text: 'Pegar a Piranha Lavínia',
+    done: caught('piranha-lavinia'),
+    sceneOnDone: 'ep1-piranha-fisgada',
+  },
+  { id: 'comprar-carbono', text: 'Comprar a Vara de Carbono', done: owns('carbono'), sceneOnDone: 'ep1-lenda' },
+  {
+    id: 'pegar-pirarucu',
+    text: 'Pegar o Pirarucu Lendário',
+    done: caught('pirarucu-lendario'),
+    sceneOnDone: 'ep1-pegou-lenda',
+  },
+  {
+    id: 'album-completo',
+    text: 'Registrar no álbum todas as espécies do Poço do Magro',
+    done: albumComplete,
+    sceneOnDone: 'ep1-album',
+  },
+] satisfies Objective[];
+
+/** Cena 2: a Jane conduz o tutorial, uma fala por passo (TUTO-02, TUTO-03). */
+export const tutorial = {
+  cast: { speaker: 'jane', text: 'Toca na água onde você quer jogar a isca. Só um dedinho, Adilson, não precisa de força.' },
+  wait: { speaker: 'jane', text: 'Agora espera. Paciência, que nem quando você conta aquele causo do peixe de 5 quilos.' },
+  hook: { speaker: 'jane', text: 'Mordeu! Toca na tela, rápido! Quer dizer… no seu tempo, ele não vai fugir.' },
+  reel: { speaker: 'jane', text: 'Segura o dedo na tela pra recolher a linha.' },
+  release: { speaker: 'jane', text: 'Ficou vermelho? Solta! Deixa o peixe cansar.' },
+  done: {
+    speaker: 'jane',
+    text: 'Pegou! Viu, seu pegador? Peixe você até pega. Faltam dois. E nada de aumentar o peso na hora de contar.',
+  },
+} satisfies Record<TutorialStep, DialogLine>;
+
 export const ep1 = {
   id: 1,
   locations: [pocoDoMagro],
   species,
   rods,
   baits,
-  // Roteiro (T23), GuanambiCup e carta (T24) entram nas próximas tarefas.
-  chapter: { title: 'Tirando a Ferrugem', openingScene: 'ep1-abertura', objectives: [], closingScene: 'ep1-vitoria' },
+  chapter: { title: 'Tirando a Ferrugem', openingScene: 'ep1-abertura', objectives, closingScene: 'ep1-vitoria' },
+  scenes,
+  defeatScene: 'ep1-derrota',
+  // GuanambiCup e carta (T24) entram na próxima tarefa.
   tournament: {
     id: 'guanambicup',
     name: 'GuanambiCup',
@@ -163,4 +310,4 @@ export const ep1 = {
     message: 'carta-guanambicup',
   },
   letter: { id: 'carta-guanambicup', from: 'Sua família', text: '{{PENDENTE}}' },
-} satisfies Episode;
+} satisfies EpisodeContent;
