@@ -1,0 +1,1511 @@
+# MoscouFishing v1 Tasks
+
+## Execution Protocol (MANDATORY -- do not skip)
+
+Implement these tasks with the `tlc-spec-driven` skill: **activate it by name and follow its Execute flow and Critical Rules.** Do not search for skill files by filesystem path. The skill is the source of truth for the full flow (per-task cycle, sub-agent delegation, adequacy review, Verifier, discrimination sensor).
+
+**If the skill cannot be activated, STOP and tell the user - do not proceed without it.**
+
+Regras da organização que valem para toda tarefa:
+
+- Nunca commitar em `main` ou `master`: todo o trabalho fica na branch `feat/v1-mvp`.
+- Antes de cada commit, invocar a skill `commit-bee`; `git add` só com os arquivos da tarefa, nunca `git add -A`.
+- `git push`, deploy e qualquer ação fora da máquina precisam de autorização explícita do usuário.
+
+---
+
+**Design**: `.specs/features/v1-mvp/design.md`
+**Status**: Draft
+
+---
+
+## Test Coverage Matrix
+
+> Generated from codebase, project guidelines, and spec - confirm before Execute. Guidelines found: none - strong defaults applied (repositório novo; segue a Test Strategy do design aprovado).
+
+| Code Layer | Required Test Type | Coverage Expectation | Location Pattern | Run Command |
+| ---------- | ------------------ | -------------------- | ---------------- | ----------- |
+| Domínio (`src/domain`) | unit | Todos os ramos; 1:1 com os ACs; todo edge case listado tem teste | `src/domain/**/*.test.ts` | `npm test` |
+| Conteúdo (`src/content`) | unit | Consistência: toda referência resolve (iscas, espécies, zonas, cenas, personagens, mensagens) | `src/content/*.test.ts` | `npm test` |
+| Plataforma e app (`src/platform`, `src/app`) | unit | Caminhos principais + falhas (API ausente, cota cheia, dado corrompido), com fakes | `src/platform/**/*.test.ts`, `src/app/**/*.test.ts` | `npm test` |
+| Desenho (`src/render`) | unit | Matemática pura (escala, `toLogical`, quadros de animação, fallback sem sprite); a imagem é conferida no e2e | `src/render/*.test.ts` | `npm test` |
+| Scripts (`scripts/`) | unit | Caminho de sucesso + caminho de falha | `scripts/*.test.ts` | `npm test` |
+| Telas (`src/ui`) | e2e | Cada AC da tela: caminho feliz + edge cases + erros, no perfil Pixel 7 | `e2e/*.spec.ts` | `npm run test:e2e` |
+| Config, tipos e arte | none | - (só o gate de build) | - | gate build |
+
+## Gate Check Commands
+
+> Generated from codebase - confirm before Execute.
+
+| Gate Level | When to Use | Command |
+| ---------- | ----------- | ------- |
+| Quick | Tarefas só com testes unitários | `npm test` |
+| Full | Tarefas com e2e | `npm test && npm run test:e2e` |
+| Build | Fim de fase e tarefas de config, tipos ou arte | `npm run typecheck && npm run build && npm run check:size && npm test && npm run test:e2e` |
+
+O gate de build **não** roda `check:content`: o marcador `{{PENDENTE}}` é esperado durante o desenvolvimento e só barra o `npm run release` (T54).
+
+---
+
+## Execution Plan
+
+Phases are ordered and run sequentially - each phase completes before the next begins, and tasks within a phase execute in order. Dependências entre fases aparecem só no campo `Depends on` de cada tarefa.
+
+**Marco jogável:** ao fim da Fase 6, a pescaria completa roda no celular com formas provisórias no lugar da arte.
+
+### Phase 1: Fundação
+
+```
+T1 → T2 → T3
+T2 → T4 → T5
+```
+
+### Phase 2: Domínio da pesca
+
+```
+T6 → T8 → T9 → T10 → T11 → T12
+T7 → T8
+```
+
+### Phase 3: Domínio do jogo
+
+```
+T13 (independente)
+T14 (independente)
+T15 (independente)
+T16 (independente)
+T17 (independente)
+T18 → T19
+```
+
+### Phase 4: Conteúdo
+
+```
+T20 → T21
+T22 → T23
+T22 → T24
+```
+
+### Phase 5: Plataforma, app e desenho
+
+```
+T25 → T29
+T26 → T29
+T28 → T29 → T30
+T29 → T31
+T32 → T33
+T28 → T33
+```
+
+### Phase 6: Telas da pescaria
+
+```
+T34 → T35
+T34 → T36 → T37
+T36 → T38
+T34 → T39 → T40
+T36 → T40
+```
+
+### Phase 7: Telas do jogo
+
+```
+T41 (independente)
+T42 (independente)
+T43 → T44
+T45 (independente)
+T46 (independente)
+```
+
+### Phase 8: Fechamento técnico
+
+```
+T47 → T48
+```
+
+### Phase 9: Arte e publicação
+
+```
+T49 → T54
+T50 → T54
+T51 → T54
+T52 → T54
+T53 → T54
+```
+
+---
+
+## Task Breakdown
+
+### Phase 1 tasks
+
+#### T1: Iniciar o repositório e commitar o planejamento
+
+**What**: Repositório git criado direto na branch `feat/v1-mvp`, com `.gitignore` e um commit contendo `.specs/` e `docs/`.
+**Where**: `.gitignore`
+**Depends on**: None
+**Reuses**: -
+**Requirement**: - (infraestrutura)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [x] `git init -b feat/v1-mvp`; nenhum commit existe em `main` ou `master`
+- [x] `.gitignore` ignora `node_modules/`, `dist/`, `Fotos/`, `test-results/`, `playwright-report/`
+- [x] Commit com `.specs/` e `docs/`; `Fotos/` fica de fora
+
+**Tests**: none
+**Gate**: none (só documentação)
+**Commit**: `docs(specs): adiciona spec, design e roteiro da v1`
+
+---
+
+#### T2: Montar o esqueleto do projeto
+
+**What**: Projeto Vite 8 + TypeScript + Preact com Vitest (happy-dom) e Playwright (perfil Pixel 7) configurados e os scripts `dev`, `build`, `preview`, `typecheck`, `test`, `test:e2e`, `check:size`.
+**Where**: `package.json`
+**Depends on**: T1
+**Reuses**: -
+**Requirement**: - (infraestrutura)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] `vite.config.ts`, `tsconfig.json`, `vitest.config.ts`, `playwright.config.ts` (webServer com `vite preview`), `index.html`, `src/main.tsx` mínimo
+- [ ] `npm test` passa com `--passWithNoTests`; `npm run test:e2e` passa com `--pass-with-no-tests`
+- [ ] `npm run typecheck` e `npm run build` passam
+- [ ] Se alguma major nova (Vite 8, TS 7, Preact 11, Vitest 5) quebrar a integração, fixar a anterior e registrar no commit
+
+**Tests**: none
+**Gate**: build
+**Commit**: `chore(setup): cria esqueleto vite, preact, vitest e playwright`
+
+---
+
+#### T3: Configurar o PWA
+
+**What**: Manifest, service worker com precache de tudo (`vite-plugin-pwa`, `registerType: 'prompt'`), `noindex` na página e `robots.txt`/`_headers`.
+**Where**: `vite.config.ts` (modify)
+**Depends on**: T2
+**Reuses**: `vite-plugin-pwa`
+**Requirement**: INST-05, INST-06, INST-09
+**Tools**: MCP: NONE · Skill: `playwright-cli` (depuração), `commit-bee`
+
+**Done when**:
+
+- [ ] Manifest com `name` "MoscouFishing", `display: fullscreen`, `orientation: portrait`, ícones provisórios 192/512 e maskable
+- [ ] `<meta name="robots" content="noindex">`, `public/robots.txt` com `Disallow: /` e `public/_headers` com `X-Robots-Tag: noindex`
+- [ ] e2e `e2e/pwa.spec.ts`: manifest com os campos acima (INST-05); meta `noindex` presente (INST-09); após o service worker ativar, recarregar com `context.setOffline(true)` abre a página (INST-06)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(pwa): configura manifest, service worker e noindex`
+
+---
+
+#### T4: Criar a trava de conteúdo pendente
+
+**What**: Script que procura `{{PENDENTE}}` em `src/content/` e sai com erro listando arquivo e linha de cada marcador.
+**Where**: `scripts/check-content.ts`
+**Depends on**: T2
+**Reuses**: -
+**Requirement**: HIST-07
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Script `check:content` no `package.json` (via `tsx`)
+- [ ] Teste: pasta sem marcador → código de saída 0
+- [ ] Teste: dois marcadores em arquivos diferentes → código 1 e as duas posições (arquivo:linha) listadas
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(build): barra publicação com conteúdo pendente`
+
+---
+
+#### T5: Criar a trava de tamanho e o comando de publicação
+
+**What**: Script que soma o `dist/` e falha acima de 5 MB, mais o script `release` = `check:content` + `build` + `check:size`.
+**Where**: `scripts/check-size.ts`
+**Depends on**: T4
+**Reuses**: padrão de `scripts/check-content.ts`
+**Requirement**: INST-08
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Teste: pasta de 4,9 MB → código 0; pasta de 5,1 MB → código 1 com o total na mensagem
+- [ ] `npm run release` encadeia as três etapas e para na primeira que falhar
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(build): limita o pacote a 5 MB e cria comando release`
+
+---
+
+### Phase 2 tasks
+
+#### T6: Definir os tipos de conteúdo e de perfil
+
+**What**: Todos os tipos do design: `Species`, `Rod`, `Bait`, `Zone`, `Character`, `Expression`, `DialogLine`, `Scene`, `Objective`, `Chapter`, `TournamentDef`, `Message`, `Profile`, `TournamentRun`, `GameEvent`, `Difficulty`.
+**Where**: `src/content/types.ts`
+**Depends on**: T2
+**Reuses**: Data Models do design
+**Requirement**: HIST-06 (estrutura)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Tipos exportados exatamente como no design
+- [ ] `npm run typecheck` passa
+
+**Tests**: none
+**Gate**: build
+**Commit**: `feat(content): define tipos de conteúdo e perfil`
+
+---
+
+#### T7: Criar o sorteio com semente
+
+**What**: Gerador pseudoaleatório com semente (mulberry32) com `next()`, `range(min, max)` e `pick(weighted)`.
+**Where**: `src/domain/rng.ts`
+**Depends on**: T2
+**Reuses**: -
+**Requirement**: - (base para PESCA-04 e PESCA-16)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Mesma semente → mesma sequência; sementes diferentes → sequências diferentes
+- [ ] `range` sempre dentro de [min, max] em 10 000 sorteios
+- [ ] `pick` respeita os pesos (frequência dentro de ±5% em 10 000 sorteios)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(domain): adiciona gerador aleatório com semente`
+
+---
+
+#### T8: Implementar o arremesso
+
+**What**: `cast()` e o trecho de voo de `tick()`: limita ao alcance da vara, voa até o ponto e ignora toques durante o voo.
+**Where**: `src/domain/fishing.ts`
+**Depends on**: T6, T7
+**Reuses**: `rng.ts`
+**Requirement**: PESCA-01, PESCA-02, PESCA-03, EQUIP-07 (alcance)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Toque dentro do alcance → isca vai ao ponto exato (PESCA-01)
+- [ ] Toque fora → isca para no limite, mesma direção (PESCA-02)
+- [ ] `press()` e `cast()` durante o voo não mudam o estado (PESCA-03)
+- [ ] Vara com Alcance maior → distância máxima maior (EQUIP-07)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(fishing): implementa arremesso limitado pelo alcance`
+
+---
+
+#### T9: Implementar espera, mordida e fisgada
+
+**What**: Estados `Waiting` e `Bite`: mordida entre 3 e 10 s quando a zona aceita a isca, desistência em 15 s, janela de fisgada de 2 s (Desafio) ou 4 s (Tranquilo), regras vindas de `TickContext.rules`.
+**Where**: `src/domain/fishing.ts` (modify)
+**Depends on**: T8
+**Reuses**: `rng.ts`
+**Requirement**: PESCA-04, PESCA-05, PESCA-08, PESCA-09
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Em 200 sementes, toda mordida acontece entre 3 e 10 s em zona compatível (PESCA-04)
+- [ ] Zona sem espécie compatível → `Result_Nothing` aos 15 s (PESCA-05)
+- [ ] Toque aos 1,9 s no Desafio fisga; aos 2,1 s o peixe escapa; no Tranquilo o limite é 4 s (PESCA-08, PESCA-09)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(fishing): implementa espera, mordida e fisgada`
+
+---
+
+#### T10: Implementar a briga e a tensão
+
+**What**: Estado `Fight`: segurar recolhe e sobe a tensão, soltar alivia e o peixe puxa; Força da vara reduz o ganho; arrebenta após 1 s em 100 no Desafio; teto 99 no Tranquilo; dificuldade capturada no início da briga.
+**Where**: `src/domain/fishing.ts` (modify)
+**Depends on**: T9
+**Reuses**: `tuning.ts` (constantes iniciais criadas aqui)
+**Requirement**: PESCA-10, PESCA-11, PESCA-12 (faixas), PESCA-13, PESCA-14, EQUIP-07 (força), ACES-03
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Segurando: tensão sobe e distância cai; soltando: tensão cai e distância sobe (PESCA-10, PESCA-11)
+- [ ] `tensionBand(t)`: verde < 70, amarelo 70 a 89, vermelho 90 a 100 (PESCA-12)
+- [ ] Desafio: 100 por 0,9 s não arrebenta, por 1,0 s arrebenta (PESCA-13)
+- [ ] Tranquilo: tensão nunca passa de 99 nem arrebenta, segurando por 60 s (PESCA-14)
+- [ ] Vara de Força 3 sobe a tensão mais devagar que a de Força 1 (EQUIP-07)
+- [ ] Trocar a dificuldade no meio da briga não muda a briga atual (ACES-03)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(fishing): implementa briga com tensão da linha`
+
+---
+
+#### T11: Implementar o resultado da pescaria
+
+**What**: Ao zerar a distância, `Result_Caught` com espécie, peso sorteado na faixa (2 casas) e valor em R$ (peso × preço/kg).
+**Where**: `src/domain/fishing.ts` (modify)
+**Depends on**: T10
+**Reuses**: `rng.ts`
+**Requirement**: PESCA-15 (dados da ficha), PESCA-16, PESCA-17 (valor)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Em 1 000 sementes, todo peso fica dentro da faixa da espécie e tem 2 casas decimais (PESCA-16)
+- [ ] Valor = arredondamento de peso × preço/kg (PESCA-17)
+- [ ] Resultado traz espécie, peso e valor (PESCA-15)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(fishing): calcula peso e valor do peixe pego`
+
+---
+
+#### T12: Balancear a pescaria
+
+**What**: Ajustar `tuning.ts` até a simulação de um jogador que segura até o amarelo e solta no vermelho cumprir os critérios de sucesso.
+**Where**: `src/domain/tuning.ts`
+**Depends on**: T11
+**Reuses**: `fishing.ts`, `rng.ts`
+**Requirement**: Success Criteria (briga de 8 a 40 s)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] `src/domain/balance.test.ts`: em 200 sementes, com cada vara e no Desafio, 100% das brigas duram entre 8 e 40 s
+- [ ] O mesmo jogador simulado arrebenta a linha em menos de 10% das brigas no Desafio
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `test(balance): calibra duração das brigas`
+
+---
+
+### Phase 3 tasks
+
+#### T13: Implementar a loja
+
+**What**: `canBuy`, `buy` e `equip`: compra uma vez só, saldo nunca negativo, item equipado vale no próximo arremesso, isca de uso ilimitado.
+**Where**: `src/domain/shop.ts`
+**Depends on**: T6
+**Reuses**: -
+**Requirement**: EQUIP-03, EQUIP-04, EQUIP-05, EQUIP-06, EQUIP-08
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Comprar com saldo → desconta uma vez; comprar de novo o mesmo item → perfil igual (EQUIP-03)
+- [ ] Saldo menor → `{ ok: false, missing }` com o valor exato que falta (EQUIP-04)
+- [ ] Equipar item não possuído → perfil igual; possuído → passa a ser o equipado (EQUIP-05)
+- [ ] Nenhuma sequência de compras deixa o saldo negativo (EQUIP-06)
+- [ ] Usar uma isca em 100 arremessos não a remove do perfil (EQUIP-08)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(shop): implementa compra e equipamento`
+
+---
+
+#### T14: Implementar o álbum
+
+**What**: `record()`: registra a primeira captura da espécie e atualiza o recorde quando o peso é maior.
+**Where**: `src/domain/album.ts`
+**Depends on**: T6
+**Reuses**: -
+**Requirement**: ALBUM-01, ALBUM-02
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Primeira tilápia de 1,20 kg → registrada com 1,20 e `isNewRecord: true` (ALBUM-01)
+- [ ] Depois, 0,90 kg → recorde continua 1,20 e `isNewRecord: false`; 1,50 kg → recorde 1,50 e `true` (ALBUM-02)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(album): registra espécies e recordes`
+
+---
+
+#### T15: Implementar o torneio
+
+**What**: `start`, `recordCast`, `score`, `standings` e `applyVictory` da GuanambiCup.
+**Where**: `src/domain/tournament.ts`
+**Depends on**: T11
+**Reuses**: tipos de `fishing.ts`
+**Requirement**: CAMP-04, CAMP-05, CAMP-06 (desbloqueio), CAMP-07, CAMP-08, CAMP-09, SAVE-06 (arremesso)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Pontuação = soma dos 3 mais pesados (5 peixes de teste com resultado conhecido) (CAMP-04)
+- [ ] `castsLeft` só cai quando um resultado é registrado; briga interrompida não gasta arremesso (SAVE-06)
+- [ ] Após o 8º arremesso, `standings` ordena jogador e 3 rivais por pontuação (CAMP-05)
+- [ ] Primeira vitória: troféu e mensagem desbloqueados (CAMP-06, CAMP-07); segunda vitória: listas sem duplicata (CAMP-08)
+- [ ] Derrota: `start` de novo zera a rodada sem custo (CAMP-09)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(tournament): implementa pontuação e vitória da guanambicup`
+
+---
+
+#### T16: Implementar a história
+
+**What**: `onEvent`, `currentObjective` e `isTournamentUnlocked` a partir de `GameEvent`.
+**Where**: `src/domain/story.ts`
+**Depends on**: T6
+**Reuses**: -
+**Requirement**: HIST-01, HIST-04, HIST-05, HIST-08, CAMP-01
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] `GameStarted` num perfil novo → cena de abertura (HIST-01)
+- [ ] Objetivo atual muda em ordem conforme os eventos, e cada conclusão devolve a cena certa (HIST-04, HIST-05)
+- [ ] Torneio bloqueado até o último objetivo; liberado depois (CAMP-01)
+- [ ] `TournamentWon` → cena de encerramento (HIST-08)
+- [ ] Evento fora de ordem (ex.: compra antes do objetivo de compra) não pula objetivos
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(story): avança objetivos e cenas por eventos`
+
+---
+
+#### T17: Implementar o tutorial
+
+**What**: Passos `cast → wait → hook → reel → release → done`, regras afrouxadas e aviso após 10 s sem toque.
+**Where**: `src/domain/tutorial.ts`
+**Depends on**: T10
+**Reuses**: estados de `fishing.ts`
+**Requirement**: TUTO-01, TUTO-03, TUTO-04, TUTO-05, TUTO-06, TUTO-07 (marcação), TUTO-08
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Perfil sem tutorial → `start()` no passo `cast` (TUTO-01)
+- [ ] Passos avançam na ordem com o estado da pesca (TUTO-03)
+- [ ] Com `rules()` do tutorial: mordida ≤ 5 s em 200 sementes, peixe não escapa sem toque, tensão máxima 99 (TUTO-04, TUTO-05, TUTO-06)
+- [ ] 10 s sem toque num passo → `nudge: true` (TUTO-07)
+- [ ] Peixe pego → `done` e evento `Caught` emitido para o objetivo (TUTO-08)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(tutorial): guia a primeira pescaria`
+
+---
+
+#### T18: Implementar o perfil e os ajustes
+
+**What**: `newProfile()` com vara de Bambu, Minhoca, R$ 0 e dificuldade não escolhida; `setDifficulty`, `setVibration` e `resetTutorial`.
+**Where**: `src/domain/profile.ts`
+**Depends on**: T6
+**Reuses**: -
+**Requirement**: ACES-02, ACES-04 (padrão ligado), TUTO-09
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Perfil novo: Bambu e Minhoca possuídos e equipados, `difficulty: null`, `vibration: true` (ACES-04)
+- [ ] `setDifficulty` troca entre Tranquilo e Desafio (ACES-02)
+- [ ] `resetTutorial` marca `tutorialDone: false` (TUTO-09)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(profile): cria perfil inicial e ajustes`
+
+---
+
+#### T19: Validar e migrar o salvamento
+
+**What**: `parseProfile(raw)` que valida a forma do perfil e `migrate()` com cadeia de versões.
+**Where**: `src/domain/saveSchema.ts`
+**Depends on**: T18
+**Reuses**: `profile.ts`
+**Requirement**: SAVE-08 (detecção de ilegível), SAVE-09
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] JSON inválido, campo faltando ou tipo errado → `null`
+- [ ] Perfil v1 válido → igual na saída
+- [ ] Migração de teste v0 (fixture) → v1 mantendo saldo, itens, progresso, troféus e mensagens (SAVE-09)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(save): valida e migra o perfil salvo`
+
+---
+
+### Phase 4 tasks
+
+#### T20: Cadastrar as espécies
+
+**What**: Lambari, Tilápia, Traíra, Carpa, Tucunaré e a Piranha Lavínia, com faixa de peso, preço/kg, força, fôlego, iscas, raridade e descrição engraçada.
+**Where**: `src/content/species.ts`
+**Depends on**: T6
+**Reuses**: fichas de `docs/historia/capitulo-1.md`
+**Requirement**: HUMOR-03 (textos), EQUIP-02 (iscas por espécie)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] `satisfies Species[]` sem erro de tipo
+- [ ] Teste: toda isca citada existe; toda espécie tem descrição não vazia; Piranha Lavínia só aceita a Isca de Carne
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(content): cadastra espécies da represa`
+
+---
+
+#### T21: Cadastrar varas, iscas e zonas
+
+**What**: Varas Bambu, Fibra e Carbono (força, alcance, preço); iscas Minhoca, Milho, Artificial e Carne; zonas da represa com as espécies de cada uma.
+**Where**: `src/content/gear.ts`
+**Depends on**: T20
+**Reuses**: `species.ts`
+**Requirement**: EQUIP-01, EQUIP-02
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Teste: 3 varas com força e alcance entre 1 e 5, Bambu custa 0 (EQUIP-01)
+- [ ] Teste: ≥ 3 iscas, Minhoca custa 0, cada isca atrai um conjunto diferente de espécies (EQUIP-02)
+- [ ] Teste: toda espécie de zona existe; toda espécie aparece em pelo menos uma zona
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(content): cadastra varas, iscas e zonas`
+
+---
+
+#### T22: Cadastrar os personagens
+
+**What**: Adilson, Jane, Lavínia, Edvan, Tio Ricardo, Bem e Tia Kris com nome, apelido do cartão e caminhos dos 4 retratos.
+**Where**: `src/content/characters.ts`
+**Depends on**: T6
+**Reuses**: elenco de `docs/historia/capitulo-1.md`
+**Requirement**: HUMOR-01 (dados), HUMOR-02 (dados)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Teste: 7 personagens, IDs únicos, apelido não vazio, 4 expressões cada
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(content): cadastra elenco da família`
+
+---
+
+#### T23: Cadastrar o Capítulo 1
+
+**What**: Cenas, falas com expressão, objetivos e passos do tutorial do roteiro "Tirando a Ferrugem".
+**Where**: `src/content/chapter1.ts`
+**Depends on**: T22
+**Reuses**: roteiro de `docs/historia/capitulo-1.md`, `story.ts`
+**Requirement**: HIST-06
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Teste: toda fala aponta para personagem existente; toda cena citada por objetivo existe; objetivos na ordem do roteiro
+- [ ] Teste: as falas dos 6 passos do tutorial existem
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(content): adiciona roteiro do capítulo 1`
+
+---
+
+#### T24: Cadastrar a GuanambiCup e a carta
+
+**What**: Definição da GuanambiCup (8 arremessos, conta 3, rivais com placar e provocação) e a mensagem da família, ainda como `{{PENDENTE}}`.
+**Where**: `src/content/tournament1.ts`
+**Depends on**: T22
+**Reuses**: `tournament.ts`, `docs/historia/cartas.md`
+**Requirement**: CAMP-02 (dados), HUMOR-04 (dados)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] `src/content/messages.ts` com a carta da GuanambiCup marcada `{{PENDENTE}}`
+- [ ] Teste: 3 rivais que existem em `characters.ts`, cada um com provocação; troféu e mensagem existem
+- [ ] Teste: a pontuação do rival mais forte é menor que a mediana da simulação com a Vara de Fibra e maior que a mediana com a de Bambu
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(content): adiciona guanambicup e rivais`
+
+---
+
+### Phase 5 tasks
+
+#### T25: Implementar o SaveService
+
+**What**: `save` em 2 slots, `load` com fallback (atual → anterior → novo + cópia do ilegível), falha de cota e `requestPersistence`.
+**Where**: `src/platform/save.ts`
+**Depends on**: T19
+**Reuses**: `saveSchema.ts`
+**Requirement**: SAVE-04 (gravação), SAVE-05, SAVE-07, SAVE-08, SAVE-10
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] `save` duas vezes → `current` é o novo e `previous` o antigo
+- [ ] `load` com `current` válido → `current`; corrompido → `previous` (SAVE-05, SAVE-07)
+- [ ] Ambos corrompidos → perfil novo e `mf.save.corrupt.<timestamp>` com o texto original (SAVE-08)
+- [ ] `setItem` lançando cota → `{ ok: false }` sem exceção
+- [ ] `requestPersistence` chama `navigator.storage.persist` e tolera a API ausente (SAVE-10)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(save): salva em dois slots com recuperação`
+
+---
+
+#### T26: Encapsular as APIs do navegador
+
+**What**: `vibrate`, `keepScreenOn` (Wake Lock, readquirido ao voltar), `onVisibilityChange` e `isLandscape`, todos tolerantes a API ausente.
+**Where**: `src/platform/browser.ts`
+**Depends on**: T2
+**Reuses**: -
+**Requirement**: PESCA-07 (plataforma), TELA-01 (plataforma), TELA-02, SAVE-01 (evento), ACES-10 (detecção)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Sem `navigator.vibrate` / `navigator.wakeLock` → chamadas não lançam erro (TELA-02)
+- [ ] Wake Lock liberado ao ficar oculto é pedido de novo ao voltar visível (TELA-01)
+- [ ] `onVisibilityChange` avisa `hidden` e `visible` (SAVE-01)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(platform): encapsula vibração, tela acesa e visibilidade`
+
+---
+
+#### T27: Implementar a lógica de instalação
+
+**What**: Captura de `beforeinstallprompt`, `canPrompt`, `prompt` e `isStandalone`.
+**Where**: `src/platform/install.ts`
+**Depends on**: T2
+**Reuses**: -
+**Requirement**: INST-02, INST-03 (decisão), INST-04 (detecção)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Evento recebido → `canPrompt()` verdadeiro e `prompt()` chama o `prompt` do evento uma vez (INST-02)
+- [ ] Sem evento → `canPrompt()` falso, o que leva à instrução do menu (INST-03)
+- [ ] `display-mode: standalone` → `isStandalone()` verdadeiro (INST-04)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(pwa): controla o convite de instalação`
+
+---
+
+#### T28: Criar o GameStore
+
+**What**: Estado do jogo com `getState`, `update`, `subscribe` e o hook `useGame`.
+**Where**: `src/app/store.ts`
+**Depends on**: T18
+**Reuses**: `profile.ts`
+**Requirement**: - (base de SAVE-04 e das telas)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] `update` notifica todos os inscritos uma vez; cancelar a inscrição para de notificar
+- [ ] `useGame` re-renderiza só quando o valor selecionado muda (teste com happy-dom)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(app): cria estado observável do jogo`
+
+---
+
+#### T29: Criar o GameController
+
+**What**: Único ponto que muda o estado: liga toques, tempo, história, tutorial, torneio, loja, álbum, salvamento e plataforma; expõe `window.__mf` só no modo de teste e2e.
+**Where**: `src/app/controller.ts`
+**Depends on**: T25, T26, T28
+**Reuses**: todo o domínio, `src/content/*`
+**Requirement**: SAVE-04 (gatilhos), SAVE-06 (briga interrompida), PESCA-07 (chamada), HIST-05 (cenas), TUTO-08 (encadeamento)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Peixe, compra, objetivo e arremesso de torneio disparam `save` (SAVE-04)
+- [ ] Mordida com vibração ligada chama `vibrate(300)`; desligada, não chama (PESCA-07)
+- [ ] Carregar perfil salvo no meio de uma briga → volta para `Idle` sem gastar arremesso de torneio (SAVE-06)
+- [ ] Peixe do tutorial conta no objetivo "pegar 3 peixes" (TUTO-08)
+- [ ] `window.__mf` não existe no build de produção
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(app): conecta domínio, salvamento e plataforma`
+
+---
+
+#### T30: Criar o GameLoop
+
+**What**: Laço com `requestAnimationFrame`, `dt` limitado a 100 ms, desenho a 30 qps e parada total na pausa.
+**Where**: `src/app/loop.ts`
+**Depends on**: T29
+**Reuses**: -
+**Requirement**: SAVE-01 (congelar)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Com rAF falso, um salto de 5 s gera `tick(0.1)`, não `tick(5)`
+- [ ] Pausado → nenhum `tick` nem desenho
+- [ ] A 60 Hz, o desenho roda 30 vezes por segundo
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(app): cria laço do jogo econômico`
+
+---
+
+#### T31: Criar o InputController
+
+**What**: Pointer Events viram `pressStart`, `pressEnd` e `tapWater`; só o primeiro dedo vale; sem menu de toque longo.
+**Where**: `src/app/input.ts`
+**Depends on**: T29
+**Reuses**: `FishingRenderer.toLogical` (assinatura)
+**Requirement**: ACES-09
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] `pointerdown`/`pointerup` → `pressStart`/`pressEnd`; `pointerup` em `Idle` → `tapWater(x, y)` lógico
+- [ ] Segundo dedo é ignorado enquanto o primeiro está na tela (ACES-09)
+- [ ] `contextmenu` é cancelado
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(app): traduz toques em comandos do jogo`
+
+---
+
+#### T32: Criar o carregador de sprites
+
+**What**: Carrega folhas de sprite, calcula o quadro da animação pelo tempo e desenha um retângulo colorido quando a imagem falta.
+**Where**: `src/render/sprites.ts`
+**Depends on**: T2
+**Reuses**: -
+**Requirement**: - (base do desenho; tratamento "Sprite não carregou" do design)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Quadro certo para tempo e fps dados (ex.: 4 quadros a 8 fps, t = 0,3 s → quadro 2)
+- [ ] Imagem que falha ao carregar → `draw` usa o retângulo de fallback sem lançar erro
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(render): carrega e anima sprites com fallback`
+
+---
+
+#### T33: Criar o FishingRenderer
+
+**What**: Desenho da represa, Adilson, isca, linha, peixe, "!" e ondinhas; escala inteira (2×, ou 3× a partir de 540 px) e `toLogical`.
+**Where**: `src/render/fishingRenderer.ts`
+**Depends on**: T32, T28
+**Reuses**: `sprites.ts`
+**Requirement**: - (cena; conferida no e2e de T36)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Teste: 412 px → escala 2 e largura lógica 206; 360 px → escala 2 e 180; 600 px → escala 3 e 200
+- [ ] Teste: `toLogical` converte cliques nos cantos e no centro com erro de no máximo 1 px lógico
+- [ ] `draw` com todos os estados da pesca roda sem erro num canvas do happy-dom (contexto falso)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(render): desenha a cena da represa`
+
+---
+
+### Phase 6 tasks
+
+#### T34: Criar a casca do app e a tela inicial
+
+**What**: `App` com troca de telas, `theme.css` (tokens de cor com contraste ≥ 4,5:1, Pixelify Sans embutida, texto a 20 px, botões ≥ 56 px na metade de baixo), `TitleScreen` e `InstallHelp`.
+**Where**: `src/ui/TitleScreen.tsx`
+**Depends on**: T27, T28
+**Reuses**: `install.ts`, `store.ts`
+**Requirement**: INST-01, INST-02, INST-03, INST-04
+**Tools**: MCP: NONE · Skill: `playwright-cli` (depuração), `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: tela inicial com "MoscouFishing", subtítulo, "Colocar na tela" e "Jogar" (INST-01)
+- [ ] e2e: com `beforeinstallprompt` simulado, o toque chama o `prompt` (INST-02)
+- [ ] e2e: sem o evento, o toque abre a instrução do menu ⋮ e "Adicionar à tela inicial" (INST-03)
+- [ ] e2e: emulando `display-mode: standalone`, o botão some (INST-04)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): cria tela inicial com instalação`
+
+---
+
+#### T35: Criar a escolha de dificuldade e os ajustes
+
+**What**: `DifficultyPrompt` na primeira abertura e `Settings` com dificuldade, vibração e "Rever tutorial".
+**Where**: `src/ui/Settings.tsx`
+**Depends on**: T34
+**Reuses**: `profile.ts`
+**Requirement**: ACES-01, ACES-02, ACES-04, TUTO-09
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: primeira abertura pergunta "Como você quer pescar hoje?" com "Tranquilo" e "Desafio"; segunda abertura não pergunta (ACES-01)
+- [ ] e2e: trocar a dificuldade em Ajustes persiste após recarregar (ACES-02)
+- [ ] e2e: vibração começa ligada e o desligar persiste (ACES-04)
+- [ ] e2e: "Rever tutorial" faz o tutorial começar na próxima pescaria (TUTO-09)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): adiciona dificuldade e ajustes`
+
+---
+
+#### T36: Criar a tela de pesca
+
+**What**: `FishingScreen` com o canvas montado e o HUD em HTML: saldo, objetivo atual, botão de pausa, barra de tensão e arremessos restantes no torneio; tela acesa enquanto aberta.
+**Where**: `src/ui/FishingScreen.tsx`
+**Depends on**: T34
+**Reuses**: `fishingRenderer.ts`, `loop.ts`, `input.ts`, `browser.ts`
+**Requirement**: HIST-04 (exibição), PESCA-12 (barra), SAVE-03, CAMP-03 (exibição), TELA-01
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: tocar na água arremessa e a pesca segue até a ficha, dirigida por `window.__mf` com semente fixa
+- [ ] e2e: objetivo atual e saldo visíveis (HIST-04)
+- [ ] e2e: barra de tensão muda de cor em 69/70 e 89/90 (PESCA-12)
+- [ ] e2e: botão de pausa visível em todos os estados da pesca (SAVE-03)
+- [ ] e2e: em torneio, "X de 8 arremessos" e pontuação parcial visíveis (CAMP-03)
+- [ ] e2e: Wake Lock pedido ao abrir a tela (stub) (TELA-01)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): cria tela de pesca com hud`
+
+---
+
+#### T37: Criar o aviso de mordida e a ficha do peixe
+
+**What**: `BitePrompt` ("!" e "FISGAR!" na metade de baixo) e `FishCard` (desenho, espécie, peso, R$, descrição engraçada, "Novo recorde!").
+**Where**: `src/ui/FishCard.tsx`
+**Depends on**: T36
+**Reuses**: `album.ts`
+**Requirement**: PESCA-06, PESCA-07 (e2e), PESCA-15, HUMOR-03, ALBUM-02 (exibição)
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: na mordida, "!" e "FISGAR!" aparecem e o botão fica inteiro abaixo da metade da tela (PESCA-06)
+- [ ] e2e: com `navigator.vibrate` espionado, mordida chama `vibrate(300)` com vibração ligada e não chama desligada (PESCA-07)
+- [ ] e2e: ficha mostra espécie, peso com 2 casas, valor em R$ e a descrição da espécie (PESCA-15, HUMOR-03)
+- [ ] e2e: peixe acima do recorde mostra "Novo recorde!" (ALBUM-02)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): mostra mordida e ficha do peixe`
+
+---
+
+#### T38: Criar os avisos de pausa, rotação e salvamento
+
+**What**: `PauseOverlay`, `RotateOverlay` e `SaveWarning`.
+**Where**: `src/ui/Overlays.tsx`
+**Depends on**: T36
+**Reuses**: `browser.ts`, `loop.ts`
+**Requirement**: SAVE-01, SAVE-02, ACES-10
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: `visibilitychange` para oculto no meio da briga → tensão e distância não mudam em 3 s (SAVE-01)
+- [ ] e2e: ao voltar, "Pausado - toque para continuar"; só retoma após o toque (SAVE-02)
+- [ ] e2e: viewport em paisagem fora do modo instalado → pausa e "Vire o celular em pé para jogar" (ACES-10)
+- [ ] e2e: `setItem` falhando → "Não consegui salvar" aparece uma vez só na sessão
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): adiciona pausa, rotação e aviso de salvamento`
+
+---
+
+#### T39: Criar os diálogos e os cartões de apresentação
+
+**What**: `DialogBox` (retrato com expressão, nome, texto, avança com toque) e `CharacterIntroCard` (retrato grande, nome e apelido na primeira aparição).
+**Where**: `src/ui/DialogBox.tsx`
+**Depends on**: T34
+**Reuses**: `characters.ts`, `chapter1.ts`
+**Requirement**: HIST-01 (exibição), HIST-02, HIST-03, HUMOR-01, HUMOR-02
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: jogo novo mostra a abertura antes da pesca, com o cartão "JANE: A Que Sempre Teve Razão" primeiro (HIST-01, HUMOR-01)
+- [ ] e2e: o cartão só fecha com toque e não aparece de novo na segunda fala da Jane (HUMOR-01)
+- [ ] e2e: cada fala mostra nome e retrato; o retrato muda conforme a expressão da fala (HIST-02, HUMOR-02)
+- [ ] e2e: a fala só avança com toque; 30 s parado não avança (HIST-03)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): mostra diálogos e cartões de personagem`
+
+---
+
+#### T40: Criar o guia do tutorial
+
+**What**: `TutorialCoach`: fala curta da Jane mais seta apontando onde tocar, piscando após 10 s parado.
+**Where**: `src/ui/TutorialCoach.tsx`
+**Depends on**: T36, T39
+**Reuses**: `tutorial.ts`, `DialogBox.tsx`
+**Requirement**: TUTO-02, TUTO-07 (exibição)
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: em cada passo, uma única instrução visível e uma seta apontando para a área certa (água, botão "FISGAR!", tela) (TUTO-02)
+- [ ] e2e: 10 s sem toque → a instrução reaparece e a seta ganha a classe de piscar (TUTO-07)
+- [ ] e2e: seguindo as setas, o primeiro peixe é pego e o objetivo mostra 1 de 3
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): guia o tutorial com a jane`
+
+---
+
+### Phase 7 tasks
+
+#### T41: Criar a loja
+
+**What**: Tela `Shop` com varas (barras de Força e Alcance) e iscas, botão "Comprar" e "Equipar".
+**Where**: `src/ui/Shop.tsx`
+**Depends on**: T34
+**Reuses**: `shop.ts`, `gear.ts`
+**Requirement**: EQUIP-01, EQUIP-02, EQUIP-04 (exibição), EQUIP-05 (exibição)
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: 3 varas com barras de 1 a 5 e pelo menos 3 iscas (EQUIP-01, EQUIP-02)
+- [ ] e2e: sem saldo, "Comprar" desabilitado e "Faltam R$ X" com o valor certo (EQUIP-04)
+- [ ] e2e: dois toques rápidos em "Comprar" descontam uma vez só
+- [ ] e2e: equipar a Fibra muda o equipamento mostrado na tela de pesca (EQUIP-05)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): cria a loja do edvan`
+
+---
+
+#### T42: Criar o álbum
+
+**What**: Tela `Album` com espécies pegas (recorde) e as que faltam como silhueta "???".
+**Where**: `src/ui/Album.tsx`
+**Depends on**: T37
+**Reuses**: `album.ts`, `species.ts`
+**Requirement**: ALBUM-03
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: depois de pegar uma tilápia, ela aparece com o recorde e as outras 5 como "???" (ALBUM-03)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): cria álbum de peixes`
+
+---
+
+#### T43: Criar as telas do torneio
+
+**What**: `TournamentLobby` (bloqueado ou aberto, regras, rivais), `RivalTaunts` antes do primeiro arremesso e `Standings` com vitória ou "Tentar de novo".
+**Where**: `src/ui/Tournament.tsx`
+**Depends on**: T36, T39
+**Reuses**: `tournament.ts`, `tournament1.ts`, `DialogBox.tsx`
+**Requirement**: CAMP-01 (exibição), CAMP-02, CAMP-05, CAMP-09, HUMOR-04
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: antes do último objetivo, torneio bloqueado com o objetivo que falta (CAMP-01)
+- [ ] e2e: ao entrar, "GuanambiCup", regras e os 3 rivais (CAMP-02)
+- [ ] e2e: provocações de Tio Ricardo, Bem e Tia Kris antes do primeiro arremesso (HUMOR-04)
+- [ ] e2e: após 8 arremessos, classificação com 4 linhas (CAMP-05)
+- [ ] e2e: derrota mostra colocação e "Tentar de novo", e o saldo não muda ao repetir (CAMP-09)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): cria telas da guanambicup`
+
+---
+
+#### T44: Criar a carta e a caixa de mensagens
+
+**What**: `LetterView` em páginas com "Continuar" (sem rolagem) e a tela `Messages` para reler.
+**Where**: `src/ui/Letter.tsx`
+**Depends on**: T43
+**Reuses**: `messages.ts`
+**Requirement**: CAMP-06 (exibição), CAMP-10, HIST-08 (exibição)
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: primeira vitória abre a carta com remetente e texto; a última página leva ao encerramento e ao "Capítulo 2 em breve" (CAMP-06, HIST-08)
+- [ ] e2e: carta longa é dividida em páginas, nenhuma com rolagem vertical
+- [ ] e2e: a carta aparece em "Mensagens" e reabre igual depois de recarregar (CAMP-10)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): mostra carta da família e mensagens`
+
+---
+
+#### T45: Aplicar atualizações sem atrapalhar
+
+**What**: `UpdateManager` (aplica a versão nova só ao abrir ou na tela inicial) e `UpdateNotice` ("Novidade no MoscouFishing!" uma vez).
+**Where**: `src/pwa/update.ts`
+**Depends on**: T34
+**Reuses**: `vite-plugin-pwa` (`virtual:pwa-register`)
+**Requirement**: INST-07
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] Unit: `shouldApply(screen)` verdadeiro para abertura e tela inicial, falso em pesca e torneio
+- [ ] e2e: `seenVersion` antigo no perfil → aviso aparece uma vez; recarregar não mostra de novo (INST-07)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(pwa): aplica atualização em tela segura`
+
+---
+
+#### T46: Criar a celebração exagerada
+
+**What**: `CatchCelebration` (Adilson posando com o peixe e "PEGOU!") e `ImpactFx` (onomatopeia e tremor de até 300 ms).
+**Where**: `src/ui/Celebration.tsx`
+**Depends on**: T37
+**Reuses**: `FishCard.tsx`
+**Requirement**: HUMOR-05, HUMOR-06
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: peixe pego → pose com "PEGOU!" antes da ficha (HUMOR-05)
+- [ ] e2e: fisgada mostra "NHAC!", linha arrebentada "PLOFT!", vitória "É CAMPEÃO!"; a classe de tremor some em até 300 ms (HUMOR-06)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): comemora capturas de forma exagerada`
+
+---
+
+### Phase 8 tasks
+
+#### T47: Testar a jornada completa
+
+**What**: e2e da jornada inteira da v1, online e offline, corrigindo o que quebrar na integração.
+**Where**: `e2e/journey.spec.ts`
+**Depends on**: T44, T46
+**Reuses**: ganchos `window.__mf`
+**Requirement**: INST-06 (todas as funções offline), SAVE-05 (reabrir), Success Criteria
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: jogo novo → tutorial → 3 peixes → compra da Fibra → Piranha Lavínia → GuanambiCup → vitória → carta → "Capítulo 2 em breve"
+- [ ] e2e: a mesma jornada roda com `setOffline(true)` depois da primeira carga (INST-06)
+- [ ] e2e: recarregar no meio da jornada retoma do mesmo objetivo e saldo (SAVE-05)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `test(e2e): cobre a jornada completa da v1`
+
+---
+
+#### T48: Auditar a acessibilidade
+
+**What**: e2e que percorre todas as telas medindo fonte, área de toque, contraste, posição dos botões e ausência de gestos.
+**Where**: `e2e/accessibility.spec.ts`
+**Depends on**: T47
+**Reuses**: `@axe-core/playwright`
+**Requirement**: ACES-05, ACES-06, ACES-07, ACES-08, ACES-09
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] Em todas as telas: nenhum texto com `font-size` computado < 18 px (ACES-05)
+- [ ] Todo `button` e alvo clicável com caixa ≥ 56 × 56 px (ACES-06)
+- [ ] axe sem violações de `color-contrast` (ACES-07)
+- [ ] Todo botão de ação com o topo abaixo da metade da altura da tela (ACES-08)
+- [ ] Nenhum handler de `dblclick`, gesto ou multitoque registrado; jornada concluída só com toques simples (ACES-09)
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `test(a11y): audita fonte, toque e contraste`
+
+---
+
+### Phase 9 tasks
+
+#### T49: Gerar o cenário da represa
+
+**What**: Fundo da Barragem de Ceraíma visto de cima (água, margem, vegetação) em pixel art, no PixelLab, e as ondinhas.
+**Where**: `src/assets/scene/represa.png`
+**Depends on**: T33
+**Reuses**: `fishingRenderer.ts`
+**Requirement**: - (arte; estilo visual das Assumptions)
+**Tools**: MCP: `pixellab` · Skill: `playwright-cli` (print no Pixel 7), `commit-bee`
+
+**Done when**:
+
+- [ ] Cenário desenhado na cena, sem distorção, nas larguras de 360, 412 e 600 px (prints)
+- [ ] Zonas de pesca coincidem com áreas visualmente distintas (água funda, vegetação)
+- [ ] Gate check passes: build
+
+**Tests**: none
+**Gate**: build
+**Commit**: `feat(art): adiciona cenário da barragem de ceraíma`
+
+---
+
+#### T50: Gerar os peixes
+
+**What**: Sprites das 6 espécies (nadando e na ficha), incluindo a Piranha Lavínia com cara de deboche.
+**Where**: `src/assets/fish/`
+**Depends on**: T33
+**Reuses**: `sprites.ts`
+**Requirement**: - (arte)
+**Tools**: MCP: `pixellab` · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] 6 espécies com sprite de cena e de ficha, mesma paleta
+- [ ] Prints da ficha de cada espécie conferidos
+- [ ] Gate check passes: build
+
+**Tests**: none
+**Gate**: build
+**Commit**: `feat(art): adiciona sprites dos peixes`
+
+---
+
+#### T51: Gerar o Adilson na cena
+
+**What**: Sprites do Adilson na margem: parado, arremessando, recolhendo e posando com o peixe.
+**Where**: `src/assets/adilson/`
+**Depends on**: T33
+**Reuses**: descrição a partir das fotos em `Fotos/`
+**Requirement**: - (arte)
+**Tools**: MCP: `pixellab` · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] 4 animações carregadas e trocando conforme o estado da pesca
+- [ ] Usuário reconhece o Adilson no print
+- [ ] Gate check passes: build
+
+**Tests**: none
+**Gate**: build
+**Commit**: `feat(art): adiciona sprites do adilson`
+
+---
+
+#### T52: Gerar os retratos da família
+
+**What**: Retratos de 96 × 96 px dos 7 personagens nas 4 expressões, gerados a partir de descrições em texto das fotos.
+**Where**: `src/assets/portraits/`
+**Depends on**: T39
+**Reuses**: `characters.ts`
+**Requirement**: - (arte de HUMOR-01 e HUMOR-02)
+**Tools**: MCP: `pixellab` · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] 28 retratos (ou 14, com normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
+- [ ] Fotos não saem da máquina: só as descrições em texto vão para o PixelLab
+- [ ] Usuário aprova cada retrato nos prints dos cartões de apresentação
+- [ ] Gate check passes: build
+
+**Tests**: none
+**Gate**: build
+**Commit**: `feat(art): adiciona retratos da família`
+
+---
+
+#### T53: Gerar o ícone do app
+
+**What**: Ícone do MoscouFishing (Adilson com a vara) em 192, 512 e maskable.
+**Where**: `public/icons/`
+**Depends on**: T3
+**Reuses**: manifest de T3
+**Requirement**: INST-05 (ícone)
+**Tools**: MCP: `pixellab` · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Manifest aponta para os 3 ícones novos e o e2e de T3 continua passando
+- [ ] Gate check passes: build
+
+**Tests**: none
+**Gate**: build
+**Commit**: `feat(art): adiciona ícone do app`
+
+---
+
+#### T54: Preparar a publicação
+
+**What**: `README.md` com o passo a passo do Cloudflare Pages (repositório privado, comando `npm run release`, pasta `dist`) e conferência final do `release`.
+**Where**: `README.md`
+**Depends on**: T49, T50, T51, T52, T53
+**Reuses**: scripts de T4 e T5
+**Requirement**: HIST-07 (aplicado), INST-08 (aplicado)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Com marcadores pendentes, `npm run release` falha listando cada um
+- [ ] Depois que a família enviar os textos e eles entrarem no conteúdo, `npm run release` passa e o `dist/` fica abaixo de 5 MB
+- [ ] Deploy **não** é feito nesta tarefa: precisa de autorização explícita do usuário
+- [ ] Gate check passes: build
+
+**Tests**: none
+**Gate**: build
+**Commit**: `docs(release): documenta publicação no cloudflare pages`
+
+---
+
+## Phase Execution Map
+
+```
+Fase 1
+T1 → T2 → T3
+T2 → T4 → T5
+
+Fase 2
+T6 → T8 → T9 → T10 → T11 → T12
+T7 → T8
+
+Fase 3
+T13, T14, T15, T16, T17 (independentes)
+T18 → T19
+
+Fase 4
+T20 → T21
+T22 → T23
+T22 → T24
+
+Fase 5
+T25 → T29
+T26 → T29
+T28 → T29 → T30
+T29 → T31
+T32 → T33
+T28 → T33
+
+Fase 6
+T34 → T35
+T34 → T36 → T37
+T36 → T38
+T34 → T39 → T40
+T36 → T40
+
+Fase 7
+T41, T42, T45, T46 (independentes)
+T43 → T44
+
+Fase 8
+T47 → T48
+
+Fase 9
+T49 → T54
+T50 → T54
+T51 → T54
+T52 → T54
+T53 → T54
+```
+
+Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
+
+**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fase 1 (5) · Fase 2 (7) · Fase 3 (7) · Fase 4 (5) · Fase 5 (9) · Fase 6 (7) · Fase 7 (6) · Fases 8 e 9 (8) = 8 lotes em sequência.
+
+---
+
+## Task Granularity Check
+
+| Task | Scope | Status |
+| ---- | ----- | ------ |
+| T1 | 1 arquivo + commit inicial | ✅ Granular |
+| T2 | Esqueleto: configs coesas de uma ferramenta cada | ⚠️ OK (coeso: sem o conjunto nada compila) |
+| T3 | Config PWA no `vite.config.ts` + estáticos de `noindex` | ⚠️ OK (coeso) |
+| T4, T5 | 1 script cada | ✅ Granular |
+| T6 | 1 arquivo de tipos | ✅ Granular |
+| T7 | 1 módulo | ✅ Granular |
+| T8 a T11 | 1 trecho da máquina de estados cada, no mesmo arquivo | ✅ Granular |
+| T12 | 1 arquivo de constantes + teste de balanço | ✅ Granular |
+| T13 a T19 | 1 módulo de domínio cada | ✅ Granular |
+| T20 a T23 | 1 arquivo de conteúdo cada | ✅ Granular |
+| T24 | Torneio + carta (2 arquivos pequenos ligados) | ⚠️ OK (coeso) |
+| T25 a T33 | 1 módulo cada | ✅ Granular |
+| T34 | Casca + tema + tela inicial + instrução de instalação | ⚠️ OK (coeso: primeira tela não existe sem a casca e o tema) |
+| T35, T37, T38, T39, T43 | 2 a 3 componentes pequenos da mesma tela | ⚠️ OK (coeso) |
+| T36, T40, T41, T42, T44, T45, T46 | 1 componente cada | ✅ Granular |
+| T47, T48 | 1 arquivo de teste cada | ✅ Granular |
+| T49 a T53 | 1 conjunto de arte cada | ✅ Granular |
+| T54 | 1 documento | ✅ Granular |
+
+## Diagram-Definition Cross-Check
+
+Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anteriores ficam no campo `Depends on`.
+
+| Task | Depends On (task body) | Diagram Shows (mesma fase) | Status |
+| ---- | ---------------------- | -------------------------- | ------ |
+| T1 | None | - | ✅ Match |
+| T2 | T1 | T1 → T2 | ✅ Match |
+| T3 | T2 | T2 → T3 | ✅ Match |
+| T4 | T2 | T2 → T4 | ✅ Match |
+| T5 | T4 | T4 → T5 | ✅ Match |
+| T6 | T2 (fase 1) | - | ✅ Match |
+| T7 | T2 (fase 1) | - | ✅ Match |
+| T8 | T6, T7 | T6 → T8, T7 → T8 | ✅ Match |
+| T9 | T8 | T8 → T9 | ✅ Match |
+| T10 | T9 | T9 → T10 | ✅ Match |
+| T11 | T10 | T10 → T11 | ✅ Match |
+| T12 | T11 | T11 → T12 | ✅ Match |
+| T13 | T6 (fase 2) | - | ✅ Match |
+| T14 | T6 (fase 2) | - | ✅ Match |
+| T15 | T11 (fase 2) | - | ✅ Match |
+| T16 | T6 (fase 2) | - | ✅ Match |
+| T17 | T10 (fase 2) | - | ✅ Match |
+| T18 | T6 (fase 2) | - | ✅ Match |
+| T19 | T18 | T18 → T19 | ✅ Match |
+| T20 | T6 (fase 2) | - | ✅ Match |
+| T21 | T20 | T20 → T21 | ✅ Match |
+| T22 | T6 (fase 2) | - | ✅ Match |
+| T23 | T22 | T22 → T23 | ✅ Match |
+| T24 | T22 | T22 → T24 | ✅ Match |
+| T25 | T19 (fase 3) | - | ✅ Match |
+| T26 | T2 (fase 1) | - | ✅ Match |
+| T27 | T2 (fase 1) | - | ✅ Match |
+| T28 | T18 (fase 3) | - | ✅ Match |
+| T29 | T25, T26, T28 | T25 → T29, T26 → T29, T28 → T29 | ✅ Match |
+| T30 | T29 | T29 → T30 | ✅ Match |
+| T31 | T29 | T29 → T31 | ✅ Match |
+| T32 | T2 (fase 1) | - | ✅ Match |
+| T33 | T32, T28 | T32 → T33, T28 → T33 | ✅ Match |
+| T34 | T27, T28 (fase 5) | - | ✅ Match |
+| T35 | T34 | T34 → T35 | ✅ Match |
+| T36 | T34 | T34 → T36 | ✅ Match |
+| T37 | T36 | T36 → T37 | ✅ Match |
+| T38 | T36 | T36 → T38 | ✅ Match |
+| T39 | T34 | T34 → T39 | ✅ Match |
+| T40 | T36, T39 | T36 → T40, T39 → T40 | ✅ Match |
+| T41 | T34 (fase 6) | - | ✅ Match |
+| T42 | T37 (fase 6) | - | ✅ Match |
+| T43 | T36, T39 (fase 6) | - | ✅ Match |
+| T44 | T43 | T43 → T44 | ✅ Match |
+| T45 | T34 (fase 6) | - | ✅ Match |
+| T46 | T37 (fase 6) | - | ✅ Match |
+| T47 | T44, T46 (fase 7) | - | ✅ Match |
+| T48 | T47 | T47 → T48 | ✅ Match |
+| T49 | T33 (fase 5) | - | ✅ Match |
+| T50 | T33 (fase 5) | - | ✅ Match |
+| T51 | T33 (fase 5) | - | ✅ Match |
+| T52 | T39 (fase 6) | - | ✅ Match |
+| T53 | T3 (fase 1) | - | ✅ Match |
+| T54 | T49, T50, T51, T52, T53 | T49 → T54 … T53 → T54 | ✅ Match |
+
+## Test Co-location Validation
+
+| Task | Code Layer Created/Modified | Matrix Requires | Task Says | Status |
+| ---- | --------------------------- | --------------- | --------- | ------ |
+| T1 | Repositório (docs) | none | none | ✅ OK |
+| T2 | Config | none | none | ✅ OK |
+| T3 | Config PWA + página | e2e (comportamento visível no navegador) | e2e | ✅ OK |
+| T4, T5 | Scripts | unit | unit | ✅ OK |
+| T6 | Tipos | none | none | ✅ OK |
+| T7 a T19 | Domínio | unit | unit | ✅ OK |
+| T20 a T24 | Conteúdo | unit | unit | ✅ OK |
+| T25 a T27 | Plataforma | unit | unit | ✅ OK |
+| T28 a T31 | App | unit | unit | ✅ OK |
+| T32, T33 | Desenho | unit | unit | ✅ OK |
+| T34 a T46 | Telas | e2e | e2e | ✅ OK |
+| T47, T48 | Telas (integração) | e2e | e2e | ✅ OK |
+| T49 a T53 | Arte | none | none | ✅ OK |
+| T54 | Documentação | none | none | ✅ OK |
