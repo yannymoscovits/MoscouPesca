@@ -602,12 +602,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Perfil novo: só o episódio 1 liberado; `isUnlocked(2)` falso (EPI-03)
-- [ ] `onChampionshipWon(p, 1)` libera o 2 com os seus dois locais; repetir não duplica; vencer o 5 não libera nada (EPI-02, EPI-08)
-- [ ] `travel` para local liberado muda `currentLocation`; para bloqueado devolve o perfil igual (EPI-04, EPI-07)
-- [ ] Depois de vencer o 5, `travel` para Poço do Magro continua permitido (EPI-05)
-- [ ] `shopItems` com os episódios 1 e 2 liberados não retorna itens dos episódios 3 a 5 (EQUIP-09)
-- [ ] Gate check passes: `npm test`
+- [x] Perfil novo: só o episódio 1 liberado; `isUnlocked(2)` falso (EPI-03)
+- [x] `onChampionshipWon(p, 1)` libera o 2 com os seus dois locais; repetir não duplica; vencer o 5 não libera nada (EPI-02, EPI-08)
+- [x] `travel` para local liberado muda `currentLocation`; para bloqueado devolve o perfil igual (EPI-04, EPI-07)
+- [x] Depois de vencer o 5, `travel` para Poço do Magro continua permitido (EPI-05)
+- [x] `shopItems` com os episódios 1 e 2 liberados não retorna itens dos episódios 3 a 5 (EQUIP-09)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
