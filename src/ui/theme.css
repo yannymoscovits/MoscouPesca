@@ -1,0 +1,292 @@
+/* Tema do MoscouFishing (design.md, "UI (Preact)", Estilo).
+   Regras de conforto (ACES-05 a ACES-08): texto >= 18 px, corpo a 20 px, botões >= 56 × 56 px,
+   todo botão de ação na metade de baixo da tela e contraste >= 4,5:1 entre texto e fundo.
+   Cada par de cor abaixo traz o contraste medido. */
+
+:root {
+  /* Fundo azul-noite com texto creme: 14,2:1. Texto secundário: 11,6:1. */
+  --bg: #0f2742;
+  --bg-raised: #173a5e; /* creme sobre ele: 10,9:1 */
+  --ink: #fff8e7;
+  --ink-soft: #d7e3f0;
+
+  /* Papel das caixas de diálogo e das fichas: tinta escura sobre creme, 16,1:1. */
+  --paper: #fff8e7;
+  --paper-ink: #1b1b2f;
+
+  /* Botão principal amarelo com tinta escura: 11,8:1. */
+  --accent: #ffd23f;
+  --accent-ink: #1b1b2f;
+
+  /* Botão secundário azul com texto branco: 5,2:1. */
+  --secondary: #2f6fb3;
+  --secondary-ink: #ffffff;
+
+  /* Contorno "pixel" de botões, caixas e retratos. */
+  --outline: #1b1b2f;
+
+  --font-title: 'Pixelify Sans', system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --text: 20px;
+  --text-min: 18px;
+  --touch: 56px;
+  --gutter: 16px;
+  --safe-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font: var(--text) / 1.4 var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3,
+p,
+ol,
+ul {
+  margin: 0;
+}
+
+/* ---------- Tela: conteúdo em cima, ações na metade de baixo ---------- */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.screen__top {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px var(--gutter);
+  text-align: center;
+}
+
+/* Metade de baixo da tela: os botões ficam empilhados no fim dela (ACES-08). */
+.screen__actions {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px var(--gutter) var(--safe-bottom);
+}
+
+/* ---------- Títulos em fonte pixel ---------- */
+
+.title {
+  font: 700 48px / 1.1 var(--font-title);
+  color: var(--accent);
+  text-shadow:
+    3px 3px 0 var(--outline),
+    -1px -1px 0 var(--outline);
+  letter-spacing: 1px;
+}
+
+.title-2 {
+  font: 700 28px / 1.2 var(--font-title);
+}
+
+.subtitle {
+  font-size: 22px;
+  color: var(--ink-soft);
+}
+
+/* ---------- Botões: >= 56 × 56 px, contorno grosso e sombra de "apertar" ---------- */
+
+.btn {
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 12px 20px;
+  border: 3px solid var(--outline);
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 var(--text) / 1.2 var(--font-body);
+  box-shadow: 0 4px 0 var(--outline);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--outline);
+}
+
+.btn--secondary {
+  background: var(--secondary);
+  color: var(--secondary-ink);
+}
+
+.btn--big {
+  min-height: 72px;
+  font: 700 28px / 1.1 var(--font-title);
+}
+
+/* ---------- Avisos por cima da tela: painel no meio, ação embaixo ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 24px var(--gutter) var(--safe-bottom);
+  background: rgba(8, 20, 36, 0.88);
+}
+
+.overlay__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel {
+  padding: 20px;
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  box-shadow: 0 6px 0 var(--outline);
+}
+
+/* ---------- Tela inicial ---------- */
+
+.logo-fish {
+  position: relative;
+  width: 112px;
+  height: 56px;
+  margin-bottom: 8px;
+  border: 4px solid var(--outline);
+  border-radius: 50% 60% 60% 50%;
+  background: var(--accent);
+  animation: nadar 2.4s ease-in-out infinite;
+}
+
+.logo-fish::before {
+  /* rabo */
+  content: '';
+  position: absolute;
+  left: -34px;
+  top: 6px;
+  border: 18px solid transparent;
+  border-right: 26px solid var(--accent);
+}
+
+.logo-fish::after {
+  /* olho */
+  content: '';
+  position: absolute;
+  right: 20px;
+  top: 14px;
+  width: 12px;
+  height: 12px;
+  background: var(--outline);
+}
+
+@keyframes nadar {
+  50% {
+    transform: translateY(-6px) rotate(-4deg);
+  }
+}
+
+.install-help ol {
+  display: grid;
+  gap: 8px;
+  padding-left: 28px;
+}
+
+.install-help .title-2 {
+  margin-bottom: 12px;
+}
+
+.install-help__note {
+  margin-top: 12px;
+}
+
+/* Desenho do Chrome: barra de endereço com o ⋮ em destaque e o menu aberto. */
+.mock-chrome {
+  margin: 0 0 16px;
+  border: 3px solid var(--outline);
+  border-radius: 8px;
+  background: #e8eef5;
+  color: var(--paper-ink);
+  overflow: hidden;
+}
+
+.mock-chrome__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+}
+
+.mock-chrome__url {
+  flex: 1;
+  padding: 2px 10px;
+  border-radius: 14px;
+  background: #ffffff;
+  font-size: var(--text-min);
+}
+
+.mock-chrome__kebab {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 3px solid #b3261e;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 24px;
+  animation: piscar 1s steps(2) infinite;
+}
+
+.mock-chrome__menu {
+  margin: 0 8px 8px auto;
+  width: max-content;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 2px solid var(--outline);
+  border-radius: 6px;
+  background: #ffffff;
+  font-size: var(--text-min);
+}
+
+.mock-chrome__item--hit {
+  font-weight: 700;
+  outline: 3px solid #b3261e;
+  outline-offset: 2px;
+}
+
+@keyframes piscar {
+  50% {
+    border-color: transparent;
+  }
+}

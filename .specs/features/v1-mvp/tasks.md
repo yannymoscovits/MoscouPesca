@@ -1012,11 +1012,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: tela inicial com "MoscouFishing", subtítulo, "Colocar na tela" e "Jogar" (INST-01)
-- [ ] e2e: com `beforeinstallprompt` simulado, o toque chama o `prompt` (INST-02)
-- [ ] e2e: sem o evento, o toque abre a instrução do menu ⋮ e "Adicionar à tela inicial" (INST-03)
-- [ ] e2e: emulando `display-mode: standalone`, o botão some (INST-04)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: tela inicial com "MoscouFishing", subtítulo, "Colocar na tela" e "Jogar" (INST-01)
+- [x] e2e: com `beforeinstallprompt` simulado, o toque chama o `prompt` (INST-02)
+- [x] e2e: sem o evento, o toque abre a instrução do menu ⋮ e "Adicionar à tela inicial" (INST-03)
+- [x] e2e: emulando `display-mode: standalone`, o botão some (INST-04)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full
