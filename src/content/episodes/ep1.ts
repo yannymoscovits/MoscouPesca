@@ -127,6 +127,7 @@ const species = [
     rarity: 5,
     description: 'Rouba isca, fala demais e jura que deixou o Adilsinho ganhar.',
     rare: false,
+    valueLabel: 'inestimável', // spec, "Ficha da Piranha Lavínia"
   },
 ] satisfies Species[];
 

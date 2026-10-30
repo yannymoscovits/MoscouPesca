@@ -65,7 +65,7 @@ export interface FishingRenderer {
 }
 
 /** Cor estável por nome, para o retângulo de cada espécie enquanto o sprite não chega. */
-function colorOf(key: string): string {
+export function colorOf(key: string): string {
   let h = 0;
   for (const ch of key) h = (h * 31 + ch.charCodeAt(0)) % 360;
   return `hsl(${h}, 65%, 55%)`;

@@ -34,6 +34,7 @@ export interface Species {
   rarity: number; // peso no sorteio da zona
   description: string; // texto engraçado da ficha (HUMOR-03)
   rare: boolean; // espécie rara do local (PROG-03)
+  valueLabel?: string; // texto da ficha no lugar do R$ (ex.: "inestimável" na Piranha Lavínia); o saldo recebe o valor normal
 }
 
 // Força e alcance de 1 a 10.

@@ -466,3 +466,146 @@ ul {
 .tension__bar[data-band='vermelho'] .tension__fill {
   background: var(--tension-vermelho);
 }
+
+/* ---------- Mordida, ficha do peixe e avisos do arremesso ---------- */
+
+/* Altura da fileira de botões do HUD: os avisos da pesca param acima dela. */
+:root {
+  --hud-row: calc(var(--touch) + 16px + var(--safe-bottom));
+}
+
+.bite {
+  position: absolute;
+  inset: 0;
+}
+
+.bite__alert {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 22%;
+  text-align: center;
+  font: 700 120px / 1 var(--font-title);
+  color: var(--accent);
+  text-shadow:
+    6px 6px 0 var(--outline),
+    -3px -3px 0 var(--outline);
+  animation: tremer 0.3s steps(2) infinite;
+  pointer-events: none;
+}
+
+@keyframes tremer {
+  50% {
+    transform: translateX(4px) rotate(4deg);
+  }
+}
+
+/* PESCA-06: o botão ocupa a metade de baixo, acima da fileira do HUD. */
+.bite__hook {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  top: 50%;
+  bottom: var(--hud-row);
+  font: 700 56px / 1 var(--font-title);
+}
+
+@keyframes pulsar {
+  50% {
+    transform: scale(0.97);
+  }
+}
+
+.overlay--fishing {
+  z-index: 20; /* abaixo da fileira do HUD (30): a pausa continua à mão */
+  justify-content: center;
+  padding-bottom: calc(var(--hud-row) + 8px);
+}
+
+.overlay--fishing .overlay__actions {
+  margin-top: auto;
+}
+
+.miss {
+  margin-top: auto;
+  text-align: center;
+  font: 700 28px / 1.2 var(--font-title);
+}
+
+.fish-card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  margin-top: auto;
+  text-align: center;
+}
+
+.fish-card__record {
+  position: absolute;
+  top: -22px;
+  right: 12px;
+  padding: 4px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 22px / 1.2 var(--font-title);
+  transform: rotate(6deg);
+  animation: pulsar 0.8s ease-in-out infinite;
+}
+
+.fish-card__facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 20px;
+  font-weight: 700;
+}
+
+.fish-card__description {
+  font-style: italic;
+}
+
+/* Peixe provisório de CSS, na cor da espécie (--fish). */
+.fish-picture {
+  position: relative;
+  width: 160px;
+  height: 80px;
+}
+
+.fish-picture__body {
+  position: absolute;
+  left: 40px;
+  top: 8px;
+  width: 112px;
+  height: 64px;
+  border: 4px solid var(--outline);
+  border-radius: 50% 60% 60% 50%;
+  background: var(--fish);
+}
+
+.fish-picture__body::before {
+  content: '';
+  position: absolute;
+  left: -46px;
+  top: 4px;
+  border: 24px solid transparent;
+  border-right: 36px solid var(--fish);
+}
+
+.fish-picture__body::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  top: 14px;
+  width: 12px;
+  height: 12px;
+  background: var(--outline);
+}
+
+.fish-picture--art {
+  background-size: 400% 100%;
+  background-position: 0 0;
+  image-rendering: pixelated;
+}

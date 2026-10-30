@@ -1083,12 +1083,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: na mordida, "!" e "FISGAR!" aparecem e o botão fica inteiro abaixo da metade da tela (PESCA-06)
-- [ ] e2e: com `navigator.vibrate` espionado, mordida chama `vibrate(300)` com vibração ligada e não chama desligada (PESCA-07)
-- [ ] e2e: ficha mostra espécie, peso com 2 casas, valor em R$ e a descrição da espécie (PESCA-15, HUMOR-03)
-- [ ] `Species.valueLabel` opcional (tipo + `piranha-lavinia` com "inestimável"); e2e: a ficha da Piranha Lavínia mostra "Valor: inestimável" e o saldo recebe o valor normal
-- [ ] e2e: peixe acima do recorde mostra "Novo recorde!" (ALBUM-02)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: na mordida, "!" e "FISGAR!" aparecem e o botão fica inteiro abaixo da metade da tela (PESCA-06)
+- [x] e2e: com `navigator.vibrate` espionado, mordida chama `vibrate(300)` com vibração ligada e não chama desligada (PESCA-07)
+- [x] e2e: ficha mostra espécie, peso com 2 casas, valor em R$ e a descrição da espécie (PESCA-15, HUMOR-03)
+- [x] `Species.valueLabel` opcional (tipo + `piranha-lavinia` com "inestimável"); e2e: a ficha da Piranha Lavínia mostra "Valor: inestimável" e o saldo recebe o valor normal
+- [x] e2e: peixe acima do recorde mostra "Novo recorde!" (ALBUM-02)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

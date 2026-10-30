@@ -2,7 +2,7 @@
 // Saldo e objetivo (HIST-04), barra de tensão (PESCA-12), pausa sempre à mão (SAVE-03),
 // arremessos e pontos do torneio (CAMP-03) e a tela acesa enquanto ela está aberta (TELA-01).
 
-import { useContext, useEffect, useRef } from 'preact/hooks';
+import { useContext, useLayoutEffect, useRef } from 'preact/hooks';
 import { attachInput } from '../app/input';
 import { createLoop } from '../app/loop';
 import { GameStoreContext, useGame, type GameStore } from '../app/store';
@@ -12,6 +12,7 @@ import { currentObjective } from '../domain/story';
 import { score } from '../domain/tournament';
 import { createFishingRenderer } from '../render/fishingRenderer';
 import { useNav, useServices } from './context';
+import { BitePrompt, ResultOverlay } from './FishCard';
 import { currentPlace, formatKg, formatMoney } from './format';
 
 export function FishingScreen() {
@@ -20,7 +21,8 @@ export function FishingScreen() {
   const stage = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
+  // Layout effect: a cena já aceita toques no mesmo quadro em que aparece.
+  useLayoutEffect(() => {
     const renderer = createFishingRenderer();
     const size = () => ({ width: window.innerWidth, height: window.innerHeight });
     const view = () => {
@@ -59,8 +61,10 @@ export function FishingScreen() {
     <section class="fishing" aria-label="Pescaria">
       <div class="stage" ref={stage}>
         <canvas ref={canvas} aria-hidden="true" />
+        <BitePrompt />
       </div>
       <Hud />
+      <ResultOverlay />
     </section>
   );
 }
