@@ -16,7 +16,7 @@
 
 ## Local
 
-**Barragem de Ceraíma**, em Guanambi (BA), a cidade do Adilson. Falta confirmar se é ali que ele pesca (alternativa: Barragem do Poço do Magro).
+**Barragem do Poço do Magro**, em Guanambi (BA), a cidade do Adilson, onde ele pesca.
 
 ## Roteiro
 
@@ -62,14 +62,14 @@
 
 **Objetivo: comprar a Vara de Carbono.**
 
-### Cena 6: A lenda de Ceraíma
+### Cena 6: A lenda do pirarucu
 
 - **Edvaldo** [normal]: Carbono! Agora sim, seu Adilson. Com essa dá pra tentar o bicho.
 - **Adilson** [chocado]: Que bicho?
-- **Edvaldo** [rindo]: O Pirarucu de Ceraíma. Dizem que já saiu um de 90 quilos pelo sangradouro.
+- **Edvaldo** [rindo]: O Pirarucu Lendário. Dizem que saiu um de 90 quilos pelo sangradouro de Ceraíma, e que o primo dele mora aqui no Poço do Magro.
 - **Lavínia** [rindo]: Esse aí nem eu encaro, Adilsinho. Boa sorte!
 
-**Objetivo: pegar o Pirarucu de Ceraíma** (raro).
+**Objetivo: pegar o Pirarucu Lendário** (raro).
 
 ### Cena 7: Pegou a lenda
 
@@ -77,7 +77,7 @@
 - **Jane** [chocado]: Tira foto, tira foto! Senão ninguém acredita.
 - **Lavínia** [bravo]: Sorte de principiante, Adilsinho.
 
-**Objetivo: registrar no álbum todas as espécies de Ceraíma.**
+**Objetivo: registrar no álbum todas as espécies do Poço do Magro.**
 
 ### Cena 8: Álbum completo
 
@@ -103,7 +103,7 @@
 
 ## Fichas engraçadas (rascunho)
 
-Peixes típicos dos açudes do sertão baiano. Não achei uma lista oficial da Barragem de Ceraíma: a família confirma quais ele pega lá.
+Os peixes mais famosos de Guanambi, o básico (pedido do usuário).
 
 | Peixe | Descrição |
 | ----- | --------- |
@@ -113,5 +113,5 @@ Peixes típicos dos açudes do sertão baiano. Não achei uma lista oficial da B
 | Piau | Rouba isca com uma educação que dá até raiva. |
 | Tambaqui | Gordinho, simpático e mais forte do que parece. |
 | Tucunaré | O craque da represa: forte, bonito e convencido. |
-| Pirarucu de Ceraíma (raro) | A lenda: dizem que um de 90 quilos já saiu pelo sangradouro. Ninguém acredita até ver. |
+| Pirarucu Lendário (raro) | Primo do gigante de 90 quilos que saiu em Ceraíma. Ninguém acredita até ver. |
 | Piranha Lavínia | Rouba isca, fala demais e jura que deixou o Adilsinho ganhar. |

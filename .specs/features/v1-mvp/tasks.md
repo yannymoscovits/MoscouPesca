@@ -549,7 +549,7 @@ T53 → T54
 
 #### T18: Implementar o perfil e os ajustes
 
-**What**: `newProfile()` com vara de Bambu, Minhoca, R$ 0 e dificuldade não escolhida, episódio 1 liberado e Ceraíma como local atual; `setDifficulty`, `setVibration` e `resetTutorial`.
+**What**: `newProfile()` com vara de Bambu, Minhoca, R$ 0 e dificuldade não escolhida, episódio 1 liberado e Poço do Magro como local atual; `setDifficulty`, `setVibration` e `resetTutorial`.
 **Where**: `src/domain/profile.ts`
 **Depends on**: T6
 **Reuses**: -
@@ -558,7 +558,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Perfil novo: Bambu e Minhoca possuídos e equipados, `difficulty: null`, `vibration: true`, `unlockedEpisodes: [1]`, `currentLocation` = Ceraíma (ACES-04)
+- [ ] Perfil novo: Bambu e Minhoca possuídos e equipados, `difficulty: null`, `vibration: true`, `unlockedEpisodes: [1]`, `currentLocation` = Poço do Magro (ACES-04)
 - [ ] `setDifficulty` troca entre Tranquilo e Desafio (ACES-02)
 - [ ] `resetTutorial` marca `tutorialDone: false` (TUTO-09)
 - [ ] Gate check passes: `npm test`
@@ -605,7 +605,7 @@ T53 → T54
 - [ ] Perfil novo: só o episódio 1 liberado; `isUnlocked(2)` falso (EPI-03)
 - [ ] `onChampionshipWon(p, 1)` libera o 2 com os seus dois locais; repetir não duplica; vencer o 5 não libera nada (EPI-02, EPI-08)
 - [ ] `travel` para local liberado muda `currentLocation`; para bloqueado devolve o perfil igual (EPI-04, EPI-07)
-- [ ] Depois de vencer o 5, `travel` para Ceraíma continua permitido (EPI-05)
+- [ ] Depois de vencer o 5, `travel` para Poço do Magro continua permitido (EPI-05)
 - [ ] `shopItems` com os episódios 1 e 2 liberados não retorna itens dos episódios 3 a 5 (EQUIP-09)
 - [ ] Gate check passes: `npm test`
 
@@ -619,7 +619,7 @@ T53 → T54
 
 #### T20: Cadastrar o local e as espécies do Episódio 1
 
-**What**: Pacote `ep1` com a Barragem de Ceraíma (zonas) e as espécies Tilápia, Traíra, Curimatã, Piau, Tambaqui, Tucunaré, Pirarucu de Ceraíma (rara) e Piranha Lavínia, com faixa de peso, preço/kg, força, fôlego, iscas, raridade e descrição engraçada; registro em `src/content/index.ts`.
+**What**: Pacote `ep1` com a Barragem do Poço do Magro (zonas) e as espécies Tilápia, Traíra, Curimatã, Piau, Tambaqui, Tucunaré, Pirarucu Lendário (rara) e Piranha Lavínia, com faixa de peso, preço/kg, força, fôlego, iscas, raridade e descrição engraçada; registro em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep1.ts`
 **Depends on**: T6
 **Reuses**: fichas de `docs/historia/episodio-1.md`
@@ -629,12 +629,12 @@ T53 → T54
 **Done when**:
 
 - [ ] `satisfies` contra os tipos de conteúdo sem erro
-- [ ] Teste: ≥ 5 espécies com exatamente 1 rara; toda espécie tem descrição não vazia; toda espécie citada nas zonas existe; Piranha Lavínia só aceita a Isca de Carne
+- [ ] Teste: ≥ 5 espécies com exatamente 1 rara; toda espécie tem descrição não vazia; força e fôlego dentro de `FISH_POWER` e `FISH_STAMINA` (1 a 10) de `tuning.ts`; toda espécie citada nas zonas existe; Piranha Lavínia só aceita a Isca de Carne
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
-**Commit**: `feat(content): cadastra peixes de ceraíma`
+**Commit**: `feat(content): cadastra peixes do poço do magro`
 
 ---
 
@@ -656,7 +656,7 @@ T53 → T54
 
 **Tests**: unit
 **Gate**: quick
-**Commit**: `feat(content): cadastra varas e iscas de ceraíma`
+**Commit**: `feat(content): cadastra varas e iscas do poço do magro`
 
 ---
 
@@ -704,7 +704,7 @@ T53 → T54
 
 #### T24: Cadastrar a GuanambiCup e a carta
 
-**What**: GuanambiCup (8 arremessos, conta 3, rivais Ricardo, Bem e Kris com placar e provocação) e a carta da família, ainda `{{PENDENTE}}`, no pacote `ep1`.
+**What**: GuanambiCup (8 arremessos, conta 3, rivais Ricardo, Bem e Kris com placar e provocação) e a carta da família do Episódio 1, transcrita de `docs/historia/cartas.md`, no pacote `ep1`.
 **Where**: `src/content/episodes/ep1.ts` (modify)
 **Depends on**: T22
 **Reuses**: `tournament.ts`, `docs/historia/cartas.md`
@@ -713,7 +713,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Carta da GuanambiCup no pacote, marcada `{{PENDENTE}}`
+- [ ] Teste: a carta da GuanambiCup existe, tem remetente e texto, e não contém `{{PENDENTE}}`
 - [ ] Teste: 3 rivais que existem em `characters.ts`, cada um com provocação; troféu e mensagem existem
 - [ ] Gate check passes: `npm test`
 
@@ -736,7 +736,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep2`
+- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep2`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 2º sendo Jacuípe (EPI-01)
 - [ ] Gate check passes: `npm test`
 
@@ -757,7 +757,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep3`
+- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep3`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 3º sendo Pantanal (EPI-01)
 - [ ] Gate check passes: `npm test`
 
@@ -778,7 +778,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep4`
+- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep4`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 4º sendo Amazônia (EPI-01)
 - [ ] Gate check passes: `npm test`
 
@@ -799,7 +799,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`
+- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 5º sendo Alto-mar da Bahia (EPI-01)
 - [ ] Gate check passes: `npm test`
 
@@ -951,12 +951,13 @@ T53 → T54
 **Where**: `src/app/controller.ts`
 **Depends on**: T25, T26, T28
 **Reuses**: todo o domínio, `src/content/*`
-**Requirement**: SAVE-04 (gatilhos), SAVE-06 (briga interrompida), PESCA-07 (chamada), HIST-05 (cenas), TUTO-08 (encadeamento)
+**Requirement**: SAVE-04 (gatilhos), SAVE-06 (briga interrompida), PESCA-07 (chamada), PESCA-17 (crédito), HIST-05 (cenas), TUTO-08 (encadeamento)
 **Tools**: MCP: NONE · Skill: `commit-bee`
 
 **Done when**:
 
 - [ ] Peixe, compra, objetivo e arremesso de torneio disparam `save` (SAVE-04)
+- [ ] Ficha exibida soma `Math.round(kg × preço/kg)` ao saldo uma vez só, e fechar a ficha volta a pesca para `Idle` (PESCA-17)
 - [ ] Mordida com vibração ligada chama `vibrate(300)`; desligada, não chama (PESCA-07)
 - [ ] Carregar perfil salvo no meio de uma briga → volta para `Idle` sem gastar arremesso de torneio (SAVE-06)
 - [ ] Peixe do tutorial conta no objetivo "pegar 3 peixes" (TUTO-08)
@@ -1365,7 +1366,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: perfil novo → só Ceraíma liberada; Rio Jacuípe e Ponte da Cetrel com cadeado e "Vença a GuanambiCup" (EPI-03)
+- [ ] e2e: perfil novo → só Poço do Magro liberada; Rio Jacuípe e Ponte da Cetrel com cadeado e "Vença a GuanambiCup" (EPI-03)
 - [ ] e2e: com o Episódio 1 vencido, os dois locais de Jacuípe aparecem liberados; tocar na Ponte da Cetrel abre a pesca com o cenário e os peixes de água salgada (EPI-04, EPI-08)
 - [ ] e2e: recarregar o jogo volta ao último local de pesca (EPI-07)
 - [ ] Gate check passes: `npm test && npm run test:e2e`
@@ -1410,7 +1411,7 @@ T53 → T54
 **Done when**:
 
 - [ ] e2e: jogo novo → tutorial → objetivos do Episódio 1 → GuanambiCup → vitória → carta → "Episódio 2 liberado!"
-- [ ] e2e: com `window.__mf` cumprindo os objetivos, vitória nos campeonatos 2 a 5 em ordem, encerramento final e pesca livre de volta em Ceraíma (EPI-02, EPI-05, HIST-10)
+- [ ] e2e: com `window.__mf` cumprindo os objetivos, vitória nos campeonatos 2 a 5 em ordem, encerramento final e pesca livre de volta no Poço do Magro (EPI-02, EPI-05, HIST-10)
 - [ ] e2e: a mesma jornada roda com `setOffline(true)` depois da primeira carga (INST-06)
 - [ ] e2e: recarregar no meio da jornada retoma do mesmo objetivo e saldo (SAVE-05)
 - [ ] Gate check passes: `npm test && npm run test:e2e`
@@ -1447,10 +1448,10 @@ T53 → T54
 
 ### Phase 10 tasks
 
-#### T49: Gerar o cenário de Ceraíma
+#### T49: Gerar o cenário do Poço do Magro
 
-**What**: Fundo da Barragem de Ceraíma visto de cima (água, margem, vegetação) em pixel art, no PixelLab, e as ondinhas.
-**Where**: `src/assets/scene/ceraima.png`
+**What**: Fundo da Barragem do Poço do Magro visto de cima (água, margem, vegetação) em pixel art, no PixelLab, e as ondinhas.
+**Where**: `src/assets/scene/poco-do-magro.png`
 **Depends on**: T33
 **Reuses**: `fishingRenderer.ts`
 **Requirement**: - (arte; estilo visual das Assumptions)
@@ -1464,16 +1465,16 @@ T53 → T54
 
 **Tests**: none
 **Gate**: build
-**Commit**: `feat(art): adiciona cenário da barragem de ceraíma`
+**Commit**: `feat(art): adiciona cenário da barragem do poço do magro`
 
 ---
 
 #### T64: Gerar o cenário do Rio Jacuípe
 
-**What**: Fundo do Rio Jacuípe visto de cima (rio de água doce com margem de mangue e coqueiros) em pixel art no PixelLab, no estilo do cenário de Ceraíma.
+**What**: Fundo do Rio Jacuípe visto de cima (rio de água doce com margem de mangue e coqueiros) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
 **Where**: `src/assets/scene/rio-jacuipe.png`
 **Depends on**: T49
-**Reuses**: estilo de `scene/ceraima.png`
+**Reuses**: estilo de `scene/poco-do-magro.png`
 **Requirement**: - (arte; cenário próprio da EPI-06)
 **Tools**: MCP: `pixellab` · Skill: `playwright-cli`, `commit-bee`
 
@@ -1491,10 +1492,10 @@ T53 → T54
 
 #### T73: Gerar o cenário da Ponte da Cetrel
 
-**What**: Fundo do Ponte da Cetrel visto de cima (água salgada sob a ponte, com pilares e pedras) em pixel art no PixelLab, no estilo do cenário de Ceraíma.
+**What**: Fundo do Ponte da Cetrel visto de cima (água salgada sob a ponte, com pilares e pedras) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
 **Where**: `src/assets/scene/ponte-cetrel.png`
 **Depends on**: T49
-**Reuses**: estilo de `scene/ceraima.png`
+**Reuses**: estilo de `scene/poco-do-magro.png`
 **Requirement**: - (arte; cenário próprio da EPI-06)
 **Tools**: MCP: `pixellab` · Skill: `playwright-cli`, `commit-bee`
 
@@ -1512,10 +1513,10 @@ T53 → T54
 
 #### T65: Gerar o cenário do Pantanal
 
-**What**: Fundo do Pantanal visto de cima (baía com aguapés e vegetação alagada) em pixel art no PixelLab, no estilo do cenário de Ceraíma.
+**What**: Fundo do Pantanal visto de cima (baía com aguapés e vegetação alagada) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
 **Where**: `src/assets/scene/pantanal.png`
 **Depends on**: T49
-**Reuses**: estilo de `scene/ceraima.png`
+**Reuses**: estilo de `scene/poco-do-magro.png`
 **Requirement**: - (arte; cenário próprio da EPI-06)
 **Tools**: MCP: `pixellab` · Skill: `playwright-cli`, `commit-bee`
 
@@ -1533,10 +1534,10 @@ T53 → T54
 
 #### T66: Gerar o cenário da Amazônia
 
-**What**: Fundo do Amazônia visto de cima (rio de água escura com igapó) em pixel art no PixelLab, no estilo do cenário de Ceraíma.
+**What**: Fundo do Amazônia visto de cima (rio de água escura com igapó) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
 **Where**: `src/assets/scene/amazonia.png`
 **Depends on**: T49
-**Reuses**: estilo de `scene/ceraima.png`
+**Reuses**: estilo de `scene/poco-do-magro.png`
 **Requirement**: - (arte; cenário próprio da EPI-06)
 **Tools**: MCP: `pixellab` · Skill: `playwright-cli`, `commit-bee`
 
@@ -1554,10 +1555,10 @@ T53 → T54
 
 #### T67: Gerar o cenário do Alto-mar da Bahia
 
-**What**: Fundo do Alto-mar da Bahia visto de cima (mar aberto azul-escuro com o barco, visto de cima) em pixel art no PixelLab, no estilo do cenário de Ceraíma.
+**What**: Fundo do Alto-mar da Bahia visto de cima (mar aberto azul-escuro com o barco, visto de cima) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
 **Where**: `src/assets/scene/alto-mar.png`
 **Depends on**: T49
-**Reuses**: estilo de `scene/ceraima.png`
+**Reuses**: estilo de `scene/poco-do-magro.png`
 **Requirement**: - (arte; cenário próprio da EPI-06)
 **Tools**: MCP: `pixellab` · Skill: `playwright-cli`, `commit-bee`
 
@@ -1577,7 +1578,7 @@ T53 → T54
 
 #### T50: Gerar os peixes do Episódio 1
 
-**What**: Sprites das 8 espécies do Episódio 1 (nadando e na ficha), incluindo o Pirarucu de Ceraíma e a Piranha Lavínia com cara de deboche.
+**What**: Sprites das 8 espécies do Episódio 1 (nadando e na ficha), incluindo o Pirarucu Lendário e a Piranha Lavínia com cara de deboche.
 **Where**: `src/assets/fish/ep1/`
 **Depends on**: T33
 **Reuses**: `sprites.ts`
@@ -1925,7 +1926,7 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T63 | `src/ui/TrophyRoom.tsx` | ✅ Granular |
 | T47 | `e2e/journey.spec.ts` | ✅ Granular |
 | T48 | `e2e/accessibility.spec.ts` | ✅ Granular |
-| T49 | `src/assets/scene/ceraima.png` | ✅ Granular |
+| T49 | `src/assets/scene/poco-do-magro.png` | ✅ Granular |
 | T64 | `src/assets/scene/rio-jacuipe.png` | ✅ Granular |
 | T73 | `src/assets/scene/ponte-cetrel.png` | ✅ Granular |
 | T65 | `src/assets/scene/pantanal.png` | ✅ Granular |

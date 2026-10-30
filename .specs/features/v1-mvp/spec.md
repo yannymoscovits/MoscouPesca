@@ -48,15 +48,16 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Hospedagem | Site estático gratuito (Cloudflare Pages ou Vercel) a partir de repositório privado, com `noindex` | Mensagens da família não ficam públicas e o link não aparece em busca | y |
 | Celular alvo | Android com Chrome | Celular dele, informado pelo usuário | y |
 | Idioma | Só português do Brasil | Público único | y |
-| Local do Episódio 1 | Barragem de Ceraíma, em Guanambi (BA), cidade onde o Adilson mora | Confirmado pelo usuário | y |
+| Local do Episódio 1 | Barragem do Poço do Magro, em Guanambi (BA), cidade onde o Adilson mora | Corrigido pelo usuário (não é Poço do Magro) | y |
 | Entrega | Os 5 episódios publicados juntos | Decisão do usuário | y |
-| Roteiro dos episódios | 1 Barragem de Ceraíma (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Pantanal · 4 Amazônia · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits) | Definido pelo usuário: Jacuípe é onde ele mais gostava de pescar; o final vai para o alto-mar para não repetir a água salgada da Ponte da Cetrel | y |
+| Roteiro dos episódios | 1 Barragem do Poço do Magro (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Pantanal · 4 Amazônia · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits) | Definido pelo usuário: Jacuípe é onde ele mais gostava de pescar; o final vai para o alto-mar para não repetir a água salgada da Ponte da Cetrel | y |
 | Nomes dos campeonatos 2 a 4 | Copa Jacuípe, Desafio do Pantanal, Torneio da Amazônia | Propostos pelo agente | n |
 | Duração | 2 a 3 horas por episódio até vencer o campeonato, medidas pela simulação de um jogador típico | Decisão do usuário: ele gosta de ficar pescando | y |
 | Medição da progressão | 50 sementes por episódio. PROG-01: mediana do tempo até a vitória entre 120 e 180 min. PROG-04: em pelo menos 90% das sementes, nenhum intervalo sem conquista passa de 10 min. PROG-05: taxa de vitória em 50 tentativas de campeonato | Torna os critérios de progressão testáveis sem depender de uma semente da sorte | n |
 | Elenco dos episódios 2 a 5 | A família viaja junto: Jane, Edvaldo, Ricardo, Bem e Kris voltam como rivais e coadjuvantes, mais um personagem local por episódio (pescador da Barra do Jacuípe, pantaneiro, guia ribeirinho, mestre de barco) | Mantém a família no centro; o usuário pode incluir mais parentes | n |
 | Varas e iscas | Bambu no início e 2 varas novas por episódio (11 no total), Força e Alcance de 1 a 10; 1 isca nova por episódio | Equipamento evolui junto com os 5 episódios | n |
-| Espécies por episódio | Ep. 1 (Ceraíma): Tilápia, Traíra, Curimatã, Piau, Tambaqui, Tucunaré, Pirarucu de Ceraíma (raro, lenda do pirarucu de ~90 kg pego no sangradouro em 2022) e Piranha Lavínia (especial) · Ep. 2, Rio Jacuípe: Tilápia, Traíra, Tainha, Robalo-peva, Carapeba; Ponte da Cetrel: Robalo-flecha, Pescada-amarela, Vermelho, Baiacu, Camurupim (raro) · Ep. 3: Pacu, Piraputanga, Piranha-vermelha, Jaú, Pintado (raro) · Ep. 4: Aruanã, Pirapitinga, Peixe-cachorro, Tucunaré-açu, Piraíba (raro) · Ep. 5, alto-mar: Dourado-do-mar, Cavala, Atum, Olho-de-boi, Marlim-azul (raro) | Usuário pediu os peixes típicos da represa de Guanambi; não há lista oficial de Ceraíma, então o Ep. 1 usa os peixes comuns dos açudes do sertão baiano. No Rio Jacuípe, guia de pesca cita robalo-peva, traíra e tainha. A família confirma as listas | n |
+| Espécies do Episódio 1 | Tilápia, Traíra, Curimatã, Piau, Tambaqui, Tucunaré, Pirarucu Lendário (raro; lenda inspirada no pirarucu de ~90 kg pego no sangradouro da vizinha Barragem de Ceraíma em 2022) e Piranha Lavínia (especial) | Usuário: usar os peixes mais famosos de Guanambi, o básico | y |
+| Espécies dos episódios 2 a 5 | Ep. 2, Rio Jacuípe: Tilápia, Traíra, Tainha, Robalo-peva, Carapeba; Ponte da Cetrel: Robalo-flecha, Pescada-amarela, Vermelho, Baiacu, Camurupim (raro) · Ep. 3: Pacu, Piraputanga, Piranha-vermelha, Jaú, Pintado (raro) · Ep. 4: Aruanã, Pirapitinga, Peixe-cachorro, Tucunaré-açu, Piraíba (raro) · Ep. 5, alto-mar: Dourado-do-mar, Cavala, Atum, Olho-de-boi, Marlim-azul (raro) | Peixes mais conhecidos de cada lugar, seguindo o critério do usuário para Guanambi; no Rio Jacuípe, guia de pesca cita robalo-peva, traíra e tainha | n |
 | Tom da história | Bem-humorado e debochado, do jeito da família | Pedido do usuário: a família é debochada | y |
 | Lavínia (irmã do usuário) | Entra como "Lavínia, a Piranha": peixe especial da represa e personagem nas falas; sempre chama o Adilson de "Adilsinho" e aparece em todos os episódios para pirraçar ele | Pedido da própria Lavínia e do usuário | y |
 | Elenco do Episódio 1 | Jane (esposa) entrega a vara; Edvaldo (cunhado) é o dono da loja; rivais do torneio: Ricardo (boêmio, toca bongô), Bem (sogra da filha, gosta de cerveja) e Kris ("Passago de Fogo", vive mandando ele parar de tomar líquido e fala "prendrive") | Definido pelo usuário | y |
@@ -65,7 +66,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Apelidos cômicos nos cartões | Propostos pelo agente em `docs/historia/episodio-1.md` | O usuário troca o que quiser | n |
 | Retratos da família | O usuário manda fotos em `Fotos/` (fora do git); o agente descreve cada pessoa em texto e o PixelLab gera a partir da descrição. As fotos não vão para o PixelLab nem para o repositório | Preferência do usuário por fotos; privacidade da família | y |
 | Personagens da família e textos da história | Ficam num arquivo de conteúdo com o marcador `{{PENDENTE}}` até o usuário enviar | Permite programar em paralelo; o build de publicação barra marcador pendente (HIST-07) | n |
-| Cartas dos campeonatos | Uma carta por campeonato (5), escritas pela família e enviadas antes da publicação; o rascunho da carta do Episódio 2 está em `docs/historia/cartas.md` | Sem elas os campeonatos perdem o sentido | n |
+| Cartas dos campeonatos | Uma carta por campeonato (5), escritas episódio a episódio com o usuário; a do Episódio 1 (GuanambiCup) está pronta em `docs/historia/cartas.md` | Pedido do usuário: "vamos por episódios" | y |
 | Nome do campeonato do Episódio 1 | "GuanambiCup" | Escolhido pelo usuário. O nome do Adilson continua no subtítulo do jogo e na grande final "Copa Adilson Moscovits", a final do Episódio 5 | y |
 | Moeda | "R$" fictício | Familiar para ele; não é dinheiro real | n |
 | Mira do arremesso | Tocar no ponto da água; a isca vai até lá, limitada pelo alcance da vara | Um toque, sem barra de força que exige timing | n |
@@ -77,6 +78,8 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Origem da arte | Gerada com o PixelLab MCP (conta paga do usuário), num estilo único para personagens, família, peixes e cenário | Escolhido pelo usuário; permite retratos próprios da família | y |
 | Peixe pego no torneio rende R$ | Sim, igual à pesca livre | Uma regra só, mais fácil de entender | n |
 | Janelas de tempo | Fisgada: 2 s no Desafio e 4 s no Tranquilo. Linha arrebenta após 1 s em tensão 100 (só no Desafio) | Generosas para quem joga deitado, ainda com algum desafio | n |
+| Interpretações da pesca (implementação, T8 a T12) | Mordida (3 a 10 s) e desistência (15 s) contam do arremesso, incluindo o voo; a janela de fisgada começa quando o "!" aparece; faixas de tensão: verde < 70, amarelo de 70 até antes de 90, vermelho ≥ 90; o 1 s em 100 zera ao soltar o dedo; se pegar e arrebentar no mesmo instante, vale a captura; valor em R$ inteiro (arredondado) | Pontos que a spec não fixava; nenhuma muda o comportamento descrito | y |
+| Ritmo da briga (calibrado em T12) | Brigas de 10 a 30 s; no Desafio, quem segue as cores da barra não arrebenta a linha; no Tranquilo, basta segurar o dedo e o peixe vem em 10 s | Jogo tranquilo para quem está no leito; dá para endurecer depois, só mudando `tuning.ts` | n |
 
 **Open questions:** none - all resolved or logged above. As linhas "n" são padrões aguardando o material do usuário; mudá-las muda conteúdo e números, não os requisitos.
 
@@ -245,7 +248,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 **Why P1**: O usuário pediu no mínimo 5 episódios, entregues juntos.
 
 **Acceptance Criteria**:
-1. The jogo SHALL ter 5 episódios, nesta ordem: 1 Barragem de Ceraíma (GuanambiCup), 2 Jacuípe (Rio Jacuípe e Ponte da Cetrel), 3 Pantanal, 4 Amazônia e 5 Alto-mar da Bahia (Copa Adilson Moscovits). `EPI-01`
+1. The jogo SHALL ter 5 episódios, nesta ordem: 1 Barragem do Poço do Magro (GuanambiCup), 2 Jacuípe (Rio Jacuípe e Ponte da Cetrel), 3 Pantanal, 4 Amazônia e 5 Alto-mar da Bahia (Copa Adilson Moscovits). `EPI-01`
 2. WHEN o jogador vence pela primeira vez o campeonato de um episódio de 1 a 4 THEN o jogo SHALL liberar o episódio seguinte e o local dele no Mapa. `EPI-02`
 3. WHILE um episódio está bloqueado the jogo SHALL mostrar o local dele no Mapa com cadeado e o nome do campeonato que o libera. `EPI-03`
 4. WHEN o jogador toca num local liberado no Mapa THEN o jogo SHALL abrir a pesca naquele local. `EPI-04`
@@ -414,23 +417,23 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | INST-07 | P1: Instalar e abrir | - | Pending |
 | INST-08 | P1: Instalar e abrir | T5 | Implementing |
 | INST-09 | P1: Instalar e abrir | T3 | Implementing |
-| PESCA-01 | P1: Pescar com um dedo | - | Pending |
-| PESCA-02 | P1: Pescar com um dedo | - | Pending |
-| PESCA-03 | P1: Pescar com um dedo | - | Pending |
-| PESCA-04 | P1: Pescar com um dedo | - | Pending |
-| PESCA-05 | P1: Pescar com um dedo | - | Pending |
+| PESCA-01 | P1: Pescar com um dedo | T8 | Implementing |
+| PESCA-02 | P1: Pescar com um dedo | T8 | Implementing |
+| PESCA-03 | P1: Pescar com um dedo | T8 | Implementing |
+| PESCA-04 | P1: Pescar com um dedo | T9 | Implementing |
+| PESCA-05 | P1: Pescar com um dedo | T9 | Implementing |
 | PESCA-06 | P1: Pescar com um dedo | - | Pending |
 | PESCA-07 | P1: Pescar com um dedo | - | Pending |
-| PESCA-08 | P1: Pescar com um dedo | - | Pending |
-| PESCA-09 | P1: Pescar com um dedo | - | Pending |
-| PESCA-10 | P1: Pescar com um dedo | - | Pending |
-| PESCA-11 | P1: Pescar com um dedo | - | Pending |
-| PESCA-12 | P1: Pescar com um dedo | - | Pending |
-| PESCA-13 | P1: Pescar com um dedo | - | Pending |
-| PESCA-14 | P1: Pescar com um dedo | - | Pending |
-| PESCA-15 | P1: Pescar com um dedo | - | Pending |
-| PESCA-16 | P1: Pescar com um dedo | - | Pending |
-| PESCA-17 | P1: Pescar com um dedo | - | Pending |
+| PESCA-08 | P1: Pescar com um dedo | T9 | Implementing |
+| PESCA-09 | P1: Pescar com um dedo | T9 | Implementing |
+| PESCA-10 | P1: Pescar com um dedo | T10 | Implementing |
+| PESCA-11 | P1: Pescar com um dedo | T10 | Implementing |
+| PESCA-12 | P1: Pescar com um dedo | T10, T36 | Implementing |
+| PESCA-13 | P1: Pescar com um dedo | T10 | Implementing |
+| PESCA-14 | P1: Pescar com um dedo | T10 | Implementing |
+| PESCA-15 | P1: Pescar com um dedo | T11, T37 | Implementing |
+| PESCA-16 | P1: Pescar com um dedo | T11 | Implementing |
+| PESCA-17 | P1: Pescar com um dedo | T11, T29 | Implementing |
 | TUTO-01 | P1: Tutorial da primeira pescaria | - | Pending |
 | TUTO-02 | P1: Tutorial da primeira pescaria | - | Pending |
 | TUTO-03 | P1: Tutorial da primeira pescaria | - | Pending |
@@ -446,7 +449,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | EQUIP-04 | P1: Varas, iscas e loja | - | Pending |
 | EQUIP-05 | P1: Varas, iscas e loja | - | Pending |
 | EQUIP-06 | P1: Varas, iscas e loja | - | Pending |
-| EQUIP-07 | P1: Varas, iscas e loja | - | Pending |
+| EQUIP-07 | P1: Varas, iscas e loja | T8, T10 | Implementing |
 | EQUIP-08 | P1: Varas, iscas e loja | - | Pending |
 | EQUIP-09 | P1: Varas, iscas e loja | - | Pending |
 | HIST-01 | P1: História dos 5 episódios | - | Pending |
@@ -500,7 +503,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | SAVE-10 | P1: Pausa e progresso salvo | - | Pending |
 | ACES-01 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-02 | P1: Conforto e acessibilidade | - | Pending |
-| ACES-03 | P1: Conforto e acessibilidade | - | Pending |
+| ACES-03 | P1: Conforto e acessibilidade | T10 | Implementing |
 | ACES-04 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-05 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-06 | P1: Conforto e acessibilidade | - | Pending |
@@ -521,7 +524,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 112 total, mapeados no tasks.md
+**Coverage:** 112 total, todos mapeados no tasks.md; 22 em implementação
 
 ---
 

@@ -8,7 +8,7 @@
 
 ## Feature Boundary
 
-A v1 entrega 5 episódios, publicados juntos: Barragem de Ceraíma (GuanambiCup), Jacuípe (Rio Jacuípe e Ponte da Cetrel), Pantanal, Amazônia e Alto-mar da Bahia (Copa Adilson Moscovits). Cada um tem lugar, peixes, equipamentos, história com a família, campeonato e carta, numa progressão de 2 a 3 horas, e a pesca livre continua depois do fim.
+A v1 entrega 5 episódios, publicados juntos: Barragem do Poço do Magro (GuanambiCup), Jacuípe (Rio Jacuípe e Ponte da Cetrel), Pantanal, Amazônia e Alto-mar da Bahia (Copa Adilson Moscovits). Cada um tem lugar, peixes, equipamentos, história com a família, campeonato e carta, numa progressão de 2 a 3 horas, e a pesca livre continua depois do fim.
 
 ---
 
@@ -53,9 +53,11 @@ A v1 entrega 5 episódios, publicados juntos: Barragem de Ceraíma (GuanambiCup)
 
 - No mínimo 5 episódios, entregues **juntos** (decisão do usuário, mesmo com a entrega mais demorada).
 - Cada episódio leva de 2 a 3 horas até vencer o campeonato; ele gosta de ficar pegando peixe. Depois do fim, a pesca livre segue em todos os lugares.
-- Roteiro: 1 Barragem de Ceraíma (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Pantanal · 4 Amazônia · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits).
+- Roteiro: 1 Barragem do Poço do Magro (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Pantanal · 4 Amazônia · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits).
 - Jacuípe entrou no Episódio 2 a pedido do usuário: é um lugar de que o Adilson gosta muito e onde pescava muito. Tem dois locais, o Rio Jacuípe (água doce) e a Ponte da Cetrel (água salgada). O Rio São Francisco saiu, e o final foi para o alto-mar para não repetir a água salgada.
-- Peixes do Episódio 1: os típicos da represa de Guanambi (pedido do usuário). Sem lista oficial de Ceraíma, usamos os comuns dos açudes do sertão baiano, mais a lenda real do pirarucu de ~90 kg pego no sangradouro em 2022; a família confirma.
+- Peixes do Episódio 1: os típicos da represa de Guanambi (pedido do usuário). Sem lista oficial do Poço do Magro, usamos os comuns dos açudes do sertão baiano, mais a lenda real do pirarucu de ~90 kg pego no sangradouro da Barragem de Ceraíma em 2022, que vira o Pirarucu Lendário. O usuário confirmou: os peixes mais famosos de Guanambi, o básico.
+- A represa do Episódio 1 é a **Barragem do Poço do Magro** (correção do usuário; não é Ceraíma).
+- A carta rascunhada para o Episódio 2 virou a carta do Episódio 1; as próximas são escritas episódio a episódio.
 - Nomes corrigidos pelo usuário: Edvaldo (não Edvan), Ricardo (sem "Tio"), Kris (sem "Tia").
 - A Lavínia sempre chama o Adilson de "ADILSINHO" e aparece em todos os episódios para pirraçar ele.
 

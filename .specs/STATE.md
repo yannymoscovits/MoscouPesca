@@ -37,10 +37,10 @@
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute, Fase 2 (lote 2: T6 a T12 com sub-agente)
-- **Completed**: Fase 1 (T1 `98bd3d1`, T2 `be74473`, T3 `07685f6`, T4 `79bc847`, T5 `b52799a`); planejamento ampliado para 5 episódios (73 tarefas, 12 fases)
-- **In-progress** (file:line): lote 2 rodando em sub-agente
-- **Next step**: Quando o lote 2 terminar, conferir o resumo e disparar o lote 3 (Fase 3).
-- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (necessário só nas fases de arte); falta foto do Ricardo; cartas dos 5 campeonatos pendentes; família confirmar os peixes de Ceraíma e de Jacuípe.
+- **Phase / Task**: Execute, Fase 3 (lote 3: T13 a T19 e T55 com sub-agente)
+- **Completed**: Fase 1 (T1 a T5) e Fase 2 (T6 `7ad53db` a T12 `6d12102`); 29 testes unitários e 3 e2e passando
+- **In-progress** (file:line): lote 3 rodando em sub-agente
+- **Next step**: Quando o lote 3 terminar, conferir o resumo e disparar o lote 4 (Fase 4, conteúdo do Episódio 1).
+- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (necessário só nas fases de arte); cartas dos episódios 2 a 5 pendentes (escritas episódio a episódio); roteiro do Episódio 2 em revisão pelo usuário.
 - **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`
