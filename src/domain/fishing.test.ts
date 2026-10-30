@@ -318,3 +318,35 @@ describe('briga', () => {
     }
   });
 });
+
+describe('resultado', () => {
+  const fish = species('curimata', { kg: { min: 0.35, max: 4.8 }, pricePerKg: 13, power: 1, stamina: 1 });
+
+  /** Briga inteira segurando, até sair da briga; confere que nenhuma briga fica parada com distância 0. */
+  function catchWith(seed: number): FishingState {
+    const { fight, ctx } = toFight('tranquilo', rod(5, 10), fish, seed);
+    let s: FishingState = fight;
+    for (let i = 0; i < 600 && s.phase === 'Fight'; i++) {
+      expect(s.distance).toBeGreaterThan(0);
+      s = tick(s, 0.1, HOLD, ctx);
+    }
+    return s;
+  }
+
+  it('PESCA-15/PESCA-16/PESCA-17: em 1 000 sementes, a ficha traz espécie, peso sorteado na faixa com 2 casas e valor = peso × preço/kg', () => {
+    const weights = new Set<number>();
+    for (let seed = 1; seed <= 1000; seed++) {
+      const s = catchWith(seed);
+      expect(s.phase).toBe('Result_Caught');
+      if (s.phase !== 'Result_Caught') continue;
+
+      expect(s.species).toEqual(fish);
+      expect(s.kg).toBeGreaterThanOrEqual(0.35);
+      expect(s.kg).toBeLessThanOrEqual(4.8);
+      expect(Number(s.kg.toFixed(2))).toBe(s.kg);
+      expect(s.value).toBe(Math.round(s.kg * 13));
+      weights.add(s.kg);
+    }
+    expect(weights.size).toBeGreaterThan(100); // sorteado, não fixo
+  });
+});

@@ -90,6 +90,7 @@ export type FishingState =
       atMaxS: number; // tempo seguido com a tensão em 100
       fightS: number;
     }
+  | { phase: 'Result_Caught'; species: Species; kg: number; value: number } // dados da ficha (PESCA-15)
   | { phase: 'Result_Broken' }
   | { phase: 'Result_Escaped' }
   | { phase: 'Result_Nothing' };
@@ -143,7 +144,14 @@ function breath(sp: Species, fightS: number): number {
   return Math.max(0, 1 - fightS / (FATIGUE_BASE_S + FATIGUE_S_PER_STAMINA * sp.stamina));
 }
 
-function fight(s: Extract<FishingState, { phase: 'Fight' }>, dt: number, holding: boolean): FishingState {
+/** Peixe na mão: peso sorteado na faixa da espécie, com 2 casas, e valor em R$ inteiros. */
+function caught(sp: Species, rng: Rng): FishingState {
+  const drawn = Math.round(rng.range(sp.kg.min, sp.kg.max) * 100) / 100; // PESCA-16
+  const kg = Math.min(Math.max(drawn, sp.kg.min), sp.kg.max);
+  return { phase: 'Result_Caught', species: sp, kg, value: Math.round(kg * sp.pricePerKg) }; // PESCA-17
+}
+
+function fight(s: Extract<FishingState, { phase: 'Fight' }>, dt: number, holding: boolean, ctx: TickContext): FishingState {
   const sp = s.species;
   let tension: number;
   let distance: number;
@@ -157,7 +165,7 @@ function fight(s: Extract<FishingState, { phase: 'Fight' }>, dt: number, holding
     distance = s.distance + FISH_PULL * sp.power * breath(sp, s.fightS) * dt;
   }
   tension = Math.min(Math.max(tension, 0), s.maxTension); // PESCA-14: teto 99 no Tranquilo
-  distance = Math.max(distance, 0);
+  if (distance <= 0) return caught(sp, ctx.rng); // PESCA-15
 
   const atMax = tension >= MAX_TENSION;
   const atMaxS = atMax && s.tension >= MAX_TENSION ? s.atMaxS + dt : 0;
@@ -188,7 +196,7 @@ export function tick(s: FishingState, dt: number, input: { holding: boolean }, c
       return { ...s, sinceBite };
     }
     case 'Fight':
-      return fight(s, dt, input.holding);
+      return fight(s, dt, input.holding, ctx);
     default:
       return s;
   }

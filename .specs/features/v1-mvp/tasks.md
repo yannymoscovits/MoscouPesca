@@ -394,10 +394,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Em 1 000 sementes, todo peso fica dentro da faixa da espécie e tem 2 casas decimais (PESCA-16)
-- [ ] Valor = arredondamento de peso × preço/kg (PESCA-17)
-- [ ] Resultado traz espécie, peso e valor (PESCA-15)
-- [ ] Gate check passes: `npm test`
+- [x] Em 1 000 sementes, todo peso fica dentro da faixa da espécie e tem 2 casas decimais (PESCA-16)
+- [x] Valor = arredondamento de peso × preço/kg (PESCA-17)
+- [x] Resultado traz espécie, peso e valor (PESCA-15)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
