@@ -104,7 +104,7 @@ Rivais da Copa Itaparica: **Lu, Geane e Louise** (com o Lucca torcendo).
 - **Lu** [rindo]: Xô campeão! Vou postar no grupo da família… depois da reunião.
 - **Geane** [chocado]: Eu sabia! Os E.T. me contaram ontem.
 - *Marcus e Julia aplaudem na torcida.*
-- **Carta das irmãs, Lu e Geane** (rascunho em `docs/historia/cartas.md`)
+- **Carta das irmãs, Lu e Geane** (em `docs/historia/cartas.md`)
 - *Episódio 4 liberado: Parque dos Ventos!*
 
 ### Se perder a Copa
