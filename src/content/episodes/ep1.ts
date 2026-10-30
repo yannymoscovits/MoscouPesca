@@ -1,7 +1,7 @@
 // Episódio 1: Tirando a Ferrugem, na Barragem do Poço do Magro (Guanambi, BA).
 // Fonte: docs/historia/episodio-1.md. Números de peso, preço e força são iniciais; T61 calibra.
 
-import type { Episode, Location, Species } from '../types';
+import type { Bait, Episode, Location, Rod, Species } from '../types';
 
 const sprite = (id: string) => `src/assets/fish/ep1/${id}.png`;
 
@@ -132,12 +132,25 @@ const pocoDoMagro = {
   ],
 } satisfies Location;
 
+// Bambu e Minhoca já vêm no perfil novo (profile.ts: START_ROD, START_BAIT).
+const rods = [
+  { id: 'bambu', name: 'Vara de Bambu', price: 0, force: 1, reach: 2, episode: 1 },
+  { id: 'fibra', name: 'Vara de Fibra', price: 150, force: 3, reach: 5, episode: 1 },
+  { id: 'carbono', name: 'Vara de Carbono', price: 400, force: 6, reach: 8, episode: 1 },
+] satisfies Rod[];
+
+const baits = [
+  { id: 'minhoca', name: 'Minhoca', price: 0, episode: 1 },
+  { id: 'milho', name: 'Milho', price: 30, episode: 1 },
+  { id: 'carne', name: 'Isca de Carne', price: 60, episode: 1 },
+] satisfies Bait[];
+
 export const ep1 = {
   id: 1,
   locations: [pocoDoMagro],
   species,
-  rods: [],
-  baits: [],
+  rods,
+  baits,
   // Roteiro (T23), GuanambiCup e carta (T24) entram nas próximas tarefas.
   chapter: { title: 'Tirando a Ferrugem', openingScene: 'ep1-abertura', objectives: [], closingScene: 'ep1-vitoria' },
   tournament: {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { START_LOCATION } from '../domain/profile';
+import { START_BAIT, START_LOCATION, START_ROD } from '../domain/profile';
 import { FISH_POWER, FISH_STAMINA } from '../domain/tuning';
 import { ep1 } from './episodes/ep1';
 import { episodes } from './index';
@@ -57,5 +57,51 @@ describe('Episódio 1: local e espécies', () => {
 
   it('EQUIP-02: a Piranha Lavínia só aceita a Isca de Carne', () => {
     expect(byName('Piranha Lavínia')?.baits).toEqual(['carne']);
+  });
+});
+
+describe('Episódio 1: varas e iscas', () => {
+  it('EQUIP-01: a Vara de Bambu do início custa 0 e há 2 varas novas, Fibra e Carbono, com força e alcance de 1 a 10', () => {
+    const bambu = ep1.rods.find((r) => r.id === START_ROD);
+    expect(bambu).toMatchObject({ name: 'Vara de Bambu', price: 0 });
+    const novas = ep1.rods.filter((r) => r.id !== START_ROD);
+    expect(novas.map((r) => r.name)).toEqual(['Vara de Fibra', 'Vara de Carbono']);
+    for (const r of novas) expect(r.price, r.id).toBeGreaterThan(0);
+    for (const r of ep1.rods) {
+      expect(r.episode, r.id).toBe(1);
+      for (const value of [r.force, r.reach]) {
+        expect(value, r.id).toBeGreaterThanOrEqual(1);
+        expect(value, r.id).toBeLessThanOrEqual(10);
+      }
+    }
+  });
+
+  it('EQUIP-02: a Minhoca do início custa 0 e há pelo menos 1 isca nova, entre elas a Isca de Carne', () => {
+    expect(ep1.baits.find((b) => b.id === START_BAIT)).toMatchObject({ name: 'Minhoca', price: 0 });
+    const novas = ep1.baits.filter((b) => b.id !== START_BAIT);
+    expect(novas.length).toBeGreaterThanOrEqual(1);
+    for (const b of novas) expect(b.price, b.id).toBeGreaterThan(0);
+    for (const b of ep1.baits) expect(b.episode, b.id).toBe(1);
+    expect(ep1.baits.find((b) => b.id === 'carne')?.name).toBe('Isca de Carne');
+  });
+
+  it('EQUIP-02: toda isca citada pelas espécies existe e cada isca atrai um conjunto diferente de espécies', () => {
+    const baitIds = new Set(ep1.baits.map((b) => b.id));
+    for (const sp of ep1.species) for (const b of sp.baits) expect(baitIds.has(b), `${sp.id} → ${b}`).toBe(true);
+
+    const attracted = ep1.baits.map((b) =>
+      ep1.species
+        .filter((sp) => sp.baits.includes(b.id))
+        .map((sp) => sp.id)
+        .sort()
+        .join(','),
+    );
+    for (const set of attracted) expect(set).not.toBe('');
+    expect(new Set(attracted).size).toBe(ep1.baits.length);
+  });
+
+  it('toda espécie aparece em pelo menos uma zona', () => {
+    const inZones = new Set(zoneSpecies());
+    for (const sp of ep1.species) expect(inZones.has(sp.id), sp.id).toBe(true);
   });
 });

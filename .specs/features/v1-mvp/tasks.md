@@ -649,10 +649,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste: Bambu custa 0 e há 2 varas novas, com força e alcance entre 1 e 10 (EQUIP-01)
-- [ ] Teste: Minhoca custa 0, há pelo menos 1 isca nova, cada isca atrai um conjunto diferente de espécies e toda isca citada pelas espécies existe (EQUIP-02)
-- [ ] Teste: toda espécie aparece em pelo menos uma zona
-- [ ] Gate check passes: `npm test`
+- [x] Teste: Bambu custa 0 e há 2 varas novas, com força e alcance entre 1 e 10 (EQUIP-01)
+- [x] Teste: Minhoca custa 0, há pelo menos 1 isca nova, cada isca atrai um conjunto diferente de espécies e toda isca citada pelas espécies existe (EQUIP-02)
+- [x] Teste: toda espécie aparece em pelo menos uma zona
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
