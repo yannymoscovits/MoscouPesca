@@ -38,6 +38,10 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  /* A Pixelify Sans junta "fi" num glifo que parece "ñ" ("Desaño"). O atalho `font` de cada classe
+     religaria as ligaduras, por isso o !important. */
+  font-variant-ligatures: none !important;
+  font-feature-settings: 'liga' 0, 'clig' 0 !important;
 }
 
 html,
@@ -289,4 +293,74 @@ ul {
   50% {
     border-color: transparent;
   }
+}
+
+/* ---------- Dificuldade e Ajustes ---------- */
+
+.btn--choice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.choice__name {
+  font: 700 28px / 1.1 var(--font-title);
+}
+
+.choice__hint {
+  font-weight: 400;
+  font-size: var(--text-min);
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting__label {
+  font-weight: 700;
+}
+
+.segmented {
+  display: flex;
+  gap: 12px;
+}
+
+.segmented > .btn {
+  flex: 1 1 0;
+}
+
+/* Opção desligada: azul-escuro com texto creme (10,9:1); ligada: amarelo com tinta escura. */
+.btn--toggle {
+  background: var(--bg-raised);
+  color: var(--ink);
+}
+
+.btn--toggle[aria-pressed='true'],
+.btn--toggle[aria-checked='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn--switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* A chavinha desenhada ao lado do texto. */
+.btn--switch::after {
+  content: '';
+  flex: 0 0 48px;
+  height: 28px;
+  border: 3px solid currentColor;
+  border-radius: 14px;
+  background: radial-gradient(circle at 25% 50%, currentColor 9px, transparent 10px);
+}
+
+.btn--switch[aria-checked='true']::after {
+  background: radial-gradient(circle at 75% 50%, currentColor 9px, transparent 10px);
 }

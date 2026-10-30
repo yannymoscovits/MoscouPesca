@@ -1,12 +1,14 @@
 // Tela inicial (INST-01 a INST-04) e a instrução do menu ⋮ do Chrome (InstallHelp, INST-03).
 
 import { useState } from 'preact/hooks';
+import { useGame } from '../app/store';
 import { useNav, useServices } from './context';
 
 export function TitleScreen() {
   const { install } = useServices();
   const go = useNav();
   const [help, setHelp] = useState(false);
+  const chosen = useGame((s) => s.profile.settings.difficulty !== null);
 
   async function installTap() {
     if (install.canPrompt()) await install.prompt(); // INST-02: diálogo de instalação do Android
@@ -29,7 +31,11 @@ export function TitleScreen() {
             Colocar na tela
           </button>
         )}
-        <button type="button" class="btn btn--big" onClick={() => go('fishing')}>
+        <button type="button" class="btn btn--secondary" onClick={() => go('settings')}>
+          Ajustes
+        </button>
+        {/* ACES-01: na primeira abertura, pergunta a dificuldade antes de pescar */}
+        <button type="button" class="btn btn--big" onClick={() => go(chosen ? 'fishing' : 'difficulty')}>
           Jogar
         </button>
       </div>

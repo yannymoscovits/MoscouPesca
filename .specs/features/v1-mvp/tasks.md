@@ -1035,11 +1035,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: primeira abertura pergunta "Como você quer pescar hoje?" com "Tranquilo" e "Desafio"; segunda abertura não pergunta (ACES-01)
-- [ ] e2e: trocar a dificuldade em Ajustes persiste após recarregar (ACES-02)
-- [ ] e2e: vibração começa ligada e o desligar persiste (ACES-04)
-- [ ] e2e: "Rever tutorial" faz o tutorial começar na próxima pescaria (TUTO-09)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: primeira abertura pergunta "Como você quer pescar hoje?" com "Tranquilo" e "Desafio"; segunda abertura não pergunta (ACES-01)
+- [x] e2e: trocar a dificuldade em Ajustes persiste após recarregar (ACES-02)
+- [x] e2e: vibração começa ligada e o desligar persiste (ACES-04)
+- [x] e2e: "Rever tutorial" faz o tutorial começar na próxima pescaria (TUTO-09)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full
