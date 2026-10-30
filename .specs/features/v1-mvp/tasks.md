@@ -237,9 +237,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste: pasta de 4,9 MB → código 0; pasta de 5,1 MB → código 1 com o total na mensagem
-- [ ] `npm run release` encadeia as três etapas e para na primeira que falhar
-- [ ] Gate check passes: `npm test`
+- [x] Teste: pasta de 4,9 MB → código 0; pasta de 5,1 MB → código 1 com o total na mensagem
+- [x] `npm run release` encadeia as três etapas e para na primeira que falhar
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

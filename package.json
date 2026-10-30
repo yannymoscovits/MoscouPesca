@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
     "test": "vitest run --passWithNoTests",
     "test:e2e": "playwright test --pass-with-no-tests",
-    "check:content": "tsx scripts/check-content.ts"
+    "check:content": "tsx scripts/check-content.ts",
+    "check:size": "tsx scripts/check-size.ts",
+    "release": "npm run check:content && npm run build && npm run check:size"
   },
   "dependencies": {
     "preact": "^11.1.0"
