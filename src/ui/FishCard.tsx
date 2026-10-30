@@ -84,15 +84,20 @@ export function FishCard({ species, kg, value, newRecord }: { species: Species; 
   );
 }
 
-/** Desenho do peixe; enquanto a arte não chega, um peixe de CSS na cor da espécie (a mesma da cena). */
-export function FishPicture({ species }: { species: Species }) {
+/**
+ * Desenho do peixe; enquanto a arte não chega, um peixe de CSS na cor da espécie (a mesma da cena).
+ * `silhouette`: espécie ainda não pega no álbum (ALBUM-03), toda escura e sem o nome.
+ */
+export function FishPicture({ species, silhouette = false }: { species: Species; silhouette?: boolean }) {
   const url = resolveAsset(species.sprite);
+  const label = silhouette ? 'Peixe desconhecido' : species.name;
+  const dark = silhouette ? ' fish-picture--silhouette' : '';
   if (url) {
     // A folha tem 4 quadros lado a lado, como no FishingRenderer: a ficha mostra o primeiro.
-    return <div class="fish-picture fish-picture--art" role="img" aria-label={species.name} style={`background-image: url(${url})`} />;
+    return <div class={`fish-picture fish-picture--art${dark}`} role="img" aria-label={label} style={`background-image: url(${url})`} />;
   }
   return (
-    <div class="fish-picture" role="img" aria-label={species.name} style={`--fish: ${colorOf(species.id)}`}>
+    <div class={`fish-picture${dark}`} role="img" aria-label={label} style={`--fish: ${silhouette ? 'var(--outline)' : colorOf(species.id)}`}>
       <span class="fish-picture__body" />
     </div>
   );

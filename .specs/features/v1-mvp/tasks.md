@@ -1226,8 +1226,8 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: depois de pegar uma tilápia, ela aparece com o recorde e as outras 5 como "???" (ALBUM-03)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: depois de pegar uma tilápia, ela aparece com o recorde e as outras 5 como "???" (ALBUM-03)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

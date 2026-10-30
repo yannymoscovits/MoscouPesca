@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'preact/hooks';
 import { GameStoreContext, type GameStore } from '../app/store';
+import { Album } from './Album';
 import { BackContext, NavContext, ServicesContext, type ScreenId, type Services } from './context';
 import { FishingScreen } from './FishingScreen';
 import { MenuScreen } from './MenuScreen';
@@ -31,6 +32,7 @@ export function App({ store, services }: { store: GameStore; services: Services 
             {screen === 'fishing' && <FishingScreen />}
             {screen === 'menu' && <MenuScreen />}
             {screen === 'shop' && <Shop />}
+            {screen === 'album' && <Album />}
             {screen === 'settings' && <Settings />}
             <SaveWarning />
             <RotateOverlay />

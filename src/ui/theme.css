@@ -1036,3 +1036,66 @@ ul {
   text-align: center;
   font-weight: 700;
 }
+
+/* ---------- Álbum de peixes ---------- */
+
+/* Silhueta da espécie que falta (ALBUM-03): sem cor, só o contorno do peixe. */
+.fish-picture--silhouette.fish-picture--art {
+  filter: brightness(0);
+}
+
+/* O álbum usa a tela toda para a grade; só os botões ficam embaixo (ACES-08). */
+.album__top {
+  justify-content: flex-start;
+  gap: 8px;
+  padding-bottom: 0;
+}
+
+.album__actions {
+  flex: 0 0 auto;
+}
+
+.album__place {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.album__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.album-cell {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border: 3px solid var(--outline);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+
+/* Desenho menor que o da ficha, para 8 espécies caberem sem rolagem. */
+.album-cell .fish-picture {
+  zoom: 0.6;
+}
+
+.album-cell--missing {
+  background: var(--bg-raised);
+  color: var(--ink);
+}
+
+.album-cell__name {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.album-cell__record {
+  font-size: var(--text-min);
+}

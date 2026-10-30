@@ -9,7 +9,7 @@ import { currentPlace, formatMoney } from './format';
 const ITEMS: { label: string; to?: ScreenId }[] = [
   { label: 'Mapa' },
   { label: 'Loja', to: 'shop' },
-  { label: 'Álbum' },
+  { label: 'Álbum', to: 'album' },
   { label: 'Troféus' },
   { label: 'Mensagens' },
   { label: 'Campeonato' },

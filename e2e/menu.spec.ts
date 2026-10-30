@@ -43,7 +43,7 @@ test('o botão "Menu" da pesca abre o menu; "Voltar a pescar" volta para a pesca
 const DESTINATIONS: { button: string; heading: string | null }[] = [
   { button: 'Mapa', heading: null },
   { button: 'Loja', heading: 'Loja do Edvaldo' },
-  { button: 'Álbum', heading: null },
+  { button: 'Álbum', heading: 'Álbum' },
   { button: 'Troféus', heading: null }, // sala de troféus: T63
   { button: 'Mensagens', heading: null },
   { button: 'Campeonato', heading: null },
