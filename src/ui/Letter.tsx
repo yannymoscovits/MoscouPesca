@@ -1,0 +1,183 @@
+// Carta da família (LetterView: CAMP-06), a caixa de mensagens para reler (Messages: CAMP-10) e o
+// aviso depois do encerramento do episódio (EpisodeBanner: HIST-08, HIST-10).
+// A carta é dividida em páginas que cabem na tela, com o botão "Continuar": nada de rolar o texto
+// com o dedo (ACES-09).
+
+import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useGame } from '../app/store';
+import type { EpisodeContent, Message } from '../content/types';
+import { useNav, useServices } from './context';
+
+/**
+ * Junta os parágrafos em páginas: cada página leva quantos parágrafos couberem (`fits`); um parágrafo
+ * que sozinho não cabe é cortado entre palavras.
+ */
+export function paginate(paragraphs: string[], fits: (page: string[]) => boolean): string[][] {
+  const pages: string[][] = [];
+  let page: string[] = [];
+  const close = () => {
+    if (page.length) pages.push(page);
+    page = [];
+  };
+  for (const paragraph of paragraphs) {
+    if (fits([...page, paragraph])) {
+      page.push(paragraph);
+      continue;
+    }
+    close();
+    let words = paragraph.split(' ');
+    while (words.length) {
+      // o maior pedaço do parágrafo que cabe numa página (pelo menos uma palavra)
+      let lo = 1;
+      let hi = words.length;
+      while (lo < hi) {
+        const mid = Math.ceil((lo + hi) / 2);
+        if (fits([words.slice(0, mid).join(' ')])) lo = mid;
+        else hi = mid - 1;
+      }
+      page = [words.slice(0, lo).join(' ')];
+      words = words.slice(lo);
+      if (words.length) close();
+    }
+  }
+  close();
+  return pages;
+}
+
+/** Nome do campeonato que dá a carta: "Carta da GuanambiCup". */
+function titleOf(message: Message, episodes: EpisodeContent[]): string {
+  const ep = episodes.find((e) => e.letter.id === message.id);
+  return ep ? `Carta da ${ep.tournament.name}` : 'Carta';
+}
+
+/**
+ * CAMP-06: a carta com o remetente e o texto, página por página. O "Continuar" da última página
+ * chama `onDone`. `inFishing`: aberta por cima da pesca, deixa a fileira Pausar/Menu à mão.
+ */
+export function LetterView({ message, onDone, inFishing = false }: { message: Message; onDone: () => void; inFishing?: boolean }) {
+  const { episodes } = useServices();
+  const body = useRef<HTMLDivElement>(null);
+  const probe = useRef<HTMLDivElement>(null);
+  const [pages, setPages] = useState<string[][] | null>(null);
+  const [at, setAt] = useState(0);
+
+  useLayoutEffect(() => {
+    const paragraphs = message.text.split('\n\n');
+    const measure = () => {
+      const box = body.current;
+      const test = probe.current;
+      if (!box || !test) return;
+      test.style.width = `${box.clientWidth}px`;
+      const room = box.clientHeight;
+      const fits = (page: string[]) => {
+        test.replaceChildren(
+          ...page.map((text) => {
+            const p = document.createElement('p');
+            p.textContent = text;
+            return p;
+          }),
+        );
+        return test.scrollHeight <= room;
+      };
+      const next = paginate(paragraphs, fits);
+      test.replaceChildren();
+      setPages(next);
+      setAt((i) => Math.min(i, next.length - 1));
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    void document.fonts?.ready.then(measure); // a fonte do título muda a altura que sobra
+    return () => window.removeEventListener('resize', measure);
+  }, [message]);
+
+  const total = pages?.length ?? 1;
+  const last = at >= total - 1;
+
+  return (
+    <div
+      class={`overlay letter${inFishing ? ' overlay--fishing' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={titleOf(message, episodes)}
+    >
+      <article class="panel letter__paper">
+        <h2 class="title-2">{titleOf(message, episodes)}</h2>
+        <p class="letter__from">De: {message.from}</p>
+        <div class="letter__text" ref={body} data-testid="letter-text">
+          {pages?.[at]?.map((text, i) => (
+            <p key={i}>{text}</p>
+          ))}
+        </div>
+        <div class="letter__text letter__probe" ref={probe} aria-hidden="true" />
+        <p class="letter__page">
+          Página {at + 1} de {total}
+        </p>
+      </article>
+      <div class="overlay__actions">
+        <button type="button" class="btn btn--big" onClick={() => (last ? onDone() : setAt(at + 1))}>
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** CAMP-10: toda carta desbloqueada fica aqui para reler, uma por campeonato vencido. */
+export function Messages() {
+  const { episodes } = useServices();
+  const go = useNav();
+  const unlocked = useGame((s) => s.profile.messagesUnlocked);
+  const [open, setOpen] = useState<Message | null>(null);
+  const letters = episodes.filter((ep) => unlocked.includes(ep.letter.id));
+
+  return (
+    <section class="screen messages" aria-label="Mensagens">
+      <div class="screen__top">
+        <h1 class="title">Mensagens</h1>
+        <p class="subtitle">
+          {letters.length ? 'Cartas da família, uma por campeonato vencido.' : 'Nenhuma carta ainda. Vença um campeonato para receber a primeira.'}
+        </p>
+      </div>
+      <div class="screen__actions">
+        <div class="messages__grid">
+          {letters.map((ep) => (
+            <button key={ep.letter.id} type="button" class="btn btn--secondary" onClick={() => setOpen(ep.letter)}>
+              {ep.tournament.name}
+            </button>
+          ))}
+        </div>
+        <button type="button" class="btn" onClick={() => go('menu')}>
+          Voltar
+        </button>
+      </div>
+      {open && <LetterView message={open} onDone={() => setOpen(null)} />}
+    </section>
+  );
+}
+
+/**
+ * HIST-08, HIST-10: "Episódio N liberado!" ou o aviso final, depois da cena de encerramento.
+ * Espera a ficha, a classificação, a carta e a cena saírem da tela.
+ */
+export function EpisodeBanner() {
+  const { controller } = useServices();
+  const notice = useGame((s) => s.notice);
+  const busy = useGame(
+    (s) => s.fishing.phase.startsWith('Result_') || s.tournamentResult !== null || s.profile.story.pendingScene !== null,
+  );
+  if (notice === null || busy) return null;
+  const unlocked = /^Episódio \d+ liberado!$/.test(notice);
+  return (
+    <div class="overlay overlay--fishing banner" role="dialog" aria-modal="true" aria-label="Aviso">
+      <div class="banner__burst">
+        <p class="banner__text">{notice}</p>
+        {unlocked && <p class="banner__hint">Abra o Mapa, no Menu, para viajar.</p>}
+      </div>
+      <div class="overlay__actions">
+        <button type="button" class="btn btn--big" onClick={() => controller.dismissNotice()}>
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+}

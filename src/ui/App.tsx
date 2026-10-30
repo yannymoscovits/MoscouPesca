@@ -5,6 +5,7 @@ import { GameStoreContext, type GameStore } from '../app/store';
 import { Album } from './Album';
 import { BackContext, NavContext, ServicesContext, type ScreenId, type Services } from './context';
 import { FishingScreen } from './FishingScreen';
+import { Messages } from './Letter';
 import { MenuScreen } from './MenuScreen';
 import { RotateOverlay, SaveWarning } from './Overlays';
 import { Shop } from './Shop';
@@ -35,6 +36,7 @@ export function App({ store, services }: { store: GameStore; services: Services 
             {screen === 'shop' && <Shop />}
             {screen === 'album' && <Album />}
             {screen === 'tournament' && <TournamentLobby />}
+            {screen === 'messages' && <Messages />}
             {screen === 'settings' && <Settings />}
             <SaveWarning />
             <RotateOverlay />

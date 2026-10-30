@@ -14,6 +14,7 @@ import { createFishingRenderer } from '../render/fishingRenderer';
 import { useNav, useServices } from './context';
 import { DialogLayer } from './DialogBox';
 import { BitePrompt, ResultOverlay } from './FishCard';
+import { EpisodeBanner } from './Letter';
 import { currentPlace, formatKg, formatMoney } from './format';
 import { PauseOverlay } from './Overlays';
 import { RivalTaunts, Standings } from './Tournament';
@@ -71,6 +72,7 @@ export function FishingScreen() {
       <ResultOverlay />
       <Standings />
       <DialogLayer />
+      <EpisodeBanner />
       <RivalTaunts />
       <PauseOverlay />
     </section>

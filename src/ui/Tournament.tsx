@@ -12,6 +12,7 @@ import { score, type Standing } from '../domain/tournament';
 import { useNav, useServices } from './context';
 import { CharacterIntroCard, characterById, DialogBox, Portrait } from './DialogBox';
 import { currentPlace, formatKg } from './format';
+import { LetterView } from './Letter';
 
 /** O campeonato do torneio em andamento, ou o do episódio do local atual. */
 function tournamentOf(run: TournamentRun | null, episode: EpisodeContent, episodes: EpisodeContent[]): TournamentDef {
@@ -119,15 +120,28 @@ export function RivalTaunts() {
 
 const nameIn = (s: Standing) => (s.isPlayer ? 'Você' : characterById(s.character).name);
 
-/** CAMP-05, CAMP-09: classificação final, depois da ficha ou do aviso do 8º arremesso. */
+/**
+ * CAMP-05, CAMP-09: classificação final, depois da ficha ou do aviso do 8º arremesso. Na primeira
+ * vitória, o "Continuar" abre a carta da família (CAMP-06); a cena de encerramento vem depois dela.
+ */
 export function Standings() {
   const { controller, episodes } = useServices();
   const result = useGame((s) => s.tournamentResult);
   const profile = useGame((s) => s.profile);
   const showingCast = useGame((s) => s.fishing.phase.startsWith('Result_'));
+  // Só a primeira vitória traz o aviso do episódio (HIST-08, HIST-10); a revanche não reabre a carta.
+  const firstWin = useGame((s) => s.notice !== null);
+  const [reading, setReading] = useState(false);
   if (!result || showingCast) return null;
 
   const { episode } = currentPlace(profile, episodes);
+  if (reading && result.won) {
+    const done = () => {
+      setReading(false);
+      controller.dismissTournamentResult();
+    };
+    return <LetterView message={episode.letter} onDone={done} inFishing />;
+  }
   const place = result.standings.findIndex((s) => s.isPlayer) + 1;
   const taunt = episode.scenes.find((sc) => sc.id === episode.defeatScene)?.lines[0];
 
@@ -152,7 +166,11 @@ export function Standings() {
       </div>
       <div class="overlay__actions">
         {result.won ? (
-          <button type="button" class="btn btn--big" onClick={() => controller.dismissTournamentResult()}>
+          <button
+            type="button"
+            class="btn btn--big"
+            onClick={() => (firstWin ? setReading(true) : controller.dismissTournamentResult())}
+          >
             Continuar
           </button>
         ) : (

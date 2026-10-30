@@ -1194,3 +1194,90 @@ ul {
 .standings__taunt {
   font-style: italic;
 }
+
+/* ---------- Carta da família, mensagens e aviso do episódio ---------- */
+
+/* A carta ocupa a tela toda acima do "Continuar"; o texto nunca rola (ACES-09). */
+.letter {
+  justify-content: stretch;
+}
+
+.letter__paper {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.letter__from {
+  font-weight: 700;
+}
+
+.letter__text {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  white-space: pre-line;
+}
+
+.letter__text p + p {
+  margin-top: 12px;
+}
+
+/* Cópia invisível do texto para medir quanto cabe em cada página. */
+.letter__probe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  flex: none;
+  height: auto;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.letter__page {
+  align-self: flex-end;
+  font-size: var(--text-min);
+  font-weight: 700;
+}
+
+.messages__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* "Episódio N liberado!": estouro amarelo no meio da tela. */
+.banner {
+  justify-content: center;
+}
+
+.banner__burst {
+  display: grid;
+  gap: 12px;
+  margin-top: auto;
+  padding: 28px 20px;
+  border: 4px solid var(--outline);
+  border-radius: 18px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 8px 0 var(--outline);
+  text-align: center;
+  transform: rotate(-2deg);
+  animation: entrar 0.35s ease-out;
+}
+
+.banner__text {
+  font: 700 36px / 1.15 var(--font-title);
+}
+
+.banner__hint {
+  font-weight: 700;
+}
+
+.banner .overlay__actions {
+  margin-top: auto;
+}

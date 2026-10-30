@@ -224,6 +224,10 @@ test('CAMP-05: na vitória, a classificação põe o jogador em 1º e a cena de 
 
   await standings(page).getByRole('button', { name: 'Continuar' }).click();
   await expect(standings(page)).toHaveCount(0);
+  // Primeira vitória: antes da cena, a carta da família (T44, CAMP-06).
+  const letter = page.getByRole('dialog', { name: 'Carta da GuanambiCup' });
+  await expect(letter).toBeVisible();
+  while (await letter.count()) await letter.getByRole('button', { name: 'Continuar' }).click();
   await expect(dialog(page)).toContainText(ep1.scenes.find((s) => s.id === ep1.chapter.closingScene)!.lines[0].text);
 });
 

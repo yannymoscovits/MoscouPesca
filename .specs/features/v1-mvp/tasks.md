@@ -1270,11 +1270,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: primeira vitória abre a carta com remetente e texto; a última página leva ao encerramento e ao "Episódio 2 liberado!" (CAMP-06, HIST-08)
+- [x] e2e: primeira vitória abre a carta com remetente e texto; a última página leva ao encerramento e ao "Episódio 2 liberado!" (CAMP-06, HIST-08)
 - [ ] e2e: vitória na Copa Adilson Moscovits leva ao encerramento final e a "A pescaria continua: todos os lugares seguem abertos" (HIST-10)
-- [ ] e2e: carta longa é dividida em páginas, nenhuma com rolagem vertical
-- [ ] e2e: a carta aparece em "Mensagens" e reabre igual depois de recarregar (CAMP-10)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: carta longa é dividida em páginas, nenhuma com rolagem vertical
+- [x] e2e: a carta aparece em "Mensagens" e reabre igual depois de recarregar (CAMP-10)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

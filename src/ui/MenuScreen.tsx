@@ -11,7 +11,7 @@ const ITEMS: { label: string; to?: ScreenId }[] = [
   { label: 'Loja', to: 'shop' },
   { label: 'Álbum', to: 'album' },
   { label: 'Troféus' },
-  { label: 'Mensagens' },
+  { label: 'Mensagens', to: 'messages' },
   { label: 'Campeonato', to: 'tournament' },
   { label: 'Ajustes', to: 'settings' },
 ];
