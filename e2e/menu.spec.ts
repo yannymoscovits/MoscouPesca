@@ -46,7 +46,7 @@ const DESTINATIONS: { button: string; heading: string | null }[] = [
   { button: 'Álbum', heading: 'Álbum' },
   { button: 'Troféus', heading: null }, // sala de troféus: T63
   { button: 'Mensagens', heading: null },
-  { button: 'Campeonato', heading: null },
+  { button: 'Campeonato', heading: 'GuanambiCup' },
   { button: 'Ajustes', heading: 'Ajustes' },
 ];
 

@@ -1099,3 +1099,98 @@ ul {
 .album-cell__record {
   font-size: var(--text-min);
 }
+
+/* ---------- Campeonato: lobby e classificação ---------- */
+
+.lobby__top {
+  gap: 10px;
+}
+
+.lobby__status {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.lobby__locked {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+}
+
+.lobby__lock {
+  font: 700 28px / 1.2 var(--font-title);
+}
+
+.lobby__rules {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lobby__rivals {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.lobby__rival {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lobby__rival .portrait {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 56px;
+  box-shadow: none;
+}
+
+.lobby__rival .portrait__initials {
+  font-size: 20px;
+}
+
+.lobby__rival .portrait__face {
+  display: none;
+}
+
+.lobby__epithet {
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.standings__panel {
+  display: grid;
+  gap: 10px;
+}
+
+.standings__list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.standings__row {
+  display: grid;
+  grid-template-columns: 2.5em 1fr auto;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+/* A linha do jogador em destaque: tinta escura sobre amarelo, 11,7:1. */
+.standings__row--you {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.standings__taunt {
+  font-style: italic;
+}

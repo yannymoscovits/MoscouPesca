@@ -24,7 +24,7 @@ export function useServices(): Services {
 }
 
 /** Telas do jogo. A tela inicial abre sempre primeiro (INST-01). */
-export type ScreenId = 'title' | 'difficulty' | 'fishing' | 'settings' | 'menu' | 'shop' | 'album';
+export type ScreenId = 'title' | 'difficulty' | 'fishing' | 'settings' | 'menu' | 'shop' | 'album' | 'tournament';
 
 export const NavContext = createContext<(to: ScreenId) => void>(() => {});
 

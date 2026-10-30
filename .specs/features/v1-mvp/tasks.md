@@ -1246,12 +1246,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: antes do último objetivo, torneio bloqueado com o objetivo que falta (CAMP-01)
-- [ ] e2e: ao entrar no campeonato do Episódio 1, "GuanambiCup", regras e os 3 rivais; no Episódio 5, "Copa Adilson Moscovits" (CAMP-02)
-- [ ] e2e: provocações de Ricardo, Bem e Kris antes do primeiro arremesso (HUMOR-04)
-- [ ] e2e: após 8 arremessos, classificação com 4 linhas (CAMP-05)
-- [ ] e2e: derrota mostra colocação e "Tentar de novo", e o saldo não muda ao repetir (CAMP-09)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: antes do último objetivo, torneio bloqueado com o objetivo que falta (CAMP-01)
+- [x] e2e: ao entrar no campeonato do Episódio 1, "GuanambiCup", regras e os 3 rivais; no Episódio 5, "Copa Adilson Moscovits" (CAMP-02)
+- [x] e2e: provocações de Ricardo, Bem e Kris antes do primeiro arremesso (HUMOR-04)
+- [x] e2e: após 8 arremessos, classificação com 4 linhas (CAMP-05)
+- [x] e2e: derrota mostra colocação e "Tentar de novo", e o saldo não muda ao repetir (CAMP-09)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

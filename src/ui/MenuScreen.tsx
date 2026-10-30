@@ -12,7 +12,7 @@ const ITEMS: { label: string; to?: ScreenId }[] = [
   { label: 'Álbum', to: 'album' },
   { label: 'Troféus' },
   { label: 'Mensagens' },
-  { label: 'Campeonato' },
+  { label: 'Campeonato', to: 'tournament' },
   { label: 'Ajustes', to: 'settings' },
 ];
 

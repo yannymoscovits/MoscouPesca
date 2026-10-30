@@ -16,6 +16,7 @@ import { DialogLayer } from './DialogBox';
 import { BitePrompt, ResultOverlay } from './FishCard';
 import { currentPlace, formatKg, formatMoney } from './format';
 import { PauseOverlay } from './Overlays';
+import { RivalTaunts, Standings } from './Tournament';
 import { TutorialCoach } from './TutorialCoach';
 
 export function FishingScreen() {
@@ -68,7 +69,9 @@ export function FishingScreen() {
       </div>
       <Hud />
       <ResultOverlay />
+      <Standings />
       <DialogLayer />
+      <RivalTaunts />
       <PauseOverlay />
     </section>
   );

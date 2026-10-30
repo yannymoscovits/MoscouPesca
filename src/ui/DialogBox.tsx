@@ -121,14 +121,15 @@ export function CharacterIntroCard({ character, onClose }: { character: Characte
 
 /**
  * A cena pendente da história, fala por fala (HIST-01, HIST-05). Quem aparece pela primeira vez
- * ganha o cartão antes da fala. Com a ficha ou o aviso do arremesso na tela, a cena espera por ele.
+ * ganha o cartão antes da fala. Com a ficha ou o aviso do arremesso na tela, a cena espera por ele;
+ * com a classificação do torneio na tela, também (a cena da vitória vem depois dela).
  */
 export function DialogLayer() {
   const { controller, episodes } = useServices();
   const sceneId = useGame((s) => s.profile.story.pendingScene);
   const index = useGame((s) => s.dialogLine);
   const introduced = useGame((s) => s.profile.charactersIntroduced);
-  const showingResult = useGame((s) => s.fishing.phase.startsWith('Result_'));
+  const showingResult = useGame((s) => s.fishing.phase.startsWith('Result_') || s.tournamentResult !== null);
   if (sceneId === null || showingResult) return null;
 
   const line = episodes.flatMap((ep) => ep.scenes).find((sc) => sc.id === sceneId)?.lines[index];
