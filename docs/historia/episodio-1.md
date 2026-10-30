@@ -1,4 +1,4 @@
-# Capítulo 1: Tirando a Ferrugem
+# Episódio 1: Tirando a Ferrugem
 
 > Rascunho para a família revisar. Cada personagem tem um **apelido** (aparece no cartão de apresentação) e as falas indicam a **expressão** do retrato entre colchetes. Pode trocar tudo.
 
@@ -9,10 +9,10 @@
 | Adilson Moscovits | O protagonista | ADILSON MOSCOVITS: *O Maior Contador de Causos de Pescaria* |
 | Jane | Esposa do Adilson | JANE: *A Que Sempre Teve Razão* |
 | Lavínia | Filha; aparece como piranha. Sempre chama o Adilson de **ADILSINHO** e aparece em todo episódio pra pirraçar ele | LAVÍNIA: *A Piranha Mais Temida da Represa* |
-| Edvan | Cunhado, dono da loja; cabelo e barba brancos (sem foto) | EDVAN: *O Cunhado que Nunca Dá Desconto* |
-| Tio Ricardo | Rival; boêmio, toca bongô | TIO RICARDO: *O Rei do Bongô* |
+| Edvaldo | Cunhado, dono da loja; cabelo e barba brancos (sem foto) | EDVALDO: *O Cunhado que Nunca Dá Desconto* |
+| Ricardo | Rival; boêmio, toca bongô | RICARDO: *O Rei do Bongô* |
 | Bem | Rival; sogra da filha, gosta de cerveja | BEM: *A Rainha da Cerveja Gelada* |
-| Tia Kris | Rival; vive mandando ele parar de tomar líquido, fala "prendrive" | TIA KRIS: *O Passago de Fogo* |
+| Kris | Rival; vive mandando ele parar de tomar líquido, fala "prendrive" | KRIS: *O Passago de Fogo* |
 
 ## Local
 
@@ -46,11 +46,11 @@
 
 **Objetivo: comprar a Vara de Fibra.**
 
-### Cena 4: A loja do Edvan
+### Cena 4: A loja do Edvaldo
 
-- **Edvan** [rindo]: Essa vara de bambu é do tempo de Cabral, seu Adilson.
-- **Edvan** [normal]: Pra você eu faço preço de família: o mesmo de todo mundo.
-- **Edvan** [normal]: Ah, e se quiser pegar aquela piranha atrevida, tenho Isca de Carne aqui.
+- **Edvaldo** [rindo]: Essa vara de bambu é do tempo de Cabral, seu Adilson.
+- **Edvaldo** [normal]: Pra você eu faço preço de família: o mesmo de todo mundo.
+- **Edvaldo** [normal]: Ah, e se quiser pegar aquela piranha atrevida, tenho Isca de Carne aqui.
 
 **Objetivo: pegar a Piranha Lavínia** (só morde a Isca de Carne).
 
@@ -60,31 +60,58 @@
 - **Ficha**: *Lavínia, a Piranha · 0,80 kg · Valor: inestimável.*
 - **Adilson** [rindo]: Agora sim, tô pronto.
 
+**Objetivo: comprar a Vara de Carbono.**
+
+### Cena 6: A lenda de Ceraíma
+
+- **Edvaldo** [normal]: Carbono! Agora sim, seu Adilson. Com essa dá pra tentar o bicho.
+- **Adilson** [chocado]: Que bicho?
+- **Edvaldo** [rindo]: O Pirarucu de Ceraíma. Dizem que já saiu um de 90 quilos pelo sangradouro.
+- **Lavínia** [rindo]: Esse aí nem eu encaro, Adilsinho. Boa sorte!
+
+**Objetivo: pegar o Pirarucu de Ceraíma** (raro).
+
+### Cena 7: Pegou a lenda
+
+- **Adilson** [rindo]: Agora quero ver alguém dizer que é causo!
+- **Jane** [chocado]: Tira foto, tira foto! Senão ninguém acredita.
+- **Lavínia** [bravo]: Sorte de principiante, Adilsinho.
+
+**Objetivo: registrar no álbum todas as espécies de Ceraíma.**
+
+### Cena 8: Álbum completo
+
+- **Jane** [rindo]: Todos os peixes da represa no álbum. Agora pode se inscrever, campeão.
+
 **Objetivo: se inscrever na GuanambiCup.**
 
-### Cena 6: Os rivais (antes do primeiro arremesso)
+### Cena 9: Os rivais (antes do primeiro arremesso)
 
-- **Tio Ricardo** [rindo]: Eu pesco no ritmo, Adilson. Tum-tum-ta! Os peixes vêm dançando.
+- **Ricardo** [rindo]: Eu pesco no ritmo, Adilson. Tum-tum-ta! Os peixes vêm dançando.
 - **Bem** [rindo]: Trouxe o isopor. Peixe dentro? Não, cerveja.
-- **Tia Kris** [bravo]: Adilson, nada de líquido hoje, hein! As regras do torneio tão todas nesse prendrive.
+- **Kris** [bravo]: Adilson, nada de líquido hoje, hein! As regras do torneio tão todas nesse prendrive.
 
-### Cena 7: Vitória
+### Cena 10: Vitória
 
 - **Jane** [rindo]: Tá bom, você ganhou. Mas o peixe de 5 quilos daquele causo continua sendo mentira.
 - **Carta da família** (escrita por vocês)
-- *Capítulo 2 em breve*
+- *Episódio 2 liberado: Jacuípe!*
 
 ### Se perder o torneio
 
-- **Tio Ricardo** [rindo]: Faltou ritmo, Adilson! Bora de novo?
+- **Ricardo** [rindo]: Faltou ritmo, Adilson! Bora de novo?
 
 ## Fichas engraçadas (rascunho)
 
+Peixes típicos dos açudes do sertão baiano. Não achei uma lista oficial da Barragem de Ceraíma: a família confirma quais ele pega lá.
+
 | Peixe | Descrição |
 | ----- | --------- |
-| Lambari | Pequeno, rápido e metido. Acha que é tubarão. |
 | Tilápia | A influencer da represa: aparece em toda foto de pescaria. |
 | Traíra | Cara de brava, dente de brava, é brava mesmo. Cuidado com o dedo. |
-| Carpa | Grandona e preguiçosa. Briga pouco, mas pesa muito. |
-| Tucunaré | O craque da represa. Raro, forte e convencido. |
-| Piranha Lavínia | Rouba isca, fala demais e jura que deixou você ganhar. |
+| Curimatã | Vive no fundo comendo lama e ainda assim se acha chique. |
+| Piau | Rouba isca com uma educação que dá até raiva. |
+| Tambaqui | Gordinho, simpático e mais forte do que parece. |
+| Tucunaré | O craque da represa: forte, bonito e convencido. |
+| Pirarucu de Ceraíma (raro) | A lenda: dizem que um de 90 quilos já saiu pelo sangradouro. Ninguém acredita até ver. |
+| Piranha Lavínia | Rouba isca, fala demais e jura que deixou o Adilsinho ganhar. |

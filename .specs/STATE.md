@@ -26,13 +26,21 @@
 - **Date**: 2026-10-30
 - **Status**: active
 
+### AD-004
+- **Decision**: Cada episódio é um pacote de conteúdo em `src/content/episodes/epN.ts` (local, zonas, espécies, varas, iscas, roteiro, campeonato e carta), sobre o mesmo domínio; o progresso por episódio fica no perfil.
+- **Reason**: O jogo tem 5 episódios entregues juntos e pode ganhar outros depois; episódio novo deve ser só conteúdo novo.
+- **Trade-off**: Mecânica exclusiva de um episódio exige mudar o domínio para todos.
+- **Scope**: Todos os episódios, campeonatos e cartas.
+- **Date**: 2026-10-30
+- **Status**: active
+
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Tasks (54 tarefas em 9 fases, aguardando aprovação do usuário)
-- **Completed**: spec e design aprovados; tasks.md validado (0 erros); roteiro do Capítulo 1 e carta do Capítulo 2 em `docs/historia/`; fotos em `Fotos/` (fora do git)
-- **In-progress** (file:line): none
-- **Next step**: Com as tarefas aprovadas, ler `references/implement.md` e começar pela T1 (lotes de sub-agentes se o usuário aceitar).
-- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (necessário só na Fase 9); falta foto do Tio Ricardo; carta da GuanambiCup pendente.
-- **Uncommitted files**: `.specs/` inteiro (repositório git ainda não criado)
-- **Branch**: nenhuma (git ainda não iniciado; primeira branch será `feat/v1-mvp`)
+- **Phase / Task**: Execute, Fase 2 (lote 2: T6 a T12 com sub-agente)
+- **Completed**: Fase 1 (T1 `98bd3d1`, T2 `be74473`, T3 `07685f6`, T4 `79bc847`, T5 `b52799a`); planejamento ampliado para 5 episódios (73 tarefas, 12 fases)
+- **In-progress** (file:line): lote 2 rodando em sub-agente
+- **Next step**: Quando o lote 2 terminar, conferir o resumo e disparar o lote 3 (Fase 3).
+- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (necessário só nas fases de arte); falta foto do Ricardo; cartas dos 5 campeonatos pendentes; família confirmar os peixes de Ceraíma e de Jacuípe.
+- **Uncommitted files**: none
+- **Branch**: `feat/v1-mvp`

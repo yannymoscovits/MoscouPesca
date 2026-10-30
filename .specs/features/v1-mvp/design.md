@@ -8,7 +8,7 @@
 
 ## Architecture Overview
 
-O jogo é um site estático instalável (PWA), sem servidor. Ele tem três camadas com uma regra de dependência só: **a interface e o desenho dependem do domínio; o domínio não depende de nada do navegador.**
+O jogo é um site estático instalável (PWA), sem servidor, com 5 episódios. Cada episódio é um pacote de conteúdo (local, espécies, equipamentos, roteiro, campeonato e carta) que roda sobre o mesmo domínio. Ele tem três camadas com uma regra de dependência só: **a interface e o desenho dependem do domínio; o domínio não depende de nada do navegador.**
 
 - **Domínio (TypeScript puro):** máquina de estados da pesca, tensão, loja, história, torneio, álbum e salvamento. Recebe o sorteio (RNG com semente) e o tempo (`dt`) por injeção, o que torna tudo determinístico e testável com Vitest.
 - **Interface (Preact, HTML/CSS):** todas as telas, textos, botões, HUD, diálogos, cartas e avisos. Por ser DOM, as regras de acessibilidade (ACES-05 a ACES-08) são medidas automaticamente no Playwright.
@@ -19,7 +19,7 @@ graph TD
     Touch[Toque / Pointer Events] --> Input[InputController]
     Input --> Game[GameController]
     Loop[GameLoop rAF + dt] --> Game
-    Game --> Domain[Domínio TS puro<br/>fishing · shop · story · tournament · album]
+    Game --> Domain[Domínio TS puro<br/>fishing · shop · story · world · tournament · album]
     Domain --> Store[GameStore<br/>estado + subscribe]
     Store --> UI[UI Preact<br/>telas · HUD · diálogos]
     Store --> Render[FishingRenderer<br/>Canvas 2D]
@@ -140,11 +140,22 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
 - **Purpose**: Avançar cenas e objetivos do capítulo a partir de eventos do jogo.
 - **Location**: `src/domain/story.ts`
 - **Interfaces**:
-  - `onEvent(p: StoryProgress, e: GameEvent, chapter: Chapter): { progress: StoryProgress; sceneToShow?: SceneId }` (HIST-05)
-  - `currentObjective(p: StoryProgress, chapter: Chapter): Objective | null` (HIST-04)
-  - `isTournamentUnlocked(p: StoryProgress, chapter: Chapter): boolean` (CAMP-01)
-- **Dependencies**: conteúdo do capítulo
+  - `onEvent(p: StoryProgress, e: GameEvent, ep: Episode): { progress: StoryProgress; sceneToShow?: SceneId }`: objetivos e cenas do episódio atual (HIST-05, HIST-08 a HIST-10)
+  - `currentObjective(p: StoryProgress, ep: Episode): Objective | null` (HIST-04)
+  - `isTournamentUnlocked(p: StoryProgress, ep: Episode): boolean` (CAMP-01)
+- **Dependencies**: conteúdo do episódio
 - `GameEvent` = `Caught{species, kg}` · `Bought{item}` · `TournamentWon{id}` · `GameStarted`
+
+### Domain: world
+
+- **Purpose**: Controlar quais episódios e locais estão liberados, para onde o jogador pode ir e o que a loja oferece.
+- **Location**: `src/domain/world.ts`
+- **Interfaces**:
+  - `onChampionshipWon(p: Profile, ep: EpisodeId): Profile`: libera o episódio seguinte, com todos os seus locais, uma vez só (EPI-02, EPI-08)
+  - `isUnlocked(p: Profile, ep: EpisodeId): boolean` (EPI-03)
+  - `travel(p: Profile, location: LocationId): Profile`: só para local liberado; guarda o último local (EPI-04, EPI-07)
+  - `shopItems(p: Profile, all: Episode[]): { rods: Rod[]; baits: Bait[] }`: só dos episódios liberados (EQUIP-09)
+- **Dependencies**: conteúdo dos episódios
 
 ### Domain: tournament
 
@@ -176,6 +187,15 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
 - **Location**: `src/domain/album.ts`
 - **Interfaces**:
   - `record(a: Album, species: SpeciesId, kg: number): { album: Album; isNewRecord: boolean }` (ALBUM-01, ALBUM-02)
+
+### Domain: typical player simulation
+
+- **Purpose**: Simular um jogador típico do primeiro arremesso à vitória de cada episódio, para calibrar a progressão longa.
+- **Location**: `src/domain/sim/typicalPlayer.ts` (usado só por testes)
+- **Interfaces**:
+  - `simulateEpisode(ep: Episode, start: Profile, seed: number): { minutes: number; achievements: { atMinute: number; kind: string }[]; tournamentAttempts: number }`
+- O jogador típico arremessa nas zonas da isca equipada, segura até o amarelo e solta no vermelho, compra a melhor vara que o saldo permite e entra no campeonato assim que ele libera. O tempo de cada arremesso inclui voo, espera, briga e ficha (cerca de 30 a 45 s).
+- **Dependencies**: `fishing`, `shop`, `story`, `tournament`, `world`, `rng`
 
 ### SaveService
 
@@ -256,11 +276,15 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
   - `RotateOverlay` (ACES-10).
   - `UpdateNotice` (INST-07).
   - `SaveWarning`.
+  - `MapScreen`: os locais dos 5 episódios, liberados e com cadeado; o Episódio 2 mostra seus dois locais (EPI-03, EPI-04, EPI-08).
+  - `TrophyRoom`: os 5 troféus, conquistados e em silhueta (TROF-01).
+  - `EpisodeBanner`: "Episódio N liberado!" e o encerramento final (HIST-08, HIST-10).
 - **Estilo**: tokens de cor em `src/ui/theme.css`, com pares de contraste ≥ 4,5:1. Títulos em fonte pixel legível (Pixelify Sans, licença OFL, embutida para funcionar offline) e textos corridos em fonte sem serifa do sistema a 20 px. Botões com no mínimo 56 × 56 px, todos na metade de baixo da tela.
 
 ### Conteúdo
 
-- **Location**: `src/content/`: `chapter1.ts`, `species.ts`, `gear.ts`, `tournament1.ts`, `messages.ts`, `characters.ts`
+- **Location**: `src/content/episodes/ep1.ts` a `ep5.ts` (um pacote por episódio: local, zonas, espécies, varas, iscas, roteiro, campeonato e carta), `src/content/characters.ts` (elenco compartilhado) e `src/content/index.ts` (junta os 5).
+- Regras de conteúdo com teste: a Lavínia nunca diz "Adilson" nem "pai" e chama ele de "Adilsinho" em todos os episódios (HUMOR-07, HUMOR-08); cada episódio tem 6 a 8 objetivos, um deles da espécie rara e outro do álbum completo (PROG-02, PROG-03).
 - Arquivos TypeScript com `satisfies` contra os tipos de `src/content/types.ts`, para o compilador pegar conteúdo malformado. Textos pendentes usam `{{PENDENTE}}`.
 
 ### Scripts de publicação
@@ -285,7 +309,13 @@ interface Profile {
   rods: { owned: RodId[]; equipped: RodId }
   baits: { owned: BaitId[]; equipped: BaitId }
   settings: { difficulty: Difficulty | null; vibration: boolean }  // null = ainda não perguntado
-  story: { chapter: 1; objectiveIndex: number; scenesSeen: SceneId[]; pendingScene: SceneId | null }
+  story: {
+    episodes: Partial<Record<EpisodeId, { objectiveIndex: number; won: boolean }>>
+    scenesSeen: SceneId[]
+    pendingScene: SceneId | null
+  }
+  unlockedEpisodes: EpisodeId[]      // começa em [1] (EPI-02)
+  currentLocation: LocationId        // último local de pesca (EPI-07)
   tutorialDone: boolean
   charactersIntroduced: CharacterId[]  // cartões de apresentação já mostrados
   tournament: TournamentRun | null   // torneio em andamento
@@ -314,9 +344,10 @@ interface Species {
   baits: BaitId[]                    // iscas que aceita
   rarity: number                     // peso no sorteio da zona
   description: string                // texto engraçado da ficha (HUMOR-03)
+  rare: boolean                      // espécie rara do local (PROG-03)
 }
-interface Rod { id: RodId; name: string; price: number; force: 1|2|3|4|5; reach: 1|2|3|4|5 }
-interface Bait { id: BaitId; name: string; price: number }
+interface Rod { id: RodId; name: string; price: number; force: number; reach: number; episode: EpisodeId }  // força e alcance de 1 a 10
+interface Bait { id: BaitId; name: string; price: number; episode: EpisodeId }
 interface Zone { id: string; polygon: Point[]; species: SpeciesId[] }
 
 type Expression = 'normal' | 'rindo' | 'bravo' | 'chocado'
@@ -332,7 +363,19 @@ interface Objective {
   done: (e: GameEvent, p: Profile) => boolean
   sceneOnDone: SceneId
 }
-interface Chapter { id: 1; title: string; openingScene: SceneId; objectives: Objective[]; closingScene: SceneId }
+interface Chapter { title: string; openingScene: SceneId; objectives: Objective[]; closingScene: SceneId }
+
+type EpisodeId = 1 | 2 | 3 | 4 | 5
+interface Location { id: LocationId; name: string; background: string; zones: Zone[] }
+interface Episode {
+  id: EpisodeId
+  locations: Location[]               // 1 ou 2; o Episódio 2 tem Rio Jacuípe e Ponte da Cetrel (EPI-08)
+  species: Species[]
+  rods: Rod[]; baits: Bait[]
+  chapter: Chapter
+  tournament: TournamentDef
+  letter: Message
+}
 
 interface TournamentDef {
   id: TournamentId; name: string     // "GuanambiCup"
@@ -369,10 +412,12 @@ Cada teste nasce de um AC da spec e verifica o resultado definido nela, nunca a 
 
 | Camada | Ferramenta | Cobre |
 | ------ | ---------- | ----- |
-| Domínio | Vitest com RNG de semente fixa e `dt` controlado | PESCA-01 a PESCA-05, PESCA-08 a PESCA-17, TUTO-01, TUTO-03 a TUTO-08, EQUIP-*, HIST-01, HIST-04 a HIST-06, HIST-08, CAMP-01, CAMP-04, CAMP-06 a CAMP-09, SAVE-04 a SAVE-09, ALBUM-*, ACES-03 |
-| Balanceamento | Vitest simulando um "jogador" que segura até o amarelo e solta no vermelho, em 200 sementes | Duração da briga de 8 a 40 s; torneio vencível com a Fibra (Success Criteria) |
+| Domínio | Vitest com RNG de semente fixa e `dt` controlado | EPI-02, EPI-05, EPI-07, EQUIP-09, HIST-09, HIST-10, PESCA-01 a PESCA-05, PESCA-08 a PESCA-17, TUTO-01, TUTO-03 a TUTO-08, EQUIP-*, HIST-01, HIST-04 a HIST-06, HIST-08, CAMP-01, CAMP-04, CAMP-06 a CAMP-09, SAVE-04 a SAVE-09, ALBUM-*, ACES-03 |
+| Balanceamento da briga | Vitest simulando um "jogador" que segura até o amarelo e solta no vermelho, em 200 sementes | Duração da briga de 8 a 40 s (Success Criteria) |
+| Progressão | Vitest com o jogador típico (`sim/typicalPlayer.ts`) em 50 sementes por episódio | PROG-01, PROG-04, PROG-05 |
+| Conteúdo | Vitest sobre os 5 pacotes de episódio | EPI-01, EPI-06, PROG-02, PROG-03, EQUIP-01, EQUIP-02, HUMOR-07, HUMOR-08 |
 | Scripts | Vitest | HIST-07 (marcador pendente), INST-08 (tamanho) |
-| Navegador | Playwright, perfil Pixel 7, com ganchos de teste (`window.__mf`) ativos só no build de teste | INST-01 a INST-06, INST-09, PESCA-06, PESCA-07, TUTO-02, TUTO-07, TUTO-09, HUMOR-*, SAVE-01 a SAVE-03, SAVE-10, CAMP-02, CAMP-03, CAMP-05, CAMP-10, ACES-01, ACES-02, ACES-04 a ACES-10, TELA-* |
+| Navegador | Playwright, perfil Pixel 7, com ganchos de teste (`window.__mf`) ativos só no build de teste | EPI-03, EPI-04, TROF-01, INST-01 a INST-06, INST-09, PESCA-06, PESCA-07, TUTO-02, TUTO-07, TUTO-09, HUMOR-*, SAVE-01 a SAVE-03, SAVE-10, CAMP-02, CAMP-03, CAMP-05, CAMP-10, ACES-01, ACES-02, ACES-04 a ACES-10, TELA-* |
 | Manual (UAT) | Android do usuário | Instalação real, modo avião, sensação da briga |
 
 ---
@@ -383,6 +428,8 @@ Cada teste nasce de um AC da spec e verifica o resultado definido nela, nunca a 
 | ------- | -------------------- | ------ | ---------- |
 | Versões novas: Vite 8, TypeScript 7, Preact 11, `vite-plugin-pwa` 2, Vitest 5 | `package.json` (a criar) | Incompatibilidade entre elas trava o build | A primeira tarefa monta o esqueleto e roda build, teste e PWA juntos; se falhar, fixar a major anterior da peça problemática |
 | Arte do PixelLab pode demorar ou sair inconsistente | `src/assets/` | Atrasa a v1 | O código usa formas coloridas provisórias até a arte chegar; geração de arte é uma fase própria, em paralelo |
+| Volume de arte dos 5 episódios: 5 cenários, cerca de 30 espécies, retratos da família e dos personagens locais | `src/assets/` | Semanas a mais e risco de passar de 5 MB | Uma tarefa de arte por cenário e por conjunto de peixes; PNG em paleta reduzida; `check:size` no gate de build |
+| Simulação pode não refletir o ritmo do Adilson | `src/domain/sim/` | Episódio rápido ou lento demais para ele | Jogador típico conservador (reage devagar, joga no Tranquilo); preços e objetivos ficam no conteúdo e podem ser ajustados por atualização depois que ele jogar |
 | Volume de retratos: 7 personagens × 4 expressões = 28 retratos | `src/assets/portraits/` | Rostos diferentes entre expressões da mesma pessoa | Gerar o retrato "normal" primeiro e derivar as outras expressões dele com edição de imagem do PixelLab; se não ficar bom, cair para 2 expressões (normal e rindo) |
 | WhatsApp abrindo o link no navegador interno | Platform/install | Sem `beforeinstallprompt` | `InstallHelp` (INST-03) instrui "Abrir no Chrome" e o menu ⋮ |
 | Android encerrando o PWA em segundo plano | SaveService | Perda de progresso | Salvar após cada evento (SAVE-04); briga interrompida volta para `Idle` |
@@ -401,6 +448,7 @@ Cada teste nasce de um AC da spec e verifica o resultado definido nela, nunca a 
 | Arquitetura | Domínio TS puro + UI Preact + Canvas 2D só na água | Escolhida pelo usuário: texto nítido, acessibilidade testável, pacote pequeno (AD-002) |
 | Estado | `GameStore` próprio com `subscribe` e hook | Evita mais uma dependência; o estado é pequeno |
 | Conteúdo | Arquivos `.ts` com `satisfies` | O compilador barra conteúdo malformado; ainda é fácil de editar (AD-003) |
+| Organização do conteúdo | Um pacote por episódio em `src/content/episodes/epN.ts` | Episódio novo é só um arquivo novo, sem mexer no domínio (AD-004) |
 | Atualização do PWA | `registerType: 'prompt'`, aplicada só em tela segura | `autoUpdate` recarregaria no meio de uma briga |
 | Resolução da cena | Escala inteira fixa (2× ou 3×), largura lógica derivada da tela, mínimo 180 px | Pixel art nítida sem distorção em celulares de 360 a 412 px de largura |
 | Fontes | Pixelify Sans nos títulos, sem serifa do sistema no texto, embutidas | Clima retrô sem sacrificar a leitura de quem está deitado e cansado |

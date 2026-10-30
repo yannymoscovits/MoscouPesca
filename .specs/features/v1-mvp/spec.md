@@ -1,18 +1,18 @@
 # MoscouFishing v1 Specification
 
-**Status**: Approved (2026-10-30)
+**Status**: Approved (2026-10-30) · ampliação para 5 episódios em revisão (2026-10-30)
 
 > Jogo de pesca para celular, presente para Adilson Moscovits.
 > Critérios de aceite em EARS. As palavras-chave ficam em inglês (WHEN, IF, THEN, WHILE, WHERE, SHALL) para a validação automática; o resto em português.
 
 ## Problem Statement
 
-Adilson Moscovits está internado na UTI aguardando um implante cardíaco e sempre gostou dos jogos de pesca de Game Boy. A família quer dar a ele um jogo de pesca próprio, com a história dele, campeonatos com o nome dele e mensagens da família, que ele consiga abrir e jogar deitado, com uma mão, num celular Android. O jogo precisa chegar às mãos dele em poucos dias. Por isso a v1 entrega o ciclo completo (pescar, equipar, história, campeonato, mensagem) em um único local, e o resto chega por atualização no mesmo link.
+Adilson Moscovits está internado na UTI aguardando um implante cardíaco e sempre gostou dos jogos de pesca de Game Boy. A família quer dar a ele um jogo de pesca próprio, com a história dele, campeonatos com o nome dele e mensagens da família, que ele consiga abrir e jogar deitado, com uma mão, num celular Android. Ele gosta de passar horas pescando. Por isso a v1 traz 5 episódios, cada um com lugar, peixes, equipamentos, história, campeonato e carta da família próprios, numa progressão longa (2 a 3 horas por episódio) e com pesca livre sem fim depois. A família decidiu entregar os 5 episódios juntos.
 
 ## Goals
 
 - [ ] Adilson instala o jogo a partir de um link do WhatsApp em menos de 1 minuto (com ajuda de um familiar na primeira vez).
-- [ ] O ciclo completo da v1 (Capítulo 1, vitória na GuanambiCup e leitura da mensagem) cabe em 20 a 40 minutos de jogo, divididos em sessões curtas.
+- [ ] Cada um dos 5 episódios leva de 2 a 3 horas de jogo até vencer o campeonato (10 a 15 horas no total), em sessões curtas, e a pesca livre continua depois do fim.
 - [ ] O jogo inteiro é jogável com um dedo, em retrato, sem exigir reação em menos de 2 segundos.
 - [ ] Depois da primeira abertura, o jogo funciona inteiro em modo avião.
 
@@ -22,9 +22,7 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Feature | Reason |
 | ------- | ------ |
-| Capítulo 2 em diante, novos locais e espécies | Chegam como atualizações, cada uma com spec própria |
-| Copa Adilson Moscovits (grande final) | Depende dos capítulos seguintes |
-| Sala de troféus como tela própria | A v1 tem um troféu só, exibido no perfil |
+| Episódios além do 5º | Podem vir como atualização depois da entrega |
 | Publicação na Play Store ou APK | Revisão e testes obrigatórios levam semanas; o link resolve no mesmo dia (decidido com o usuário) |
 | Ajustes específicos para iPhone | Ele usa Android; o jogo abre no iPhone, mas não é testado lá |
 | Modo paisagem e otimização para computador | Ele joga deitado, com uma mão, em retrato |
@@ -50,22 +48,29 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Hospedagem | Site estático gratuito (Cloudflare Pages ou Vercel) a partir de repositório privado, com `noindex` | Mensagens da família não ficam públicas e o link não aparece em busca | y |
 | Celular alvo | Android com Chrome | Celular dele, informado pelo usuário | y |
 | Idioma | Só português do Brasil | Público único | y |
-| Local do Capítulo 1 | Barragem de Ceraíma, em Guanambi (BA), cidade onde o Adilson mora; alternativa: Barragem do Poço do Magro | Guanambi confirmado pelo usuário; falta confirmar qual represa ele frequenta. O conteúdo é dado e troca sem mexer no código | n |
-| Espécies da v1 | Lambari, Tilápia, Traíra, Carpa, Tucunaré (raro) e a Piranha Lavínia (especial) | Peixes comuns de represa brasileira; ajustar se ele tiver favoritos | n |
+| Local do Episódio 1 | Barragem de Ceraíma, em Guanambi (BA), cidade onde o Adilson mora | Confirmado pelo usuário | y |
+| Entrega | Os 5 episódios publicados juntos | Decisão do usuário | y |
+| Roteiro dos episódios | 1 Barragem de Ceraíma (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Pantanal · 4 Amazônia · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits) | Definido pelo usuário: Jacuípe é onde ele mais gostava de pescar; o final vai para o alto-mar para não repetir a água salgada da Ponte da Cetrel | y |
+| Nomes dos campeonatos 2 a 4 | Copa Jacuípe, Desafio do Pantanal, Torneio da Amazônia | Propostos pelo agente | n |
+| Duração | 2 a 3 horas por episódio até vencer o campeonato, medidas pela simulação de um jogador típico | Decisão do usuário: ele gosta de ficar pescando | y |
+| Medição da progressão | 50 sementes por episódio. PROG-01: mediana do tempo até a vitória entre 120 e 180 min. PROG-04: em pelo menos 90% das sementes, nenhum intervalo sem conquista passa de 10 min. PROG-05: taxa de vitória em 50 tentativas de campeonato | Torna os critérios de progressão testáveis sem depender de uma semente da sorte | n |
+| Elenco dos episódios 2 a 5 | A família viaja junto: Jane, Edvaldo, Ricardo, Bem e Kris voltam como rivais e coadjuvantes, mais um personagem local por episódio (pescador da Barra do Jacuípe, pantaneiro, guia ribeirinho, mestre de barco) | Mantém a família no centro; o usuário pode incluir mais parentes | n |
+| Varas e iscas | Bambu no início e 2 varas novas por episódio (11 no total), Força e Alcance de 1 a 10; 1 isca nova por episódio | Equipamento evolui junto com os 5 episódios | n |
+| Espécies por episódio | Ep. 1 (Ceraíma): Tilápia, Traíra, Curimatã, Piau, Tambaqui, Tucunaré, Pirarucu de Ceraíma (raro, lenda do pirarucu de ~90 kg pego no sangradouro em 2022) e Piranha Lavínia (especial) · Ep. 2, Rio Jacuípe: Tilápia, Traíra, Tainha, Robalo-peva, Carapeba; Ponte da Cetrel: Robalo-flecha, Pescada-amarela, Vermelho, Baiacu, Camurupim (raro) · Ep. 3: Pacu, Piraputanga, Piranha-vermelha, Jaú, Pintado (raro) · Ep. 4: Aruanã, Pirapitinga, Peixe-cachorro, Tucunaré-açu, Piraíba (raro) · Ep. 5, alto-mar: Dourado-do-mar, Cavala, Atum, Olho-de-boi, Marlim-azul (raro) | Usuário pediu os peixes típicos da represa de Guanambi; não há lista oficial de Ceraíma, então o Ep. 1 usa os peixes comuns dos açudes do sertão baiano. No Rio Jacuípe, guia de pesca cita robalo-peva, traíra e tainha. A família confirma as listas | n |
 | Tom da história | Bem-humorado e debochado, do jeito da família | Pedido do usuário: a família é debochada | y |
-| Lavínia (irmã do usuário) | Entra como "Lavínia, a Piranha": peixe especial da represa e personagem nas falas | Pedido da própria Lavínia | y |
-| Elenco do Capítulo 1 | Jane (esposa) entrega a vara; Edvan (cunhado) é o dono da loja; rivais do torneio: Tio Ricardo (boêmio, toca bongô), Bem (sogra da filha, gosta de cerveja) e Tia Kris ("Passago de Fogo", vive mandando ele parar de tomar líquido e fala "prendrive") | Definido pelo usuário | y |
+| Lavínia (irmã do usuário) | Entra como "Lavínia, a Piranha": peixe especial da represa e personagem nas falas; sempre chama o Adilson de "Adilsinho" e aparece em todos os episódios para pirraçar ele | Pedido da própria Lavínia e do usuário | y |
+| Elenco do Episódio 1 | Jane (esposa) entrega a vara; Edvaldo (cunhado) é o dono da loja; rivais do torneio: Ricardo (boêmio, toca bongô), Bem (sogra da filha, gosta de cerveja) e Kris ("Passago de Fogo", vive mandando ele parar de tomar líquido e fala "prendrive") | Definido pelo usuário | y |
 | Quem conduz o tutorial | Jane | Ela entrega a vara na abertura; mantém o tutorial dentro da história | n |
 | Referência de humor | Pegada cômica no estilo Dave the Diver: cartões de apresentação, expressões exageradas, fichas engraçadas | Pedido do usuário; só o tom, sem as mecânicas | y |
-| Apelidos cômicos nos cartões | Propostos pelo agente em `docs/historia/capitulo-1.md` | O usuário troca o que quiser | n |
+| Apelidos cômicos nos cartões | Propostos pelo agente em `docs/historia/episodio-1.md` | O usuário troca o que quiser | n |
 | Retratos da família | O usuário manda fotos em `Fotos/` (fora do git); o agente descreve cada pessoa em texto e o PixelLab gera a partir da descrição. As fotos não vão para o PixelLab nem para o repositório | Preferência do usuário por fotos; privacidade da família | y |
 | Personagens da família e textos da história | Ficam num arquivo de conteúdo com o marcador `{{PENDENTE}}` até o usuário enviar | Permite programar em paralelo; o build de publicação barra marcador pendente (HIST-07) | n |
-| Mensagem da GuanambiCup | Escrita pela família e enviada pelo usuário antes da publicação | Sem ela o campeonato perde o sentido; se não chegar a tempo, o usuário escreve | n |
-| Nome do torneio da v1 | "GuanambiCup" | Escolhido pelo usuário. O nome do Adilson continua no subtítulo do jogo e na grande final "Copa Adilson Moscovits", prevista para os próximos capítulos | y |
+| Cartas dos campeonatos | Uma carta por campeonato (5), escritas pela família e enviadas antes da publicação; o rascunho da carta do Episódio 2 está em `docs/historia/cartas.md` | Sem elas os campeonatos perdem o sentido | n |
+| Nome do campeonato do Episódio 1 | "GuanambiCup" | Escolhido pelo usuário. O nome do Adilson continua no subtítulo do jogo e na grande final "Copa Adilson Moscovits", a final do Episódio 5 | y |
 | Moeda | "R$" fictício | Familiar para ele; não é dinheiro real | n |
 | Mira do arremesso | Tocar no ponto da água; a isca vai até lá, limitada pelo alcance da vara | Um toque, sem barra de força que exige timing | n |
 | Formato do torneio | 8 arremessos, sem cronômetro; vale a soma dos 3 peixes mais pesados | Sem pressão de tempo; dá para pausar quando a enfermagem chegar | n |
-| Rivais do torneio | 3 rivais com pontuação fixa, calibrada para ser vencível com a Vara de Fibra | Desafio real que ele consegue vencer; tentativas ilimitadas | n |
+| Rivais dos campeonatos | 3 rivais por campeonato, com pontuação fixa calibrada pela PROG-05 | Desafio real que ele consegue vencer; tentativas ilimitadas | n |
 | Dificuldade | Perguntada na primeira abertura (Tranquilo ou Desafio) e mudável em Ajustes | A disposição dele pode variar de um dia para o outro | n |
 | Iscas | Compradas uma vez, uso ilimitado | Evita ficar sem isca e ter que controlar estoque | n |
 | Estilo visual | 2D em pixel art colorida e detalhada, vista de cima, com personagens expressivos de cabeça grande e retratos grandes nos diálogos; na linha visual de Dave the Diver, mas toda a arte é original (nenhum asset ou personagem do jogo) | Escolhido pelo usuário em vez de 3D (Three.js) e ajustado para o clima de Dave the Diver; a arte do jogo é protegida por direitos autorais e não pode ser usada | y |
@@ -157,34 +162,37 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 **Why P1**: Escolher a vara foi um pedido explícito, e a loja dá motivo para continuar pescando.
 
 **Acceptance Criteria**:
-1. The jogo SHALL oferecer 3 varas: Bambu (já possuída no início), Fibra e Carbono, cada uma com Força e Alcance de 1 a 5 mostrados em barras. `EQUIP-01`
-2. The jogo SHALL oferecer pelo menos 3 iscas, começando com a Minhoca já possuída, e cada isca atrai um conjunto diferente de espécies. `EQUIP-02`
+1. The jogo SHALL oferecer a Vara de Bambu, já possuída no início, e mais 2 varas novas por episódio, cada uma com Força e Alcance de 1 a 10 mostrados em barras. `EQUIP-01`
+2. The jogo SHALL oferecer a Minhoca, já possuída no início, e pelo menos 1 isca nova por episódio, e cada isca atrai um conjunto diferente de espécies. `EQUIP-02`
 3. WHEN o jogador compra um item com saldo suficiente THEN o jogo SHALL descontar o preço uma única vez e marcar o item como possuído. `EQUIP-03`
 4. IF o saldo é menor que o preço do item THEN o jogo SHALL desabilitar o botão "Comprar" e mostrar quanto falta. `EQUIP-04`
 5. WHEN o jogador equipa uma vara ou isca possuída THEN o jogo SHALL usá-la a partir do próximo arremesso. `EQUIP-05`
 6. The jogo SHALL manter o saldo sempre maior ou igual a zero. `EQUIP-06`
 7. The jogo SHALL fazer cada ponto de Força reduzir o ganho de tensão na briga e cada ponto de Alcance aumentar a distância máxima de arremesso. `EQUIP-07`
 8. The jogo SHALL manter as iscas compradas com uso ilimitado. `EQUIP-08`
+9. WHILE um episódio está bloqueado the jogo SHALL esconder da loja as varas e iscas dele. `EQUIP-09`
 
 **Independent Test**: Com saldo dado, comprar a Vara de Fibra, equipá-la, conferir que o arremesso vai mais longe e que a tensão sobe mais devagar que com a de Bambu.
 
 ---
 
-### P1: História - Capítulo 1 ⭐ MVP
+### P1: História dos 5 episódios ⭐ MVP
 
 **User Story**: Como Adilson, quero viver uma história em que eu sou o protagonista e minha família aparece, para me sentir dentro do jogo.
 
 **Why P1**: História com o nome dele foi um pedido explícito, e é o que transforma um jogo de pesca num presente.
 
 **Acceptance Criteria**:
-1. WHEN o jogo começa pela primeira vez THEN o jogo SHALL mostrar a cena de abertura do Capítulo 1 antes da primeira pescaria. `HIST-01`
+1. WHEN o jogo começa pela primeira vez THEN o jogo SHALL mostrar a cena de abertura do Episódio 1 antes da primeira pescaria. `HIST-01`
 2. The jogo SHALL mostrar cada fala numa caixa de texto com o retrato e o nome do personagem. `HIST-02`
 3. WHEN o jogador toca na caixa de texto THEN o jogo SHALL avançar para a fala seguinte, sem avanço automático. `HIST-03`
 4. The jogo SHALL mostrar o objetivo atual do capítulo na tela de pesca. `HIST-04`
 5. WHEN o jogador cumpre um objetivo THEN o jogo SHALL mostrar a cena correspondente e o objetivo seguinte. `HIST-05`
 6. The jogo SHALL ler falas, personagens e objetivos de um arquivo de conteúdo separado do código. `HIST-06`
 7. IF algum texto do arquivo de conteúdo contém o marcador `{{PENDENTE}}` THEN o build de publicação SHALL falhar e listar cada marcador encontrado. `HIST-07`
-8. WHEN o jogador vence a GuanambiCup THEN o jogo SHALL mostrar a cena de encerramento do Capítulo 1 e o aviso "Capítulo 2 em breve". `HIST-08`
+8. WHEN o jogador vence pela primeira vez o campeonato de um episódio de 1 a 4 THEN o jogo SHALL mostrar a cena de encerramento do episódio e o aviso "Episódio N liberado!", com N = episódio seguinte. `HIST-08`
+9. WHEN o jogador pesca pela primeira vez no local de um episódio liberado THEN o jogo SHALL mostrar antes a cena de abertura daquele episódio. `HIST-09`
+10. WHEN o jogador vence a Copa Adilson Moscovits pela primeira vez THEN o jogo SHALL mostrar o encerramento final da história e o aviso "A pescaria continua: todos os lugares seguem abertos". `HIST-10`
 
 **Independent Test**: Num jogo novo: ver a abertura, avançar as falas tocando, cumprir os objetivos em ordem até o torneio ser liberado.
 
@@ -201,30 +209,69 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 2. The jogo SHALL mostrar em cada fala o retrato do personagem com a expressão definida no conteúdo: normal, rindo, bravo ou chocado. `HUMOR-02`
 3. The jogo SHALL mostrar na ficha de cada espécie uma descrição bem-humorada definida no conteúdo. `HUMOR-03`
 4. WHEN o torneio começa THEN o jogo SHALL mostrar uma provocação de cada rival antes do primeiro arremesso. `HUMOR-04`
+5. The jogo SHALL fazer a Lavínia chamar o Adilson sempre de "Adilsinho", em todas as falas dela. `HUMOR-07`
+6. The jogo SHALL incluir em cada episódio pelo menos uma cena em que a Lavínia aparece para pirraçar o Adilson. `HUMOR-08`
 
 **Independent Test**: Num jogo novo, conferir o cartão da Jane na abertura, as expressões mudando entre as falas, a descrição na ficha do primeiro peixe e as provocações dos 3 rivais no torneio.
 
 ---
 
-### P1: GuanambiCup ⭐ MVP
+### P1: Campeonatos, da GuanambiCup à Copa Adilson Moscovits ⭐ MVP
 
-**User Story**: Como Adilson, quero disputar um campeonato com o meu nome e, ao vencer, ler uma mensagem da minha família.
+**User Story**: Como Adilson, quero disputar 5 campeonatos, da GuanambiCup da minha cidade à Copa com o meu nome, e ao vencer cada um ler uma carta da minha família.
 
-**Why P1**: Campeonato com o nome dele e mensagens da família foram pedidos explícitos.
+**Why P1**: Campeonatos com o nome dele e da cidade dele, e cartas da família, foram pedidos explícitos.
 
 **Acceptance Criteria**:
-1. WHILE o último objetivo do Capítulo 1 não foi cumprido the jogo SHALL mostrar o torneio como bloqueado, com o objetivo que falta. `CAMP-01`
-2. WHEN o jogador entra no torneio THEN o jogo SHALL mostrar o nome "GuanambiCup", as regras e os 3 rivais. `CAMP-02`
+1. WHILE o último objetivo de um episódio não foi cumprido the jogo SHALL mostrar o campeonato do episódio como bloqueado, com o objetivo que falta. `CAMP-01`
+2. WHEN o jogador entra num campeonato THEN o jogo SHALL mostrar o nome do campeonato do episódio (no Episódio 1, "GuanambiCup"; no 5, "Copa Adilson Moscovits"), as regras e os 3 rivais. `CAMP-02`
 3. WHILE o torneio está em andamento the jogo SHALL mostrar quantos dos 8 arremessos restam e a pontuação parcial. `CAMP-03`
 4. The jogo SHALL calcular a pontuação do torneio como a soma dos pesos dos 3 peixes mais pesados pegos nele. `CAMP-04`
 5. WHEN o 8º arremesso do torneio termina THEN o jogo SHALL mostrar a classificação final com o jogador e os 3 rivais. `CAMP-05`
-6. WHEN o jogador termina em 1º lugar pela primeira vez THEN o jogo SHALL mostrar a carta da família com o remetente e o texto da mensagem do torneio. `CAMP-06`
-7. WHEN o jogador termina em 1º lugar pela primeira vez THEN o jogo SHALL adicionar o troféu do torneio ao perfil. `CAMP-07`
-8. IF o jogador vence o torneio de novo THEN o jogo SHALL manter um único troféu e uma única carta. `CAMP-08`
+6. WHEN o jogador termina um campeonato em 1º lugar pela primeira vez THEN o jogo SHALL mostrar a carta da família daquele campeonato, com o remetente e o texto. `CAMP-06`
+7. WHEN o jogador termina um campeonato em 1º lugar pela primeira vez THEN o jogo SHALL adicionar o troféu daquele campeonato ao perfil. `CAMP-07`
+8. IF o jogador vence de novo um campeonato que já tinha vencido THEN o jogo SHALL manter um único troféu e uma única carta daquele campeonato. `CAMP-08`
 9. IF o jogador não termina em 1º lugar THEN o jogo SHALL mostrar a colocação e o botão "Tentar de novo", sem custo e sem limite de tentativas. `CAMP-09`
 10. The jogo SHALL deixar toda mensagem desbloqueada disponível para reler na tela "Mensagens" do menu. `CAMP-10`
 
-**Independent Test**: Com o Capítulo 1 concluído: jogar os 8 arremessos, ver a classificação; ao vencer, ler a carta, ver o troféu no perfil e reabrir a carta pelo menu.
+**Independent Test**: Com os objetivos do Episódio 1 concluídos: jogar os 8 arremessos, ver a classificação; ao vencer, ler a carta, ver o troféu no perfil e reabrir a carta pelo menu.
+
+---
+
+### P1: Mapa e 5 episódios ⭐ MVP
+
+**User Story**: Como Adilson, quero viajar por 5 lugares de pesca do Brasil, liberando um de cada vez, e voltar a qualquer um deles quando quiser.
+
+**Why P1**: O usuário pediu no mínimo 5 episódios, entregues juntos.
+
+**Acceptance Criteria**:
+1. The jogo SHALL ter 5 episódios, nesta ordem: 1 Barragem de Ceraíma (GuanambiCup), 2 Jacuípe (Rio Jacuípe e Ponte da Cetrel), 3 Pantanal, 4 Amazônia e 5 Alto-mar da Bahia (Copa Adilson Moscovits). `EPI-01`
+2. WHEN o jogador vence pela primeira vez o campeonato de um episódio de 1 a 4 THEN o jogo SHALL liberar o episódio seguinte e o local dele no Mapa. `EPI-02`
+3. WHILE um episódio está bloqueado the jogo SHALL mostrar o local dele no Mapa com cadeado e o nome do campeonato que o libera. `EPI-03`
+4. WHEN o jogador toca num local liberado no Mapa THEN o jogo SHALL abrir a pesca naquele local. `EPI-04`
+5. The jogo SHALL permitir pescar em qualquer local liberado a qualquer momento, rendendo R$, álbum e recordes, inclusive depois de vencer a Copa Adilson Moscovits. `EPI-05`
+6. The jogo SHALL dar a cada episódio pelo menos um local com cenário próprio, pelo menos 5 espécies próprias com 1 rara, um campeonato com 3 rivais e uma carta da família. `EPI-06`
+7. WHEN o jogo é reaberto THEN o jogo SHALL voltar ao último local em que o jogador estava pescando. `EPI-07`
+8. WHERE um episódio tem dois locais the jogo SHALL mostrar os dois no Mapa, liberados juntos, cada um com cenário e espécies próprios. `EPI-08`
+
+**Independent Test**: Num perfil com o Episódio 1 vencido: o Mapa mostra o Rio Jacuípe e a Ponte da Cetrel liberados e os episódios 3 a 5 com cadeado; tocar em cada local abre a pesca no lugar certo, com os peixes de lá.
+
+---
+
+### P1: Progressão longa ⭐ MVP
+
+**User Story**: Como Adilson, quero ter sempre um próximo peixe, vara ou objetivo para buscar, para passar horas pescando sem acabar rápido.
+
+**Why P1**: Ele gosta de ficar pegando peixe; o usuário pediu progressão mais demorada.
+
+**Acceptance Criteria**:
+1. The jogo SHALL exigir de 2 a 3 horas de jogo para cumprir os objetivos e vencer o campeonato de cada episódio, segundo a simulação de um jogador típico. `PROG-01`
+2. The jogo SHALL ter entre 6 e 8 objetivos por episódio antes do campeonato. `PROG-02`
+3. The jogo SHALL incluir em cada episódio um objetivo de pegar a espécie rara do local e um de registrar no álbum todas as espécies do local. `PROG-03`
+4. The jogo SHALL dar ao jogador típico simulado uma conquista (objetivo cumprido, item ao alcance do saldo, espécie nova ou recorde) pelo menos a cada 10 minutos de jogo. `PROG-04`
+5. The jogo SHALL calibrar o campeonato de cada episódio para que o jogador típico simulado vença com a melhor vara daquele episódio em pelo menos 60% das tentativas e com a melhor vara do episódio anterior em no máximo 20%. `PROG-05`
+
+**Independent Test**: Rodar a simulação de progressão: para cada episódio, o tempo até a vitória fica entre 2 e 3 horas, sem intervalo maior que 10 minutos entre conquistas.
 
 ---
 
@@ -315,6 +362,19 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 ---
 
+### P2: Sala de troféus
+
+**User Story**: Como Adilson, quero ver todos os troféus que conquistei e os que ainda faltam.
+
+**Why P2**: Com 5 campeonatos, a coleção de troféus vira motivo para continuar, mas o jogo funciona sem ela.
+
+**Acceptance Criteria**:
+1. The jogo SHALL mostrar na Sala de Troféus os 5 troféus dos campeonatos, os conquistados em destaque e os que faltam como silhueta com o nome do campeonato. `TROF-01`
+
+**Independent Test**: Num perfil com a GuanambiCup vencida, a sala mostra esse troféu em destaque e outros 4 como silhueta.
+
+---
+
 ## Edge Cases
 
 - IF o jogador toca em "Comprar" duas vezes seguidas THEN o jogo SHALL cobrar uma vez só (coberto por EQUIP-03).
@@ -337,7 +397,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Data lifecycle / expiry | SAVE-09, SAVE-10; não há expiração nem apagamento na v1 |
 | Observability | N/A because nenhum dado sai do celular (decisão de privacidade); problemas são vistos em teste no Android do usuário |
 | External-dependency failure | INST-06, TELA-02, INST-03 |
-| State-transition integrity | PESCA-03, PESCA-08, PESCA-09, ACES-03, CAMP-01, SAVE-01, TUTO-03 |
+| State-transition integrity | PESCA-03, PESCA-08, PESCA-09, ACES-03, CAMP-01, SAVE-01, TUTO-03, EPI-02, EPI-03, EQUIP-09 |
 
 ---
 
@@ -349,11 +409,11 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | INST-02 | P1: Instalar e abrir | - | Pending |
 | INST-03 | P1: Instalar e abrir | - | Pending |
 | INST-04 | P1: Instalar e abrir | - | Pending |
-| INST-05 | P1: Instalar e abrir | - | Pending |
-| INST-06 | P1: Instalar e abrir | - | Pending |
+| INST-05 | P1: Instalar e abrir | T3 | Implementing |
+| INST-06 | P1: Instalar e abrir | T3, T47 | Implementing |
 | INST-07 | P1: Instalar e abrir | - | Pending |
-| INST-08 | P1: Instalar e abrir | - | Pending |
-| INST-09 | P1: Instalar e abrir | - | Pending |
+| INST-08 | P1: Instalar e abrir | T5 | Implementing |
+| INST-09 | P1: Instalar e abrir | T3 | Implementing |
 | PESCA-01 | P1: Pescar com um dedo | - | Pending |
 | PESCA-02 | P1: Pescar com um dedo | - | Pending |
 | PESCA-03 | P1: Pescar com um dedo | - | Pending |
@@ -388,28 +448,46 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | EQUIP-06 | P1: Varas, iscas e loja | - | Pending |
 | EQUIP-07 | P1: Varas, iscas e loja | - | Pending |
 | EQUIP-08 | P1: Varas, iscas e loja | - | Pending |
-| HIST-01 | P1: História - Capítulo 1 | - | Pending |
-| HIST-02 | P1: História - Capítulo 1 | - | Pending |
-| HIST-03 | P1: História - Capítulo 1 | - | Pending |
-| HIST-04 | P1: História - Capítulo 1 | - | Pending |
-| HIST-05 | P1: História - Capítulo 1 | - | Pending |
-| HIST-06 | P1: História - Capítulo 1 | - | Pending |
-| HIST-07 | P1: História - Capítulo 1 | - | Pending |
-| HIST-08 | P1: História - Capítulo 1 | - | Pending |
+| EQUIP-09 | P1: Varas, iscas e loja | - | Pending |
+| HIST-01 | P1: História dos 5 episódios | - | Pending |
+| HIST-02 | P1: História dos 5 episódios | - | Pending |
+| HIST-03 | P1: História dos 5 episódios | - | Pending |
+| HIST-04 | P1: História dos 5 episódios | - | Pending |
+| HIST-05 | P1: História dos 5 episódios | - | Pending |
+| HIST-06 | P1: História dos 5 episódios | - | Pending |
+| HIST-07 | P1: História dos 5 episódios | T4 | Implementing |
+| HIST-08 | P1: História dos 5 episódios | - | Pending |
+| HIST-09 | P1: História dos 5 episódios | - | Pending |
+| HIST-10 | P1: História dos 5 episódios | - | Pending |
 | HUMOR-01 | P1: Pegada cômica nos personagens | - | Pending |
 | HUMOR-02 | P1: Pegada cômica nos personagens | - | Pending |
 | HUMOR-03 | P1: Pegada cômica nos personagens | - | Pending |
 | HUMOR-04 | P1: Pegada cômica nos personagens | - | Pending |
-| CAMP-01 | P1: GuanambiCup | - | Pending |
-| CAMP-02 | P1: GuanambiCup | - | Pending |
-| CAMP-03 | P1: GuanambiCup | - | Pending |
-| CAMP-04 | P1: GuanambiCup | - | Pending |
-| CAMP-05 | P1: GuanambiCup | - | Pending |
-| CAMP-06 | P1: GuanambiCup | - | Pending |
-| CAMP-07 | P1: GuanambiCup | - | Pending |
-| CAMP-08 | P1: GuanambiCup | - | Pending |
-| CAMP-09 | P1: GuanambiCup | - | Pending |
-| CAMP-10 | P1: GuanambiCup | - | Pending |
+| HUMOR-07 | P1: Pegada cômica nos personagens | - | Pending |
+| HUMOR-08 | P1: Pegada cômica nos personagens | - | Pending |
+| CAMP-01 | P1: Campeonatos | - | Pending |
+| CAMP-02 | P1: Campeonatos | - | Pending |
+| CAMP-03 | P1: Campeonatos | - | Pending |
+| CAMP-04 | P1: Campeonatos | - | Pending |
+| CAMP-05 | P1: Campeonatos | - | Pending |
+| CAMP-06 | P1: Campeonatos | - | Pending |
+| CAMP-07 | P1: Campeonatos | - | Pending |
+| CAMP-08 | P1: Campeonatos | - | Pending |
+| CAMP-09 | P1: Campeonatos | - | Pending |
+| CAMP-10 | P1: Campeonatos | - | Pending |
+| EPI-01 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-02 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-03 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-04 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-05 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-06 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-07 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-08 | P1: Mapa e 5 episódios | - | Pending |
+| PROG-01 | P1: Progressão longa | - | Pending |
+| PROG-02 | P1: Progressão longa | - | Pending |
+| PROG-03 | P1: Progressão longa | - | Pending |
+| PROG-04 | P1: Progressão longa | - | Pending |
+| PROG-05 | P1: Progressão longa | - | Pending |
 | SAVE-01 | P1: Pausa e progresso salvo | - | Pending |
 | SAVE-02 | P1: Pausa e progresso salvo | - | Pending |
 | SAVE-03 | P1: Pausa e progresso salvo | - | Pending |
@@ -437,12 +515,13 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | TELA-02 | P2: Tela acesa durante a pesca | - | Pending |
 | HUMOR-05 | P2: Celebração exagerada | - | Pending |
 | HUMOR-06 | P2: Celebração exagerada | - | Pending |
+| TROF-01 | P2: Sala de troféus | - | Pending |
 
 **ID format:** `[CATEGORIA]-[NÚMERO]`
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 93 total, 0 mapped to tasks, 93 unmapped (tasks ainda não criadas)
+**Coverage:** 112 total, mapeados no tasks.md
 
 ---
 
@@ -450,7 +529,8 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 - [ ] Instalação testada no Android do usuário: do link ao ícone na tela em menos de 1 minuto.
 - [ ] Jogo completo testado em modo avião depois da primeira abertura.
-- [ ] Um jogador que nunca viu o jogo conclui o Capítulo 1 e vence o torneio em 20 a 40 minutos.
+- [ ] A simulação de um jogador típico conclui cada episódio em 2 a 3 horas, sem passar 10 minutos sem conquista (PROG-01, PROG-04).
+- [ ] Um jogador que nunca viu o jogo conclui o tutorial e pega os 3 primeiros peixes em até 10 minutos.
 - [ ] Cada briga dura entre 8 e 40 segundos para quem segura e solta conforme a cor da barra.
 - [ ] Nenhum marcador `{{PENDENTE}}` na versão publicada.
 - [ ] O Adilson joga e se diverte.

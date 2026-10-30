@@ -8,7 +8,7 @@
 
 ## Feature Boundary
 
-A v1 entrega, num único local de pesca, o ciclo completo: instalar pelo link, pescar com um dedo, comprar e escolher varas e iscas, viver o Capítulo 1 da história com a família e vencer a GuanambiCup para ler a primeira mensagem da família. Capítulos, locais e campeonatos seguintes chegam como atualizações.
+A v1 entrega 5 episódios, publicados juntos: Barragem de Ceraíma (GuanambiCup), Jacuípe (Rio Jacuípe e Ponte da Cetrel), Pantanal, Amazônia e Alto-mar da Bahia (Copa Adilson Moscovits). Cada um tem lugar, peixes, equipamentos, história com a família, campeonato e carta, numa progressão de 2 a 3 horas, e a pesca livre continua depois do fim.
 
 ---
 
@@ -46,8 +46,18 @@ A v1 entrega, num único local de pesca, o ciclo completo: instalar pelo link, p
 - Tom: bem-humorado e debochado, do jeito da família.
 - Lavínia (irmã do usuário) pediu para ser a Piranha: "Lavínia, a Piranha" é um peixe especial da represa e personagem nas falas.
 - Fluxo do conteúdo: criamos as histórias juntos primeiro; depois o usuário manda os nomes e as mensagens.
-- Elenco do Capítulo 1 (definido pelo usuário): Jane, esposa do Adilson, entrega a vara; Edvan, o cunhado, é o dono da loja; os rivais do torneio são Tio Ricardo (boêmio, toca bongô), Bem (sogra da filha, gosta de cerveja) e Tia Kris (vive mandando ele parar de tomar líquido, fala "prendrive" e é chamada de "Passago de Fogo"). Roteiro e apelidos em `docs/historia/capitulo-1.md`.
+- Elenco do Episódio 1 (definido pelo usuário): Jane, esposa do Adilson, entrega a vara; Edvaldo, o cunhado, é o dono da loja; os rivais do torneio são Ricardo (boêmio, toca bongô), Bem (sogra da filha, gosta de cerveja) e Kris (vive mandando ele parar de tomar líquido, fala "prendrive" e é chamada de "Passago de Fogo"). Roteiro e apelidos em `docs/historia/episodio-1.md`.
 - O torneio da v1 se chama **GuanambiCup** (escolha do usuário).
+
+### 5 episódios (pedido do usuário depois da aprovação das tarefas)
+
+- No mínimo 5 episódios, entregues **juntos** (decisão do usuário, mesmo com a entrega mais demorada).
+- Cada episódio leva de 2 a 3 horas até vencer o campeonato; ele gosta de ficar pegando peixe. Depois do fim, a pesca livre segue em todos os lugares.
+- Roteiro: 1 Barragem de Ceraíma (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Pantanal · 4 Amazônia · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits).
+- Jacuípe entrou no Episódio 2 a pedido do usuário: é um lugar de que o Adilson gosta muito e onde pescava muito. Tem dois locais, o Rio Jacuípe (água doce) e a Ponte da Cetrel (água salgada). O Rio São Francisco saiu, e o final foi para o alto-mar para não repetir a água salgada.
+- Peixes do Episódio 1: os típicos da represa de Guanambi (pedido do usuário). Sem lista oficial de Ceraíma, usamos os comuns dos açudes do sertão baiano, mais a lenda real do pirarucu de ~90 kg pego no sangradouro em 2022; a família confirma.
+- Nomes corrigidos pelo usuário: Edvaldo (não Edvan), Ricardo (sem "Tio"), Kris (sem "Tia").
+- A Lavínia sempre chama o Adilson de "ADILSINHO" e aparece em todos os episódios para pirraçar ele.
 
 ### Tutorial e humor (pedidos do usuário depois da aprovação da spec)
 
@@ -74,8 +84,6 @@ A v1 entrega, num único local de pesca, o ciclo completo: instalar pelo link, p
 
 ## Deferred Ideas
 
-- Capítulos 2 em diante: Pantanal, Araguaia, Amazônia, mar.
-- Copa Adilson Moscovits (grande final).
-- Sala de troféus.
+- Episódios além do 5º.
 - Fotos, áudios e vídeos da família nas mensagens.
 - Música e efeitos sonoros retrô.
