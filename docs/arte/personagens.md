@@ -17,3 +17,7 @@
 | Didi | sem foto (descrição proposta pelo agente) | Senhor grisalho de uns 60 anos, de óculos e bigode, jaleco branco com estetoscópio, uma seringa gigante no bolso e a chinela na mão (exageros cômicos); por baixo do jaleco, camisa listrada azul, vermelha e branca, sem escudo de time |
 | Capenga | sem foto | O típico pescador |
 | Ninha (criança) | sem foto | Menina com jeito de moleca: cabelo escuro curtinho e bagunçado, pele morena de sol, descalça, de short e camiseta, sempre com a varinha na mão. Personagem original (a referência do usuário foi "parecia um menino da selva de desenho, só que menina"; nada de copiar personagem existente) |
+| Lu | sem foto | Irmã do Adilson; loira clara e magra; sempre com o celular na mão (trabalho) e um cigarro |
+| Geane | sem foto | Irmã do Adilson; dramática, olhando pro céu procurando E.T. |
+| Louise | sem foto | Sobrinha preferida do Adilson; parecida com a Lu, mas mais nova (loira clara); advogada, de terninho |
+| Lucca | sem foto | Filho da Louise, criança; loiro claro e gordinho |

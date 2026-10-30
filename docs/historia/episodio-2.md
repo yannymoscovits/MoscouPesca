@@ -86,12 +86,12 @@ Rivais da Copa Jacuípe: **Tininho, Denise e Didi**.
 
 **Objetivo: registrar no álbum todas as espécies de Jacuípe.**
 
-**Objetivo: se inscrever na Copa Jacuípe.**
+*A Copa Jacuípe fica liberada.*
 
 ### Cena 9: Os rivais (antes do primeiro arremesso)
 
 - **Tininho** [rindo]: Arrumei tudo pra vocês: casa, café e rede. Mas a Copa eu não arrumo pra ninguém.
-- **Denise** [bravo]: JUNIORRRR! Isso aqui é uma intimação: perder pra sua mãe é obrigatório.
+- **Denise** [bravo]: JUNIORRRR! Isso aqui é uma intimação: perder pra sua mãe é obrigatório! YOLANDAAAAAAA.
 - **Didi** [rindo]: Quem perder toma injeção. Bahia aqui, Corinthians em São Paulo: médico tem que ser versátil.
 
 ### Cena 10: Vitória
@@ -99,12 +99,13 @@ Rivais da Copa Jacuípe: **Tininho, Denise e Didi**.
 - **Didi** [rindo]: Esse é o meu filho!
 - **Denise** [rindo]: JUNIORRRR, CAMPEÃO!
 - **Didi** [normal]: Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho. *(opcional: vocês decidem se entra)*
+- **Didi e Denise**[normal]: Amamos você meu filho, segura firme!
 - **Ninha** [normal]: Pai, a gente volta aqui de novo?
 - **Adilson** [rindo]: Sempre que a maré deixar.
 - *A tela ondula. Presente.*
 - **Jane** [rindo]: Cochilou aqui na beira do rio, foi? Tava sorrindo dormindo.
 - **Carta da Ninha** (em `docs/historia/cartas.md`)
-- *Episódio 3 liberado: Pantanal!*
+- *Episódio 3 liberado: Ilha de Itaparica!*
 
 ### Se perder a Copa
 

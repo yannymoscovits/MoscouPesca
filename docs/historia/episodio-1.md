@@ -87,7 +87,7 @@
 
 - **Jane** [rindo]: Todos os peixes da represa no álbum. Agora pode se inscrever, campeão.
 
-**Objetivo: se inscrever na GuanambiCup.**
+*A GuanambiCup fica liberada.*
 
 ### Cena 9: Os rivais (antes do primeiro arremesso)
 

@@ -44,7 +44,7 @@ Ninha
 
 P.S.: a gente ainda volta pra Jacuípe. Sempre que a maré deixar.
 
-## Episódio 3: Desafio do Pantanal
+## Episódio 3: Copa Itaparica
 
 {{PENDENTE}}
 
