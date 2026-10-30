@@ -44,7 +44,7 @@ Ninha
 
 P.S.: a gente ainda volta pra Jacuípe. Sempre que a maré deixar.
 
-## Episódio 3: Copa Itaparica (rascunho, da Lu e da Geane)
+## Episódio 3: Copa Itaparica (da Lu e da Geane)
 
 Xô,
 
@@ -64,10 +64,47 @@ Lu e Geane
 
 P.S. da Geane: se aparecer uma luz estranha no céu hoje à noite, sou eu mandando energia. Ou um E.T. Os dois servem.
 
-## Episódio 4: Copa dos Ventos
+## Episódio 4: Copa dos Ventos (do Márcio)
 
-{{PENDENTE}}
+Chefe,
 
-## Episódio 5: Copa Adilson Moscovits
+Campeão da Copa dos Ventos! Eu sempre soube que o senhor ia longe, mas não sabia que ia pescar peixe voando.
 
-{{PENDENTE}}
+Aqui é o Márcio, o funcionário 01. Desde o primeiro dia eu aprendi como é trabalhar com o senhor: tem torre pra subir, tem problema pra resolver e, no fim do dia, sempre tem uma história de pescaria (sempre maior que o peixe).
+
+As torres tão girando e eu tô segurando as pontas por aqui. Pode ficar tranquilo: o funcionário 01 não deixa nada parar.
+
+Mas, chefe, o senhor faz falta. Faz falta a sua risada e o seu "deixa comigo". O vento aqui sopra mais forte quando o senhor tá por perto.
+
+Então se cuida, obedece os médicos e volta logo. A gente tem muito serviço pela frente. E muita pescaria também.
+
+Do seu funcionário 01 e amigo,
+Márcio
+
+P.S. do Sr. Higashi: botei um GPS nesta carta. Destino: o Adilson melhorando. Status: a caminho.
+
+## Episódio 5: Copa Adilson Moscovits (de todo mundo)
+
+Adilson, pai, Xô, Junior, chefe, Adilsinho, pegador…
+
+Cada um aqui te chama de um jeito, mas todo mundo quer dizer a mesma coisa.
+
+Você foi do Poço do Magro ao alto-mar. Pegou o Pirarucu Lendário, o Camurupim, a Garoupa, o Dourado-dos-Ventos e o Marlim-azul. Ganhou a GuanambiCup, a Copa Jacuípe, a Copa Itaparica, a Copa dos Ventos e a Copa que leva o seu nome. Agora tem outra briga, a mais importante de todas. E essa a gente briga junto.
+
+Você sempre ensinou que pescaria é paciência: esperar a hora certa e não soltar quando o peixe puxa forte. Então não solta. A gente tá segurando a linha com você, cada um do seu jeito:
+
+A Jane, que te atura e faria tudo de novo.
+A Ninha e a Ângela, com o protetor solar na bolsa e o jogo pronto pra próxima fase.
+A Lavínia, que promete continuar te pirraçando por muitos e muitos anos.
+A Lu e a Geane, chorando de esperança (e com os E.T. torcendo por você).
+A Louise e o Lucca, guardando o lugar do lado na próxima pescaria.
+O Edvaldo, com desconto de verdade dessa vez.
+O Ricardo e o bongô, a Bem e a gelada sem álcool, a Kris e o prendrive cheio de cuidados.
+O Márcio, segurando as pontas. E o Sr. Higashi, de GPS ligado no seu caminho de volta.
+
+A gente acredita na sua melhora. Todo dia. Ninguém aqui desiste, e você também não vai desistir.
+
+Os lugares de pesca continuam abertos. A vara tá te esperando. E a gente também.
+
+Com todo o amor do mundo,
+Sua família

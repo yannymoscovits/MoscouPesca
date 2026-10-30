@@ -91,7 +91,7 @@ Rivais da Copa dos Ventos: **Márcio, Sr. Higashi e Edvaldo**.
 
 - **Márcio** [rindo]: Esse é o meu chefe!
 - **Sr. Higashi** [rindo]: O GPS confirmou: você chegou ao seu destino. Campeão.
-- **Carta da família** (a escrever)
+- **Carta do Márcio** (em `docs/historia/cartas.md`)
 - *Episódio 5 liberado: Alto-mar da Bahia!*
 
 ### Se perder a Copa

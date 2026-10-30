@@ -98,7 +98,7 @@ Rivais da Copa Jacuípe: **Tininho, Denise e Didi**.
 
 - **Didi** [rindo]: Esse é o meu filho!
 - **Denise** [rindo]: JUNIORRRR, CAMPEÃO!
-- **Didi** [normal]: Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho. *(opcional: vocês decidem se entra)*
+- **Didi** [normal]: Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho.
 - **Didi e Denise**[normal]: Amamos você meu filho, segura firme!
 - **Ninha** [normal]: Pai, a gente volta aqui de novo?
 - **Adilson** [rindo]: Sempre que a maré deixar.

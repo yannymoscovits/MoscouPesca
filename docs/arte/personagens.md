@@ -21,5 +21,7 @@
 | Geane | sem foto | Irmã do Adilson; bem gorda, de cabelo preto e pele branca; dramática, olhando pro céu procurando E.T. |
 | Louise | sem foto | Sobrinha preferida do Adilson; parecida com a Lu, mas mais nova (loira clara); advogada, de terninho |
 | Lucca | sem foto | Filho da Louise, criança; loiro claro e gordinho |
-| Márcio | sem foto | Funcionário 01 do Adilson, o faz-tudo; uniforme de trabalho de parque eólico. Falta descrição |
-| Sr. Higashi | sem foto | Chefe da Ninha; sempre com um aparelho de GPS na mão. Falta descrição |
+| Márcio | sem foto | Funcionário 01 do Adilson, o faz-tudo; negro, magro e alto; uniforme de trabalho de parque eólico (no Episódio 5, quepe de capitão) |
+| Sr. Higashi | sem foto | Chefe da Ninha; japonês e gordinho; sempre com um aparelho de GPS na mão |
+| Ninha (adulta) | `Fotos/Ninha.png` | Nerd de TI; cabelo escuro curto, cacheado e volumoso em cima; óculos de armação fina prateada, formato hexagonal; pele clara; piercing de argola no nariz e alargador preto na orelha; camisa social preta |
+| Ângela | sem foto | Companheira da Ninha; ruiva, gordinha, sardenta e mais alta que a Ninha |
