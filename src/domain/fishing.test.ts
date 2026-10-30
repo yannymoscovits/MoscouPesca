@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Point, Rod } from '../content/types';
-import { cast, press, tick, type CastContext, type FishingState, type TickContext } from './fishing';
+import type { Point, Rod, Species, Zone } from '../content/types';
+import { cast, press, rulesFor, tick, type CastContext, type FishingState, type TickContext } from './fishing';
 import { createRng } from './rng';
 
 const ORIGIN: Point = { x: 100, y: 400 };
@@ -13,8 +13,8 @@ function castCtx(r: Rod): CastContext {
   return { origin: ORIGIN, rod: r, bait: 'minhoca' };
 }
 
-function tickCtx(seed = 1): TickContext {
-  return { rng: createRng(seed) };
+function tickCtx(seed = 1, over: Partial<TickContext> = {}): TickContext {
+  return { rng: createRng(seed), rules: rulesFor('desafio'), zones: [], species: [], ...over };
 }
 
 const IDLE: FishingState = { phase: 'Idle' };
@@ -75,6 +75,123 @@ describe('arremesso', () => {
       const shorter = dist(ORIGIN, landingPoint(rod(reach), far));
       const longer = dist(ORIGIN, landingPoint(rod(reach + 1), far));
       expect(longer).toBeGreaterThan(shorter);
+    }
+  });
+});
+
+function species(id: string, over: Partial<Species> = {}): Species {
+  return {
+    id,
+    name: id,
+    sprite: '',
+    kg: { min: 1, max: 2 },
+    pricePerKg: 10,
+    power: 1,
+    stamina: 1,
+    baits: ['minhoca'],
+    rarity: 1,
+    description: '',
+    rare: false,
+    ...over,
+  };
+}
+
+const TILAPIA = species('tilapia'); // aceita minhoca
+const DOURADO = species('dourado', { baits: ['lula'] }); // não aceita minhoca
+const POND: Zone = {
+  id: 'represa',
+  polygon: [
+    { x: 0, y: 0 },
+    { x: 200, y: 0 },
+    { x: 200, y: 390 },
+    { x: 0, y: 390 },
+  ],
+  species: ['tilapia', 'dourado'],
+};
+const SPOT: Point = { x: 100, y: 300 }; // dentro da represa e do alcance
+const OUTSIDE: Point = { x: 250, y: 380 }; // dentro do alcance, fora de qualquer zona
+
+const DT = 1 / 32; // passo exato em binário: 3 s, 10 s e 15 s caem em passos inteiros
+
+/** Avança de DT em DT até `stop`; devolve o estado e o tempo decorrido. */
+function runUntil(s: FishingState, ctx: TickContext, stop: (s: FishingState) => boolean, maxS = 60) {
+  let steps = 0;
+  while (!stop(s) && steps < maxS / DT) {
+    s = tick(s, DT, STILL, ctx);
+    steps++;
+  }
+  return { s, t: steps * DT };
+}
+
+const waitingOver = (s: FishingState) => s.phase !== 'Flying' && s.phase !== 'Waiting';
+
+/** Passa o tempo sem tocar, em passos de 0,1 s. */
+function idleFor(s: FishingState, ctx: TickContext, seconds: number): FishingState {
+  for (let i = 0; i < Math.round(seconds / 0.1); i++) s = tick(s, 0.1, STILL, ctx);
+  return s;
+}
+
+function toBite(ctx: TickContext): FishingState {
+  const { s } = runUntil(cast(IDLE, SPOT, castCtx(rod(5))), ctx, waitingOver);
+  if (s.phase !== 'Bite') throw new Error(`esperava Bite, veio ${s.phase}`);
+  return s;
+}
+
+const pondCtx = (seed: number, d: 'desafio' | 'tranquilo' = 'desafio') =>
+  tickCtx(seed, { rules: rulesFor(d), zones: [POND], species: [TILAPIA, DOURADO] });
+
+describe('espera e mordida', () => {
+  it('PESCA-04: em 200 sementes, a mordida vem entre 3 e 10 s depois do arremesso, de peixe que aceita a isca', () => {
+    for (const d of ['desafio', 'tranquilo'] as const) {
+      for (let seed = 1; seed <= 200; seed++) {
+        const { s, t } = runUntil(cast(IDLE, SPOT, castCtx(rod(5))), pondCtx(seed, d), waitingOver);
+        expect(s.phase).toBe('Bite');
+        expect(t).toBeGreaterThanOrEqual(3);
+        expect(t).toBeLessThanOrEqual(10);
+        if (s.phase === 'Bite') expect(s.species.id).toBe('tilapia');
+      }
+    }
+  });
+
+  it('PESCA-05: sem peixe que aceite a isca, recolhe aos 15 s com Result_Nothing', () => {
+    const noTaker = { ...POND, species: ['dourado'] };
+    for (const target of [SPOT, OUTSIDE]) {
+      const ctx = tickCtx(3, { zones: [noTaker], species: [TILAPIA, DOURADO] });
+      const { s, t } = runUntil(cast(IDLE, target, castCtx(rod(5))), ctx, waitingOver);
+      expect(s.phase).toBe('Result_Nothing');
+      expect(t).toBe(15);
+    }
+  });
+});
+
+describe('fisgada', () => {
+  it.each([
+    ['desafio', 2],
+    ['tranquilo', 4],
+  ] as const)('PESCA-08/PESCA-09 (%s): toque antes de %i s fisga; depois, o peixe escapa', (d, windowS) => {
+    const ctx = pondCtx(5, d);
+    const bite = toBite(ctx);
+
+    const inTime = idleFor(bite, ctx, windowS - 0.1);
+    expect(inTime.phase).toBe('Bite');
+    expect(press(inTime, ctx).phase).toBe('Fight');
+
+    const late = idleFor(bite, ctx, windowS + 0.1);
+    expect(late.phase).toBe('Result_Escaped');
+    expect(press(late, ctx).phase).toBe('Result_Escaped');
+  });
+
+  it('TUTO-04/TUTO-05 pelas regras do contexto: mordida em até 5 s e peixe que espera o toque', () => {
+    const rules = { ...rulesFor('desafio'), biteS: { min: 0, max: 5 }, hookWindowS: null };
+    for (let seed = 1; seed <= 50; seed++) {
+      const ctx = tickCtx(seed, { rules, zones: [POND], species: [TILAPIA, DOURADO] });
+      const { s, t } = runUntil(cast(IDLE, SPOT, castCtx(rod(5))), ctx, waitingOver);
+      expect(s.phase).toBe('Bite');
+      expect(t).toBeLessThanOrEqual(5);
+
+      const later = idleFor(s, ctx, 60);
+      expect(later.phase).toBe('Bite');
+      expect(press(later, ctx).phase).toBe('Fight');
     }
   });
 });

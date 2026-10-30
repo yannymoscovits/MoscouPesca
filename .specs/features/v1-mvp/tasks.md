@@ -347,10 +347,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Em 200 sementes, toda mordida acontece entre 3 e 10 s em zona compatível (PESCA-04)
-- [ ] Zona sem espécie compatível → `Result_Nothing` aos 15 s (PESCA-05)
-- [ ] Toque aos 1,9 s no Desafio fisga; aos 2,1 s o peixe escapa; no Tranquilo o limite é 4 s (PESCA-08, PESCA-09)
-- [ ] Gate check passes: `npm test`
+- [x] Em 200 sementes, toda mordida acontece entre 3 e 10 s em zona compatível (PESCA-04)
+- [x] Zona sem espécie compatível → `Result_Nothing` aos 15 s (PESCA-05)
+- [x] Toque aos 1,9 s no Desafio fisga; aos 2,1 s o peixe escapa; no Tranquilo o limite é 4 s (PESCA-08, PESCA-09)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
