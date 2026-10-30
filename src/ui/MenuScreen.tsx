@@ -8,7 +8,7 @@ import { currentPlace, formatMoney } from './format';
 /** Botões do menu, na ordem da tela; `to` ausente = tela que ainda não existe (botão desabilitado). */
 const ITEMS: { label: string; to?: ScreenId }[] = [
   { label: 'Mapa' },
-  { label: 'Loja' },
+  { label: 'Loja', to: 'shop' },
   { label: 'Álbum' },
   { label: 'Troféus' },
   { label: 'Mensagens' },

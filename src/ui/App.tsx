@@ -6,6 +6,7 @@ import { BackContext, NavContext, ServicesContext, type ScreenId, type Services 
 import { FishingScreen } from './FishingScreen';
 import { MenuScreen } from './MenuScreen';
 import { RotateOverlay, SaveWarning } from './Overlays';
+import { Shop } from './Shop';
 import { DifficultyPrompt, Settings } from './Settings';
 import { TitleScreen } from './TitleScreen';
 
@@ -29,6 +30,7 @@ export function App({ store, services }: { store: GameStore; services: Services 
             {screen === 'difficulty' && <DifficultyPrompt />}
             {screen === 'fishing' && <FishingScreen />}
             {screen === 'menu' && <MenuScreen />}
+            {screen === 'shop' && <Shop />}
             {screen === 'settings' && <Settings />}
             <SaveWarning />
             <RotateOverlay />

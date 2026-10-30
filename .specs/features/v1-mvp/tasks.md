@@ -1203,11 +1203,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: varas e iscas dos episódios liberados, com barras de 1 a 10; itens de episódio bloqueado não aparecem (EQUIP-01, EQUIP-02, EQUIP-09)
-- [ ] e2e: sem saldo, "Comprar" desabilitado e "Faltam R$ X" com o valor certo (EQUIP-04)
-- [ ] e2e: dois toques rápidos em "Comprar" descontam uma vez só
-- [ ] e2e: equipar a Fibra muda o equipamento mostrado na tela de pesca (EQUIP-05)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: varas e iscas dos episódios liberados, com barras de 1 a 10; itens de episódio bloqueado não aparecem (EQUIP-01, EQUIP-02, EQUIP-09)
+- [x] e2e: sem saldo, "Comprar" desabilitado e "Faltam R$ X" com o valor certo (EQUIP-04)
+- [x] e2e: dois toques rápidos em "Comprar" descontam uma vez só
+- [x] e2e: equipar a Fibra muda o equipamento mostrado na tela de pesca (EQUIP-05)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

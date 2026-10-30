@@ -90,6 +90,7 @@ function Hud() {
             <span class="hud__money">{formatMoney(profile.money)}</span>
             <span class="hud__place">{location.name}</span>
           </p>
+          <p class="hud__gear">{gear(profile, episodes)}</p>
           {run ? (
             <p>
               {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
@@ -111,6 +112,14 @@ function Hud() {
       </div>
     </div>
   );
+}
+
+/** Vara e isca equipadas (EQUIP-05): "Vara de Fibra · Minhoca". */
+function gear(profile: Profile, episodes: EpisodeContent[]): string {
+  const name = (id: string, items: { id: string; name: string }[]) => items.find((i) => i.id === id)?.name ?? id;
+  const rod = name(profile.rods.equipped, episodes.flatMap((ep) => ep.rods));
+  const bait = name(profile.baits.equipped, episodes.flatMap((ep) => ep.baits));
+  return `${rod} · ${bait}`;
 }
 
 /** HIST-04: o objetivo atual, com a contagem quando ele pede mais de um ("1 de 3"). */

@@ -42,7 +42,7 @@ test('o botão "Menu" da pesca abre o menu; "Voltar a pescar" volta para a pesca
 /** Cada botão do menu e o título da tela que ele abre; null = tela que ainda não existe nesta fase. */
 const DESTINATIONS: { button: string; heading: string | null }[] = [
   { button: 'Mapa', heading: null },
-  { button: 'Loja', heading: null },
+  { button: 'Loja', heading: 'Loja do Edvaldo' },
   { button: 'Álbum', heading: null },
   { button: 'Troféus', heading: null }, // sala de troféus: T63
   { button: 'Mensagens', heading: null },
