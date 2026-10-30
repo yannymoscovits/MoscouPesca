@@ -807,12 +807,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] `save` duas vezes → `current` é o novo e `previous` o antigo
-- [ ] `load` com `current` válido → `current`; corrompido → `previous` (SAVE-05, SAVE-07)
-- [ ] Ambos corrompidos → perfil novo e `mf.save.corrupt.<timestamp>` com o texto original (SAVE-08)
-- [ ] `setItem` lançando cota → `{ ok: false }` sem exceção
-- [ ] `requestPersistence` chama `navigator.storage.persist` e tolera a API ausente (SAVE-10)
-- [ ] Gate check passes: `npm test`
+- [x] `save` duas vezes → `current` é o novo e `previous` o antigo
+- [x] `load` com `current` válido → `current`; corrompido → `previous` (SAVE-05, SAVE-07)
+- [x] Ambos corrompidos → perfil novo e `mf.save.corrupt.<timestamp>` com o texto original (SAVE-08)
+- [x] `setItem` lançando cota → `{ ok: false }` sem exceção
+- [x] `requestPersistence` chama `navigator.storage.persist` e tolera a API ausente (SAVE-10)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
