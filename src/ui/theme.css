@@ -1281,3 +1281,15 @@ ul {
 .banner .overlay__actions {
   margin-top: auto;
 }
+
+/* ---------- Novidade depois de uma atualização (INST-07) ---------- */
+
+/* Acima das telas, abaixo do aviso de salvamento (90) e do celular deitado (100). */
+.overlay--news {
+  z-index: 60;
+  justify-content: center;
+}
+
+.overlay--news .overlay__actions {
+  margin-top: auto;
+}

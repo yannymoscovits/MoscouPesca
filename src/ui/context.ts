@@ -7,12 +7,15 @@ import type { GameController } from '../app/controller';
 import type { EpisodeContent } from '../content/types';
 import type { BrowserApi } from '../platform/browser';
 import type { InstallApi } from '../platform/install';
+import type { UpdateManager } from '../pwa/update';
 
 export interface Services {
   controller: GameController;
   install: InstallApi;
   browser: BrowserApi;
   episodes: EpisodeContent[];
+  /** INST-07: aplica a versão nova só em tela segura (ausente fora do navegador). */
+  update?: UpdateManager;
 }
 
 export const ServicesContext = createContext<Services | null>(null);

@@ -1,8 +1,10 @@
-// Avisos por cima das telas: pausa (SAVE-02), celular deitado (ACES-10) e falha ao salvar
-// (edge case "armazenamento cheio"). A pausa em si vem do GameController (SAVE-01).
+// Avisos por cima das telas: pausa (SAVE-02), celular deitado (ACES-10), falha ao salvar
+// (edge case "armazenamento cheio") e novidade depois de uma atualização (INST-07).
+// A pausa em si vem do GameController (SAVE-01).
 
-import { useEffect, useState } from 'preact/hooks';
-import { useGame } from '../app/store';
+import { useContext, useEffect, useState } from 'preact/hooks';
+import { GameStoreContext, useGame, type GameStore } from '../app/store';
+import { APP_VERSION, versionNotice } from '../pwa/update';
 import { useServices } from './context';
 
 /** SAVE-02: o jogo só volta depois de um toque, em qualquer ponto da tela. */
@@ -65,6 +67,37 @@ export function SaveWarning() {
       <button type="button" class="btn" onClick={() => controller.dismissSaveWarning()}>
         OK
       </button>
+    </div>
+  );
+}
+
+/**
+ * INST-07: na abertura, compara a versão vista no perfil com a deste build. Versão antiga mostra
+ * "Novidade no MoscouFishing!" e já grava a nova, então reabrir não mostra de novo; perfil novo só
+ * grava a versão.
+ */
+export function UpdateNotice() {
+  const { controller } = useServices();
+  const store = useContext(GameStoreContext) as GameStore;
+  const [check] = useState(() => versionNotice(store.getState().profile.seenVersion, APP_VERSION));
+  const [open, setOpen] = useState(check.show);
+
+  useEffect(() => {
+    if (check.store) controller.markVersionSeen(APP_VERSION);
+  }, [check, controller]);
+
+  if (!open) return null;
+  return (
+    <div class="overlay overlay--news" role="dialog" aria-modal="true" aria-label="Novidade">
+      <div class="banner__burst">
+        <p class="banner__text">Novidade no MoscouFishing!</p>
+        <p class="banner__hint">O jogo foi atualizado. Seu progresso continua salvo.</p>
+      </div>
+      <div class="overlay__actions">
+        <button type="button" class="btn btn--big" onClick={() => setOpen(false)}>
+          OK
+        </button>
+      </div>
     </div>
   );
 }

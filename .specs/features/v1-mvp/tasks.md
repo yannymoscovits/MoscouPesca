@@ -1293,10 +1293,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Unit: `shouldApply(screen)` verdadeiro para abertura e tela inicial, falso em pesca e torneio
-- [ ] e2e: perfil novo (`seenVersion` vazio) não mostra o aviso de novidade e só grava a versão atual
-- [ ] e2e: `seenVersion` antigo no perfil → aviso aparece uma vez; recarregar não mostra de novo (INST-07)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] Unit: `shouldApply(screen)` verdadeiro para abertura e tela inicial, falso em pesca e torneio
+- [x] e2e: perfil novo (`seenVersion` vazio) não mostra o aviso de novidade e só grava a versão atual
+- [x] e2e: `seenVersion` antigo no perfil → aviso aparece uma vez; recarregar não mostra de novo (INST-07)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

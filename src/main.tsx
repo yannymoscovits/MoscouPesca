@@ -9,12 +9,14 @@ import { createRng } from './domain/rng';
 import { createBrowser } from './platform/browser';
 import { createInstall } from './platform/install';
 import { createSaveService } from './platform/save';
+import { createUpdateManager } from './pwa/update';
 import { App } from './ui/App';
 
 // Antes de tudo: o Chrome dispara beforeinstallprompt logo depois de carregar (INST-02).
 const install = createInstall();
 
-registerSW({ immediate: true });
+// INST-07: a versão nova fica esperando e só entra na abertura ou na tela inicial.
+const update = createUpdateManager(registerSW);
 
 const rng = createRng(Date.now() >>> 0);
 const browser = createBrowser();
@@ -26,6 +28,6 @@ if (import.meta.env.MODE === 'e2e') {
 }
 
 render(
-  <App store={game.store} services={{ controller: game.controller, install, browser, episodes }} />,
+  <App store={game.store} services={{ controller: game.controller, install, browser, episodes, update }} />,
   document.getElementById('app')!,
 );

@@ -61,6 +61,8 @@ export interface GameController {
   /** TUTO-09: o tutorial começa de novo na próxima pescaria. */
   resetTutorial(): void;
   travel(location: LocationId): void;
+  /** INST-07: guarda a versão do jogo já vista, para a novidade aparecer uma vez só. */
+  markVersionSeen(version: string): void;
 }
 
 export interface ControllerDeps {
@@ -285,6 +287,8 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       if (profile === s.profile) return;
       commit({ ...s, profile, fishing: { phase: 'Idle' }, holding: false }, true);
     },
+
+    markVersionSeen: (version) => changeProfile((p) => (p.seenVersion === version ? p : { ...p, seenVersion: version })),
   };
 }
 

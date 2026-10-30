@@ -1,8 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
+
 export default defineConfig({
+  // INST-07: cada build é uma versão nova; a novidade aparece uma vez depois de atualizar.
+  define: { __APP_VERSION__: JSON.stringify(`${pkg.version}+${new Date().toISOString()}`) },
   plugins: [
     preact(),
     VitePWA({
