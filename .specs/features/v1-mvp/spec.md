@@ -73,6 +73,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Moeda | "R$" fictício | Familiar para ele; não é dinheiro real | n |
 | Mira do arremesso | Tocar no ponto da água; a isca vai até lá, limitada pelo alcance da vara | Um toque, sem barra de força que exige timing | n |
 | Formato do torneio | 8 arremessos, sem cronômetro; vale a soma dos 3 peixes mais pesados | Sem pressão de tempo; dá para pausar quando a enfermagem chegar | n |
+| Empate no campeonato | O Adilson fica à frente do rival com a mesma pontuação | Decidido na implementação (T15); a spec não definia | n |
 | Rivais dos campeonatos | 3 rivais por campeonato, com pontuação fixa calibrada pela PROG-05 | Desafio real que ele consegue vencer; tentativas ilimitadas | n |
 | Dificuldade | Perguntada na primeira abertura (Tranquilo ou Desafio) e mudável em Ajustes | A disposição dele pode variar de um dia para o outro | n |
 | Iscas | Compradas uma vez, uso ilimitado | Evita ficar sem isca e ter que controlar estoque | n |
@@ -436,58 +437,58 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | PESCA-15 | P1: Pescar com um dedo | T11, T37 | Implementing |
 | PESCA-16 | P1: Pescar com um dedo | T11 | Implementing |
 | PESCA-17 | P1: Pescar com um dedo | T11, T29 | Implementing |
-| TUTO-01 | P1: Tutorial da primeira pescaria | - | Pending |
+| TUTO-01 | P1: Tutorial da primeira pescaria | T17 | Implementing |
 | TUTO-02 | P1: Tutorial da primeira pescaria | - | Pending |
-| TUTO-03 | P1: Tutorial da primeira pescaria | - | Pending |
-| TUTO-04 | P1: Tutorial da primeira pescaria | - | Pending |
-| TUTO-05 | P1: Tutorial da primeira pescaria | - | Pending |
-| TUTO-06 | P1: Tutorial da primeira pescaria | - | Pending |
-| TUTO-07 | P1: Tutorial da primeira pescaria | - | Pending |
-| TUTO-08 | P1: Tutorial da primeira pescaria | - | Pending |
-| TUTO-09 | P1: Tutorial da primeira pescaria | - | Pending |
+| TUTO-03 | P1: Tutorial da primeira pescaria | T17 | Implementing |
+| TUTO-04 | P1: Tutorial da primeira pescaria | T17 | Implementing |
+| TUTO-05 | P1: Tutorial da primeira pescaria | T17 | Implementing |
+| TUTO-06 | P1: Tutorial da primeira pescaria | T17 | Implementing |
+| TUTO-07 | P1: Tutorial da primeira pescaria | T17, T40 | Implementing |
+| TUTO-08 | P1: Tutorial da primeira pescaria | T17, T29 | Implementing |
+| TUTO-09 | P1: Tutorial da primeira pescaria | T18, T35 | Implementing |
 | EQUIP-01 | P1: Varas, iscas e loja | - | Pending |
 | EQUIP-02 | P1: Varas, iscas e loja | - | Pending |
-| EQUIP-03 | P1: Varas, iscas e loja | - | Pending |
-| EQUIP-04 | P1: Varas, iscas e loja | - | Pending |
-| EQUIP-05 | P1: Varas, iscas e loja | - | Pending |
-| EQUIP-06 | P1: Varas, iscas e loja | - | Pending |
+| EQUIP-03 | P1: Varas, iscas e loja | T13 | Implementing |
+| EQUIP-04 | P1: Varas, iscas e loja | T13, T41 | Implementing |
+| EQUIP-05 | P1: Varas, iscas e loja | T13, T41 | Implementing |
+| EQUIP-06 | P1: Varas, iscas e loja | T13 | Implementing |
 | EQUIP-07 | P1: Varas, iscas e loja | T8, T10 | Implementing |
-| EQUIP-08 | P1: Varas, iscas e loja | - | Pending |
-| EQUIP-09 | P1: Varas, iscas e loja | - | Pending |
-| HIST-01 | P1: História dos 5 episódios | - | Pending |
+| EQUIP-08 | P1: Varas, iscas e loja | T13 | Implementing |
+| EQUIP-09 | P1: Varas, iscas e loja | T55, T41 | Implementing |
+| HIST-01 | P1: História dos 5 episódios | T16, T39 | Implementing |
 | HIST-02 | P1: História dos 5 episódios | - | Pending |
 | HIST-03 | P1: História dos 5 episódios | - | Pending |
-| HIST-04 | P1: História dos 5 episódios | - | Pending |
-| HIST-05 | P1: História dos 5 episódios | - | Pending |
+| HIST-04 | P1: História dos 5 episódios | T16, T36 | Implementing |
+| HIST-05 | P1: História dos 5 episódios | T16 | Implementing |
 | HIST-06 | P1: História dos 5 episódios | - | Pending |
 | HIST-07 | P1: História dos 5 episódios | T4 | Implementing |
-| HIST-08 | P1: História dos 5 episódios | - | Pending |
-| HIST-09 | P1: História dos 5 episódios | - | Pending |
-| HIST-10 | P1: História dos 5 episódios | - | Pending |
+| HIST-08 | P1: História dos 5 episódios | T16, T44 | Implementing |
+| HIST-09 | P1: História dos 5 episódios | T16 | Implementing |
+| HIST-10 | P1: História dos 5 episódios | T16, T44 | Implementing |
 | HUMOR-01 | P1: Pegada cômica nos personagens | - | Pending |
 | HUMOR-02 | P1: Pegada cômica nos personagens | - | Pending |
 | HUMOR-03 | P1: Pegada cômica nos personagens | - | Pending |
 | HUMOR-04 | P1: Pegada cômica nos personagens | - | Pending |
 | HUMOR-07 | P1: Pegada cômica nos personagens | - | Pending |
 | HUMOR-08 | P1: Pegada cômica nos personagens | - | Pending |
-| CAMP-01 | P1: Campeonatos | - | Pending |
+| CAMP-01 | P1: Campeonatos | T16, T43 | Implementing |
 | CAMP-02 | P1: Campeonatos | - | Pending |
 | CAMP-03 | P1: Campeonatos | - | Pending |
-| CAMP-04 | P1: Campeonatos | - | Pending |
-| CAMP-05 | P1: Campeonatos | - | Pending |
-| CAMP-06 | P1: Campeonatos | - | Pending |
-| CAMP-07 | P1: Campeonatos | - | Pending |
-| CAMP-08 | P1: Campeonatos | - | Pending |
-| CAMP-09 | P1: Campeonatos | - | Pending |
+| CAMP-04 | P1: Campeonatos | T15 | Implementing |
+| CAMP-05 | P1: Campeonatos | T15, T43 | Implementing |
+| CAMP-06 | P1: Campeonatos | T15, T44 | Implementing |
+| CAMP-07 | P1: Campeonatos | T15 | Implementing |
+| CAMP-08 | P1: Campeonatos | T15 | Implementing |
+| CAMP-09 | P1: Campeonatos | T15, T43 | Implementing |
 | CAMP-10 | P1: Campeonatos | - | Pending |
 | EPI-01 | P1: Mapa e 5 episódios | - | Pending |
-| EPI-02 | P1: Mapa e 5 episódios | - | Pending |
-| EPI-03 | P1: Mapa e 5 episódios | - | Pending |
-| EPI-04 | P1: Mapa e 5 episódios | - | Pending |
-| EPI-05 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-02 | P1: Mapa e 5 episódios | T55 | Implementing |
+| EPI-03 | P1: Mapa e 5 episódios | T55, T62 | Implementing |
+| EPI-04 | P1: Mapa e 5 episódios | T55, T62 | Implementing |
+| EPI-05 | P1: Mapa e 5 episódios | T55 | Implementing |
 | EPI-06 | P1: Mapa e 5 episódios | - | Pending |
-| EPI-07 | P1: Mapa e 5 episódios | - | Pending |
-| EPI-08 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-07 | P1: Mapa e 5 episódios | T55, T62 | Implementing |
+| EPI-08 | P1: Mapa e 5 episódios | T55, T62 | Implementing |
 | PROG-01 | P1: Progressão longa | - | Pending |
 | PROG-02 | P1: Progressão longa | - | Pending |
 | PROG-03 | P1: Progressão longa | - | Pending |
@@ -498,23 +499,23 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | SAVE-03 | P1: Pausa e progresso salvo | - | Pending |
 | SAVE-04 | P1: Pausa e progresso salvo | - | Pending |
 | SAVE-05 | P1: Pausa e progresso salvo | - | Pending |
-| SAVE-06 | P1: Pausa e progresso salvo | - | Pending |
+| SAVE-06 | P1: Pausa e progresso salvo | T15, T29 | Implementing |
 | SAVE-07 | P1: Pausa e progresso salvo | - | Pending |
-| SAVE-08 | P1: Pausa e progresso salvo | - | Pending |
-| SAVE-09 | P1: Pausa e progresso salvo | - | Pending |
+| SAVE-08 | P1: Pausa e progresso salvo | T19, T25 | Implementing |
+| SAVE-09 | P1: Pausa e progresso salvo | T19 | Implementing |
 | SAVE-10 | P1: Pausa e progresso salvo | - | Pending |
 | ACES-01 | P1: Conforto e acessibilidade | - | Pending |
-| ACES-02 | P1: Conforto e acessibilidade | - | Pending |
+| ACES-02 | P1: Conforto e acessibilidade | T18, T35 | Implementing |
 | ACES-03 | P1: Conforto e acessibilidade | T10 | Implementing |
-| ACES-04 | P1: Conforto e acessibilidade | - | Pending |
+| ACES-04 | P1: Conforto e acessibilidade | T18, T35 | Implementing |
 | ACES-05 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-06 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-07 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-08 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-09 | P1: Conforto e acessibilidade | - | Pending |
 | ACES-10 | P1: Conforto e acessibilidade | - | Pending |
-| ALBUM-01 | P2: Álbum de peixes | - | Pending |
-| ALBUM-02 | P2: Álbum de peixes | - | Pending |
+| ALBUM-01 | P2: Álbum de peixes | T14 | Implementing |
+| ALBUM-02 | P2: Álbum de peixes | T14, T37 | Implementing |
 | ALBUM-03 | P2: Álbum de peixes | - | Pending |
 | TELA-01 | P2: Tela acesa durante a pesca | - | Pending |
 | TELA-02 | P2: Tela acesa durante a pesca | - | Pending |
@@ -526,7 +527,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 112 total, todos mapeados no tasks.md; 22 em implementação
+**Coverage:** 112 total, todos mapeados no tasks.md; 61 em implementação
 
 ---
 

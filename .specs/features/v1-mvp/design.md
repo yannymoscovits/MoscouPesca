@@ -140,7 +140,7 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
 - **Purpose**: Avançar cenas e objetivos do capítulo a partir de eventos do jogo.
 - **Location**: `src/domain/story.ts`
 - **Interfaces**:
-  - `onEvent(p: StoryProgress, e: GameEvent, ep: Episode): { progress: StoryProgress; sceneToShow?: SceneId }`: objetivos e cenas do episódio atual (HIST-05, HIST-08 a HIST-10)
+  - `onEvent(p: Profile, e: GameEvent, ep: Episode): { progress: StoryProgress; sceneToShow?: SceneId; notice?: string }`: objetivos e cenas do episódio atual; `notice` traz "Episódio N liberado!" ou o aviso final (HIST-05, HIST-08 a HIST-10). O perfil recebido já tem o efeito do evento (compra, álbum); o controlador manda `GameStarted` ao abrir a pesca de um episódio e cuida de `pendingScene`. O encerramento final é o `closingScene` do Episódio 5
   - `currentObjective(p: StoryProgress, ep: Episode): Objective | null` (HIST-04)
   - `isTournamentUnlocked(p: StoryProgress, ep: Episode): boolean` (CAMP-01)
 - **Dependencies**: conteúdo do episódio
@@ -153,7 +153,8 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
 - **Interfaces**:
   - `onChampionshipWon(p: Profile, ep: EpisodeId): Profile`: libera o episódio seguinte, com todos os seus locais, uma vez só (EPI-02, EPI-08)
   - `isUnlocked(p: Profile, ep: EpisodeId): boolean` (EPI-03)
-  - `travel(p: Profile, location: LocationId): Profile`: só para local liberado; guarda o último local (EPI-04, EPI-07)
+  - `travel(p: Profile, location: LocationId, all: Episode[]): Profile`: só para local liberado; guarda o último local (EPI-04, EPI-07)
+  - `episodeAt(location: LocationId, all: Episode[]): Episode`
   - `shopItems(p: Profile, all: Episode[]): { rods: Rod[]; baits: Bait[] }`: só dos episódios liberados (EQUIP-09)
 - **Dependencies**: conteúdo dos episódios
 
@@ -163,9 +164,9 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
 - **Location**: `src/domain/tournament.ts`
 - **Interfaces**:
   - `start(def: TournamentDef): TournamentRun`
-  - `recordCast(run: TournamentRun, result: CastResult): TournamentRun`: gasta o arremesso só quando o resultado sai (SAVE-06)
+  - `recordCast(run: TournamentRun, state: FishingState): TournamentRun`: só os estados `Result_*` gastam arremesso (SAVE-06)
   - `score(run: TournamentRun): number`: soma dos 3 mais pesados (CAMP-04)
-  - `standings(run: TournamentRun, def: TournamentDef): Standing[]` (CAMP-05)
+  - `standings(run: TournamentRun, def: TournamentDef): Standing[]`: em empate, o jogador fica à frente (CAMP-05)
   - `applyVictory(p: Profile, def: TournamentDef): Profile`: troféu e carta uma vez só (CAMP-06 a CAMP-08)
 - **Dependencies**: conteúdo (torneio, rivais, mensagem)
 
@@ -177,7 +178,7 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
   - `start(): TutorialState`: passo `cast` (TUTO-01)
   - `onFishing(t: TutorialState, f: FishingState): TutorialState`: avança `cast → wait → hook → reel → release → done` conforme o estado da pesca (TUTO-03, TUTO-08)
   - `tick(t: TutorialState, dt: number, touched: boolean): TutorialState`: 10 s sem toque marca `nudge` para repetir a instrução e piscar a seta (TUTO-07)
-  - `rules(t: TutorialState): FishingRules`: enquanto ativo, mordida em até 5 s, mordida sem prazo e tensão máxima 99 (TUTO-04 a TUTO-06)
+  - `rules(t: TutorialState, d: Difficulty): FishingRules`: enquanto ativo, mordida em até 5 s, mordida sem prazo e tensão máxima 99; depois do tutorial, as regras normais da dificuldade (TUTO-04 a TUTO-06)
 - **Dependencies**: `fishing` (só lê o estado)
 - O `fishing` recebe as regras por `TickContext.rules`, então o tutorial não tem um caminho de código próprio para a pesca: as mesmas funções rodam com limites diferentes.
 
@@ -310,7 +311,7 @@ interface Profile {
   baits: { owned: BaitId[]; equipped: BaitId }
   settings: { difficulty: Difficulty | null; vibration: boolean }  // null = ainda não perguntado
   story: {
-    episodes: Partial<Record<EpisodeId, { objectiveIndex: number; won: boolean }>>
+    episodes: Partial<Record<EpisodeId, { objectiveIndex: number; progress: number; won: boolean }>>  // progress conta o objetivo atual (ex.: 2 de 3 peixes)
     scenesSeen: SceneId[]
     pendingScene: SceneId | null
   }
@@ -361,6 +362,7 @@ interface Scene { id: SceneId; lines: DialogLine[] }
 interface Objective {
   id: string; text: string
   done: (e: GameEvent, p: Profile) => boolean
+  count?: number                     // quantas vezes `done` precisa acontecer (padrão 1)
   sceneOnDone: SceneId
 }
 interface Chapter { title: string; openingScene: SceneId; objectives: Objective[]; closingScene: SceneId }

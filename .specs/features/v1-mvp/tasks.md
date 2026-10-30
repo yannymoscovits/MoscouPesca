@@ -693,7 +693,7 @@ T53 → T54
 
 - [ ] Teste: toda fala aponta para personagem existente; toda cena citada por objetivo existe; objetivos na ordem do roteiro
 - [ ] Teste: as falas dos 6 passos do tutorial existem
-- [ ] `src/content/rules.test.ts`, sobre todos os episódios de `src/content/index.ts`: 6 a 8 objetivos por episódio, um da espécie rara e um do álbum completo (PROG-02, PROG-03); nenhuma fala da Lavínia contém "Adilson" nem "pai", e cada episódio tem uma cena com fala dela contendo "Adilsinho" (HUMOR-07, HUMOR-08)
+- [ ] `src/content/rules.test.ts`, sobre todos os episódios de `src/content/index.ts` (palavras inteiras: "pai" não casa com "paixão"): 6 a 8 objetivos por episódio, um da espécie rara e um do álbum completo (PROG-02, PROG-03); nenhuma fala da Lavínia contém "Adilson" nem "pai", e cada episódio tem uma cena com fala dela contendo "Adilsinho" (HUMOR-07, HUMOR-08)
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
@@ -727,10 +727,10 @@ T53 → T54
 
 #### T56: Cadastrar o Episódio 2: Jacuípe
 
-**What**: Pacote `ep2` completo: os dois locais (Rio Jacuípe e Ponte da Cetrel) e suas zonas; Rio Jacuípe com Tilápia, Traíra, Tainha, Robalo-peva e Carapeba; Ponte da Cetrel com Robalo-flecha, Pescada-amarela, Vermelho, Baiacu e Camurupim (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um pescador da Barra do Jacuípe como personagem local e encerramento; Copa Jacuípe com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep2` completo: os dois locais (Rio Jacuípe e Ponte da Cetrel) e suas zonas; Rio Jacuípe com Tilápia, Traíra, Tainha, Robalo-peva e Carapeba; Ponte da Cetrel com Robalo-flecha, Pescada-amarela, Vermelho, Baiacu e Camurupim (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, a viagem no tempo de `docs/historia/episodio-2.md` (Ninha criança, Capenga como personagem local) e encerramento; Copa Jacuípe com os rivais Tininho, Denise e Didi e suas provocações; carta da Ninha transcrita de `docs/historia/cartas.md`. Os personagens novos (Ninha, Tininho, Denise, Didi e Capenga) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep2.ts`
 **Depends on**: T23, T24
-**Reuses**: estrutura de `episodes/ep1.ts`
+**Reuses**: estrutura de `episodes/ep1.ts`, roteiro de `docs/historia/episodio-2.md`
 **Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08, EPI-08 (conteúdo)
 **Tools**: MCP: NONE · Skill: `commit-bee`
 
@@ -738,6 +738,7 @@ T53 → T54
 
 - [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep2`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 2º sendo Jacuípe (EPI-01)
+- [ ] Teste: a carta do `ep2` existe e não contém `{{PENDENTE}}`
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
@@ -759,6 +760,7 @@ T53 → T54
 
 - [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep3`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 3º sendo Pantanal (EPI-01)
+- [ ] Roteiro de `docs/historia/episodio-3.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
@@ -780,6 +782,7 @@ T53 → T54
 
 - [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep4`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 4º sendo Amazônia (EPI-01)
+- [ ] Roteiro de `docs/historia/episodio-4.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
@@ -790,7 +793,7 @@ T53 → T54
 
 #### T59: Cadastrar o Episódio 5: Alto-mar da Bahia
 
-**What**: Pacote `ep5` completo: local e zonas (Alto-mar da Bahia); Dourado-do-mar, Cavala, Atum, Olho-de-boi e Marlim-azul (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um mestre de barco como personagem local e encerramento e o encerramento final da história; Copa Adilson Moscovits com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep5` completo: local e zonas (Alto-mar da Bahia); Dourado-do-mar, Cavala, Atum, Olho-de-boi e Marlim-azul (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um mestre de barco como personagem local e encerramento, sendo o encerramento final da história o `chapter.closingScene` do episódio (HIST-10); Copa Adilson Moscovits com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep5.ts`
 **Depends on**: T23, T24
 **Reuses**: estrutura de `episodes/ep1.ts`
@@ -801,6 +804,7 @@ T53 → T54
 
 - [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 5º sendo Alto-mar da Bahia (EPI-01)
+- [ ] Roteiro de `docs/historia/episodio-5.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
@@ -961,6 +965,8 @@ T53 → T54
 - [ ] Mordida com vibração ligada chama `vibrate(300)`; desligada, não chama (PESCA-07)
 - [ ] Carregar perfil salvo no meio de uma briga → volta para `Idle` sem gastar arremesso de torneio (SAVE-06)
 - [ ] Peixe do tutorial conta no objetivo "pegar 3 peixes" (TUTO-08)
+- [ ] Abrir a pesca de um episódio envia `GameStarted`; a abertura do episódio aparece uma vez só, e o controlador cuida de `pendingScene` (HIST-01, HIST-09)
+- [ ] O efeito de cada evento (compra, álbum) é aplicado no perfil antes de chamar `story.onEvent`
 - [ ] `window.__mf` não existe no build de produção
 - [ ] Gate check passes: `npm test`
 
@@ -1325,6 +1331,7 @@ T53 → T54
 **Done when**:
 
 - [ ] Unit: `shouldApply(screen)` verdadeiro para abertura e tela inicial, falso em pesca e torneio
+- [ ] e2e: perfil novo (`seenVersion` vazio) não mostra o aviso de novidade e só grava a versão atual
 - [ ] e2e: `seenVersion` antigo no perfil → aviso aparece uma vez; recarregar não mostra de novo (INST-07)
 - [ ] Gate check passes: `npm test && npm run test:e2e`
 
@@ -1706,7 +1713,7 @@ T53 → T54
 
 #### T52: Gerar os retratos da família
 
-**What**: Retratos de 96 × 96 px dos 7 personagens nas 4 expressões, gerados a partir de descrições em texto das fotos (o Edvaldo, sem foto, pela descrição: cabelo e barba brancos).
+**What**: Retratos de 96 × 96 px dos 11 personagens da família (Adilson, Jane, Lavínia, Edvaldo, Ricardo, Bem, Kris, Ninha criança, Tininho, Denise e Didi) nas 4 expressões, a partir das fotos de `Fotos/` e das notas de `docs/arte/personagens.md` (o Edvaldo também de cabelo preto, para o passado).
 **Where**: `src/assets/portraits/`
 **Depends on**: T39
 **Reuses**: `characters.ts`
@@ -1715,7 +1722,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 28 retratos (ou 14, com normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
+- [ ] 44 retratos, mais o Edvaldo jovem (ou só normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
 - [ ] Fotos não saem da máquina: só as descrições em texto vão para o PixelLab
 - [ ] Usuário aprova cada retrato nos prints dos cartões de apresentação
 - [ ] Gate check passes: build
@@ -1728,7 +1735,7 @@ T53 → T54
 
 #### T72: Gerar os personagens locais
 
-**What**: Retratos de 96 × 96 px, nas 4 expressões, do pescador da Barra do Jacuípe, do pantaneiro, do guia ribeirinho e do mestre de barco.
+**What**: Retratos de 96 × 96 px, nas 4 expressões, do Capenga, do pantaneiro, do guia ribeirinho e do mestre de barco.
 **Where**: `src/assets/portraits/locais/`
 **Depends on**: T52
 **Reuses**: estilo dos retratos da família
