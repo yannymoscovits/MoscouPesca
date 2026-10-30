@@ -463,9 +463,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Primeira tilápia de 1,20 kg → registrada com 1,20 e `isNewRecord: true` (ALBUM-01)
-- [ ] Depois, 0,90 kg → recorde continua 1,20 e `isNewRecord: false`; 1,50 kg → recorde 1,50 e `true` (ALBUM-02)
-- [ ] Gate check passes: `npm test`
+- [x] Primeira tilápia de 1,20 kg → registrada com 1,20 e `isNewRecord: true` (ALBUM-01)
+- [x] Depois, 0,90 kg → recorde continua 1,20 e `isNewRecord: false`; 1,50 kg → recorde 1,50 e `true` (ALBUM-02)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
