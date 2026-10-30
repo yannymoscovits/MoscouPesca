@@ -70,7 +70,7 @@ export interface Character {
 }
 
 export interface DialogLine {
-  speaker: CharacterId;
+  speaker: CharacterId | CharacterId[] | null; // null = narração; lista = fala conjunta
   text: string;
   expression?: Expression; // padrão: 'normal'
 }

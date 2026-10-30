@@ -1,7 +1,7 @@
 // Perfil inicial e ajustes do jogador (design.md, "Data Models").
 // Os IDs iniciais são a referência para o conteúdo do Episódio 1.
 
-import type { BaitId, Difficulty, LocationId, Profile, RodId } from '../content/types';
+import type { BaitId, CharacterId, Difficulty, LocationId, Profile, RodId } from '../content/types';
 
 export const START_ROD: RodId = 'bambu';
 export const START_BAIT: BaitId = 'minhoca';
@@ -41,4 +41,10 @@ export function setVibration(p: Profile, vibration: boolean): Profile {
 /** TUTO-09: "Rever tutorial" na tela Ajustes. */
 export function resetTutorial(p: Profile): Profile {
   return { ...p, tutorialDone: false };
+}
+
+/** HUMOR-01: o cartão de apresentação aparece só na primeira vez. */
+export function introduceCharacter(p: Profile, id: CharacterId): Profile {
+  if (p.charactersIntroduced.includes(id)) return p;
+  return { ...p, charactersIntroduced: [...p.charactersIntroduced, id] };
 }

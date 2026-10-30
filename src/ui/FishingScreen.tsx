@@ -12,6 +12,7 @@ import { currentObjective } from '../domain/story';
 import { score } from '../domain/tournament';
 import { createFishingRenderer } from '../render/fishingRenderer';
 import { useNav, useServices } from './context';
+import { DialogLayer } from './DialogBox';
 import { BitePrompt, ResultOverlay } from './FishCard';
 import { currentPlace, formatKg, formatMoney } from './format';
 import { PauseOverlay } from './Overlays';
@@ -66,6 +67,7 @@ export function FishingScreen() {
       </div>
       <Hud />
       <ResultOverlay />
+      <DialogLayer />
       <PauseOverlay />
     </section>
   );

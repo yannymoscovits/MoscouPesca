@@ -193,13 +193,15 @@ const scenes = [
     lines: [say('lu', 'rindo', 'Xô, completou o álbum? Vou mandar no grupo da família. Depois da reunião.')],
   },
   {
-    // Cena 11. Marcus e Julia aplaudem na torcida, sem falas. Depois vêm a carta e o aviso do Episódio 4.
+    // Cena 11. Marcus e Julia aplaudem na torcida, sem falas: a narração conta. Depois vêm a carta e o
+    // aviso do Episódio 4.
     id: 'ep3-vitoria',
     lines: [
       say('lucca', 'rindo', 'Ganhou! Ganhou!'),
       say('louise', 'rindo', 'Esse é o meu tio!'),
       say('lu', 'rindo', 'Xô campeão! Vou postar no grupo da família… depois da reunião.'),
       say('geane', 'chocado', 'Eu sabia! Os E.T. me contaram ontem.'),
+      { speaker: null, text: 'Marcus e Julia aplaudem na torcida.' }, // narração do roteiro
     ],
   },
   {
@@ -264,11 +266,20 @@ const copaItaparica = {
   message: 'carta-copa-itaparica',
 } satisfies TournamentDef;
 
-// docs/historia/cartas.md, "Episódio 3: Copa Itaparica": a carta ainda vai ser escrita com a família.
+// docs/historia/cartas.md, "Episódio 3: Copa Itaparica (da Lu e da Geane)".
 const letter = {
   id: 'carta-copa-itaparica',
-  from: 'Sua família',
-  text: '{{PENDENTE}}',
+  from: 'Lu e Geane',
+  text: [
+    'Xô,',
+    'Campeão da Copa Itaparica! A gente sabe que você foi pra Vera Cruz pra pescar em paz. Desculpa. Não deu pra deixar.',
+    'Aqui é a Lu, escrevendo entre uma reunião e outra (e um cigarrinho, mas não conta pra ninguém). Quando o Xô some, todo mundo já sabe: foi pescar. E quando volta, o peixe é sempre maior na história do que no balde.',
+    'Aqui é a Geane. Eu chorei quando você ganhou, chorei quando a Lu acendeu o cigarro e chorei porque sim. Sou canceriana, Xô. E os E.T. mandaram avisar que, lá de cima, dá pra ver direitinho: o maior pescador da Bahia é você.',
+    'A Louise mandou dizer que, juridicamente, o troféu é seu, sem direito a recurso. O Lucca quer saber quando vai pescar outro peixe grandão com você. E o Marcus e a Julia gritaram tanto na torcida que espantaram metade dos peixes da ilha.',
+    'Xô, a gente cresceu brigando, rindo e dividindo tudo. Agora a gente divide a torcida: tá todo mundo aqui, esperando você voltar pra ilha com a gente. Dessa vez a gente promete: pescaria em paz. (Mentira.)',
+    'Com amor das suas irmãs,\nLu e Geane\n(e Louise, Lucca, Marcus e Julia)',
+    'P.S. da Geane: se aparecer uma luz estranha no céu hoje à noite, sou eu mandando energia. Ou um E.T. Os dois servem.',
+  ].join('\n\n'),
 } satisfies Message;
 
 export const ep3 = {

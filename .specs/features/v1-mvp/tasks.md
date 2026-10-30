@@ -1130,15 +1130,15 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: jogo novo mostra a abertura antes da pesca, com o cartão "JANE: A Que Sempre Teve Razão" primeiro (HIST-01, HUMOR-01)
-- [ ] e2e: o cartão só fecha com toque e não aparece de novo na segunda fala da Jane (HUMOR-01)
-- [ ] e2e: cada fala mostra nome e retrato; o retrato muda conforme a expressão da fala (HIST-02, HUMOR-02)
-- [ ] e2e: a fala só avança com toque; 30 s parado não avança (HIST-03)
-- [ ] `DialogLine.speaker` aceita `null` (narração: sem retrato, em itálico) e lista de personagens (fala conjunta: retratos lado a lado); e2e cobre os dois casos
-- [ ] Conteúdo dos episódios 2 e 3 ganha as narrações dos roteiros (ex.: "Jacuípe, muitos anos atrás.", "Presente.") e a fala conjunta do Didi e da Denise volta a ser uma só, como no roteiro: "Amamos você meu filho, segura firme!"
-- [ ] A fala do Didi "Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho." entra no final do `ep2` (aprovada pelo usuário); o teste que garantia a ausência dela passa a garantir a presença
-- [ ] A carta do `ep3` deixa de ser `{{PENDENTE}}`: transcrever a carta aprovada da Lu e da Geane de `docs/historia/cartas.md`
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: jogo novo mostra a abertura antes da pesca, com o cartão "JANE: A Que Sempre Teve Razão" primeiro (HIST-01, HUMOR-01)
+- [x] e2e: o cartão só fecha com toque e não aparece de novo na segunda fala da Jane (HUMOR-01)
+- [x] e2e: cada fala mostra nome e retrato; o retrato muda conforme a expressão da fala (HIST-02, HUMOR-02)
+- [x] e2e: a fala só avança com toque; 30 s parado não avança (HIST-03)
+- [x] `DialogLine.speaker` aceita `null` (narração: sem retrato, em itálico) e lista de personagens (fala conjunta: retratos lado a lado); e2e cobre os dois casos
+- [x] Conteúdo dos episódios 2 e 3 ganha as narrações dos roteiros (ex.: "Jacuípe, muitos anos atrás.", "Presente.") e a fala conjunta do Didi e da Denise volta a ser uma só, como no roteiro: "Amamos você meu filho, segura firme!"
+- [x] A fala do Didi "Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho." entra no final do `ep2` (aprovada pelo usuário); o teste que garantia a ausência dela passa a garantir a presença
+- [x] A carta do `ep3` deixa de ser `{{PENDENTE}}`: transcrever a carta aprovada da Lu e da Geane de `docs/historia/cartas.md`
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

@@ -210,18 +210,25 @@ const rods = [
 
 const baits = [{ id: 'camarao', name: 'Isca de Camarão', price: 120, episode: 2 }] satisfies Bait[];
 
-const say = (speaker: CharacterId, expression: Expression, text: string): DialogLine => ({ speaker, expression, text });
+const say = (speaker: CharacterId | CharacterId[], expression: Expression, text: string): DialogLine => ({
+  speaker,
+  expression,
+  text,
+});
+/** Narração do roteiro (as linhas em itálico): sem retrato. */
+const narrate = (text: string): DialogLine => ({ speaker: null, text });
 
 const scenes = [
   {
-    // Cenas 1 e 2 juntas: o capítulo tem uma abertura só.
-    // Entre elas: "A tela ondula. 'Jacuípe, muitos anos atrás.'"
+    // Cenas 1 e 2 juntas: o capítulo tem uma abertura só. Entre elas, a narração leva ao passado
+    // (no roteiro: "A tela ondula. 'Jacuípe, muitos anos atrás.'").
     id: 'ep2-abertura',
     lines: [
       say('jane', 'normal', 'Jacuípe… quanto tempo, hein?'),
       say('adilson', 'normal', 'Olha essa foto que tava na caixa de pesca… eu e a Ninha na Ponte da Cetrel.'),
       say('jane', 'rindo', 'E você já se achando pegador naquela época.'),
       say('capenga', 'normal', 'A maré de Jacuípe devolve tudo, seu Adilson. Até o tempo.'),
+      narrate('Jacuípe, muitos anos atrás.'),
       say('tininho', 'rindo', 'Casa arrumada, rede armada, isca no isopor. Pode chegar, Adilson!'),
       say('didi', 'rindo', 'Junior! Chegou na hora. Antes de pescar, eu fiz uma feijoada maravilhosa.'),
       say('adilson', 'chocado', 'Pai?!'),
@@ -266,17 +273,18 @@ const scenes = [
     lines: [say('ninha', 'rindo', 'Pai, a gente pegou todos!')],
   },
   {
-    // Cena 10. Fica de fora, até a família confirmar, a fala opcional do Didi sobre os médicos e o remédio.
-    // "Didi e Denise" falam juntos no roteiro; aqui cada um diz uma parte da fala.
-    // Antes da Jane: "A tela ondula. Presente." Depois dela vêm a carta da Ninha e o aviso do Episódio 3.
+    // Cena 10, com a fala do Didi sobre os médicos e o remédio (aprovada pela família) e a fala conjunta
+    // do Didi e da Denise. Antes da Jane, a narração volta ao presente ("A tela ondula. Presente.").
+    // Depois dela vêm a carta da Ninha e o aviso do Episódio 3.
     id: 'ep2-vitoria',
     lines: [
       say('didi', 'rindo', 'Esse é o meu filho!'),
       say('denise', 'rindo', 'JUNIORRRR, CAMPEÃO!'),
-      say('didi', 'normal', 'Amamos você, meu filho.'),
-      say('denise', 'normal', 'Segura firme!'),
+      say('didi', 'normal', 'Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho.'),
+      say(['didi', 'denise'], 'normal', 'Amamos você meu filho, segura firme!'),
       say('ninha', 'normal', 'Pai, a gente volta aqui de novo?'),
       say('adilson', 'rindo', 'Sempre que a maré deixar.'),
+      narrate('Presente.'),
       say('jane', 'rindo', 'Cochilou aqui na beira do rio, foi? Tava sorrindo dormindo.'),
     ],
   },

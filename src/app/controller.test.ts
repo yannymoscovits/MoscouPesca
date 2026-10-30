@@ -249,6 +249,17 @@ describe('história', () => {
     expect(g.state().profile.story.pendingScene).toBeNull();
   });
 
+  it('HUMOR-01: apresentar um personagem guarda o cartão como visto e salva', () => {
+    const g = setup(played());
+
+    g.controller.introduce('jane');
+    expect(g.state().profile.charactersIntroduced).toEqual(['jane']);
+    expect(g.lastSaved().charactersIntroduced).toEqual(['jane']);
+
+    g.controller.introduce('jane');
+    expect(g.state().profile.charactersIntroduced).toEqual(['jane']);
+  });
+
   it('HIST-09: primeira pescaria no local de um episódio liberado mostra a abertura dele', () => {
     const g = setup(played({ unlockedEpisodes: [1, 2] }));
 

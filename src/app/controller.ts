@@ -1,7 +1,17 @@
 // Único ponto que muda o estado do jogo (design.md, "GameController"): liga toques, tempo,
 // história, tutorial, torneio, loja, álbum, salvamento e plataforma às funções do domínio.
 
-import type { Difficulty, Episode, EpisodeContent, GameEvent, ItemId, LocationId, Point, Profile } from '../content/types';
+import type {
+  CharacterId,
+  Difficulty,
+  Episode,
+  EpisodeContent,
+  GameEvent,
+  ItemId,
+  LocationId,
+  Point,
+  Profile,
+} from '../content/types';
 import { record } from '../domain/album';
 import { cast, press, rulesFor, tick as fishingTick, type FishingState, type TickContext } from '../domain/fishing';
 import * as profiles from '../domain/profile';
@@ -37,6 +47,8 @@ export interface GameController {
   resume(): void;
   /** Próxima fala da cena pendente; depois da última, fecha a cena (HIST-03). */
   advanceDialog(): void;
+  /** HUMOR-01: o cartão de apresentação do personagem foi visto; não aparece de novo. */
+  introduce(id: CharacterId): void;
   dismissNotice(): void;
   dismissSaveWarning(): void;
   buy(itemId: ItemId): void;
@@ -227,6 +239,8 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       }
       commit({ ...s, dialogLine: 0, profile: { ...s.profile, story: { ...s.profile.story, pendingScene: null } } }, true);
     },
+
+    introduce: (id) => changeProfile((p) => profiles.introduceCharacter(p, id)),
 
     dismissNotice() {
       store.update((s) => ({ ...s, notice: null }));

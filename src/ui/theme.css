@@ -680,3 +680,154 @@ ul {
 .toast p {
   flex: 1;
 }
+
+/* ---------- Diálogos e cartões de apresentação ---------- */
+
+/* A cena da história cobre a pesca, mas deixa a fileira do HUD (Pausar e Menu) à mão. */
+.dialog-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px var(--gutter) calc(var(--hud-row) + 8px);
+  background: rgba(8, 20, 36, 0.55);
+  cursor: pointer;
+}
+
+.dialog-box {
+  display: grid;
+  gap: 6px;
+}
+
+.dialog-box__portraits {
+  display: flex;
+  gap: 12px;
+  margin-top: -64px; /* os retratos saltam para fora da caixa, como num gibi */
+}
+
+.dialog-box__name {
+  font: 700 24px / 1.2 var(--font-title);
+}
+
+.dialog-box__hint {
+  justify-self: end;
+  font-size: var(--text-min);
+  font-weight: 700;
+  animation: cutucar 1.2s ease-in-out infinite;
+}
+
+/* Chama o toque sem apagar o texto (o contraste fica sempre >= 4,5:1). */
+@keyframes cutucar {
+  50% {
+    transform: translateX(6px);
+  }
+}
+
+/* Narração: sem retrato, em itálico, num papel azul-escuro que "ondula". */
+.dialog-box--narration {
+  background: var(--bg-raised);
+  color: var(--ink);
+  border-color: var(--ink);
+  text-align: center;
+  animation: ondular 2.4s ease-in-out infinite;
+}
+
+.dialog-box--narration .dialog-box__text {
+  font-style: italic;
+  font-size: 24px;
+}
+
+@keyframes ondular {
+  25% {
+    transform: skewX(2deg);
+  }
+  75% {
+    transform: skewX(-2deg);
+  }
+}
+
+/* Retrato provisório: quadrado na cor do personagem, iniciais e a carinha da expressão. */
+.portrait {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 112px;
+  height: 112px;
+  border: 4px solid var(--outline);
+  border-radius: 14px;
+  background: var(--portrait);
+  color: #ffffff;
+  box-shadow: 0 5px 0 var(--outline);
+}
+
+.portrait__initials {
+  font: 700 40px / 1 var(--font-title);
+}
+
+.portrait__face {
+  font: 700 20px / 1.2 var(--font-body);
+}
+
+.portrait--art {
+  background-size: cover;
+  image-rendering: pixelated;
+}
+
+.portrait--big {
+  width: 200px;
+  height: 200px;
+}
+
+.portrait--big .portrait__initials {
+  font-size: 72px;
+}
+
+.portrait--big .portrait__face {
+  font-size: 32px;
+}
+
+/* Cartão de apresentação: estouro de cor, retrato grande, nome em caixa alta e o apelido. */
+.intro-card {
+  z-index: 26;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  background: var(--bg);
+}
+
+.intro-card__burst {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 28px 20px;
+  border: 4px solid var(--outline);
+  border-radius: 18px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 8px 0 var(--outline);
+  text-align: center;
+  transform: rotate(-3deg);
+  animation: entrar 0.35s ease-out;
+}
+
+.intro-card__name {
+  font: 700 44px / 1.05 var(--font-title);
+}
+
+.intro-card__epithet {
+  font: italic 700 24px / 1.2 var(--font-body);
+}
+
+.intro-card__hint {
+  font-weight: 700;
+  animation: cutucar 1.2s ease-in-out infinite;
+}
+
+@keyframes entrar {
+  from {
+    transform: scale(0.3) rotate(-20deg);
+  }
+}

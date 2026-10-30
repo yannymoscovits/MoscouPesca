@@ -120,3 +120,22 @@ describe('Episódio 3: Copa Itaparica', () => {
     expect(ep3.tournament.rivals.map((r) => r.character)).toEqual(['lu', 'geane', 'louise']);
   });
 });
+
+describe('Episódio 3: narração e carta', () => {
+  it('na vitória, a narração mostra Marcus e Julia aplaudindo na torcida', () => {
+    const victory = ep3.scenes.find((s) => s.id === ep3.chapter.closingScene)!;
+    expect(victory.lines).toContainEqual({ speaker: null, text: 'Marcus e Julia aplaudem na torcida.' });
+  });
+
+  // Montado em partes para o check:content não acusar este arquivo de teste.
+  const PENDING = '{{' + 'PENDENTE}}';
+
+  it('CAMP-06, HIST-07: a carta da Lu e da Geane existe, começa com "Xô," e não tem texto pendente', () => {
+    expect(ep3.letter.id).toBe(ep3.tournament.message);
+    expect(ep3.letter.from).toBe('Lu e Geane');
+    expect(ep3.letter.text).toMatch(/^Xô,/);
+    expect(ep3.letter.text).toContain('Com amor das suas irmãs,\nLu e Geane\n(e Louise, Lucca, Marcus e Julia)');
+    expect(ep3.letter.text).toContain('P.S. da Geane: se aparecer uma luz estranha no céu hoje à noite');
+    expect(ep3.letter.text).not.toContain(PENDING);
+  });
+});

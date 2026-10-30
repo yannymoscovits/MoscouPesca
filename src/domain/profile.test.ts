@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { newProfile, resetTutorial, setDifficulty, setVibration, START_LOCATION } from './profile';
+import { introduceCharacter, newProfile, resetTutorial, setDifficulty, setVibration, START_LOCATION } from './profile';
 
 describe('perfil novo', () => {
   it('ACES-04: começa com Bambu e Minhoca possuídos e equipados, R$ 0, dificuldade não escolhida e vibração ligada', () => {
@@ -54,5 +54,15 @@ describe('ajustes', () => {
     expect(p.tutorialDone).toBe(false);
     expect(p.money).toBe(230);
     expect(p.trophies).toEqual(['trofeu-guanambicup']);
+  });
+});
+
+describe('cartões de apresentação', () => {
+  it('HUMOR-01: introduceCharacter marca o personagem como apresentado, uma vez só', () => {
+    let p = introduceCharacter(newProfile(), 'jane');
+    expect(p.charactersIntroduced).toEqual(['jane']);
+    p = introduceCharacter(p, 'adilson');
+    expect(p.charactersIntroduced).toEqual(['jane', 'adilson']);
+    expect(introduceCharacter(p, 'jane')).toBe(p);
   });
 });

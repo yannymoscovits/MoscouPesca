@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { newProfile, START_BAIT, START_ROD } from '../domain/profile';
 import { FISH_POWER, FISH_STAMINA } from '../domain/tuning';
-import { characters } from './characters';
+import { characters, speakersOf } from './characters';
 import { episodes } from './index';
 import type { DialogLine, EpisodeContent, GameEvent, Profile, SpeciesId } from './types';
 
@@ -68,7 +68,7 @@ describe('todos os episódios', () => {
   it('HUMOR-09: nenhuma fala da Lu ou da Geane contém "Adilson", e cada uma chama ele de "Xô" em pelo menos uma fala', () => {
     const lines = episodes.flatMap(allLines);
     for (const sister of ['lu', 'geane']) {
-      const hers = lines.filter((l) => l.speaker === sister);
+      const hers = lines.filter((l) => speakersOf(l).includes(sister));
       for (const l of hers) expect(hasWord(l.text, 'Adilson'), l.text).toBe(false);
       expect(hers.filter((l) => hasWord(l.text, 'Xô')).length, sister).toBeGreaterThanOrEqual(1);
     }
@@ -174,11 +174,15 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
     expect(ep.letter.text.trim()).not.toBe('');
   });
 
-  it('toda fala aponta para um personagem de characters.ts e tem texto', () => {
+  it('toda fala tem texto e aponta para personagens de characters.ts; fala conjunta tem 2 ou mais personagens diferentes', () => {
     const ids = new Set(characters.map((c) => c.id));
     for (const line of allLines(ep)) {
-      expect(ids.has(line.speaker), line.speaker).toBe(true);
       expect(line.text.trim()).not.toBe('');
+      for (const id of speakersOf(line)) expect(ids.has(id), id).toBe(true);
+      if (Array.isArray(line.speaker)) {
+        expect(new Set(line.speaker).size, line.text).toBe(line.speaker.length);
+        expect(line.speaker.length, line.text).toBeGreaterThanOrEqual(2);
+      }
     }
   });
 
@@ -223,7 +227,7 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
   });
 
   it('HUMOR-07: nenhuma fala da Lavínia contém "Adilson" nem "pai"', () => {
-    const hers = allLines(ep).filter((l) => l.speaker === 'lavinia');
+    const hers = allLines(ep).filter((l) => speakersOf(l).includes('lavinia'));
     for (const l of hers) {
       expect(hasWord(l.text, 'Adilson'), l.text).toBe(false);
       expect(hasWord(l.text, 'pai'), l.text).toBe(false);
@@ -232,7 +236,7 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
 
   it('HUMOR-07, HUMOR-08: alguma cena tem fala da Lavínia chamando ele de "Adilsinho"', () => {
     const teasing = ep.scenes.filter((s) =>
-      s.lines.some((l) => l.speaker === 'lavinia' && hasWord(l.text, 'Adilsinho')),
+      s.lines.some((l) => speakersOf(l).includes('lavinia') && hasWord(l.text, 'Adilsinho')),
     );
     expect(teasing.length).toBeGreaterThanOrEqual(1);
   });

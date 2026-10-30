@@ -2,7 +2,7 @@
 // e um retrato por expressão (HUMOR-02). Fonte: docs/historia/episodio-1.md e os episódios seguintes.
 // Os retratos ainda não existem; sem eles, a interface desenha formas coloridas.
 
-import type { Character, CharacterId, Expression } from './types';
+import type { Character, CharacterId, DialogLine, Expression } from './types';
 
 const portraits = (id: CharacterId): Record<Expression, string> => ({
   normal: `src/assets/portraits/${id}-normal.png`,
@@ -34,3 +34,9 @@ export const characters = [
   { id: 'louise', name: 'Louise', epithet: 'A Sobrinha Preferida (Ele Nega, Mas É)', portraits: portraits('louise') },
   { id: 'lucca', name: 'Lucca', epithet: 'O Xodó do Xô', portraits: portraits('lucca') },
 ] satisfies Character[];
+
+/** Quem fala: ninguém na narração, um personagem ou vários na fala conjunta. */
+export function speakersOf(line: DialogLine): CharacterId[] {
+  if (line.speaker === null) return [];
+  return Array.isArray(line.speaker) ? line.speaker : [line.speaker];
+}

@@ -3,7 +3,7 @@ import { record } from '../domain/album';
 import { newProfile } from '../domain/profile';
 import { buy } from '../domain/shop';
 import { currentObjective, isTournamentUnlocked, onEvent } from '../domain/story';
-import { characters } from './characters';
+import { characters, speakersOf } from './characters';
 import { ep2 } from './episodes/ep2';
 import { episodes } from './index';
 import type { GameEvent, Profile, SceneId } from './types';
@@ -64,16 +64,46 @@ describe('Episódio 2: elenco', () => {
   it('Tininho, Denise, Didi e o Edvaldo de cabelo preto só aparecem no Episódio 2, o do passado', () => {
     const past = ['tininho', 'denise', 'didi', 'edvaldo-jovem'];
     for (const ep of episodes.filter((e) => e.id !== 2)) {
-      const speakers = [...ep.scenes.flatMap((s) => s.lines), ...ep.tournament.rivals.map((r) => r.taunt)].map(
-        (l) => l.speaker,
+      const speakers = [...ep.scenes.flatMap((s) => s.lines), ...ep.tournament.rivals.map((r) => r.taunt)].flatMap(
+        speakersOf,
       );
       for (const id of past) expect(speakers, `Episódio ${ep.id}`).not.toContain(id);
     }
   });
 
-  it('a fala opcional do Didi ("obedece os médicos") fica de fora até a família confirmar', () => {
-    const texts = ep2.scenes.flatMap((s) => s.lines.map((l) => l.text));
-    for (const text of texts) expect(text.toLowerCase()).not.toContain('obedece os médicos');
+  // A família aprovou a fala do Didi sobre os médicos e o remédio: ela entra na vitória, como no roteiro.
+  it('a fala do Didi "Vai, Junior. Obedece os médicos…" está no final do episódio, na vitória', () => {
+    const victory = ep2.scenes.find((s) => s.id === ep2.chapter.closingScene)!;
+    expect(victory.lines).toContainEqual({
+      speaker: 'didi',
+      expression: 'normal',
+      text: 'Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho.',
+    });
+  });
+});
+
+describe('Episódio 2: narração e fala conjunta do roteiro', () => {
+  const lines = (id: string) => ep2.scenes.find((s) => s.id === id)!.lines;
+
+  it('a abertura vai do presente ao passado com a narração "Jacuípe, muitos anos atrás."', () => {
+    const opening = lines(ep2.chapter.openingScene);
+    const i = opening.findIndex((l) => l.speaker === null && l.text === 'Jacuípe, muitos anos atrás.');
+    expect(i).toBeGreaterThan(0);
+    expect(opening[i - 1]).toMatchObject({ speaker: 'capenga', text: 'A maré de Jacuípe devolve tudo, seu Adilson. Até o tempo.' });
+    expect(opening[i + 1]).toMatchObject({ speaker: 'tininho' });
+  });
+
+  it('a vitória segue o roteiro: Didi e Denise falam juntos e a narração "Presente." volta antes da Jane', () => {
+    expect(lines(ep2.chapter.closingScene).map((l) => [l.speaker, l.text])).toEqual([
+      ['didi', 'Esse é o meu filho!'],
+      ['denise', 'JUNIORRRR, CAMPEÃO!'],
+      ['didi', 'Vai, Junior. Obedece os médicos e toma o remédio direitinho, que eu tô de olho.'],
+      [['didi', 'denise'], 'Amamos você meu filho, segura firme!'],
+      ['ninha', 'Pai, a gente volta aqui de novo?'],
+      ['adilson', 'Sempre que a maré deixar.'],
+      [null, 'Presente.'],
+      ['jane', 'Cochilou aqui na beira do rio, foi? Tava sorrindo dormindo.'],
+    ]);
   });
 });
 
