@@ -37,10 +37,10 @@
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute, Fase 8 (lote 8: T74, T41 a T46 e T62, telas do jogo, com sub-agente)
-- **Completed**: Fases 1 a 7 (até `b8ac69b`); jogo jogável nos episódios 1 a 3 sem arte; 291 testes unitários e 40 e2e passando
-- **In-progress** (file:line): lote 8 rodando em sub-agente
-- **Next step**: Quando o lote 8 terminar, disparar as Fases 9 e 10 (episódios 4 e 5, calibragem, sala de troféus, jornada completa e acessibilidade).
-- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (fases de arte).
-- **Uncommitted files**: spec (visual da tela inicial) e `docs/arte/mockups/tela-inicial.png`. Pendente no `tasks.md` depois do lote 8: T75 já registrada e rodando em worktree isolado, em paralelo à Fase 8 (juntar depois que as duas terminarem); aprovação do usuário com prévias antes de gerar arte em T51, T52 e T72 (3 versões do retrato normal; página de prévia em `arte-previa/`, fora do git)
+- **Phase / Task**: Execute; Fase 8 concluída; T75 (tela inicial do mockup e da logo) rodando em worktree isolado (`.claude/worktrees/`, branch `worktree-agent-a063074ba24fd924b`)
+- **Completed**: Fases 1 a 8 (até `6a6232f`); 303 testes unitários e 81 e2e passando; T44 tem a caixa de HIST-10 aberta até o Episódio 5 existir
+- **In-progress** (file:line): T75 no worktree
+- **Next step**: Quando a T75 terminar, juntar a branch dela na `feat/v1-mvp`, rodar o gate de build e disparar as Fases 9 e 10 (T58, T59, T61, T63, T47, T48; T63 liga "Troféus" no menu).
+- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (só reiniciar quando nenhum sub-agente estiver rodando).
+- **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`

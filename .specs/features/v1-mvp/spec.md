@@ -44,7 +44,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | --------------------- | -------------- | --------- | ---------- |
 | Nome do jogo | MoscouFishing | Escolhido pelo usuário | y |
 | Subtítulo da tela inicial | "A Jornada de Adilson Moscovits" | Põe o nome dele logo na abertura | y |
-| Visual da tela inicial e do tema | Segue o mockup do usuário (`docs/arte/mockups/tela-inicial.png`): fundo do mar em pixel art azul-marinho com raios de luz, bolhas, cardume e algas; peixe amarelo; título "MoscouFishing" em amarelo na fonte pixel; subtítulo claro; botões "Colocar na tela" (azul), "Ajustes" (marinho) e "Jogar" (amarelo, maior), com ícone e seta. A mesma paleta vale para as outras telas | Desenho do usuário | y |
+| Visual da tela inicial e do tema | Segue o mockup do usuário (`docs/arte/mockups/tela-inicial.png`): fundo do mar em pixel art azul-marinho com raios de luz, bolhas, cardume e algas; peixe amarelo; título com "Moscou" claro e "Fishing" amarelo na fonte pixel e o peixe da logo do usuário (`docs/arte/mockups/logo.png`); logo abaixo, a frase "Um peixinho de cada vez" entre dois tracinhos, escolhida pelo usuário; depois o subtítulo claro; botões "Colocar na tela" (azul), "Ajustes" (marinho) e "Jogar" (amarelo, maior), com ícone e seta. A mesma paleta vale para as outras telas | Desenho do usuário | y |
 | Distribuição | PWA instalável, aberta por link enviado no WhatsApp | Decidido com o usuário; sem loja, no ar no mesmo dia | y |
 | Hospedagem | Site estático gratuito (Cloudflare Pages ou Vercel) a partir de repositório privado, com `noindex` | Mensagens da família não ficam públicas e o link não aparece em busca | y |
 | Celular alvo | Android com Chrome | Celular dele, informado pelo usuário | y |
@@ -78,6 +78,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Formato do torneio | 8 arremessos, sem cronômetro; vale a soma dos 3 peixes mais pesados | Sem pressão de tempo; dá para pausar quando a enfermagem chegar | n |
 | Empate no campeonato | O Adilson fica à frente do rival com a mesma pontuação | Decidido na implementação (T15); a spec não definia | n |
 | Interpretações das telas (T34 a T40) | A pergunta de dificuldade aparece no primeiro toque em "Jogar" (a tela inicial abre antes); "FISGAR!" ocupa a metade de baixo = inteiro abaixo do meio, com pelo menos 1/4 da altura e 80% da largura, acima da linha Pausar/Menu; "repetir a instrução" (TUTO-07) = o balão reaparece e a seta pisca; a primeira captura de uma espécie também mostra "Novo recorde!"; uma cena da história espera a ficha do peixe fechar | Pontos que a spec não fixava | y |
+| Vitória e atualização (T44, T45) | Na primeira vitória: carta → cena de encerramento → aviso "Episódio N liberado!"; vitórias repetidas não reabrem a carta. A versão do jogo é a do `package.json` mais a data do build, então cada publicação mostra "Novidade" uma vez | Decidido na implementação | n |
 | Inscrição no campeonato | Não é objetivo: o campeonato libera sozinho depois do último objetivo (CAMP-01) | Não existe evento de inscrição; o Episódio 1 ficou com 6 objetivos, dentro de PROG-02 | y |
 | Ficha da Piranha Lavínia | Mostra "Valor: inestimável" no lugar do valor em R$ (o saldo recebe o valor normal) | Piada do roteiro; exceção visual a PESCA-15 | y |
 | Tamanho da cena | Cena lógica de 180 × 400 px com a ponta da vara em (90, 370); telas mais largas centralizam a cena e completam as laterais com o cenário; a cena fica ancorada embaixo, e em telas mais baixas que 400 × escala a parte de cima (água mais distante) é cortada, ficando visível todo ponto de arremesso em telas a partir de 660 px de altura | As zonas e o alcance das varas são medidos nessa cena (T20) | y |
@@ -425,7 +426,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | INST-04 | P1: Instalar e abrir | T27, T34 | Implementing |
 | INST-05 | P1: Instalar e abrir | T3 | Implementing |
 | INST-06 | P1: Instalar e abrir | T3, T47 | Implementing |
-| INST-07 | P1: Instalar e abrir | - | Pending |
+| INST-07 | P1: Instalar e abrir | T45 | Implementing |
 | INST-08 | P1: Instalar e abrir | T5 | Implementing |
 | INST-09 | P1: Instalar e abrir | T3 | Implementing |
 | PESCA-01 | P1: Pescar com um dedo | T8 | Implementing |
@@ -489,7 +490,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | CAMP-07 | P1: Campeonatos | T15 | Implementing |
 | CAMP-08 | P1: Campeonatos | T15 | Implementing |
 | CAMP-09 | P1: Campeonatos | T15, T43 | Implementing |
-| CAMP-10 | P1: Campeonatos | - | Pending |
+| CAMP-10 | P1: Campeonatos | T44 | Implementing |
 | EPI-01 | P1: Mapa e 5 episódios | T56 a T59 | Implementing |
 | EPI-02 | P1: Mapa e 5 episódios | T55 | Implementing |
 | EPI-03 | P1: Mapa e 5 episódios | T55, T62 | Implementing |
@@ -525,18 +526,18 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | ACES-10 | P1: Conforto e acessibilidade | T26, T38 | Implementing |
 | ALBUM-01 | P2: Álbum de peixes | T14 | Implementing |
 | ALBUM-02 | P2: Álbum de peixes | T14, T37 | Implementing |
-| ALBUM-03 | P2: Álbum de peixes | - | Pending |
+| ALBUM-03 | P2: Álbum de peixes | T42 | Implementing |
 | TELA-01 | P2: Tela acesa durante a pesca | T26, T36 | Implementing |
 | TELA-02 | P2: Tela acesa durante a pesca | T26 | Implementing |
-| HUMOR-05 | P2: Celebração exagerada | - | Pending |
-| HUMOR-06 | P2: Celebração exagerada | - | Pending |
+| HUMOR-05 | P2: Celebração exagerada | T46 | Implementing |
+| HUMOR-06 | P2: Celebração exagerada | T46 | Implementing |
 | TROF-01 | P2: Sala de troféus | - | Pending |
 
 **ID format:** `[CATEGORIA]-[NÚMERO]`
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 113 total, todos mapeados no tasks.md; 103 em implementação
+**Coverage:** 113 total, todos mapeados no tasks.md; 108 em implementação
 
 ---
 
