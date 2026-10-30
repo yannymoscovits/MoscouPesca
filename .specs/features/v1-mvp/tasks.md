@@ -739,10 +739,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep2`, inclusive força e fôlego das espécies entre 1 e 10
-- [ ] Teste: `index.ts` lista os episódios em ordem, com o 2º sendo Jacuípe (EPI-01)
-- [ ] Teste: a carta do `ep2` existe e não contém `{{PENDENTE}}`
-- [ ] Gate check passes: `npm test`
+- [x] Os testes de regras e de consistência de conteúdo passam incluindo o `ep2`, inclusive força e fôlego das espécies entre 1 e 10
+- [x] Teste: `index.ts` lista os episódios em ordem, com o 2º sendo Jacuípe (EPI-01)
+- [x] Teste: a carta do `ep2` existe e não contém `{{PENDENTE}}`
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

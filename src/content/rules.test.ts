@@ -1,6 +1,7 @@
 // Regras de conteúdo que valem para todos os episódios registrados em index.ts.
 import { describe, expect, it } from 'vitest';
-import { newProfile } from '../domain/profile';
+import { newProfile, START_BAIT, START_ROD } from '../domain/profile';
+import { FISH_POWER, FISH_STAMINA } from '../domain/tuning';
 import { characters } from './characters';
 import { episodes } from './index';
 import type { DialogLine, EpisodeContent, GameEvent, Profile, SpeciesId } from './types';
@@ -31,7 +32,127 @@ describe('o verificador de palavra inteira', () => {
   });
 });
 
+describe('todos os episódios', () => {
+  it('EPI-01: index.ts lista os episódios em ordem, a partir do 1', () => {
+    expect(episodes.map((ep) => ep.id)).toEqual(episodes.map((_, i) => i + 1));
+  });
+
+  it('os IDs que o perfil guarda e os cenários são únicos entre os episódios', () => {
+    const unique = (what: string, ids: string[]) => expect(ids.length - new Set(ids).size, what).toBe(0);
+    unique('espécies', episodes.flatMap((ep) => ep.species.map((sp) => sp.id)));
+    unique('varas', episodes.flatMap((ep) => ep.rods.map((r) => r.id)));
+    unique('iscas', episodes.flatMap((ep) => ep.baits.map((b) => b.id)));
+    unique('locais', episodes.flatMap((ep) => ep.locations.map((l) => l.id)));
+    unique('cenários', episodes.flatMap((ep) => ep.locations.map((l) => l.background)));
+    unique('cenas', episodes.flatMap((ep) => ep.scenes.map((s) => s.id)));
+    unique('campeonatos', episodes.map((ep) => ep.tournament.id));
+    unique('troféus', episodes.map((ep) => ep.tournament.trophy));
+    unique('cartas', episodes.map((ep) => ep.letter.id));
+  });
+
+  it('EQUIP-02: cada isca atrai um conjunto não vazio e diferente de espécies', () => {
+    const species = episodes.flatMap((ep) => ep.species);
+    const baits = episodes.flatMap((ep) => ep.baits);
+    const attracted = baits.map((b) =>
+      species
+        .filter((sp) => sp.baits.includes(b.id))
+        .map((sp) => sp.id)
+        .sort()
+        .join(','),
+    );
+    for (const [i, set] of attracted.entries()) expect(set, baits[i].id).not.toBe('');
+    expect(new Set(attracted).size).toBe(baits.length);
+  });
+});
+
 describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, ep) => {
+  const zones = () => ep.locations.flatMap((l) => l.zones);
+
+  it('EPI-06, HUMOR-03: tem pelo menos 5 espécies próprias, com IDs únicos e descrição engraçada', () => {
+    expect(ep.species.length).toBeGreaterThanOrEqual(5);
+    expect(new Set(ep.species.map((sp) => sp.id)).size).toBe(ep.species.length);
+    for (const sp of ep.species) expect(sp.description.trim(), sp.id).not.toBe('');
+  });
+
+  it('força e fôlego de toda espécie ficam dentro de FISH_POWER e FISH_STAMINA (1 a 10)', () => {
+    for (const sp of ep.species) {
+      expect(sp.power, sp.id).toBeGreaterThanOrEqual(FISH_POWER.min);
+      expect(sp.power, sp.id).toBeLessThanOrEqual(FISH_POWER.max);
+      expect(sp.stamina, sp.id).toBeGreaterThanOrEqual(FISH_STAMINA.min);
+      expect(sp.stamina, sp.id).toBeLessThanOrEqual(FISH_STAMINA.max);
+    }
+  });
+
+  it('toda espécie tem faixa de peso válida, preço por kg e peso no sorteio positivos', () => {
+    for (const sp of ep.species) {
+      expect(sp.kg.min, sp.id).toBeGreaterThan(0);
+      expect(sp.kg.max, sp.id).toBeGreaterThanOrEqual(sp.kg.min);
+      expect(sp.pricePerKg, sp.id).toBeGreaterThan(0);
+      expect(sp.rarity, sp.id).toBeGreaterThan(0);
+    }
+  });
+
+  it('EPI-06: todo local tem cenário e zonas; toda espécie das zonas existe e toda espécie aparece numa zona', () => {
+    const ids = new Set(ep.species.map((sp) => sp.id));
+    for (const loc of ep.locations) {
+      expect(loc.name.trim(), loc.id).not.toBe('');
+      expect(loc.background.trim(), loc.id).not.toBe('');
+      expect(loc.zones.length, loc.id).toBeGreaterThan(0);
+    }
+    for (const zone of zones()) {
+      expect(zone.polygon.length, zone.id).toBeGreaterThanOrEqual(3);
+      expect(zone.species.length, zone.id).toBeGreaterThan(0);
+      for (const id of zone.species) expect(ids.has(id), `${zone.id} → ${id}`).toBe(true);
+    }
+    const inZones = new Set(zones().flatMap((z) => z.species));
+    for (const sp of ep.species) expect(inZones.has(sp.id), sp.id).toBe(true);
+  });
+
+  it('EQUIP-02: toda isca citada pelas espécies existe neste episódio ou num anterior', () => {
+    const available = new Set(episodes.filter((e) => e.id <= ep.id).flatMap((e) => e.baits.map((b) => b.id)));
+    for (const sp of ep.species) for (const b of sp.baits) expect(available.has(b), `${sp.id} → ${b}`).toBe(true);
+  });
+
+  it('EQUIP-01: traz 2 varas novas com preço, e toda vara do episódio tem força e alcance de 1 a 10', () => {
+    const novas = ep.rods.filter((r) => r.id !== START_ROD);
+    expect(novas).toHaveLength(2);
+    for (const r of novas) expect(r.price, r.id).toBeGreaterThan(0);
+    for (const r of ep.rods) {
+      expect(r.episode, r.id).toBe(ep.id);
+      for (const value of [r.force, r.reach]) {
+        expect(value, r.id).toBeGreaterThanOrEqual(1);
+        expect(value, r.id).toBeLessThanOrEqual(10);
+      }
+    }
+  });
+
+  it('EQUIP-02: traz pelo menos 1 isca nova com preço', () => {
+    const novas = ep.baits.filter((b) => b.id !== START_BAIT);
+    expect(novas.length).toBeGreaterThanOrEqual(1);
+    for (const b of novas) expect(b.price, b.id).toBeGreaterThan(0);
+    for (const b of ep.baits) expect(b.episode, b.id).toBe(ep.id);
+  });
+
+  it('CAMP-02, HUMOR-04: o campeonato tem nome, 8 arremessos, conta 3 e tem 3 rivais do elenco, cada um provocando com a própria fala', () => {
+    const ids = new Set(characters.map((c) => c.id));
+    expect(ep.tournament.name.trim()).not.toBe('');
+    expect(ep.tournament).toMatchObject({ casts: 8, countBest: 3 });
+    expect(ep.tournament.rivals).toHaveLength(3);
+    expect(new Set(ep.tournament.rivals.map((r) => r.character)).size).toBe(3);
+    for (const r of ep.tournament.rivals) {
+      expect(ids.has(r.character), r.character).toBe(true);
+      expect(r.kg, r.character).toBeGreaterThan(0);
+      expect(r.taunt.speaker).toBe(r.character);
+    }
+  });
+
+  it('EPI-06, CAMP-06, CAMP-07: o campeonato tem troféu e a carta da família, com remetente e texto', () => {
+    expect(ep.tournament.trophy.trim()).not.toBe('');
+    expect(ep.letter.id).toBe(ep.tournament.message);
+    expect(ep.letter.from.trim()).not.toBe('');
+    expect(ep.letter.text.trim()).not.toBe('');
+  });
+
   it('toda fala aponta para um personagem de characters.ts e tem texto', () => {
     const ids = new Set(characters.map((c) => c.id));
     for (const line of allLines(ep)) {
