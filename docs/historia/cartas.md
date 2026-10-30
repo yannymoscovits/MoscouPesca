@@ -95,7 +95,7 @@ Você sempre ensinou que pescaria é paciência: esperar a hora certa e não sol
 
 A Jane, que te atura e faria tudo de novo.
 A Ninha e a Ângela, com o protetor solar na bolsa e o jogo pronto pra próxima fase.
-A Lavínia, que promete continuar te pirraçando por muitos e muitos anos.
+A Lavínia, que promete continuar te pirraçando por muitos e muitos anos (agora com a ajuda do Cervero).
 A Lu e a Geane, chorando de esperança (e com os E.T. torcendo por você).
 A Louise e o Lucca, guardando o lugar do lado na próxima pescaria.
 O Edvaldo, com desconto de verdade dessa vez.

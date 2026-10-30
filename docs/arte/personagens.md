@@ -25,3 +25,4 @@
 | Sr. Higashi | sem foto | Chefe da Ninha; japonês e gordinho; sempre com um aparelho de GPS na mão |
 | Ninha (adulta) | `Fotos/Ninha.png` | Nerd de TI; cabelo escuro curto, cacheado e volumoso em cima; óculos de armação fina prateada, formato hexagonal; pele clara; piercing de argola no nariz e alargador preto na orelha; camisa social preta |
 | Ângela | sem foto | Companheira da Ninha; ruiva, gordinha, sardenta e mais alta que a Ninha |
+| Ruan (Cervero) | sem foto | Namorado da Lavínia; aparece como peixe ao lado da Piranha Lavínia, com o olho torto (o apelido vem daí), num traço carinhoso e engraçado |

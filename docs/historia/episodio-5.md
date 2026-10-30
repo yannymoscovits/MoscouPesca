@@ -14,7 +14,7 @@ O chefão é o **Marlim-azul**, que briga até o fim. Quando pega, o Adilson sol
 
 ## Elenco
 
-Todo mundo: Jane, Ninha (adulta), Ângela (companheira da Ninha), Lavínia (piranha, no mar aberto), Edvaldo, Ricardo, Bem, Kris, Lu, Geane, Louise, Lucca, Márcio (capitão do barco), Sr. Higashi e Capenga.
+Todo mundo: Jane, Ninha (adulta), Ângela (companheira da Ninha), Lavínia (piranha, no mar aberto) e o namorado dela, o Ruan, mais conhecido como Cervero, Edvaldo, Ricardo, Bem, Kris, Lu, Geane, Louise, Lucca, Márcio (capitão do barco), Sr. Higashi e Capenga.
 
 Rivais da Copa Adilson Moscovits: **Jane, Lavínia e Ninha**.
 
@@ -24,6 +24,7 @@ Novos cartões de apresentação:
 | ---------- | ------ | ---------------------- |
 | Ninha (adulta) | A filha que pescava com ele em Jacuípe, hoje nerd de TI (e quem fez este jogo) | NINHA: *A Nerd de TI que Programou Este Jogo* |
 | Ângela | Companheira da Ninha; ruiva, gordinha, sardenta e mais alta que a Ninha | ÂNGELA: *Mais Alta que a Ninha (e Adora Lembrar Disso)* |
+| Ruan (Cervero) | Namorado da Lavínia; aparece no mar ao lado da Piranha Lavínia; tem o olho torto, daí o apelido | RUAN: *Mais Conhecido como Cervero* |
 
 Didi, Denise e Tininho aparecem só como lembrança leve, nas falas de quem está no barco.
 
@@ -61,7 +62,9 @@ Didi, Denise e Tininho aparecem só como lembrança leve, nas falas de quem est�
 
 - **Lavínia** [rindo]: Adilsinho! Mar aberto é o meu parquinho.
 - **Adilson** [bravo]: Você não cansa, né?
-- **Lavínia** [rindo]: De te pirraçar? Nunca, Adilsinho.
+- **Lavínia** [rindo]: De te pirraçar? Nunca, Adilsinho. E hoje eu trouxe reforço: meu namorado!
+- **Cervero** [rindo]: Prazer, seu Adilson. Pode deixar que eu fico de olho: um olho no peixe e outro no gato.
+- **Adilson** [chocado]: Mais um pra me pirraçar no mar…
 
 **Objetivo: pegar um Atum.**
 
@@ -81,6 +84,7 @@ Didi, Denise e Tininho aparecem só como lembrança leve, nas falas de quem est�
 - **Jane** [normal]: Esse é teimoso que nem você, pegador.
 - **Ninha** [normal]: Pai, esse vai puxar forte. Não solta!
 - **Lavínia** [normal]: Vai, Adilsinho. Hoje eu torço por você.
+- **Cervero** [rindo]: Tô de olho na sombra dele, seu Adilson. Num dos olhos, pelo menos.
 - **Geane** [chocado]: Xô, não desiste!
 - **Ricardo** [rindo]: Tum-tum-ta! Força!
 
@@ -118,6 +122,7 @@ Didi, Denise e Tininho aparecem só como lembrança leve, nas falas de quem est�
 - **Ninha** [normal]: Pai, segura firme. A próxima pescaria é nossa, e eu tô aqui pra ela.
 - **Ângela** [normal]: Seu Adilson, o senhor é família. E família a gente não solta.
 - **Lavínia** [normal]: Adilsinho, sem pirraça agora: a gente te ama muito. Não desiste.
+- **Cervero** [normal]: Seu Adilson, tô de olho na sua melhora. Com os dois olhos.
 - **Lu** [normal]: Xô, cancelei todas as reuniões. Hoje eu só torço por você.
 - **Geane** [chocado]: Xô, eu chorei, claro. Mas de esperança. Até os E.T. tão torcendo.
 - **Louise** [normal]: Tio, você é o meu herói. Ponto final, sem recurso.
