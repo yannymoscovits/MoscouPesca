@@ -48,10 +48,9 @@ O gate de build **não** roda `check:content`: o marcador `{{PENDENTE}}` é espe
 ---
 
 ## Execution Plan
-
 Phases are ordered and run sequentially - each phase completes before the next begins, and tasks within a phase execute in order. Dependências entre fases aparecem só no campo `Depends on` de cada tarefa.
 
-**Marco jogável:** ao fim da Fase 7, os 5 episódios rodam no celular com formas provisórias no lugar da arte.
+**Marco jogável:** ao fim da Fase 8, os episódios 1 a 3 rodam no celular com formas provisórias no lugar da arte. Os episódios 4 e 5 entram na Fase 9, quando os roteiros estiverem prontos com o usuário.
 
 ### Phase 1: Fundação
 
@@ -83,14 +82,10 @@ T22 → T23
 T22 → T24
 ```
 
-### Phase 5: Episódios 2 a 5 e progressão
+### Phase 5: Episódios 2 e 3 e simulação
 
 ```
-T56 → T61
-T57 → T61
-T58 → T61
-T59 → T61
-T60 → T61
+T56, T57, T60 (independentes)
 ```
 
 ### Phase 6: Plataforma, app e desenho
@@ -117,17 +112,25 @@ T36 → T40
 ### Phase 8: Telas do jogo
 
 ```
-T41, T42, T45, T46, T62, T63 (independentes)
+T41, T42, T45, T46, T62 (independentes)
 T43 → T44
 ```
 
-### Phase 9: Fechamento técnico
+### Phase 9: Episódios 4 e 5 e progressão
+
+```
+T58 → T61
+T59 → T61
+T59 → T63
+```
+
+### Phase 10: Fechamento técnico
 
 ```
 T47 → T48
 ```
 
-### Phase 10: Arte dos cenários
+### Phase 11: Arte dos cenários
 
 ```
 T49 → T64
@@ -137,7 +140,7 @@ T49 → T66
 T49 → T67
 ```
 
-### Phase 11: Arte dos peixes
+### Phase 12: Arte dos peixes
 
 ```
 T50 → T68
@@ -146,7 +149,7 @@ T50 → T70
 T50 → T71
 ```
 
-### Phase 12: Personagens, ícone e publicação
+### Phase 13: Personagens, ícone e publicação
 
 ```
 T51 → T54
@@ -727,7 +730,7 @@ T53 → T54
 
 #### T56: Cadastrar o Episódio 2: Jacuípe
 
-**What**: Pacote `ep2` completo: os dois locais (Rio Jacuípe e Ponte da Cetrel) e suas zonas; Rio Jacuípe com Tilápia, Traíra, Tainha, Robalo-peva e Carapeba; Ponte da Cetrel com Robalo-flecha, Pescada-amarela, Vermelho, Baiacu e Camurupim (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, a viagem no tempo de `docs/historia/episodio-2.md` (Ninha criança, Capenga como personagem local) e encerramento; Copa Jacuípe com os rivais Tininho, Denise e Didi e suas provocações; carta da Ninha transcrita de `docs/historia/cartas.md`. Os personagens novos (Ninha, Tininho, Denise, Didi e Capenga) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep2` completo: os dois locais (Rio Jacuípe e Ponte da Cetrel) e suas zonas; Rio Jacuípe com Tilápia, Traíra, Tainha, Robalo-peva e Carapeba; Ponte da Cetrel com Robalo-flecha, Pescada-amarela, Vermelho, Baiacu e Camurupim (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, a viagem no tempo de `docs/historia/episodio-2.md` (Ninha criança, Capenga como personagem local) e encerramento; Copa Jacuípe com os rivais Tininho, Denise e Didi e suas provocações; carta da Ninha transcrita de `docs/historia/cartas.md`. Os personagens novos (Ninha, Tininho, Denise, Didi, Capenga e `edvaldo-jovem`, o Edvaldo de cabelo preto do passado) entram em `src/content/characters.ts`. A fala opcional do Didi ("obedece os médicos") fica de fora até o usuário confirmar. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep2.ts`
 **Depends on**: T23, T24
 **Reuses**: estrutura de `episodes/ep1.ts`, roteiro de `docs/historia/episodio-2.md`
@@ -747,69 +750,25 @@ T53 → T54
 
 ---
 
-#### T57: Cadastrar o Episódio 3: Pantanal
+#### T57: Cadastrar o Episódio 3: Vera Cruz, Ilha de Itaparica
 
-**What**: Pacote `ep3` completo: local e zonas (Pantanal); Pacu, Piraputanga, Piranha-vermelha, Jaú e Pintado (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um pantaneiro como personagem local e encerramento; Desafio do Pantanal com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep3` completo a partir de `docs/historia/episodio-3.md`: local e zonas (Vera Cruz, Ilha de Itaparica); Xaréu, Guaricema, Agulhinha, Cioba, Budião e Garoupa (rara), com descrição engraçada; 2 varas (Vara Baía e Vara Pedra Fina) e 1 isca novas; roteiro com abertura na fila do ferry, 7 objetivos, a Lavínia pirraçando o Adilsinho e encerramento; Copa Itaparica com os rivais Lu, Geane e Louise e suas provocações; carta `{{PENDENTE}}`. Os personagens novos (Lu, Geane, Louise e Lucca) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep3.ts`
 **Depends on**: T23, T24
-**Reuses**: estrutura de `episodes/ep1.ts`
-**Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08
+**Reuses**: estrutura de `episodes/ep1.ts`, roteiro de `docs/historia/episodio-3.md`
+**Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08, HUMOR-09
 **Tools**: MCP: NONE · Skill: `commit-bee`
 
 **Done when**:
 
 - [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep3`, inclusive força e fôlego das espécies entre 1 e 10
-- [ ] Teste: `index.ts` lista os episódios em ordem, com o 3º sendo Pantanal (EPI-01)
-- [ ] Roteiro de `docs/historia/episodio-3.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
+- [ ] Teste: `index.ts` lista os episódios em ordem, com o 3º sendo Vera Cruz, Ilha de Itaparica (EPI-01)
+- [ ] `rules.test.ts` ganha a regra das irmãs: nenhuma fala da Lu ou da Geane contém "Adilson", e cada uma tem pelo menos uma fala com "Xô" (HUMOR-09)
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
-**Commit**: `feat(content): adiciona episódio do pantanal`
-
----
-
-#### T58: Cadastrar o Episódio 4: Amazônia
-
-**What**: Pacote `ep4` completo: local e zonas (Amazônia); Aruanã, Pirapitinga, Peixe-cachorro, Tucunaré-açu e Piraíba (rara), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um guia ribeirinho como personagem local e encerramento; Torneio da Amazônia com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
-**Where**: `src/content/episodes/ep4.ts`
-**Depends on**: T23, T24
-**Reuses**: estrutura de `episodes/ep1.ts`
-**Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08
-**Tools**: MCP: NONE · Skill: `commit-bee`
-
-**Done when**:
-
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep4`, inclusive força e fôlego das espécies entre 1 e 10
-- [ ] Teste: `index.ts` lista os episódios em ordem, com o 4º sendo Amazônia (EPI-01)
-- [ ] Roteiro de `docs/historia/episodio-4.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
-- [ ] Gate check passes: `npm test`
-
-**Tests**: unit
-**Gate**: quick
-**Commit**: `feat(content): adiciona episódio da amazônia`
-
----
-
-#### T59: Cadastrar o Episódio 5: Alto-mar da Bahia
-
-**What**: Pacote `ep5` completo: local e zonas (Alto-mar da Bahia); Dourado-do-mar, Cavala, Atum, Olho-de-boi e Marlim-azul (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um mestre de barco como personagem local e encerramento, sendo o encerramento final da história o `chapter.closingScene` do episódio (HIST-10); Copa Adilson Moscovits com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
-**Where**: `src/content/episodes/ep5.ts`
-**Depends on**: T23, T24
-**Reuses**: estrutura de `episodes/ep1.ts`
-**Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08, HIST-10 (conteúdo)
-**Tools**: MCP: NONE · Skill: `commit-bee`
-
-**Done when**:
-
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`, inclusive força e fôlego das espécies entre 1 e 10
-- [ ] Teste: `index.ts` lista os episódios em ordem, com o 5º sendo Alto-mar da Bahia (EPI-01)
-- [ ] Roteiro de `docs/historia/episodio-5.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
-- [ ] Gate check passes: `npm test`
-
-**Tests**: unit
-**Gate**: quick
-**Commit**: `feat(content): adiciona episódio do alto-mar`
+**Commit**: `feat(content): adiciona episódio de itaparica`
 
 ---
 
@@ -832,29 +791,6 @@ T53 → T54
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(sim): simula um jogador típico por episódio`
-
----
-
-#### T61: Calibrar a progressão dos 5 episódios
-
-**What**: Ajustar preços, objetivos, raridades e pontuação dos rivais nos 5 pacotes até a simulação cumprir a medição de progressão da spec.
-**Where**: `src/content/progression.test.ts`
-**Depends on**: T56, T57, T58, T59, T60
-**Reuses**: `sim/typicalPlayer.ts`
-**Requirement**: PROG-01, PROG-04, PROG-05
-**Tools**: MCP: NONE · Skill: `commit-bee`
-
-**Done when**:
-
-- [ ] Para cada episódio, em 50 sementes, mediana do tempo até a vitória entre 120 e 180 min (PROG-01)
-- [ ] Em pelo menos 90% das sementes, nenhum intervalo sem conquista passa de 10 min (PROG-04)
-- [ ] Em 50 tentativas, vitória ≥ 60% com a melhor vara do episódio e ≤ 20% com a melhor do episódio anterior (PROG-05)
-- [ ] Ajustes só em números de `src/content/episodes/*`, sem mudar o domínio
-- [ ] Gate check passes: `npm test`
-
-**Tests**: unit
-**Gate**: quick
-**Commit**: `test(balance): calibra a progressão dos episódios`
 
 ---
 
@@ -1052,8 +988,8 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste: 412 px → escala 2 e largura lógica 206; 360 px → escala 2 e 180; 600 px → escala 3 e 200
-- [ ] Teste: `toLogical` converte cliques nos cantos e no centro com erro de no máximo 1 px lógico
+- [ ] Teste: 412 px → escala 2; 360 px → escala 2; 600 px → escala 3; a cena lógica é sempre 180 × 400 e fica centralizada, com as laterais preenchidas pelo cenário
+- [ ] Teste: `toLogical` converte cliques nos cantos e no centro da cena com erro de no máximo 1 px lógico; a ponta da vara fica em (90, 370)
 - [ ] `draw` com todos os estados da pesca roda sem erro num canvas do happy-dom (contexto falso)
 - [ ] Gate check passes: `npm test`
 
@@ -1150,6 +1086,7 @@ T53 → T54
 - [ ] e2e: na mordida, "!" e "FISGAR!" aparecem e o botão fica inteiro abaixo da metade da tela (PESCA-06)
 - [ ] e2e: com `navigator.vibrate` espionado, mordida chama `vibrate(300)` com vibração ligada e não chama desligada (PESCA-07)
 - [ ] e2e: ficha mostra espécie, peso com 2 casas, valor em R$ e a descrição da espécie (PESCA-15, HUMOR-03)
+- [ ] `Species.valueLabel` opcional (tipo + `piranha-lavinia` com "inestimável"); e2e: a ficha da Piranha Lavínia mostra "Valor: inestimável" e o saldo recebe o valor normal
 - [ ] e2e: peixe acima do recorde mostra "Novo recorde!" (ALBUM-02)
 - [ ] Gate check passes: `npm test && npm run test:e2e`
 
@@ -1187,7 +1124,7 @@ T53 → T54
 **What**: `DialogBox` (retrato com expressão, nome, texto, avança com toque) e `CharacterIntroCard` (retrato grande, nome e apelido na primeira aparição).
 **Where**: `src/ui/DialogBox.tsx`
 **Depends on**: T34
-**Reuses**: `characters.ts`, `chapter1.ts`
+**Reuses**: `characters.ts`, `episodes/ep1.ts`
 **Requirement**: HIST-01 (exibição), HIST-02, HIST-03, HUMOR-01, HUMOR-02
 **Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
 
@@ -1366,7 +1303,7 @@ T53 → T54
 
 **What**: `MapScreen` com os 5 locais: liberados tocáveis, bloqueados com cadeado e o nome do campeonato que libera.
 **Where**: `src/ui/MapScreen.tsx`
-**Depends on**: T36
+**Depends on**: T36, T56
 **Reuses**: `world.ts`, `episodes/*`
 **Requirement**: EPI-03, EPI-04, EPI-07, EPI-08
 **Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
@@ -1384,11 +1321,80 @@ T53 → T54
 
 ---
 
+### Phase 9 tasks
+
+#### T58: Cadastrar o Episódio 4: Amazônia
+
+**What**: Pacote `ep4` completo: local e zonas (Amazônia); Aruanã, Pirapitinga, Peixe-cachorro, Tucunaré-açu e Piraíba (rara), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um guia ribeirinho como personagem local e encerramento; Torneio da Amazônia com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
+**Where**: `src/content/episodes/ep4.ts`
+**Depends on**: T23, T24
+**Reuses**: estrutura de `episodes/ep1.ts`
+**Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep4`, inclusive força e fôlego das espécies entre 1 e 10
+- [ ] Teste: `index.ts` lista os episódios em ordem, com o 4º sendo Amazônia (EPI-01)
+- [ ] Roteiro de `docs/historia/episodio-4.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(content): adiciona episódio da amazônia`
+
+---
+
+#### T59: Cadastrar o Episódio 5: Alto-mar da Bahia
+
+**What**: Pacote `ep5` completo: local e zonas (Alto-mar da Bahia); Dourado-do-mar, Cavala, Atum, Olho-de-boi e Marlim-azul (raro), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um mestre de barco como personagem local e encerramento, sendo o encerramento final da história o `chapter.closingScene` do episódio (HIST-10); Copa Adilson Moscovits com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
+**Where**: `src/content/episodes/ep5.ts`
+**Depends on**: T23, T24
+**Reuses**: estrutura de `episodes/ep1.ts`
+**Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08, HIST-10 (conteúdo)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`, inclusive força e fôlego das espécies entre 1 e 10
+- [ ] Teste: `index.ts` lista os episódios em ordem, com o 5º sendo Alto-mar da Bahia (EPI-01)
+- [ ] Roteiro de `docs/historia/episodio-5.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(content): adiciona episódio do alto-mar`
+
+---
+
+#### T61: Calibrar a progressão dos 5 episódios
+
+**What**: Ajustar preços, objetivos, raridades e pontuação dos rivais nos 5 pacotes até a simulação cumprir a medição de progressão da spec.
+**Where**: `src/content/progression.test.ts`
+**Depends on**: T56, T57, T58, T59, T60
+**Reuses**: `sim/typicalPlayer.ts`
+**Requirement**: PROG-01, PROG-04, PROG-05
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Para cada episódio, em 50 sementes, mediana do tempo até a vitória entre 120 e 180 min (PROG-01)
+- [ ] Em pelo menos 90% das sementes, nenhum intervalo sem conquista passa de 10 min (PROG-04)
+- [ ] Em 50 tentativas, vitória ≥ 60% com a melhor vara do episódio e ≤ 20% com a melhor do episódio anterior (PROG-05)
+- [ ] Ajustes só em números de `src/content/episodes/*`, sem mudar o domínio
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `test(balance): calibra a progressão dos episódios`
+
+---
+
 #### T63: Criar a sala de troféus
 
 **What**: `TrophyRoom` com os 5 troféus: conquistados em destaque e os que faltam em silhueta com o nome do campeonato.
 **Where**: `src/ui/TrophyRoom.tsx`
-**Depends on**: T34
+**Depends on**: T34, T59
 **Reuses**: `tournament.ts`, `episodes/*`
 **Requirement**: TROF-01
 **Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
@@ -1404,7 +1410,7 @@ T53 → T54
 
 ---
 
-### Phase 9 tasks
+### Phase 10 tasks
 
 #### T47: Testar a jornada completa
 
@@ -1453,7 +1459,7 @@ T53 → T54
 
 ---
 
-### Phase 10 tasks
+### Phase 11 tasks
 
 #### T49: Gerar o cenário do Poço do Magro
 
@@ -1518,10 +1524,10 @@ T53 → T54
 
 ---
 
-#### T65: Gerar o cenário do Pantanal
+#### T65: Gerar o cenário de Vera Cruz
 
-**What**: Fundo do Pantanal visto de cima (baía com aguapés e vegetação alagada) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
-**Where**: `src/assets/scene/pantanal.png`
+**What**: Fundo de Vera Cruz, na Ilha de Itaparica, visto de cima (água calma da Baía de Todos os Santos, pedras e coqueiros) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
+**Where**: `src/assets/scene/vera-cruz.png`
 **Depends on**: T49
 **Reuses**: estilo de `scene/poco-do-magro.png`
 **Requirement**: - (arte; cenário próprio da EPI-06)
@@ -1529,13 +1535,13 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Cenário aparece ao pescar em Pantanal (Episódio 3), sem distorção nas larguras de 360, 412 e 600 px (prints)
+- [ ] Cenário aparece ao pescar em Vera Cruz (Episódio 3), sem distorção nas larguras de 360, 412 e 600 px (prints)
 - [ ] Zonas de pesca do `ep3` coincidem com áreas visualmente distintas
 - [ ] Gate check passes: build
 
 **Tests**: none
 **Gate**: build
-**Commit**: `feat(art): adiciona cenário do pantanal`
+**Commit**: `feat(art): adiciona cenário de vera cruz`
 
 ---
 
@@ -1581,7 +1587,7 @@ T53 → T54
 
 ---
 
-### Phase 11 tasks
+### Phase 12 tasks
 
 #### T50: Gerar os peixes do Episódio 1
 
@@ -1627,7 +1633,7 @@ T53 → T54
 
 #### T69: Gerar os peixes do Episódio 3
 
-**What**: Sprites de Pacu, Piraputanga, Piranha-vermelha, Jaú e Pintado (nadando e na ficha), na paleta do Episódio 1.
+**What**: Sprites de Xaréu, Guaricema, Agulhinha, Cioba, Budião e Garoupa (nadando e na ficha), na paleta do Episódio 1.
 **Where**: `src/assets/fish/ep3/`
 **Depends on**: T50
 **Reuses**: estilo de `fish/ep1/`
@@ -1636,13 +1642,13 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 5 espécies com sprite de cena e de ficha
+- [ ] 6 espécies com sprite de cena e de ficha
 - [ ] Prints da ficha de cada espécie conferidos
 - [ ] Gate check passes: build
 
 **Tests**: none
 **Gate**: build
-**Commit**: `feat(art): adiciona peixes do pantanal`
+**Commit**: `feat(art): adiciona peixes de itaparica`
 
 ---
 
@@ -1688,7 +1694,7 @@ T53 → T54
 
 ---
 
-### Phase 12 tasks
+### Phase 13 tasks
 
 #### T51: Gerar o Adilson na cena
 
@@ -1713,7 +1719,7 @@ T53 → T54
 
 #### T52: Gerar os retratos da família
 
-**What**: Retratos de 96 × 96 px dos 11 personagens da família (Adilson, Jane, Lavínia, Edvaldo, Ricardo, Bem, Kris, Ninha criança, Tininho, Denise e Didi) nas 4 expressões, a partir das fotos de `Fotos/` e das notas de `docs/arte/personagens.md` (o Edvaldo também de cabelo preto, para o passado).
+**What**: Retratos de 96 × 96 px dos 15 personagens da família (Adilson, Jane, Lavínia, Edvaldo, Ricardo, Bem, Kris, Ninha criança, Tininho, Denise, Didi, Lu, Geane, Louise e Lucca) nas 4 expressões, a partir das fotos de `Fotos/` e das notas de `docs/arte/personagens.md` (o Edvaldo também de cabelo preto, para o passado).
 **Where**: `src/assets/portraits/`
 **Depends on**: T39
 **Reuses**: `characters.ts`
@@ -1722,7 +1728,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 44 retratos, mais o Edvaldo jovem (ou só normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
+- [ ] 60 retratos, mais o Edvaldo jovem (ou só normal e rindo, se as variações saírem inconsistentes, conforme o risco do design)
 - [ ] Fotos não saem da máquina: só as descrições em texto vão para o PixelLab
 - [ ] Usuário aprova cada retrato nos prints dos cartões de apresentação
 - [ ] Gate check passes: build
@@ -1735,7 +1741,7 @@ T53 → T54
 
 #### T72: Gerar os personagens locais
 
-**What**: Retratos de 96 × 96 px, nas 4 expressões, do Capenga, do pantaneiro, do guia ribeirinho e do mestre de barco.
+**What**: Retratos de 96 × 96 px, nas 4 expressões, do Capenga, do guia ribeirinho e do mestre de barco.
 **Where**: `src/assets/portraits/locais/`
 **Depends on**: T52
 **Reuses**: estilo dos retratos da família
@@ -1744,7 +1750,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 16 retratos no estilo dos da família
+- [ ] 12 retratos no estilo dos da família
 - [ ] Prints dos cartões de apresentação conferidos
 - [ ] Gate check passes: build
 
@@ -1818,11 +1824,7 @@ T22 → T23
 T22 → T24
 
 Fase 5
-T56 → T61
-T57 → T61
-T58 → T61
-T59 → T61
-T60 → T61
+T56, T57, T60 (independentes)
 
 Fase 6
 T25 → T29
@@ -1840,26 +1842,31 @@ T34 → T39 → T40
 T36 → T40
 
 Fase 8
-T41, T42, T45, T46, T62, T63 (independentes)
+T41, T42, T45, T46, T62 (independentes)
 T43 → T44
 
 Fase 9
-T47 → T48
+T58 → T61
+T59 → T61
+T59 → T63
 
 Fase 10
+T47 → T48
+
+Fase 11
 T49 → T64
 T49 → T73
 T49 → T65
 T49 → T66
 T49 → T67
 
-Fase 11
+Fase 12
 T50 → T68
 T50 → T69
 T50 → T70
 T50 → T71
 
-Fase 12
+Fase 13
 T51 → T54
 T52 → T72 → T54
 T52 → T54
@@ -1868,7 +1875,7 @@ T53 → T54
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
 
-**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fase 1 (5) · Fase 2 (7) · Fase 3 (8) · Fase 4 (5) · Fase 5 (6) · Fase 6 (9) · Fase 7 (7) · Fases 8 e 9 (10) · Fase 10 (6) · Fases 11 e 12 (10) = 10 lotes em sequência.
+**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (7) · Fases 9 e 10 (6) · Fase 11 (6) · Fases 12 e 13 (10).
 
 ---
 
@@ -1903,10 +1910,7 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T24 | `src/content/episodes/ep1.ts` (modify) | ✅ Granular |
 | T56 | `src/content/episodes/ep2.ts` | ✅ Granular |
 | T57 | `src/content/episodes/ep3.ts` | ✅ Granular |
-| T58 | `src/content/episodes/ep4.ts` | ✅ Granular |
-| T59 | `src/content/episodes/ep5.ts` | ✅ Granular |
 | T60 | `src/domain/sim/typicalPlayer.ts` | ✅ Granular |
-| T61 | `src/content/progression.test.ts` | ✅ Granular |
 | T25 | `src/platform/save.ts` | ✅ Granular |
 | T26 | `src/platform/browser.ts` | ✅ Granular |
 | T27 | `src/platform/install.ts` | ✅ Granular |
@@ -1930,13 +1934,16 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T45 | `src/pwa/update.ts` | ✅ Granular |
 | T46 | `src/ui/Celebration.tsx` | ✅ Granular |
 | T62 | `src/ui/MapScreen.tsx` | ✅ Granular |
+| T58 | `src/content/episodes/ep4.ts` | ✅ Granular |
+| T59 | `src/content/episodes/ep5.ts` | ✅ Granular |
+| T61 | `src/content/progression.test.ts` | ✅ Granular |
 | T63 | `src/ui/TrophyRoom.tsx` | ✅ Granular |
 | T47 | `e2e/journey.spec.ts` | ✅ Granular |
 | T48 | `e2e/accessibility.spec.ts` | ✅ Granular |
 | T49 | `src/assets/scene/poco-do-magro.png` | ✅ Granular |
 | T64 | `src/assets/scene/rio-jacuipe.png` | ✅ Granular |
 | T73 | `src/assets/scene/ponte-cetrel.png` | ✅ Granular |
-| T65 | `src/assets/scene/pantanal.png` | ✅ Granular |
+| T65 | `src/assets/scene/vera-cruz.png` | ✅ Granular |
 | T66 | `src/assets/scene/amazonia.png` | ✅ Granular |
 | T67 | `src/assets/scene/alto-mar.png` | ✅ Granular |
 | T50 | `src/assets/fish/ep1/` | ✅ Granular |
@@ -1983,10 +1990,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T24 | T22 | T22 → T24 | ✅ Match |
 | T56 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T57 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
-| T58 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
-| T59 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T60 | T55 (fase 3), T24 (fase 4) | - | ✅ Match |
-| T61 | T56, T57, T58, T59, T60 | T56 → T61, T57 → T61, T58 → T61, T59 → T61, T60 → T61 | ✅ Match |
 | T25 | T19 (fase 3) | - | ✅ Match |
 | T26 | T2 (fase 1) | - | ✅ Match |
 | T27 | T2 (fase 1) | - | ✅ Match |
@@ -2009,9 +2013,12 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T44 | T43 | T43 → T44 | ✅ Match |
 | T45 | T34 (fase 7) | - | ✅ Match |
 | T46 | T37 (fase 7) | - | ✅ Match |
-| T62 | T36 (fase 7) | - | ✅ Match |
-| T63 | T34 (fase 7) | - | ✅ Match |
-| T47 | T44 (fase 8), T46 (fase 8), T62 (fase 8), T63 (fase 8) | - | ✅ Match |
+| T62 | T36 (fase 7), T56 (fase 5) | - | ✅ Match |
+| T58 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
+| T59 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
+| T61 | T56 (fase 5), T57 (fase 5), T58, T59, T60 (fase 5) | T58 → T61, T59 → T61 | ✅ Match |
+| T63 | T34 (fase 7), T59 | T59 → T63 | ✅ Match |
+| T47 | T44 (fase 8), T46 (fase 8), T62 (fase 8), T63 (fase 9) | - | ✅ Match |
 | T48 | T47 | T47 → T48 | ✅ Match |
 | T49 | T33 (fase 6) | - | ✅ Match |
 | T64 | T49 | T49 → T64 | ✅ Match |
@@ -2028,7 +2035,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T52 | T39 (fase 7) | - | ✅ Match |
 | T72 | T52 | T52 → T72 | ✅ Match |
 | T53 | T3 (fase 1) | - | ✅ Match |
-| T54 | T51, T52, T53, T72, T49 (fase 10), T50 (fase 11), T64 (fase 10), T65 (fase 10), T66 (fase 10), T67 (fase 10), T68 (fase 11), T69 (fase 11), T70 (fase 11), T71 (fase 11), T73 (fase 10) | T51 → T54, T52 → T54, T53 → T54, T72 → T54 | ✅ Match |
+| T54 | T51, T52, T53, T72, T49 (fase 11), T50 (fase 12), T64 (fase 11), T65 (fase 11), T66 (fase 11), T67 (fase 11), T68 (fase 12), T69 (fase 12), T70 (fase 12), T71 (fase 12), T73 (fase 11) | T51 → T54, T52 → T54, T53 → T54, T72 → T54 | ✅ Match |
 
 ## Test Co-location Validation
 
@@ -2061,10 +2068,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T24 | Conteúdo | unit | unit | ✅ OK |
 | T56 | Conteúdo | unit | unit | ✅ OK |
 | T57 | Conteúdo | unit | unit | ✅ OK |
-| T58 | Conteúdo | unit | unit | ✅ OK |
-| T59 | Conteúdo | unit | unit | ✅ OK |
 | T60 | Domínio | unit | unit | ✅ OK |
-| T61 | Conteúdo | unit | unit | ✅ OK |
 | T25 | Plataforma | unit | unit | ✅ OK |
 | T26 | Plataforma | unit | unit | ✅ OK |
 | T27 | Plataforma | unit | unit | ✅ OK |
@@ -2088,6 +2092,9 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T45 | Telas (PWA) | e2e | e2e | ✅ OK |
 | T46 | Telas | e2e | e2e | ✅ OK |
 | T62 | Telas | e2e | e2e | ✅ OK |
+| T58 | Conteúdo | unit | unit | ✅ OK |
+| T59 | Conteúdo | unit | unit | ✅ OK |
+| T61 | Conteúdo | unit | unit | ✅ OK |
 | T63 | Telas | e2e | e2e | ✅ OK |
 | T47 | Telas (integração) | e2e | e2e | ✅ OK |
 | T48 | Telas (integração) | e2e | e2e | ✅ OK |

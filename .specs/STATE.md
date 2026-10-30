@@ -37,10 +37,10 @@
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute, Fase 4 (lote 4: T20 a T24, conteúdo do Episódio 1, com sub-agente)
-- **Completed**: Fases 1 a 3 (T1 a T19 e T55, até `b783a53`); 105 testes unitários e 3 e2e passando; roteiros e cartas dos episódios 1 e 2 prontos
-- **In-progress** (file:line): lote 4 rodando em sub-agente
-- **Next step**: Quando o lote 4 terminar, conferir o resumo e disparar o lote 5 (Fase 5: episódios 2 a 5 e progressão).
-- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (necessário só nas fases de arte); roteiros e cartas dos episódios 3 a 5 pendentes (escritos episódio a episódio); fala opcional do Didi no Episódio 2 aguardando o usuário.
+- **Phase / Task**: Execute, Fase 5 (lote 5: T56, T57 e T60 com sub-agente)
+- **Completed**: Fases 1 a 4 (até `f6eec09`); 136 testes unitários e 3 e2e passando; roteiros dos episódios 1 a 3; cartas dos episódios 1 e 2
+- **In-progress** (file:line): lote 5 rodando em sub-agente
+- **Next step**: Quando o lote 5 terminar, disparar a Fase 6 (plataforma, app e desenho). Os episódios 4 e 5 (Fase 9) esperam os roteiros com o usuário.
+- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (fases de arte); roteiros dos episódios 4 e 5 e cartas dos episódios 3 a 5 pendentes; fala opcional do Didi aguardando o usuário; foto ou descrição da Geane.
 - **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`

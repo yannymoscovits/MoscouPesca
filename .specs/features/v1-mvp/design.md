@@ -226,7 +226,7 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
   - `mount(canvas: HTMLCanvasElement): void`
   - `draw(s: FishingViewState, t: number): void`
   - `toLogical(clientX: number, clientY: number): Point`
-- Escala inteira fixa: 2× (3× em telas a partir de 540 px CSS de largura). A largura lógica é a largura da tela dividida pela escala (cerca de 180 a 206 px em celulares) e a cena é composta para no mínimo 180 px, com `imageSmoothingEnabled = false` e `image-rendering: pixelated`. Os retratos dos diálogos ficam no HTML, em resolução maior (96 × 96 px de arte), para mostrar as expressões.
+- Escala inteira fixa: 2× (3× em telas a partir de 540 px CSS de largura). A cena lógica tem 180 × 400 px, com a ponta da vara em (90, 370); zonas e alcance das varas usam essas coordenadas (T20). Telas mais largas centralizam a cena e completam as laterais com o cenário, com `imageSmoothingEnabled = false` e `image-rendering: pixelated`. Os retratos dos diálogos ficam no HTML, em resolução maior (96 × 96 px de arte), para mostrar as expressões.
 - `sprites.ts`: carrega as folhas de sprite do PixelLab e anima por quadros.
 
 ### InputController
@@ -346,6 +346,7 @@ interface Species {
   rarity: number                     // peso no sorteio da zona
   description: string                // texto engraçado da ficha (HUMOR-03)
   rare: boolean                      // espécie rara do local (PROG-03)
+  valueLabel?: string                // texto da ficha no lugar do R$ (ex.: "inestimável" na Piranha Lavínia)
 }
 interface Rod { id: RodId; name: string; price: number; force: number; reach: number; episode: EpisodeId }  // força e alcance de 1 a 10
 interface Bait { id: BaitId; name: string; price: number; episode: EpisodeId }
@@ -369,6 +370,7 @@ interface Chapter { title: string; openingScene: SceneId; objectives: Objective[
 
 type EpisodeId = 1 | 2 | 3 | 4 | 5
 interface Location { id: LocationId; name: string; background: string; zones: Zone[] }
+// O conteúdo de cada episódio é um EpisodeContent: Episode + scenes + defeatScene
 interface Episode {
   id: EpisodeId
   locations: Location[]               // 1 ou 2; o Episódio 2 tem Rio Jacuípe e Ponte da Cetrel (EPI-08)
@@ -378,6 +380,7 @@ interface Episode {
   tournament: TournamentDef
   letter: Message
 }
+interface EpisodeContent extends Episode { scenes: Scene[]; defeatScene: SceneId }
 
 interface TournamentDef {
   id: TournamentId; name: string     // "GuanambiCup"
