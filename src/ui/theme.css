@@ -152,6 +152,20 @@ ul {
   font: 700 28px / 1.1 var(--font-title);
 }
 
+/* Desabilitado: sem sombra e com contorno tracejado; texto creme suave sobre azul, 8,9:1. */
+.btn:disabled {
+  background: var(--bg-raised);
+  color: var(--ink-soft);
+  border-style: dashed;
+  border-color: var(--ink-soft);
+  box-shadow: none;
+  cursor: default;
+}
+
+.btn:disabled:active {
+  transform: none;
+}
+
 /* ---------- Avisos por cima da tela: painel no meio, ação embaixo ---------- */
 
 .overlay {
@@ -412,9 +426,23 @@ ul {
   color: var(--ink);
 }
 
+.hud__line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 12px;
+}
+
 .hud__money {
   font: 700 24px / 1.2 var(--font-title);
   color: var(--accent);
+}
+
+/* Local da pesca (EPI-07): texto secundário sobre o azul-noite, 11,6:1. */
+.hud__place {
+  font-weight: 700;
+  color: var(--ink-soft);
 }
 
 /* Fileira de baixo: pausa à esquerda, menu à direita, o Adilson livre no meio. */
@@ -907,4 +935,22 @@ ul {
   50% {
     opacity: 0.2;
   }
+}
+
+/* ---------- Menu do jogo ---------- */
+
+.menu__money {
+  font: 700 32px / 1.2 var(--font-title);
+  color: var(--accent);
+}
+
+.menu__place {
+  font-weight: 700;
+}
+
+/* Botões do menu em duas colunas, para caberem todos na metade de baixo (ACES-08). */
+.menu__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }

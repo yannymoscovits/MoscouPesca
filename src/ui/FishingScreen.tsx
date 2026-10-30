@@ -78,7 +78,7 @@ function Hud() {
   const { controller, episodes } = useServices();
   const go = useNav();
   const profile = useGame((s) => s.profile);
-  const { episode } = currentPlace(profile, episodes);
+  const { episode, location } = currentPlace(profile, episodes);
   const run = profile.tournament;
   const tournament = run && episodes.find((ep) => ep.tournament.id === run.id)?.tournament;
 
@@ -86,7 +86,10 @@ function Hud() {
     <div class="hud">
       <div class="hud__top">
         <div class="hud__panel" role="group" aria-label="Painel da pescaria">
-          <p class="hud__money">{formatMoney(profile.money)}</p>
+          <p class="hud__line">
+            <span class="hud__money">{formatMoney(profile.money)}</span>
+            <span class="hud__place">{location.name}</span>
+          </p>
           {run ? (
             <p>
               {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
@@ -102,7 +105,7 @@ function Hud() {
         <button type="button" class="btn btn--secondary" onClick={() => controller.pause()}>
           Pausar
         </button>
-        <button type="button" class="btn btn--secondary" onClick={() => go('title')}>
+        <button type="button" class="btn btn--secondary" onClick={() => go('menu')}>
           Menu
         </button>
       </div>

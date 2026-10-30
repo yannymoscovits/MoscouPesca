@@ -3,7 +3,7 @@
 import { useState } from 'preact/hooks';
 import { useGame } from '../app/store';
 import type { Difficulty } from '../content/types';
-import { useNav, useServices } from './context';
+import { useBack, useNav, useServices } from './context';
 
 const DIFFICULTIES: { id: Difficulty; name: string; hint: string }[] = [
   { id: 'tranquilo', name: 'Tranquilo', hint: 'Mais tempo para fisgar, e a linha nunca arrebenta.' },
@@ -42,7 +42,7 @@ export function DifficultyPrompt() {
 
 export function Settings() {
   const { controller } = useServices();
-  const go = useNav();
+  const back = useBack();
   const difficulty = useGame((s) => s.profile.settings.difficulty);
   const vibration = useGame((s) => s.profile.settings.vibration);
   const [tutorialAgain, setTutorialAgain] = useState(false);
@@ -93,7 +93,7 @@ export function Settings() {
         >
           Rever tutorial
         </button>
-        <button type="button" class="btn" onClick={() => go('title')}>
+        <button type="button" class="btn" onClick={back}>
           Voltar
         </button>
       </div>

@@ -1181,10 +1181,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: o botão "Menu" da pesca abre o menu; "Voltar a pescar" volta para a pesca no local atual
-- [ ] e2e: cada botão leva à tela certa; telas que ainda não existem nesta fase ficam desabilitadas e são ligadas pelas tarefas delas
-- [ ] e2e: botões com no mínimo 56 × 56 px, todos na metade de baixo (ACES-06, ACES-08)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: o botão "Menu" da pesca abre o menu; "Voltar a pescar" volta para a pesca no local atual
+- [x] e2e: cada botão leva à tela certa; telas que ainda não existem nesta fase ficam desabilitadas e são ligadas pelas tarefas delas
+- [x] e2e: botões com no mínimo 56 × 56 px, todos na metade de baixo (ACES-06, ACES-08)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

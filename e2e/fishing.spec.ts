@@ -234,7 +234,7 @@ test('TELA-01: a tela de pesca pede para manter a tela acesa e solta ao sair del
   await play(page);
   await expect.poll(wakeLog).toEqual(['request:screen']);
 
-  await page.getByRole('button', { name: 'Menu' }).click();
-  await expect(page.getByRole('button', { name: 'Jogar' })).toBeVisible();
+  await page.getByRole('button', { name: 'Menu' }).click(); // sai da pesca para o menu (T74)
+  await expect(page.getByRole('region', { name: 'Menu' })).toBeVisible();
   await expect.poll(wakeLog).toEqual(['request:screen', 'release']);
 });

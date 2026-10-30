@@ -24,9 +24,14 @@ export function useServices(): Services {
 }
 
 /** Telas do jogo. A tela inicial abre sempre primeiro (INST-01). */
-export type ScreenId = 'title' | 'difficulty' | 'fishing' | 'settings';
+export type ScreenId = 'title' | 'difficulty' | 'fishing' | 'settings' | 'menu';
 
 export const NavContext = createContext<(to: ScreenId) => void>(() => {});
 
 /** Troca de tela: `const go = useNav(); go('fishing')`. */
 export const useNav = () => useContext(NavContext);
+
+export const BackContext = createContext<() => void>(() => {});
+
+/** Volta para a tela de onde se veio (Ajustes abre da tela inicial e do menu). */
+export const useBack = () => useContext(BackContext);
