@@ -14,6 +14,7 @@ import { createFishingRenderer } from '../render/fishingRenderer';
 import { useNav, useServices } from './context';
 import { BitePrompt, ResultOverlay } from './FishCard';
 import { currentPlace, formatKg, formatMoney } from './format';
+import { PauseOverlay } from './Overlays';
 
 export function FishingScreen() {
   const store = useContext(GameStoreContext) as GameStore;
@@ -65,6 +66,7 @@ export function FishingScreen() {
       </div>
       <Hud />
       <ResultOverlay />
+      <PauseOverlay />
     </section>
   );
 }

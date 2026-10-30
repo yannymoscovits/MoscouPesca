@@ -1107,11 +1107,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: `visibilitychange` para oculto no meio da briga → tensão e distância não mudam em 3 s (SAVE-01)
-- [ ] e2e: ao voltar, "Pausado - toque para continuar"; só retoma após o toque (SAVE-02)
-- [ ] e2e: viewport em paisagem fora do modo instalado → pausa e "Vire o celular em pé para jogar" (ACES-10)
-- [ ] e2e: `setItem` falhando → "Não consegui salvar" aparece uma vez só na sessão
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: `visibilitychange` para oculto no meio da briga → tensão e distância não mudam em 3 s (SAVE-01)
+- [x] e2e: ao voltar, "Pausado - toque para continuar"; só retoma após o toque (SAVE-02)
+- [x] e2e: viewport em paisagem fora do modo instalado → pausa e "Vire o celular em pé para jogar" (ACES-10)
+- [x] e2e: `setItem` falhando → "Não consegui salvar" aparece uma vez só na sessão
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full
