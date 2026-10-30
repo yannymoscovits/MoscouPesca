@@ -119,6 +119,7 @@ T43 → T44
 ### Phase 9: Episódios 4 e 5 e progressão
 
 ```
+T75 (independente)
 T58 → T61
 T59 → T61
 T59 → T63
@@ -1350,6 +1351,30 @@ T53 → T54
 
 ### Phase 9 tasks
 
+#### T75: Redesenhar a tela inicial e o tema
+
+**What**: Tela inicial conforme o mockup do usuário (`docs/arte/mockups/tela-inicial.png`): fundo do mar em pixel art feito em CSS/SVG (gradiente azul-marinho, raios de luz, bolhas quadradas, cardume e algas), peixe amarelo, título "MoscouFishing" amarelo em Pixelify Sans com sombra, subtítulo claro e os botões "Colocar na tela" (azul, ícone de monitor), "Ajustes" (marinho, engrenagem) e "Jogar" (amarelo, maior, play), cada um com seta. A paleta do mockup vai para os tokens de `src/ui/theme.css` e vale para todas as telas.
+**Where**: `src/ui/TitleScreen.tsx`
+**Depends on**: T34, T35
+**Reuses**: tokens de `theme.css`, `.btn`, `install.ts`, tela de Ajustes de T35
+**Requirement**: INST-01 a INST-04 (visual), ACES-02 (Ajustes na tela inicial), ACES-05 a ACES-08
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: tela inicial com título, subtítulo e os 3 botões na ordem do mockup; "Ajustes" abre a tela de ajustes (ACES-02)
+- [ ] Os e2e de INST-01 a INST-04 continuam passando sem mudança nas asserções
+- [ ] e2e: na tela inicial, botões com no mínimo 56 × 56 px e todos na metade de baixo, textos com no mínimo 18 px e axe sem violação de contraste (ACES-05 a ACES-08)
+- [ ] Print do Pixel 7 comparado lado a lado com o mockup, no relatório
+- [ ] Os nomes dos tokens de cor de `theme.css` não mudam, só os valores, para não quebrar as telas de outras tarefas
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): redesenha a tela inicial e o tema`
+
+---
+
 #### T58: Cadastrar o Episódio 4: Parque dos Ventos
 
 **What**: Pacote `ep4` completo a partir de `docs/historia/episodio-4.md`: local e zonas (Parque dos Ventos, açude no pé das torres eólicas); espécies fantasiosas Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (raro), com descrição engraçada; 2 varas (Vara Hélice e Vara Torre) e 1 isca novas; roteiro com 7 objetivos, a Lavínia como piranha-pipa e encerramento; Copa dos Ventos com os rivais Márcio, Sr. Higashi e Edvaldo e suas provocações; carta do Márcio transcrita de `docs/historia/cartas.md`. Os personagens novos (Márcio e Sr. Higashi) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
@@ -1875,6 +1900,7 @@ T74, T41, T42, T45, T46, T62 (independentes)
 T43 → T44
 
 Fase 9
+T75 (independente)
 T58 → T61
 T59 → T61
 T59 → T63
@@ -1904,7 +1930,7 @@ T53 → T54
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
 
-**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (6) · Fase 11 (6) · Fases 12 e 13 (10).
+**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (7) · Fase 11 (6) · Fases 12 e 13 (10).
 
 ---
 
@@ -1964,6 +1990,7 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T45 | `src/pwa/update.ts` | ✅ Granular |
 | T46 | `src/ui/Celebration.tsx` | ✅ Granular |
 | T62 | `src/ui/MapScreen.tsx` | ✅ Granular |
+| T75 | `src/ui/TitleScreen.tsx` | ✅ Granular |
 | T58 | `src/content/episodes/ep4.ts` | ✅ Granular |
 | T59 | `src/content/episodes/ep5.ts` | ✅ Granular |
 | T61 | `src/content/progression.test.ts` | ✅ Granular |
@@ -2045,6 +2072,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T45 | T34 (fase 7) | - | ✅ Match |
 | T46 | T37 (fase 7) | - | ✅ Match |
 | T62 | T36 (fase 7), T56 (fase 5) | - | ✅ Match |
+| T75 | T34 (fase 7), T35 (fase 7) | - | ✅ Match |
 | T58 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T59 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T61 | T56 (fase 5), T57 (fase 5), T58, T59, T60 (fase 5) | T58 → T61, T59 → T61 | ✅ Match |
@@ -2124,6 +2152,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T45 | Telas (PWA) | e2e | e2e | ✅ OK |
 | T46 | Telas | e2e | e2e | ✅ OK |
 | T62 | Telas | e2e | e2e | ✅ OK |
+| T75 | Telas | e2e | e2e | ✅ OK |
 | T58 | Conteúdo | unit | unit | ✅ OK |
 | T59 | Conteúdo | unit | unit | ✅ OK |
 | T61 | Conteúdo | unit | unit | ✅ OK |

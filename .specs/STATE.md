@@ -42,5 +42,5 @@
 - **In-progress** (file:line): lote 8 rodando em sub-agente
 - **Next step**: Quando o lote 8 terminar, disparar as Fases 9 e 10 (episódios 4 e 5, calibragem, sala de troféus, jornada completa e acessibilidade).
 - **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (fases de arte).
-- **Uncommitted files**: none
+- **Uncommitted files**: spec (visual da tela inicial) e `docs/arte/mockups/tela-inicial.png`. Pendente no `tasks.md` depois do lote 8: T75 já registrada e rodando em worktree isolado, em paralelo à Fase 8 (juntar depois que as duas terminarem); aprovação do usuário com prévias antes de gerar arte em T51, T52 e T72 (3 versões do retrato normal; página de prévia em `arte-previa/`, fora do git)
 - **Branch**: `feat/v1-mvp`
