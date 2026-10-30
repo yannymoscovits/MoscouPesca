@@ -896,15 +896,15 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Peixe, compra, objetivo e arremesso de torneio disparam `save` (SAVE-04)
-- [ ] Ficha exibida soma `Math.round(kg × preço/kg)` ao saldo uma vez só, e fechar a ficha volta a pesca para `Idle` (PESCA-17)
-- [ ] Mordida com vibração ligada chama `vibrate(300)`; desligada, não chama (PESCA-07)
-- [ ] Carregar perfil salvo no meio de uma briga → volta para `Idle` sem gastar arremesso de torneio (SAVE-06)
-- [ ] Peixe do tutorial conta no objetivo "pegar 3 peixes" (TUTO-08)
-- [ ] Abrir a pesca de um episódio envia `GameStarted`; a abertura do episódio aparece uma vez só, e o controlador cuida de `pendingScene` (HIST-01, HIST-09)
-- [ ] O efeito de cada evento (compra, álbum) é aplicado no perfil antes de chamar `story.onEvent`
-- [ ] `window.__mf` não existe no build de produção
-- [ ] Gate check passes: `npm test`
+- [x] Peixe, compra, objetivo e arremesso de torneio disparam `save` (SAVE-04)
+- [x] Ficha exibida soma `Math.round(kg × preço/kg)` ao saldo uma vez só, e fechar a ficha volta a pesca para `Idle` (PESCA-17)
+- [x] Mordida com vibração ligada chama `vibrate(300)`; desligada, não chama (PESCA-07)
+- [x] Carregar perfil salvo no meio de uma briga → volta para `Idle` sem gastar arremesso de torneio (SAVE-06)
+- [x] Peixe do tutorial conta no objetivo "pegar 3 peixes" (TUTO-08)
+- [x] Abrir a pesca de um episódio envia `GameStarted`; a abertura do episódio aparece uma vez só, e o controlador cuida de `pendingScene` (HIST-01, HIST-09)
+- [x] O efeito de cada evento (compra, álbum) é aplicado no perfil antes de chamar `story.onEvent`
+- [x] `window.__mf` não existe no build de produção
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

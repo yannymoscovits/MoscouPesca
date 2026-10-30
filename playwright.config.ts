@@ -1,21 +1,36 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4173;
+// Dois builds servidos lado a lado:
+// - produção (dist/): o que vai para o ar; os testes de PWA e o que prova que não há ganchos de teste;
+// - e2e (dist-e2e/, `--mode e2e`): o mesmo jogo com `window.__mf` para dirigir as telas.
+const PROD_PORT = 4173;
+const E2E_PORT = 4174;
+const PROD_SPECS = /(pwa|prod)\.spec\.ts$/;
 
 export default defineConfig({
   testDir: 'e2e',
-  use: {
-    baseURL: `http://localhost:${PORT}`,
-  },
   projects: [
     {
       name: 'pixel7',
-      use: { ...devices['Pixel 7'] },
+      testIgnore: PROD_SPECS,
+      use: { ...devices['Pixel 7'], baseURL: `http://localhost:${E2E_PORT}` },
+    },
+    {
+      name: 'pixel7-prod',
+      testMatch: PROD_SPECS,
+      use: { ...devices['Pixel 7'], baseURL: `http://localhost:${PROD_PORT}` },
     },
   ],
-  webServer: {
-    command: `npm run build && npm run preview -- --port ${PORT} --strictPort`,
-    url: `http://localhost:${PORT}`,
-    reuseExistingServer: false,
-  },
+  webServer: [
+    {
+      command: `npm run build && npm run preview -- --port ${PROD_PORT} --strictPort`,
+      url: `http://localhost:${PROD_PORT}`,
+      reuseExistingServer: false,
+    },
+    {
+      command: `npx vite build --mode e2e --outDir dist-e2e && npx vite preview --outDir dist-e2e --port ${E2E_PORT} --strictPort`,
+      url: `http://localhost:${E2E_PORT}`,
+      reuseExistingServer: false,
+    },
+  ],
 });
