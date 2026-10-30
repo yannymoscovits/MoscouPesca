@@ -1,10 +1,14 @@
 // Aviso de mordida (BitePrompt, PESCA-06) e o fim do arremesso: a ficha do peixe (FishCard, PESCA-15,
-// HUMOR-03, ALBUM-02) ou o aviso de quando não vem peixe (PESCA-05, PESCA-09, PESCA-13).
+// HUMOR-03, ALBUM-02), depois da comemoração (HUMOR-05), ou o aviso de quando não vem peixe
+// (PESCA-05, PESCA-09, PESCA-13).
 
+import { useState } from 'preact/hooks';
 import { useGame } from '../app/store';
 import type { Species } from '../content/types';
+import type { FishingState } from '../domain/fishing';
 import { colorOf } from '../render/fishingRenderer';
 import { resolveAsset } from '../render/sprites';
+import { CatchCelebration } from './Celebration';
 import { useServices } from './context';
 import { formatKg, formatMoney } from './format';
 
@@ -39,6 +43,8 @@ export function ResultOverlay() {
   const { controller } = useServices();
   const fishing = useGame((s) => s.fishing);
   const newRecord = useGame((s) => s.newRecord);
+  // HUMOR-05: cada peixe pego é comemorado antes da ficha.
+  const [celebrated, setCelebrated] = useState<FishingState | null>(null);
   const next = (
     <div class="overlay__actions">
       <button type="button" class="btn btn--big" onClick={() => controller.dismissResult()}>
@@ -49,6 +55,7 @@ export function ResultOverlay() {
 
   if (fishing.phase === 'Result_Caught') {
     const { species, kg, value } = fishing;
+    if (celebrated !== fishing) return <CatchCelebration species={species} onDone={() => setCelebrated(fishing)} />;
     return (
       <div class="overlay overlay--fishing" role="dialog" aria-modal="true" aria-label="Ficha do peixe">
         <FishCard species={species} kg={kg} value={value} newRecord={newRecord} />

@@ -12,6 +12,7 @@ import { currentObjective } from '../domain/story';
 import { score } from '../domain/tournament';
 import { createFishingRenderer } from '../render/fishingRenderer';
 import { useNav, useServices } from './context';
+import { ImpactFx } from './Celebration';
 import { DialogLayer } from './DialogBox';
 import { BitePrompt, ResultOverlay } from './FishCard';
 import { EpisodeBanner } from './Letter';
@@ -23,6 +24,7 @@ import { TutorialCoach } from './TutorialCoach';
 export function FishingScreen() {
   const store = useContext(GameStoreContext) as GameStore;
   const { controller, browser, episodes } = useServices();
+  const screen = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -63,7 +65,7 @@ export function FishingScreen() {
   }, [store, controller, browser, episodes]);
 
   return (
-    <section class="fishing" aria-label="Pescaria">
+    <section class="fishing" aria-label="Pescaria" ref={screen}>
       <div class="stage" ref={stage}>
         <canvas ref={canvas} aria-hidden="true" />
         <BitePrompt />
@@ -71,6 +73,7 @@ export function FishingScreen() {
       <Hud />
       <ResultOverlay />
       <Standings />
+      <ImpactFx scene={screen} />
       <DialogLayer />
       <EpisodeBanner />
       <RivalTaunts />

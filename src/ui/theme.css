@@ -1293,3 +1293,91 @@ ul {
 .overlay--news .overlay__actions {
   margin-top: auto;
 }
+
+/* ---------- Celebração exagerada (HUMOR-05, HUMOR-06) ---------- */
+
+.celebration {
+  justify-content: center;
+  cursor: pointer;
+}
+
+.celebration__burst {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 24px 16px;
+  border: 4px solid var(--outline);
+  border-radius: 18px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 8px 0 var(--outline);
+  animation: entrar 0.35s ease-out;
+}
+
+.celebration__word {
+  font: 700 64px / 1 var(--font-title);
+  transform: rotate(-6deg);
+  animation: pulsar 0.5s ease-in-out infinite;
+}
+
+/* O Adilson com o peixe erguido ao lado do rosto. */
+.celebration__pose {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.celebration__fish {
+  transform: rotate(-20deg) translateY(-40px);
+}
+
+/* Onomatopeia: grande, torta e por cima da cena (abaixo das falas, 25). */
+.impact {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 30%;
+  z-index: 24;
+  text-align: center;
+  font: 700 72px / 1 var(--font-title);
+  color: var(--accent);
+  text-shadow:
+    6px 6px 0 var(--outline),
+    -3px -3px 0 var(--outline),
+    3px -3px 0 var(--outline),
+    -3px 3px 0 var(--outline);
+  transform: rotate(-8deg);
+  animation: estourar 0.3s ease-out;
+  pointer-events: none;
+}
+
+@keyframes estourar {
+  from {
+    transform: rotate(-8deg) scale(0.2);
+  }
+  70% {
+    transform: rotate(-8deg) scale(1.2);
+  }
+}
+
+/* HUMOR-06: a cena treme por transform (até 300 ms; a classe sai em SHAKE_MS). */
+.tremor {
+  animation: tremor-cena 0.25s steps(5) 1;
+}
+
+@keyframes tremor-cena {
+  20% {
+    transform: translate(-6px, 3px);
+  }
+  40% {
+    transform: translate(6px, -3px);
+  }
+  60% {
+    transform: translate(-4px, -2px);
+  }
+  80% {
+    transform: translate(4px, 2px);
+  }
+}

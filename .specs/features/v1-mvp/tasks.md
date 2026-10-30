@@ -1316,9 +1316,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: peixe pego → pose com "PEGOU!" antes da ficha (HUMOR-05)
-- [ ] e2e: fisgada mostra "NHAC!", linha arrebentada "PLOFT!", vitória "É CAMPEÃO!"; a classe de tremor some em até 300 ms (HUMOR-06)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: peixe pego → pose com "PEGOU!" antes da ficha (HUMOR-05)
+- [x] e2e: fisgada mostra "NHAC!", linha arrebentada "PLOFT!", vitória "É CAMPEÃO!"; a classe de tremor some em até 300 ms (HUMOR-06)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full
