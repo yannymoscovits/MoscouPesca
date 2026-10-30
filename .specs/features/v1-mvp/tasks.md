@@ -215,10 +215,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Script `check:content` no `package.json` (via `tsx`)
-- [ ] Teste: pasta sem marcador → código de saída 0
-- [ ] Teste: dois marcadores em arquivos diferentes → código 1 e as duas posições (arquivo:linha) listadas
-- [ ] Gate check passes: `npm test`
+- [x] Script `check:content` no `package.json` (via `tsx`)
+- [x] Teste: pasta sem marcador → código de saída 0
+- [x] Teste: dois marcadores em arquivos diferentes → código 1 e as duas posições (arquivo:linha) listadas
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
