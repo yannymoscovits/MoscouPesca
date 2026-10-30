@@ -713,9 +713,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste: a carta da GuanambiCup existe, tem remetente e texto, e não contém `{{PENDENTE}}`
-- [ ] Teste: 3 rivais que existem em `characters.ts`, cada um com provocação; troféu e mensagem existem
-- [ ] Gate check passes: `npm test`
+- [x] Teste: a carta da GuanambiCup existe, tem remetente e texto, e não contém `{{PENDENTE}}`
+- [x] Teste: 3 rivais que existem em `characters.ts`, cada um com provocação; troféu e mensagem existem
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

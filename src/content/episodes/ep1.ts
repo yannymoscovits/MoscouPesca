@@ -10,6 +10,7 @@ import type {
   Expression,
   GameEvent,
   Location,
+  Message,
   Objective,
   Profile,
   Rod,
@@ -17,6 +18,7 @@ import type {
   Scene,
   Species,
   SpeciesId,
+  TournamentDef,
 } from '../types';
 
 const sprite = (id: string) => `src/assets/fish/ep1/${id}.png`;
@@ -290,6 +292,43 @@ export const tutorial = {
   },
 } satisfies Record<TutorialStep, DialogLine>;
 
+// Cena 9: as provocações aparecem antes do primeiro arremesso (HUMOR-04).
+// Placar dos rivais em kg (soma dos 3 mais pesados): valores provisórios, T61 calibra.
+const guanambiCup = {
+  id: 'guanambicup',
+  name: 'GuanambiCup',
+  casts: 8,
+  countBest: 3,
+  rivals: [
+    { character: 'ricardo', kg: 15.2, taunt: say('ricardo', 'rindo', 'Eu pesco no ritmo, Adilson. Tum-tum-ta! Os peixes vêm dançando.') },
+    { character: 'bem', kg: 12.6, taunt: say('bem', 'rindo', 'Trouxe o isopor. Peixe dentro? Não, cerveja.') },
+    {
+      character: 'kris',
+      kg: 18.4,
+      taunt: say('kris', 'bravo', 'Adilson, nada de líquido hoje, hein! As regras do torneio tão todas nesse prendrive.'),
+    },
+  ],
+  trophy: 'trofeu-guanambicup',
+  message: 'carta-guanambicup',
+} satisfies TournamentDef;
+
+// docs/historia/cartas.md, "Episódio 1: GuanambiCup".
+const letter = {
+  id: 'carta-guanambicup',
+  from: 'Sua família',
+  text: [
+    'Adilson,',
+    'O primeiro troféu da GuanambiCup! A Jane já arrumou um lugar na estante, mas avisou: se chegarem mais, os enfeites dela não saem de lá. Então vai ter que ganhar outra estante também.',
+    'O Edvaldo mandou dizer que, agora que você é campeão, o desconto na loja continua o mesmo: nenhum.',
+    'O Ricardo compôs um samba pra comemorar. Só tem três batidas no bongô, mas ele jura que é sobre você.',
+    'A Bem fez um brinde à sua vitória. Depois outro. Depois mais um. A gente perdeu a conta.',
+    'E a Lavínia continua roubando isca e jurando pra todo mundo que deixou o Adilsinho ganhar.',
+    'Agora falando sério (só um pouquinho): você sempre ensinou que pescaria é paciência. Jogar a linha, esperar a hora certa e não soltar quando o peixe puxa forte. A gente aprendeu direitinho. Então segura firme, que tem uma família inteira do outro lado da linha, segurando junto com você.',
+    'Com amor (e o deboche de sempre),\nSua família',
+    'P.S. da Kris: pode comemorar, mas nada de exagerar no líquido! Gravei todas as recomendações num prendrive pra você.',
+  ].join('\n\n'),
+} satisfies Message;
+
 export const ep1 = {
   id: 1,
   locations: [pocoDoMagro],
@@ -299,15 +338,6 @@ export const ep1 = {
   chapter: { title: 'Tirando a Ferrugem', openingScene: 'ep1-abertura', objectives, closingScene: 'ep1-vitoria' },
   scenes,
   defeatScene: 'ep1-derrota',
-  // GuanambiCup e carta (T24) entram na próxima tarefa.
-  tournament: {
-    id: 'guanambicup',
-    name: 'GuanambiCup',
-    casts: 8,
-    countBest: 3,
-    rivals: [],
-    trophy: 'trofeu-guanambicup',
-    message: 'carta-guanambicup',
-  },
-  letter: { id: 'carta-guanambicup', from: 'Sua família', text: '{{PENDENTE}}' },
+  tournament: guanambiCup,
+  letter,
 } satisfies EpisodeContent;

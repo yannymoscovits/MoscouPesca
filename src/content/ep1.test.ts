@@ -4,6 +4,7 @@ import { newProfile, START_BAIT, START_LOCATION, START_ROD } from '../domain/pro
 import { buy } from '../domain/shop';
 import { currentObjective, isTournamentUnlocked, onEvent } from '../domain/story';
 import { FISH_POWER, FISH_STAMINA } from '../domain/tuning';
+import { characters } from './characters';
 import { ep1, tutorial } from './episodes/ep1';
 import { episodes } from './index';
 import type { GameEvent, Profile, SceneId } from './types';
@@ -209,5 +210,37 @@ describe('Episódio 1: roteiro', () => {
       expect(line.speaker).toBe('jane');
       expect(line.text.trim()).not.toBe('');
     }
+  });
+});
+
+// Montado em partes para o check:content não acusar este arquivo de teste.
+const PENDING = '{{' + 'PENDENTE}}';
+
+describe('Episódio 1: GuanambiCup e carta', () => {
+  it('CAMP-02: a GuanambiCup tem 8 arremessos e conta os 3 peixes mais pesados', () => {
+    expect(ep1.tournament).toMatchObject({ name: 'GuanambiCup', casts: 8, countBest: 3 });
+  });
+
+  it('CAMP-02, HUMOR-04: os 3 rivais, Ricardo, Bem e Kris, existem em characters.ts, têm placar e provocam com a própria fala', () => {
+    const ids = new Set(characters.map((c) => c.id));
+    expect(ep1.tournament.rivals.map((r) => r.character)).toEqual(['ricardo', 'bem', 'kris']);
+    for (const r of ep1.tournament.rivals) {
+      expect(ids.has(r.character), r.character).toBe(true);
+      expect(r.kg, r.character).toBeGreaterThan(0);
+      expect(r.taunt.speaker).toBe(r.character);
+      expect(r.taunt.text.trim(), r.character).not.toBe('');
+    }
+  });
+
+  it('CAMP-06, CAMP-07: o troféu existe e a mensagem do campeonato é a carta do episódio', () => {
+    expect(ep1.tournament.trophy.trim()).not.toBe('');
+    expect(ep1.letter.id).toBe(ep1.tournament.message);
+  });
+
+  it('CAMP-06, HIST-07: a carta da GuanambiCup tem remetente e texto, sem texto pendente', () => {
+    expect(ep1.letter.from).toBe('Sua família');
+    expect(ep1.letter.text.trim()).not.toBe('');
+    expect(ep1.letter.text).toMatch(/^Adilson,/);
+    expect(ep1.letter.text).not.toContain(PENDING);
   });
 });
