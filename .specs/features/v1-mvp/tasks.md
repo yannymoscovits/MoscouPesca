@@ -558,10 +558,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Perfil novo: Bambu e Minhoca possuídos e equipados, `difficulty: null`, `vibration: true`, `unlockedEpisodes: [1]`, `currentLocation` = Poço do Magro (ACES-04)
-- [ ] `setDifficulty` troca entre Tranquilo e Desafio (ACES-02)
-- [ ] `resetTutorial` marca `tutorialDone: false` (TUTO-09)
-- [ ] Gate check passes: `npm test`
+- [x] Perfil novo: Bambu e Minhoca possuídos e equipados, `difficulty: null`, `vibration: true`, `unlockedEpisodes: [1]`, `currentLocation` = Poço do Magro (ACES-04)
+- [x] `setDifficulty` troca entre Tranquilo e Desafio (ACES-02)
+- [x] `resetTutorial` marca `tutorialDone: false` (TUTO-09)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
