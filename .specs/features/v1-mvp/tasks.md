@@ -324,11 +324,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Toque dentro do alcance → isca vai ao ponto exato (PESCA-01)
-- [ ] Toque fora → isca para no limite, mesma direção (PESCA-02)
-- [ ] `press()` e `cast()` durante o voo não mudam o estado (PESCA-03)
-- [ ] Vara com Alcance maior → distância máxima maior (EQUIP-07)
-- [ ] Gate check passes: `npm test`
+- [x] Toque dentro do alcance → isca vai ao ponto exato (PESCA-01)
+- [x] Toque fora → isca para no limite, mesma direção (PESCA-02)
+- [x] `press()` e `cast()` durante o voo não mudam o estado (PESCA-03)
+- [x] Vara com Alcance maior → distância máxima maior (EQUIP-07)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
