@@ -7,3 +7,4 @@ playwright-report/
 .vite/
 *.log
 dist-e2e/
+.claude/
