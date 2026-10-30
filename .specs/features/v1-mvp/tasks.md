@@ -1058,13 +1058,13 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: tocar na água arremessa e a pesca segue até a ficha, dirigida por `window.__mf` com semente fixa
-- [ ] e2e: objetivo atual e saldo visíveis (HIST-04)
-- [ ] e2e: barra de tensão muda de cor em 69/70 e 89/90 (PESCA-12)
-- [ ] e2e: botão de pausa visível em todos os estados da pesca (SAVE-03)
-- [ ] e2e: em torneio, "X de 8 arremessos" e pontuação parcial visíveis (CAMP-03)
-- [ ] e2e: Wake Lock pedido ao abrir a tela (stub) (TELA-01)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: tocar na água arremessa e a pesca segue até a ficha, dirigida por `window.__mf` com semente fixa
+- [x] e2e: objetivo atual e saldo visíveis (HIST-04)
+- [x] e2e: barra de tensão muda de cor em 69/70 e 89/90 (PESCA-12)
+- [x] e2e: botão de pausa visível em todos os estados da pesca (SAVE-03)
+- [x] e2e: em torneio, "X de 8 arremessos" e pontuação parcial visíveis (CAMP-03)
+- [x] e2e: Wake Lock pedido ao abrir a tela (stub) (TELA-01)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

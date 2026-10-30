@@ -364,3 +364,105 @@ ul {
 .btn--switch[aria-checked='true']::after {
   background: radial-gradient(circle at 75% 50%, currentColor 9px, transparent 10px);
 }
+
+/* ---------- Tela de pesca: cena no canvas, HUD por cima ---------- */
+
+.fishing {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #1b5e8c; /* a água continua atrás do canvas */
+}
+
+/* Área dos toques na cena (InputController); os botões do HUD ficam fora dela. */
+.stage {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+
+/* A cena fica ancorada embaixo (spec, "Tamanho da cena"); o renderizador centraliza na largura. */
+.stage canvas {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* O HUD não pega toque: só os botões dele. Sem z-index próprio, para a fileira de botões
+   disputar a camada com as fichas e avisos da pesca. */
+.hud {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.hud__panel {
+  display: grid;
+  gap: 4px;
+  margin: 8px;
+  padding: 8px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.hud__money {
+  font: 700 24px / 1.2 var(--font-title);
+  color: var(--accent);
+}
+
+/* Fileira de baixo: pausa à esquerda, menu à direita, o Adilson livre no meio. */
+.hud__actions {
+  position: relative;
+  z-index: 30; /* acima das fichas e avisos da pesca: a pausa nunca fica coberta (SAVE-03) */
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--gutter) var(--safe-bottom);
+}
+
+.hud__actions .btn {
+  pointer-events: auto;
+}
+
+:root {
+  --tension-verde: #43a047;
+  --tension-amarelo: #fdd835;
+  --tension-vermelho: #e53935;
+}
+
+.tension {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tension__bar {
+  flex: 1;
+  height: 24px;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  background: #2b2b3d;
+  overflow: hidden;
+}
+
+.tension__fill {
+  height: 100%;
+}
+
+.tension__bar[data-band='verde'] .tension__fill {
+  background: var(--tension-verde);
+}
+
+.tension__bar[data-band='amarelo'] .tension__fill {
+  background: var(--tension-amarelo);
+}
+
+.tension__bar[data-band='vermelho'] .tension__fill {
+  background: var(--tension-vermelho);
+}
