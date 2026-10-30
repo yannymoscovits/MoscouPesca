@@ -171,10 +171,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] `vite.config.ts`, `tsconfig.json`, `vitest.config.ts`, `playwright.config.ts` (webServer com `vite preview`), `index.html`, `src/main.tsx` mínimo
-- [ ] `npm test` passa com `--passWithNoTests`; `npm run test:e2e` passa com `--pass-with-no-tests`
-- [ ] `npm run typecheck` e `npm run build` passam
-- [ ] Se alguma major nova (Vite 8, TS 7, Preact 11, Vitest 5) quebrar a integração, fixar a anterior e registrar no commit
+- [x] `vite.config.ts`, `tsconfig.json`, `vitest.config.ts`, `playwright.config.ts` (webServer com `vite preview`), `index.html`, `src/main.tsx` mínimo
+- [x] `npm test` passa com `--passWithNoTests`; `npm run test:e2e` passa com `--pass-with-no-tests`
+- [x] `npm run typecheck` e `npm run build` passam
+- [x] Se alguma major nova (Vite 8, TS 7, Preact 11, Vitest 5) quebrar a integração, fixar a anterior e registrar no commit
 
 **Tests**: none
 **Gate**: build
