@@ -16,6 +16,7 @@ import { DialogLayer } from './DialogBox';
 import { BitePrompt, ResultOverlay } from './FishCard';
 import { currentPlace, formatKg, formatMoney } from './format';
 import { PauseOverlay } from './Overlays';
+import { TutorialCoach } from './TutorialCoach';
 
 export function FishingScreen() {
   const store = useContext(GameStoreContext) as GameStore;
@@ -83,16 +84,19 @@ function Hud() {
 
   return (
     <div class="hud">
-      <div class="hud__panel" role="group" aria-label="Painel da pescaria">
-        <p class="hud__money">{formatMoney(profile.money)}</p>
-        {run ? (
-          <p>
-            {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
-          </p>
-        ) : (
-          <p>{objectiveText(profile, episode)}</p>
-        )}
-        <TensionBar />
+      <div class="hud__top">
+        <div class="hud__panel" role="group" aria-label="Painel da pescaria">
+          <p class="hud__money">{formatMoney(profile.money)}</p>
+          {run ? (
+            <p>
+              {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
+            </p>
+          ) : (
+            <p>{objectiveText(profile, episode)}</p>
+          )}
+          <TensionBar />
+        </div>
+        <TutorialCoach />
       </div>
       <div class="hud__actions">
         <button type="button" class="btn btn--secondary" onClick={() => controller.pause()}>

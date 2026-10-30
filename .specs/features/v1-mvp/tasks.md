@@ -1157,10 +1157,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: em cada passo, uma única instrução visível e uma seta apontando para a área certa (água, botão "FISGAR!", tela) (TUTO-02)
-- [ ] e2e: 10 s sem toque → a instrução reaparece e a seta ganha a classe de piscar (TUTO-07)
-- [ ] e2e: seguindo as setas, o primeiro peixe é pego e o objetivo mostra 1 de 3
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: em cada passo, uma única instrução visível e uma seta apontando para a área certa (água, botão "FISGAR!", tela) (TUTO-02)
+- [x] e2e: 10 s sem toque → a instrução reaparece e a seta ganha a classe de piscar (TUTO-07)
+- [x] e2e: seguindo as setas, o primeiro peixe é pego e o objetivo mostra 1 de 3
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

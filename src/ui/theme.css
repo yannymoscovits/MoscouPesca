@@ -516,14 +516,10 @@ ul {
   }
 }
 
+/* A ficha encosta no "Continuar", embaixo: o alto fica livre para a dica da Jane no tutorial. */
 .overlay--fishing {
   z-index: 20; /* abaixo da fileira do HUD (30): a pausa continua à mão */
-  justify-content: center;
   padding-bottom: calc(var(--hud-row) + 8px);
-}
-
-.overlay--fishing .overlay__actions {
-  margin-top: auto;
 }
 
 .miss {
@@ -829,5 +825,86 @@ ul {
 @keyframes entrar {
   from {
     transform: scale(0.3) rotate(-20deg);
+  }
+}
+
+/* ---------- Guia do tutorial ---------- */
+
+.hud__top {
+  display: grid;
+  gap: 8px;
+}
+
+/* A dica fica sobre a ficha do peixe (20), para o "Pegou!" da Jane aparecer junto. */
+.coach {
+  position: relative;
+  z-index: 22;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 8px;
+  padding: 10px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  box-shadow: 0 5px 0 var(--outline);
+  animation: entrar 0.3s ease-out;
+}
+
+.coach .portrait {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+}
+
+.coach .portrait__initials {
+  font-size: 26px;
+}
+
+.coach .portrait__face {
+  font-size: var(--text-min);
+}
+
+.coach__text {
+  font-weight: 700;
+}
+
+/* A ponta da seta fica no ponto (left, top): ela desce até ele. */
+.coach-arrow {
+  position: absolute;
+  z-index: 22;
+  transform: translate(-50%, -100%);
+}
+
+.coach-arrow svg {
+  display: block;
+  animation: apontar 0.9s ease-in-out infinite;
+}
+
+@keyframes apontar {
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.coach-arrow--fisgar {
+  left: 50%;
+  top: calc(50% - 4px);
+}
+
+.coach-arrow--tela {
+  left: 50%;
+  top: 62%;
+}
+
+/* TUTO-07: 10 s sem toque, a seta pisca. */
+.coach-arrow.piscar {
+  animation: piscar-seta 0.5s steps(2) infinite;
+}
+
+@keyframes piscar-seta {
+  50% {
+    opacity: 0.2;
   }
 }
