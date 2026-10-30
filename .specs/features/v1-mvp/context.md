@@ -58,6 +58,8 @@ A v1 entrega 5 episódios, publicados juntos: Barragem do Poço do Magro (Guanam
 - Peixes do Episódio 1: os típicos da represa de Guanambi (pedido do usuário). Sem lista oficial do Poço do Magro, usamos os comuns dos açudes do sertão baiano, mais a lenda real do pirarucu de ~90 kg pego no sangradouro da Barragem de Ceraíma em 2022, que vira o Pirarucu Lendário. O usuário confirmou: os peixes mais famosos de Guanambi, o básico.
 - A represa do Episódio 1 é a **Barragem do Poço do Magro** (correção do usuário; não é Ceraíma).
 - A carta rascunhada para o Episódio 2 virou a carta do Episódio 1; as próximas são escritas episódio a episódio.
+- Episódio 1: a Jane zoa o Adilson por se achar pegador (pedido do usuário).
+- Episódio 2 vira uma viagem no tempo em Jacuípe: o usuário pescava com o pai quando criança. Rivais definidos pelo usuário: Tininho, Denise (chama ele de "JUNIORRRR") e Didi. Os três já faleceram: aparecem só no passado, com carinho e com o humor que tinham; o presente se passa na beira do rio, não na casa do Tininho. O pescador local é o Capenga (não Mestre Dinho). Roteiro em `docs/historia/episodio-2.md`.
 - Nomes corrigidos pelo usuário: Edvaldo (não Edvan), Ricardo (sem "Tio"), Kris (sem "Tia").
 - A Lavínia sempre chama o Adilson de "ADILSINHO" e aparece em todos os episódios para pirraçar ele.
 

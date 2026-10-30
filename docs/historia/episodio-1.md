@@ -6,7 +6,7 @@
 
 | Personagem | Quem é | Cartão de apresentação |
 | ---------- | ------ | ---------------------- |
-| Adilson Moscovits | O protagonista | ADILSON MOSCOVITS: *O Maior Contador de Causos de Pescaria* |
+| Adilson Moscovits | O protagonista | ADILSON MOSCOVITS: *O Pegador… de Peixe* |
 | Jane | Esposa do Adilson | JANE: *A Que Sempre Teve Razão* |
 | Lavínia | Filha; aparece como piranha. Sempre chama o Adilson de **ADILSINHO** e aparece em todo episódio pra pirraçar ele | LAVÍNIA: *A Piranha Mais Temida da Represa* |
 | Edvaldo | Cunhado, dono da loja; cabelo e barba brancos (sem foto) | EDVALDO: *O Cunhado que Nunca Dá Desconto* |
@@ -26,6 +26,8 @@
 - **Adilson** [rindo]: Um torneio? Então já pode ir gravando o meu nome no troféu.
 - **Jane** [bravo]: Calma. Antes você tira a ferrugem. Toma, achei a sua vara de bambu no fundo do armário.
 - **Jane** [rindo]: Tá mais torta que os causos que você conta.
+- **Adilson** [rindo]: Torta nada. Na mão de um pegador, qualquer vara vira profissional.
+- **Jane** [bravo]: Pegador? Você pegou foi gripe no ano passado.
 
 ### Cena 2: Tutorial (Jane conduz)
 
@@ -34,7 +36,7 @@
 3. **Fisgar**: "Mordeu! Toca na tela, rápido! Quer dizer… no seu tempo, ele não vai fugir."
 4. **Segurar**: "Segura o dedo na tela pra recolher a linha."
 5. **Soltar**: "Ficou vermelho? Solta! Deixa o peixe cansar."
-6. **Fim**: "Pegou! Faltam dois. E nada de aumentar o peso na hora de contar."
+6. **Fim**: "Pegou! Viu, seu pegador? Peixe você até pega. Faltam dois. E nada de aumentar o peso na hora de contar."
 
 **Objetivo: pegar 3 peixes** (o do tutorial já conta).
 
@@ -75,6 +77,8 @@
 
 - **Adilson** [rindo]: Agora quero ver alguém dizer que é causo!
 - **Jane** [chocado]: Tira foto, tira foto! Senão ninguém acredita.
+- **Adilson** [rindo]: Falei que eu era pegador.
+- **Jane** [rindo]: Pegador de peixe, Adilson. Só de peixe.
 - **Lavínia** [bravo]: Sorte de principiante, Adilsinho.
 
 **Objetivo: registrar no álbum todas as espécies do Poço do Magro.**
@@ -94,6 +98,7 @@
 ### Cena 10: Vitória
 
 - **Jane** [rindo]: Tá bom, você ganhou. Mas o peixe de 5 quilos daquele causo continua sendo mentira.
+- **Jane** [bravo]: E pode tirar esse sorriso de pegador da cara.
 - **Carta da família** (escrita por vocês)
 - *Episódio 2 liberado: Jacuípe!*
 
