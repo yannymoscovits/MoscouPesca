@@ -831,10 +831,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Sem `navigator.vibrate` / `navigator.wakeLock` → chamadas não lançam erro (TELA-02)
-- [ ] Wake Lock liberado ao ficar oculto é pedido de novo ao voltar visível (TELA-01)
-- [ ] `onVisibilityChange` avisa `hidden` e `visible` (SAVE-01)
-- [ ] Gate check passes: `npm test`
+- [x] Sem `navigator.vibrate` / `navigator.wakeLock` → chamadas não lançam erro (TELA-02)
+- [x] Wake Lock liberado ao ficar oculto é pedido de novo ao voltar visível (TELA-01)
+- [x] `onVisibilityChange` avisa `hidden` e `visible` (SAVE-01)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
