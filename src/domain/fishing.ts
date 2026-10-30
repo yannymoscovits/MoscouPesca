@@ -3,6 +3,15 @@
 
 import type { BaitId, Difficulty, Point, Rod, Species, Zone } from '../content/types';
 import type { Rng } from './rng';
+import {
+  FATIGUE_BASE_S,
+  FATIGUE_S_PER_STAMINA,
+  FIGHT_START_DISTANCE,
+  FISH_PULL,
+  REEL_SPEED,
+  TENSION_GAIN,
+  TENSION_RELIEF,
+} from './tuning';
 
 /** Distância máxima (px lógicos da cena) = base + por ponto de Alcance. */
 export const CAST_BASE = 60;
@@ -10,14 +19,19 @@ export const CAST_PER_REACH = 24;
 /** Duração do voo da isca, em segundos. */
 export const FLIGHT_S = 0.8;
 
+/** Topo da barra de tensão e quanto tempo seguido nele arrebenta a linha (PESCA-12, PESCA-13). */
+export const MAX_TENSION = 100;
+export const BREAK_AFTER_S = 1;
+
 /** Folga para comparar tempos somados em ponto flutuante. */
 const EPS = 1e-9;
 
-/** Limites de tempo da pescaria. O tutorial passa regras mais folgadas pelo mesmo caminho. */
+/** Limites da pescaria. O tutorial passa regras mais folgadas pelo mesmo caminho. */
 export interface FishingRules {
   biteS: { min: number; max: number }; // mordida, em segundos depois do arremesso
   giveUpS: number; // sem mordida até aqui: recolhe a isca
   hookWindowS: number | null; // prazo para fisgar; null = o peixe espera o toque
+  maxTension: number; // 100 deixa arrebentar; 99 nunca arrebenta
 }
 
 export function rulesFor(d: Difficulty): FishingRules {
@@ -25,7 +39,17 @@ export function rulesFor(d: Difficulty): FishingRules {
     biteS: { min: 3, max: 10 }, // PESCA-04
     giveUpS: 15, // PESCA-05
     hookWindowS: d === 'desafio' ? 2 : 4, // PESCA-08
+    maxTension: d === 'desafio' ? MAX_TENSION : 99, // PESCA-13, PESCA-14
   };
+}
+
+export type TensionBand = 'verde' | 'amarelo' | 'vermelho';
+
+/** Cor da barra de tensão (PESCA-12). */
+export function tensionBand(tension: number): TensionBand {
+  if (tension < 70) return 'verde';
+  if (tension < 90) return 'amarelo';
+  return 'vermelho';
 }
 
 export interface Gear {
@@ -55,7 +79,18 @@ export type FishingState =
       bite: { atS: number; species: Species } | null; // sorteada ao cair na água; null = nenhum peixe aceita a isca
     }
   | { phase: 'Bite'; gear: Gear; at: Point; species: Species; sinceBite: number }
-  | { phase: 'Fight'; gear: Gear; at: Point; species: Species }
+  | {
+      phase: 'Fight';
+      gear: Gear;
+      at: Point;
+      species: Species;
+      maxTension: number; // da dificuldade do início da briga (ACES-03)
+      tension: number; // 0 a maxTension
+      distance: number; // 0 = peixe na mão
+      atMaxS: number; // tempo seguido com a tensão em 100
+      fightS: number;
+    }
+  | { phase: 'Result_Broken' }
   | { phase: 'Result_Escaped' }
   | { phase: 'Result_Nothing' };
 
@@ -103,7 +138,35 @@ function land(s: Extract<FishingState, { phase: 'Flying' }>, sinceCast: number, 
   return { phase: 'Waiting', gear: s.gear, at: s.to, sinceCast, bite };
 }
 
-export function tick(s: FishingState, dt: number, _input: { holding: boolean }, ctx: TickContext): FishingState {
+/** Fôlego do peixe, de 1 a 0: cai com o tempo de briga para que toda briga termine. */
+function breath(sp: Species, fightS: number): number {
+  return Math.max(0, 1 - fightS / (FATIGUE_BASE_S + FATIGUE_S_PER_STAMINA * sp.stamina));
+}
+
+function fight(s: Extract<FishingState, { phase: 'Fight' }>, dt: number, holding: boolean): FishingState {
+  const sp = s.species;
+  let tension: number;
+  let distance: number;
+  if (holding) {
+    // PESCA-10; EQUIP-07: cada ponto de Força divide o ganho
+    tension = s.tension + ((TENSION_GAIN * sp.power) / s.gear.rod.force) * dt;
+    distance = s.distance - REEL_SPEED * dt;
+  } else {
+    // PESCA-11
+    tension = s.tension - TENSION_RELIEF * dt;
+    distance = s.distance + FISH_PULL * sp.power * breath(sp, s.fightS) * dt;
+  }
+  tension = Math.min(Math.max(tension, 0), s.maxTension); // PESCA-14: teto 99 no Tranquilo
+  distance = Math.max(distance, 0);
+
+  const atMax = tension >= MAX_TENSION;
+  const atMaxS = atMax && s.tension >= MAX_TENSION ? s.atMaxS + dt : 0;
+  if (atMax && atMaxS >= BREAK_AFTER_S - EPS) return { phase: 'Result_Broken' }; // PESCA-13
+
+  return { ...s, tension, distance, atMaxS, fightS: s.fightS + dt };
+}
+
+export function tick(s: FishingState, dt: number, input: { holding: boolean }, ctx: TickContext): FishingState {
   switch (s.phase) {
     case 'Flying': {
       const sinceCast = s.sinceCast + dt;
@@ -124,13 +187,25 @@ export function tick(s: FishingState, dt: number, _input: { holding: boolean }, 
       if (hookWindow !== null && sinceBite >= hookWindow - EPS) return { phase: 'Result_Escaped' }; // PESCA-09
       return { ...s, sinceBite };
     }
+    case 'Fight':
+      return fight(s, dt, input.holding);
     default:
       return s;
   }
 }
 
 /** Toque em qualquer ponto da tela: dentro da janela, fisga (PESCA-08). */
-export function press(s: FishingState, _ctx: TickContext): FishingState {
+export function press(s: FishingState, ctx: TickContext): FishingState {
   if (s.phase !== 'Bite') return s;
-  return { phase: 'Fight', gear: s.gear, at: s.at, species: s.species };
+  return {
+    phase: 'Fight',
+    gear: s.gear,
+    at: s.at,
+    species: s.species,
+    maxTension: ctx.rules.maxTension, // ACES-03: vale a dificuldade de agora até o fim da briga
+    tension: 0,
+    distance: FIGHT_START_DISTANCE,
+    atMaxS: 0,
+    fightS: 0,
+  };
 }

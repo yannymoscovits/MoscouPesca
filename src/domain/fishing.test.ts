@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { Point, Rod, Species, Zone } from '../content/types';
-import { cast, press, rulesFor, tick, type CastContext, type FishingState, type TickContext } from './fishing';
+import {
+  cast,
+  press,
+  rulesFor,
+  tensionBand,
+  tick,
+  type CastContext,
+  type FishingState,
+  type TickContext,
+} from './fishing';
 import { createRng } from './rng';
 
 const ORIGIN: Point = { x: 100, y: 400 };
@@ -192,6 +201,120 @@ describe('fisgada', () => {
       const later = idleFor(s, ctx, 60);
       expect(later.phase).toBe('Bite');
       expect(press(later, ctx).phase).toBe('Fight');
+    }
+  });
+});
+
+/** Arremessa na represa com a vara e o peixe dados e fisga assim que morde. */
+function toFight(d: 'desafio' | 'tranquilo', r: Rod, fish: Species, seed = 1) {
+  const ctx = tickCtx(seed, { rules: rulesFor(d), zones: [{ ...POND, species: [fish.id] }], species: [fish] });
+  const { s } = runUntil(cast(IDLE, SPOT, castCtx(r)), ctx, waitingOver);
+  const fight = press(s, ctx);
+  if (fight.phase !== 'Fight') throw new Error(`esperava Fight, veio ${fight.phase}`);
+  return { fight, ctx };
+}
+
+const HOLD = { holding: true };
+
+function fightFor(s: FishingState, ctx: TickContext, seconds: number, input: { holding: boolean }): FishingState {
+  for (let i = 0; i < Math.round(seconds / 0.1); i++) s = tick(s, 0.1, input, ctx);
+  return s;
+}
+
+function asFight(s: FishingState) {
+  if (s.phase !== 'Fight') throw new Error(`esperava Fight, veio ${s.phase}`);
+  return s;
+}
+
+/** Segura até a tensão chegar a 100 (no máximo 10 s). */
+function holdUntilMax(s: FishingState, ctx: TickContext): FishingState {
+  for (let i = 0; i < 100 && asFight(s).tension < 100; i++) s = tick(s, 0.1, HOLD, ctx);
+  expect(asFight(s).tension).toBe(100);
+  return s;
+}
+
+const BRUTE = species('pirarucu', { power: 10, stamina: 10 }); // peixe mais forte
+const BAMBOO = rod(5, 1); // vara mais fraca
+
+describe('briga', () => {
+  it('PESCA-10/PESCA-11: segurar sobe a tensão e recolhe; soltar alivia e o peixe puxa', () => {
+    const { fight, ctx } = toFight('desafio', rod(5, 5), species('traira', { power: 5, stamina: 5 }));
+    const held = asFight(fightFor(fight, ctx, 0.5, HOLD));
+    expect(held.tension).toBeGreaterThan(fight.tension);
+    expect(held.distance).toBeLessThan(fight.distance);
+
+    const released = asFight(fightFor(held, ctx, 0.5, STILL));
+    expect(released.tension).toBeLessThan(held.tension);
+    expect(released.distance).toBeGreaterThan(held.distance);
+  });
+
+  it('PESCA-12: faixas da barra: verde abaixo de 70, amarela de 70 a 89, vermelha de 90 a 100', () => {
+    for (const t of [0, 35, 69, 69.9]) expect(tensionBand(t)).toBe('verde');
+    for (const t of [70, 80, 89, 89.9]) expect(tensionBand(t)).toBe('amarelo');
+    for (const t of [90, 95, 100]) expect(tensionBand(t)).toBe('vermelho');
+  });
+
+  it('PESCA-13: no Desafio, 100 por 0,9 s não arrebenta; por 1 s seguido, arrebenta', () => {
+    const { fight, ctx } = toFight('desafio', BAMBOO, BRUTE);
+    const atMax = holdUntilMax(fight, ctx);
+
+    const almost = fightFor(atMax, ctx, 0.9, HOLD);
+    expect(almost.phase).toBe('Fight');
+    expect(fightFor(almost, ctx, 0.1, HOLD).phase).toBe('Result_Broken');
+  });
+
+  it('PESCA-13: o segundo em 100 precisa ser seguido; soltar zera a contagem', () => {
+    const { fight, ctx } = toFight('desafio', BAMBOO, BRUTE);
+    const first = fightFor(holdUntilMax(fight, ctx), ctx, 0.9, HOLD);
+    const relieved = fightFor(first, ctx, 0.1, STILL);
+    expect(asFight(relieved).tension).toBeLessThan(100);
+
+    const second = fightFor(holdUntilMax(relieved, ctx), ctx, 0.9, HOLD);
+    expect(second.phase).toBe('Fight');
+  });
+
+  it('PESCA-14: no Tranquilo, segurando por 60 s, a tensão para em 99 e a linha não arrebenta', () => {
+    const { fight, ctx } = toFight('tranquilo', BAMBOO, BRUTE);
+    let s: FishingState = fight;
+    let highest = 0;
+    for (let i = 0; i < 600; i++) {
+      s = tick(s, 0.1, HOLD, ctx);
+      expect(s.phase).not.toBe('Result_Broken');
+      if (s.phase === 'Fight') {
+        expect(s.tension).toBeLessThanOrEqual(99);
+        highest = Math.max(highest, s.tension);
+      }
+    }
+    expect(highest).toBe(99);
+  });
+
+  it('EQUIP-07: cada ponto de Força faz a tensão subir mais devagar', () => {
+    const fish = species('tucunare', { power: 2, stamina: 5 });
+    const tensionAfterHold = (force: number) => {
+      const { fight, ctx } = toFight('desafio', rod(5, force), fish);
+      return asFight(fightFor(fight, ctx, 0.5, HOLD)).tension;
+    };
+    expect(tensionAfterHold(3)).toBeLessThan(tensionAfterHold(1));
+    for (let force = 1; force < 10; force++) {
+      expect(tensionAfterHold(force + 1)).toBeLessThan(tensionAfterHold(force));
+    }
+  });
+
+  it('ACES-03: trocar para Tranquilo no meio da briga não salva a linha da briga atual', () => {
+    const { fight, ctx } = toFight('desafio', BAMBOO, BRUTE);
+    const switched = { ...ctx, rules: rulesFor('tranquilo') };
+    const atMax = holdUntilMax(fight, switched);
+    expect(fightFor(atMax, switched, 1, HOLD).phase).toBe('Result_Broken');
+  });
+
+  it('ACES-03: trocar para Desafio no meio da briga não muda o teto de 99 da briga atual', () => {
+    const { fight, ctx } = toFight('tranquilo', BAMBOO, BRUTE);
+    const switched = { ...ctx, rules: rulesFor('desafio') };
+    let s: FishingState = fight;
+    for (let i = 0; i < 600; i++) {
+      s = tick(s, 0.1, HOLD, switched);
+      expect(s.phase).not.toBe('Result_Broken');
+      if (s.phase === 'Fight') expect(s.tension).toBeLessThanOrEqual(99);
     }
   });
 });

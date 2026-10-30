@@ -369,13 +369,13 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Segurando: tensão sobe e distância cai; soltando: tensão cai e distância sobe (PESCA-10, PESCA-11)
-- [ ] `tensionBand(t)`: verde < 70, amarelo 70 a 89, vermelho 90 a 100 (PESCA-12)
-- [ ] Desafio: 100 por 0,9 s não arrebenta, por 1,0 s arrebenta (PESCA-13)
-- [ ] Tranquilo: tensão nunca passa de 99 nem arrebenta, segurando por 60 s (PESCA-14)
-- [ ] Vara de Força 3 sobe a tensão mais devagar que a de Força 1 (EQUIP-07)
-- [ ] Trocar a dificuldade no meio da briga não muda a briga atual (ACES-03)
-- [ ] Gate check passes: `npm test`
+- [x] Segurando: tensão sobe e distância cai; soltando: tensão cai e distância sobe (PESCA-10, PESCA-11)
+- [x] `tensionBand(t)`: verde < 70, amarelo 70 a 89, vermelho 90 a 100 (PESCA-12)
+- [x] Desafio: 100 por 0,9 s não arrebenta, por 1,0 s arrebenta (PESCA-13)
+- [x] Tranquilo: tensão nunca passa de 99 nem arrebenta, segurando por 60 s (PESCA-14)
+- [x] Vara de Força 3 sobe a tensão mais devagar que a de Força 1 (EQUIP-07)
+- [x] Trocar a dificuldade no meio da briga não muda a briga atual (ACES-03)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
