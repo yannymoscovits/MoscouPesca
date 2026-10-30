@@ -55,7 +55,7 @@ export interface Bait {
 
 export interface Zone {
   id: string;
-  polygon: Point[];
+  polygon: Point[]; // px lógicos da cena, os mesmos do arremesso (fishing.cast); (0, 0) no canto de cima à esquerda
   species: SpeciesId[];
 }
 

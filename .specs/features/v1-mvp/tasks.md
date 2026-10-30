@@ -628,9 +628,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] `satisfies` contra os tipos de conteúdo sem erro
-- [ ] Teste: ≥ 5 espécies com exatamente 1 rara; toda espécie tem descrição não vazia; força e fôlego dentro de `FISH_POWER` e `FISH_STAMINA` (1 a 10) de `tuning.ts`; toda espécie citada nas zonas existe; Piranha Lavínia só aceita a Isca de Carne
-- [ ] Gate check passes: `npm test`
+- [x] `satisfies` contra os tipos de conteúdo sem erro
+- [x] Teste: ≥ 5 espécies com exatamente 1 rara; toda espécie tem descrição não vazia; força e fôlego dentro de `FISH_POWER` e `FISH_STAMINA` (1 a 10) de `tuning.ts`; toda espécie citada nas zonas existe; Piranha Lavínia só aceita a Isca de Carne
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
