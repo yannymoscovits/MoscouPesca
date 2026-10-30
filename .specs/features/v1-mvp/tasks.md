@@ -671,8 +671,8 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste: 7 personagens, IDs únicos, apelido não vazio, 4 expressões cada
-- [ ] Gate check passes: `npm test`
+- [x] Teste: 7 personagens, IDs únicos, apelido não vazio, 4 expressões cada
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
