@@ -534,12 +534,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Perfil sem tutorial → `start()` no passo `cast` (TUTO-01)
-- [ ] Passos avançam na ordem com o estado da pesca (TUTO-03)
-- [ ] Com `rules()` do tutorial: mordida ≤ 5 s em 200 sementes, peixe não escapa sem toque, tensão máxima 99 (TUTO-04, TUTO-05, TUTO-06)
-- [ ] 10 s sem toque num passo → `nudge: true` (TUTO-07)
-- [ ] Peixe pego → `done` e evento `Caught` emitido para o objetivo (TUTO-08)
-- [ ] Gate check passes: `npm test`
+- [x] Perfil sem tutorial → `start()` no passo `cast` (TUTO-01)
+- [x] Passos avançam na ordem com o estado da pesca (TUTO-03)
+- [x] Com `rules()` do tutorial: mordida ≤ 5 s em 200 sementes, peixe não escapa sem toque, tensão máxima 99 (TUTO-04, TUTO-05, TUTO-06)
+- [x] 10 s sem toque num passo → `nudge: true` (TUTO-07)
+- [x] Peixe pego → `done` e evento `Caught` emitido para o objetivo (TUTO-08)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
