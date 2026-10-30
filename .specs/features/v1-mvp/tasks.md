@@ -302,10 +302,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Mesma semente → mesma sequência; sementes diferentes → sequências diferentes
-- [ ] `range` sempre dentro de [min, max] em 10 000 sorteios
-- [ ] `pick` respeita os pesos (frequência dentro de ±5% em 10 000 sorteios)
-- [ ] Gate check passes: `npm test`
+- [x] Mesma semente → mesma sequência; sementes diferentes → sequências diferentes
+- [x] `range` sempre dentro de [min, max] em 10 000 sorteios
+- [x] `pick` respeita os pesos (frequência dentro de ±5% em 10 000 sorteios)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
