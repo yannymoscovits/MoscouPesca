@@ -282,8 +282,8 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Tipos exportados exatamente como no design
-- [ ] `npm run typecheck` passa
+- [x] Tipos exportados exatamente como no design
+- [x] `npm run typecheck` passa
 
 **Tests**: none
 **Gate**: build
