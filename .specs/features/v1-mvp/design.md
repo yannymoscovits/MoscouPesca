@@ -194,7 +194,7 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
 - **Purpose**: Simular um jogador típico do primeiro arremesso à vitória de cada episódio, para calibrar a progressão longa.
 - **Location**: `src/domain/sim/typicalPlayer.ts` (usado só por testes)
 - **Interfaces**:
-  - `simulateEpisode(ep: Episode, start: Profile, seed: number): { minutes: number; achievements: { atMinute: number; kind: string }[]; tournamentAttempts: number }`
+  - `simulateEpisode(ep: EpisodeContent, start: Profile, seed: number, opts?: { difficulty?: Difficulty; earlier?: Episode[] }): { won: boolean; minutes: number; casts: number; achievements: { atMinute: number; kind: string }[]; tournamentAttempts: number; profile: Profile }`: o `profile` final permite encadear os episódios
 - O jogador típico arremessa nas zonas da isca equipada, segura até o amarelo e solta no vermelho, compra a melhor vara que o saldo permite e entra no campeonato assim que ele libera. O tempo de cada arremesso inclui voo, espera, briga e ficha (cerca de 30 a 45 s).
 - **Dependencies**: `fishing`, `shop`, `story`, `tournament`, `world`, `rng`
 
@@ -358,7 +358,7 @@ interface Character {
   epithet: string                    // apelido do cartão, ex.: "O Rei do Bongô"
   portraits: Record<Expression, string>
 }
-interface DialogLine { speaker: CharacterId; text: string; expression?: Expression }  // padrão: 'normal'
+interface DialogLine { speaker: CharacterId | CharacterId[] | null; text: string; expression?: Expression }  // padrão: 'normal'; null = narração; lista = fala conjunta
 interface Scene { id: SceneId; lines: DialogLine[] }
 interface Objective {
   id: string; text: string

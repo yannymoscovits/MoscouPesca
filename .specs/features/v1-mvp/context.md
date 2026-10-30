@@ -8,7 +8,7 @@
 
 ## Feature Boundary
 
-A v1 entrega 5 episódios, publicados juntos: Barragem do Poço do Magro (GuanambiCup), Jacuípe (Rio Jacuípe e Ponte da Cetrel), Ilha de Itaparica, Amazônia e Alto-mar da Bahia (Copa Adilson Moscovits). Cada um tem lugar, peixes, equipamentos, história com a família, campeonato e carta, numa progressão de 2 a 3 horas, e a pesca livre continua depois do fim.
+A v1 entrega 5 episódios, publicados juntos: Barragem do Poço do Magro (GuanambiCup), Jacuípe (Rio Jacuípe e Ponte da Cetrel), Ilha de Itaparica, Parque dos Ventos e Alto-mar da Bahia (Copa Adilson Moscovits). Cada um tem lugar, peixes, equipamentos, história com a família, campeonato e carta, numa progressão de 2 a 3 horas, e a pesca livre continua depois do fim.
 
 ---
 
@@ -53,13 +53,14 @@ A v1 entrega 5 episódios, publicados juntos: Barragem do Poço do Magro (Guanam
 
 - No mínimo 5 episódios, entregues **juntos** (decisão do usuário, mesmo com a entrega mais demorada).
 - Cada episódio leva de 2 a 3 horas até vencer o campeonato; ele gosta de ficar pegando peixe. Depois do fim, a pesca livre segue em todos os lugares.
-- Roteiro: 1 Barragem do Poço do Magro (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Ilha de Itaparica · 4 Amazônia · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits).
+- Roteiro: 1 Barragem do Poço do Magro (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Ilha de Itaparica · 4 Parque dos Ventos · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits).
 - Jacuípe entrou no Episódio 2 a pedido do usuário: é um lugar de que o Adilson gosta muito e onde pescava muito. Tem dois locais, o Rio Jacuípe (água doce) e a Ponte da Cetrel (água salgada). O Rio São Francisco saiu, e o final foi para o alto-mar para não repetir a água salgada.
 - Peixes do Episódio 1: os típicos da represa de Guanambi (pedido do usuário). Sem lista oficial do Poço do Magro, usamos os comuns dos açudes do sertão baiano, mais a lenda real do pirarucu de ~90 kg pego no sangradouro da Barragem de Ceraíma em 2022, que vira o Pirarucu Lendário. O usuário confirmou: os peixes mais famosos de Guanambi, o básico.
 - A represa do Episódio 1 é a **Barragem do Poço do Magro** (correção do usuário; não é Ceraíma).
 - A carta rascunhada para o Episódio 2 virou a carta do Episódio 1; as próximas são escritas episódio a episódio.
 - Episódio 1: a Jane zoa o Adilson por se achar pegador (pedido do usuário).
 - Episódio 3 vai para a Ilha de Itaparica, no lugar do Pantanal: ele pescou muito lá, em Vera Cruz, quase sempre sozinho (pedido do usuário). As irmãs dele, Lu e Geane, invadem a pescaria e sempre chamam ele de "Xô"; aparecem a Louise (sobrinha preferida) e o Lucca (filho dela, que ele adora). Roteiro em `docs/historia/episodio-3.md`.
+- Episódio 4 sai da Amazônia e vira lúdico: o Adilson trabalha com energia eólica e presta serviços ao Grupo IK; num parque eólico do Alto Sertão (região de Guanambi), o vento é tão forte que os peixes voam (pedido do usuário). Mesma mecânica de pesca; espécies fantasiosas. Entram o Márcio (funcionário 01 do Adilson, faz-tudo e amigo) e o Sr. Higashi (chefe da Ninha; piada interna de botar um GPS). Rivais: Márcio, Sr. Higashi e Edvaldo. Roteiro em `docs/historia/episodio-4.md`.
 - Episódio 2 vira uma viagem no tempo em Jacuípe: o usuário pescava com o pai quando criança. Rivais definidos pelo usuário: Tininho, Denise (chama ele de "JUNIORRRR") e Didi. Os três já faleceram: aparecem só no passado, com carinho e com o humor que tinham; o presente se passa na beira do rio, não na casa do Tininho. O pescador local é o Capenga (não Mestre Dinho). Roteiro em `docs/historia/episodio-2.md`.
 - Nomes corrigidos pelo usuário: Edvaldo (não Edvan), Ricardo (sem "Tio"), Kris (sem "Tia").
 - Regra do usuário: nunca usar "Tio" ou "Tia" antes do nome de personagem (Ricardo, Kris, Lu). Nas falas, a Louise chamar o Adilson de "tio" continua, por ser o jeito de ela falar com ele.

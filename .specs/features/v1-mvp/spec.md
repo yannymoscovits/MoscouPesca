@@ -50,16 +50,17 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Idioma | Só português do Brasil | Público único | y |
 | Local do Episódio 1 | Barragem do Poço do Magro, em Guanambi (BA), cidade onde o Adilson mora | Corrigido pelo usuário (não é Poço do Magro) | y |
 | Entrega | Os 5 episódios publicados juntos | Decisão do usuário | y |
-| Roteiro dos episódios | 1 Barragem do Poço do Magro (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Ilha de Itaparica, em Vera Cruz · 4 Amazônia · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits) | Definido pelo usuário: Jacuípe e a Ilha de Itaparica são lugares onde ele pescou muito; o final vai para o alto-mar para não repetir a água salgada da Ponte da Cetrel | y |
-| Nomes dos campeonatos 2 a 4 | Copa Jacuípe, Copa Itaparica, Torneio da Amazônia | Propostos pelo agente | n |
+| Roteiro dos episódios | 1 Barragem do Poço do Magro (GuanambiCup) · 2 Jacuípe, com dois locais: Rio Jacuípe (doce) e Ponte da Cetrel (salgado) · 3 Ilha de Itaparica, em Vera Cruz · 4 Parque dos Ventos, nas eólicas do Alto Sertão (episódio lúdico, com peixes voadores) · 5 Alto-mar da Bahia, de barco (Copa Adilson Moscovits) | Definido pelo usuário: Jacuípe e a Ilha de Itaparica são lugares onde ele pescou muito; o final vai para o alto-mar para não repetir a água salgada da Ponte da Cetrel | y |
+| Nomes dos campeonatos 2 a 4 | Copa Jacuípe, Copa Itaparica, Copa dos Ventos | Propostos pelo agente | n |
 | Duração | 2 a 3 horas por episódio até vencer o campeonato, medidas pela simulação de um jogador típico | Decisão do usuário: ele gosta de ficar pescando | y |
 | Medição da progressão | 50 sementes por episódio. PROG-01: mediana do tempo até a vitória entre 120 e 180 min. PROG-04: em pelo menos 90% das sementes, nenhum intervalo sem conquista passa de 10 min. PROG-05: taxa de vitória em 50 tentativas de campeonato | Torna os critérios de progressão testáveis sem depender de uma semente da sorte | n |
 | Elenco do Episódio 2 | Viagem no tempo em Jacuípe: o Adilson pesca com a Ninha (como ele chama a filha que pediu o jogo), criança; a Lavínia aparece só como a piranha que viajou no tempo. Rivais: Tininho (dono da casa de Jacuípe, super pai), Denise (mãe do Adilson, delegada, farrista, chama ele de "JUNIORRRR") e Didi (pai do Adilson, médico, dava injeção, Bahia em Salvador e Corinthians em São Paulo). Tininho, Denise e Didi já faleceram: aparecem só no passado. Personagem local: Capenga | Definido pelo usuário; a viagem no tempo foi a forma proposta de colocar o usuário criança na história | y |
 | Elenco do Episódio 3 | Ele pescava sozinho em Vera Cruz; as irmãs dele invadem a pescaria: Lu (fuma, bebe e trabalha demais; mãe de Marcus, Louise e Julia) e Geane (canceriana, dramática, acredita em E.T.). Louise, a sobrinha preferida dele, e o filho dela, Lucca, que ele adora. Rivais: Lu, Geane e Louise. Sem personagem local | Definido pelo usuário | y |
-| Elenco dos episódios 4 e 5 | Jane, Edvaldo, Ricardo, Bem e Kris voltam como rivais e coadjuvantes, mais um personagem local por episódio (guia ribeirinho, mestre de barco) | Mantém a família no centro; o usuário pode incluir mais parentes | n |
+| Episódio 4 | O Adilson trabalha com energia eólica e presta serviços ao Grupo IK; num parque eólico do Alto Sertão, o vento é tão forte que os peixes voam. Com ele, o Márcio (funcionário 01, faz-tudo e muito amigo dele). Aparece o Sr. Higashi (chefe da Ninha), com a piada de botar GPS em tudo. Rivais: Márcio, Sr. Higashi e Edvaldo | Pedido do usuário: algo lúdico com peixe voador, ligado ao trabalho dele | y |
+| Elenco do Episódio 5 | Jane, Edvaldo, Ricardo, Bem e Kris voltam como rivais e coadjuvantes, mais um mestre de barco como personagem local | Mantém a família no centro; o usuário pode incluir mais parentes | n |
 | Varas e iscas | Bambu no início e 2 varas novas por episódio (11 no total), Força e Alcance de 1 a 10; 1 isca nova por episódio | Equipamento evolui junto com os 5 episódios | n |
 | Espécies do Episódio 1 | Tilápia, Traíra, Curimatã, Piau, Tambaqui, Tucunaré, Pirarucu Lendário (raro; lenda inspirada no pirarucu de ~90 kg pego no sangradouro da vizinha Barragem de Ceraíma em 2022) e Piranha Lavínia (especial) | Usuário: usar os peixes mais famosos de Guanambi, o básico | y |
-| Espécies dos episódios 2 a 5 | Ep. 2, Rio Jacuípe: Tilápia, Traíra, Tainha, Robalo-peva, Carapeba; Ponte da Cetrel: Robalo-flecha, Pescada-amarela, Vermelho, Baiacu, Camurupim (raro) · Ep. 3, Vera Cruz: Xaréu, Guaricema, Agulhinha, Cioba, Budião, Garoupa (raro) · Ep. 4: Aruanã, Pirapitinga, Peixe-cachorro, Tucunaré-açu, Piraíba (raro) · Ep. 5, alto-mar: Dourado-do-mar, Cavala, Atum, Olho-de-boi, Marlim-azul (raro) | Peixes mais conhecidos de cada lugar, seguindo o critério do usuário para Guanambi; no Rio Jacuípe, guia de pesca cita robalo-peva, traíra e tainha | n |
+| Espécies dos episódios 2 a 5 | Ep. 2, Rio Jacuípe: Tilápia, Traíra, Tainha, Robalo-peva, Carapeba; Ponte da Cetrel: Robalo-flecha, Pescada-amarela, Vermelho, Baiacu, Camurupim (raro) · Ep. 3, Vera Cruz: Xaréu, Guaricema, Agulhinha, Cioba, Budião, Garoupa (raro) · Ep. 4, Parque dos Ventos (espécies fantasiosas): Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador, Dourado-dos-Ventos (raro) · Ep. 5, alto-mar: Dourado-do-mar, Cavala, Atum, Olho-de-boi, Marlim-azul (raro) | Peixes mais conhecidos de cada lugar, seguindo o critério do usuário para Guanambi; no Rio Jacuípe, guia de pesca cita robalo-peva, traíra e tainha | n |
 | Tom da história | Bem-humorado e debochado, do jeito da família | Pedido do usuário: a família é debochada | y |
 | Lavínia (irmã do usuário) | Entra como "Lavínia, a Piranha": peixe especial da represa e personagem nas falas; sempre chama o Adilson de "Adilsinho" e aparece em todos os episódios para pirraçar ele | Pedido da própria Lavínia e do usuário | y |
 | Elenco do Episódio 1 | Jane (esposa) entrega a vara; Edvaldo (cunhado) é o dono da loja; rivais do torneio: Ricardo (boêmio, toca bongô), Bem (sogra da filha, gosta de cerveja) e Kris ("Passago de Fogo", vive mandando ele parar de tomar líquido e fala "prendrive") | Definido pelo usuário | y |
@@ -256,7 +257,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 **Why P1**: O usuário pediu no mínimo 5 episódios, entregues juntos.
 
 **Acceptance Criteria**:
-1. The jogo SHALL ter 5 episódios, nesta ordem: 1 Barragem do Poço do Magro (GuanambiCup), 2 Jacuípe (Rio Jacuípe e Ponte da Cetrel), 3 Ilha de Itaparica (Vera Cruz), 4 Amazônia e 5 Alto-mar da Bahia (Copa Adilson Moscovits). `EPI-01`
+1. The jogo SHALL ter 5 episódios, nesta ordem: 1 Barragem do Poço do Magro (GuanambiCup), 2 Jacuípe (Rio Jacuípe e Ponte da Cetrel), 3 Ilha de Itaparica (Vera Cruz), 4 Parque dos Ventos e 5 Alto-mar da Bahia (Copa Adilson Moscovits). `EPI-01`
 2. WHEN o jogador vence pela primeira vez o campeonato de um episódio de 1 a 4 THEN o jogo SHALL liberar o episódio seguinte e o local dele no Mapa. `EPI-02`
 3. WHILE um episódio está bloqueado the jogo SHALL mostrar o local dele no Mapa com cadeado e o nome do campeonato que o libera. `EPI-03`
 4. WHEN o jogador toca num local liberado no Mapa THEN o jogo SHALL abrir a pesca naquele local. `EPI-04`
@@ -476,7 +477,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | HUMOR-04 | P1: Pegada cômica nos personagens | T24, T43 | Implementing |
 | HUMOR-07 | P1: Pegada cômica nos personagens | T23 | Implementing |
 | HUMOR-08 | P1: Pegada cômica nos personagens | T23 | Implementing |
-| HUMOR-09 | P1: Pegada cômica nos personagens | - | Pending |
+| HUMOR-09 | P1: Pegada cômica nos personagens | T57 | Implementing |
 | CAMP-01 | P1: Campeonatos | T16, T43 | Implementing |
 | CAMP-02 | P1: Campeonatos | T24, T43 | Implementing |
 | CAMP-03 | P1: Campeonatos | - | Pending |
@@ -487,7 +488,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | CAMP-08 | P1: Campeonatos | T15 | Implementing |
 | CAMP-09 | P1: Campeonatos | T15, T43 | Implementing |
 | CAMP-10 | P1: Campeonatos | - | Pending |
-| EPI-01 | P1: Mapa e 5 episódios | - | Pending |
+| EPI-01 | P1: Mapa e 5 episódios | T56 a T59 | Implementing |
 | EPI-02 | P1: Mapa e 5 episódios | T55 | Implementing |
 | EPI-03 | P1: Mapa e 5 episódios | T55, T62 | Implementing |
 | EPI-04 | P1: Mapa e 5 episódios | T55, T62 | Implementing |
@@ -533,7 +534,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 113 total, todos mapeados no tasks.md; 74 em implementação
+**Coverage:** 113 total, todos mapeados no tasks.md; 77 em implementação
 
 ---
 

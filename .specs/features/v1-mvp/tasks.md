@@ -1125,7 +1125,7 @@ T53 → T54
 **Where**: `src/ui/DialogBox.tsx`
 **Depends on**: T34
 **Reuses**: `characters.ts`, `episodes/ep1.ts`
-**Requirement**: HIST-01 (exibição), HIST-02, HIST-03, HUMOR-01, HUMOR-02
+**Requirement**: HIST-01 (exibição), HIST-02, HIST-03, HUMOR-01, HUMOR-02 (inclui narração e fala conjunta dos roteiros)
 **Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
 
 **Done when**:
@@ -1134,6 +1134,8 @@ T53 → T54
 - [ ] e2e: o cartão só fecha com toque e não aparece de novo na segunda fala da Jane (HUMOR-01)
 - [ ] e2e: cada fala mostra nome e retrato; o retrato muda conforme a expressão da fala (HIST-02, HUMOR-02)
 - [ ] e2e: a fala só avança com toque; 30 s parado não avança (HIST-03)
+- [ ] `DialogLine.speaker` aceita `null` (narração: sem retrato, em itálico) e lista de personagens (fala conjunta: retratos lado a lado); e2e cobre os dois casos
+- [ ] Conteúdo dos episódios 2 e 3 ganha as narrações dos roteiros (ex.: "Jacuípe, muitos anos atrás.", "Presente.") e a fala conjunta do Didi e da Denise volta a ser uma só, como no roteiro: "Amamos você meu filho, segura firme!"
 - [ ] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
@@ -1323,25 +1325,25 @@ T53 → T54
 
 ### Phase 9 tasks
 
-#### T58: Cadastrar o Episódio 4: Amazônia
+#### T58: Cadastrar o Episódio 4: Parque dos Ventos
 
-**What**: Pacote `ep4` completo: local e zonas (Amazônia); Aruanã, Pirapitinga, Peixe-cachorro, Tucunaré-açu e Piraíba (rara), com descrição engraçada; 2 varas e 1 isca novas; roteiro com abertura, 6 a 8 objetivos, cena da Lavínia pirraçando o Adilsinho, um guia ribeirinho como personagem local e encerramento; Torneio da Amazônia com 3 rivais da família e provocações; carta `{{PENDENTE}}`. Registrado em `src/content/index.ts`.
+**What**: Pacote `ep4` completo a partir de `docs/historia/episodio-4.md`: local e zonas (Parque dos Ventos, açude no pé das torres eólicas); espécies fantasiosas Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (raro), com descrição engraçada; 2 varas (Vara Hélice e Vara Torre) e 1 isca novas; roteiro com 7 objetivos, a Lavínia como piranha-pipa e encerramento; Copa dos Ventos com os rivais Márcio, Sr. Higashi e Edvaldo e suas provocações; carta `{{PENDENTE}}`. Os personagens novos (Márcio e Sr. Higashi) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
 **Where**: `src/content/episodes/ep4.ts`
 **Depends on**: T23, T24
-**Reuses**: estrutura de `episodes/ep1.ts`
+**Reuses**: estrutura de `episodes/ep1.ts`, roteiro de `docs/historia/episodio-4.md`
 **Requirement**: EPI-01, EPI-06, EQUIP-01, EQUIP-02, PROG-02, PROG-03, HUMOR-07, HUMOR-08
 **Tools**: MCP: NONE · Skill: `commit-bee`
 
 **Done when**:
 
 - [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep4`, inclusive força e fôlego das espécies entre 1 e 10
-- [ ] Teste: `index.ts` lista os episódios em ordem, com o 4º sendo Amazônia (EPI-01)
-- [ ] Roteiro de `docs/historia/episodio-4.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
+- [ ] Teste: `index.ts` lista os episódios em ordem, com o 4º sendo Parque dos Ventos (EPI-01)
+- [ ] O alcance das varas já chega a 10 no Episódio 3, então a espécie rara é limitada pela isca nova e pela força da vara, não pelo alcance; teste prova que sem a isca nova ela não morde
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
-**Commit**: `feat(content): adiciona episódio da amazônia`
+**Commit**: `feat(content): adiciona episódio dos ventos`
 
 ---
 
@@ -1358,6 +1360,7 @@ T53 → T54
 
 - [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`, inclusive força e fôlego das espécies entre 1 e 10
 - [ ] Teste: `index.ts` lista os episódios em ordem, com o 5º sendo Alto-mar da Bahia (EPI-01)
+- [ ] A espécie rara é limitada pela isca nova e pela força da vara, não pelo alcance (que já chega a 10)
 - [ ] Roteiro de `docs/historia/episodio-5.md` se existir; se não, rascunho no mesmo tom, com as falas que faltam marcadas `{{PENDENTE}}` para a família revisar
 - [ ] Gate check passes: `npm test`
 
@@ -1382,6 +1385,7 @@ T53 → T54
 - [ ] Em pelo menos 90% das sementes, nenhum intervalo sem conquista passa de 10 min (PROG-04)
 - [ ] Em 50 tentativas, vitória ≥ 60% com a melhor vara do episódio e ≤ 20% com a melhor do episódio anterior (PROG-05)
 - [ ] Ajustes só em números de `src/content/episodes/*`, sem mudar o domínio
+- [ ] Ponto de partida medido em T60: mediana de 15 a 20 min por episódio, e o dinheiro passa de um episódio para o outro; preços, contagens dos objetivos e raridades precisam subir em cada episódio
 - [ ] Gate check passes: `npm test`
 
 **Tests**: unit
@@ -1545,10 +1549,10 @@ T53 → T54
 
 ---
 
-#### T66: Gerar o cenário da Amazônia
+#### T66: Gerar o cenário do Parque dos Ventos
 
-**What**: Fundo do Amazônia visto de cima (rio de água escura com igapó) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
-**Where**: `src/assets/scene/amazonia.png`
+**What**: Fundo do Parque dos Ventos visto de cima (açude no pé das torres eólicas, com as pás girando e peixes saltando) em pixel art no PixelLab, no estilo do cenário do Poço do Magro.
+**Where**: `src/assets/scene/parque-dos-ventos.png`
 **Depends on**: T49
 **Reuses**: estilo de `scene/poco-do-magro.png`
 **Requirement**: - (arte; cenário próprio da EPI-06)
@@ -1556,13 +1560,13 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Cenário aparece ao pescar em Amazônia (Episódio 4), sem distorção nas larguras de 360, 412 e 600 px (prints)
+- [ ] Cenário aparece ao pescar no Parque dos Ventos (Episódio 4), sem distorção nas larguras de 360, 412 e 600 px (prints)
 - [ ] Zonas de pesca do `ep4` coincidem com áreas visualmente distintas
 - [ ] Gate check passes: build
 
 **Tests**: none
 **Gate**: build
-**Commit**: `feat(art): adiciona cenário da amazônia`
+**Commit**: `feat(art): adiciona cenário do parque eólico`
 
 ---
 
@@ -1654,7 +1658,7 @@ T53 → T54
 
 #### T70: Gerar os peixes do Episódio 4
 
-**What**: Sprites de Aruanã, Pirapitinga, Peixe-cachorro, Tucunaré-açu e Piraíba (nadando e na ficha), na paleta do Episódio 1.
+**What**: Sprites dos peixes voadores Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (voando e na ficha), com asas, hélices e rabo de pipa, na paleta do Episódio 1.
 **Where**: `src/assets/fish/ep4/`
 **Depends on**: T50
 **Reuses**: estilo de `fish/ep1/`
@@ -1663,13 +1667,13 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 5 espécies com sprite de cena e de ficha
+- [ ] 6 espécies com sprite de cena e de ficha
 - [ ] Prints da ficha de cada espécie conferidos
 - [ ] Gate check passes: build
 
 **Tests**: none
 **Gate**: build
-**Commit**: `feat(art): adiciona peixes da amazônia`
+**Commit**: `feat(art): adiciona peixes voadores`
 
 ---
 
@@ -1739,9 +1743,9 @@ T53 → T54
 
 ---
 
-#### T72: Gerar os personagens locais
+#### T72: Gerar os personagens de fora da família
 
-**What**: Retratos de 96 × 96 px, nas 4 expressões, do Capenga, do guia ribeirinho e do mestre de barco.
+**What**: Retratos de 96 × 96 px, nas 4 expressões, do Capenga, do Márcio, do Sr. Higashi e do mestre de barco.
 **Where**: `src/assets/portraits/locais/`
 **Depends on**: T52
 **Reuses**: estilo dos retratos da família
@@ -1750,7 +1754,7 @@ T53 → T54
 
 **Done when**:
 
-- [ ] 12 retratos no estilo dos da família
+- [ ] 16 retratos no estilo dos da família
 - [ ] Prints dos cartões de apresentação conferidos
 - [ ] Gate check passes: build
 
