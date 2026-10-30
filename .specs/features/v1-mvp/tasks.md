@@ -508,14 +508,14 @@ T53 → T54
 
 **Done when**:
 
-- [ ] `GameStarted` num perfil novo → cena de abertura (HIST-01)
-- [ ] Objetivo atual muda em ordem conforme os eventos, e cada conclusão devolve a cena certa (HIST-04, HIST-05)
-- [ ] Torneio bloqueado até o último objetivo; liberado depois (CAMP-01)
-- [ ] Vitória no campeonato de um episódio de 1 a 4 → cena de encerramento e aviso "Episódio N liberado!" com o N seguinte (HIST-08)
-- [ ] Primeira pesca num episódio liberado → cena de abertura dele, uma vez só (HIST-09)
-- [ ] Vitória na Copa Adilson Moscovits → encerramento final (HIST-10)
-- [ ] Evento fora de ordem (ex.: compra antes do objetivo de compra) não pula objetivos
-- [ ] Gate check passes: `npm test`
+- [x] `GameStarted` num perfil novo → cena de abertura (HIST-01)
+- [x] Objetivo atual muda em ordem conforme os eventos, e cada conclusão devolve a cena certa (HIST-04, HIST-05)
+- [x] Torneio bloqueado até o último objetivo; liberado depois (CAMP-01)
+- [x] Vitória no campeonato de um episódio de 1 a 4 → cena de encerramento e aviso "Episódio N liberado!" com o N seguinte (HIST-08)
+- [x] Primeira pesca num episódio liberado → cena de abertura dele, uma vez só (HIST-09)
+- [x] Vitória na Copa Adilson Moscovits → encerramento final (HIST-10)
+- [x] Evento fora de ordem (ex.: compra antes do objetivo de compra) não pula objetivos
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

@@ -88,7 +88,10 @@ export type GameEvent =
 export interface Objective {
   id: string;
   text: string;
-  done: (e: GameEvent, p: Profile) => boolean;
+  done: (e: GameEvent, p: Profile) => boolean; // p já com o efeito do evento (compra, álbum)
+  // SPEC_DEVIATION: campo `count` não existe no design.
+  // Reason: "pegar 3 peixes" precisa contar eventos e mostrar "1 de 3" (TUTO-08, T40).
+  count?: number; // quantos eventos com `done` verdadeiro cumprem o objetivo; padrão 1
   sceneOnDone: SceneId;
 }
 
@@ -148,7 +151,9 @@ export interface Profile {
   baits: { owned: BaitId[]; equipped: BaitId };
   settings: { difficulty: Difficulty | null; vibration: boolean }; // null = ainda não perguntado
   story: {
-    episodes: Partial<Record<EpisodeId, { objectiveIndex: number; won: boolean }>>;
+    // SPEC_DEVIATION: `progress` não existe no design.
+    // Reason: guarda a contagem do objetivo atual ("1 de 3") entre as sessões.
+    episodes: Partial<Record<EpisodeId, { objectiveIndex: number; progress: number; won: boolean }>>;
     scenesSeen: SceneId[];
     pendingScene: SceneId | null;
   };
