@@ -484,12 +484,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Pontuação = soma dos 3 mais pesados (5 peixes de teste com resultado conhecido) (CAMP-04)
-- [ ] `castsLeft` só cai quando um resultado é registrado; briga interrompida não gasta arremesso (SAVE-06)
-- [ ] Após o 8º arremesso, `standings` ordena jogador e 3 rivais por pontuação (CAMP-05)
-- [ ] Primeira vitória: troféu e mensagem desbloqueados (CAMP-06, CAMP-07); segunda vitória: listas sem duplicata (CAMP-08)
-- [ ] Derrota: `start` de novo zera a rodada sem custo (CAMP-09)
-- [ ] Gate check passes: `npm test`
+- [x] Pontuação = soma dos 3 mais pesados (5 peixes de teste com resultado conhecido) (CAMP-04)
+- [x] `castsLeft` só cai quando um resultado é registrado; briga interrompida não gasta arremesso (SAVE-06)
+- [x] Após o 8º arremesso, `standings` ordena jogador e 3 rivais por pontuação (CAMP-05)
+- [x] Primeira vitória: troféu e mensagem desbloqueados (CAMP-06, CAMP-07); segunda vitória: listas sem duplicata (CAMP-08)
+- [x] Derrota: `start` de novo zera a rodada sem custo (CAMP-09)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
