@@ -166,6 +166,15 @@ export function createController({ store, save, platform, episodes, rng }: Contr
     if (profile !== s.profile) commit({ ...s, profile }, true);
   }
 
+  /**
+   * HIST-09: a abertura do episódio do local atual, na primeira pescaria nele. Nunca por cima de uma
+   * cena ou de um aviso que ainda não foram vistos: a abertura vem depois deles.
+   */
+  function opening(s: GameState): GameState {
+    if (s.profile.story.pendingScene !== null || s.notice !== null) return s;
+    return story(s, { type: 'GameStarted' });
+  }
+
   function enterTournament() {
     const s = get();
     const ep = episodeOf(s.profile);
@@ -176,7 +185,8 @@ export function createController({ store, save, platform, episodes, rng }: Contr
   return {
     openFishing() {
       const s = get();
-      let next = story(s, { type: 'GameStarted' }); // HIST-01, HIST-09
+      // HIST-01, HIST-09. Uma cena pendente (ex.: viajar pelo Mapa no meio de "ep1-vitoria") não é trocada.
+      let next = opening(s);
       const tutorial = s.profile.tutorialDone ? null : (s.tutorial ?? tutorials.start()); // TUTO-01
       next = { ...next, tutorial };
       commit(next, next.profile !== s.profile);
@@ -239,13 +249,16 @@ export function createController({ store, save, platform, episodes, rng }: Contr
         store.update(() => ({ ...s, dialogLine: s.dialogLine + 1 }));
         return;
       }
-      commit({ ...s, dialogLine: 0, profile: { ...s.profile, story: { ...s.profile.story, pendingScene: null } } }, true);
+      const done = { ...s, dialogLine: 0, profile: { ...s.profile, story: { ...s.profile.story, pendingScene: null } } };
+      commit(opening(done), true); // a abertura que esperava esta cena (HIST-09)
     },
 
     introduce: (id) => changeProfile((p) => profiles.introduceCharacter(p, id)),
 
     dismissNotice() {
-      store.update((s) => ({ ...s, notice: null }));
+      const s = get();
+      const next = opening({ ...s, notice: null }); // a abertura que esperava o aviso (HIST-09)
+      commit(next, next.profile !== s.profile);
     },
 
     dismissSaveWarning() {

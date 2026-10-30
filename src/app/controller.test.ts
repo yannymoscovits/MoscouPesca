@@ -450,3 +450,54 @@ describe('HIST-10: vitória na Copa Adilson Moscovits (Episódio 5 de teste)', (
     expect(s.profile.unlockedEpisodes).toEqual([1, 2, 3, 4, 5]);
   });
 });
+
+describe('viagem com cena pendente (T62)', () => {
+  /** Episódio 1 vencido, Jacuípe liberado e a cena da vitória ainda por ver. */
+  const afterVictory = (over: Partial<Profile> = {}) =>
+    played({
+      unlockedEpisodes: [1, 2],
+      story: {
+        episodes: { 1: { objectiveIndex: ep1.chapter.objectives.length, progress: 0, won: true } },
+        scenesSeen: ['ep1-abertura', 'ep1-vitoria'],
+        pendingScene: 'ep1-vitoria',
+      },
+      ...over,
+    });
+
+  it('viajar e abrir a pesca não descarta a cena pendente; a abertura do novo episódio vem depois dela', () => {
+    const g = setup(afterVictory());
+    g.controller.travel('rio-jacuipe');
+    g.controller.openFishing();
+    expect(g.state().profile.story.pendingScene).toBe('ep1-vitoria');
+
+    const lines = ep1.scenes.find((s) => s.id === 'ep1-vitoria')!.lines.length;
+    for (let i = 0; i < lines; i++) g.controller.advanceDialog();
+
+    expect(g.state().profile.story.pendingScene).toBe('ep2-abertura'); // HIST-09
+    expect(g.state().profile.story.scenesSeen).toEqual(['ep1-abertura', 'ep1-vitoria', 'ep2-abertura']);
+    expect(g.lastSaved().story.pendingScene).toBe('ep2-abertura');
+  });
+
+  it('com o aviso "Episódio 2 liberado!" ainda na tela, a abertura espera o aviso fechar', () => {
+    const g = setup(afterVictory());
+    g.store.update((s) => ({ ...s, notice: 'Episódio 2 liberado!' }));
+    g.controller.travel('rio-jacuipe');
+    g.controller.openFishing();
+    const lines = ep1.scenes.find((s) => s.id === 'ep1-vitoria')!.lines.length;
+    for (let i = 0; i < lines; i++) g.controller.advanceDialog();
+    expect(g.state().profile.story.pendingScene).toBeNull();
+    expect(g.state().notice).toBe('Episódio 2 liberado!');
+
+    g.controller.dismissNotice();
+    expect(g.state().notice).toBeNull();
+    expect(g.state().profile.story.pendingScene).toBe('ep2-abertura');
+  });
+
+  it('no mesmo episódio, fechar a cena não traz abertura nenhuma', () => {
+    const g = setup(afterVictory());
+    g.controller.openFishing();
+    const lines = ep1.scenes.find((s) => s.id === 'ep1-vitoria')!.lines.length;
+    for (let i = 0; i < lines; i++) g.controller.advanceDialog();
+    expect(g.state().profile.story.pendingScene).toBeNull();
+  });
+});

@@ -26,6 +26,8 @@ export function FishingScreen() {
   const { controller, browser, episodes } = useServices();
   const screen = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
+  // O cenário do local atual (EPI-04, EPI-08), o mesmo que o renderizador desenha.
+  const background = useGame((s) => currentPlace(s.profile, episodes).location.background);
   const canvas = useRef<HTMLCanvasElement>(null);
 
   // Layout effect: a cena já aceita toques no mesmo quadro em que aparece.
@@ -66,7 +68,7 @@ export function FishingScreen() {
 
   return (
     <section class="fishing" aria-label="Pescaria" ref={screen}>
-      <div class="stage" ref={stage}>
+      <div class="stage" ref={stage} data-background={background}>
         <canvas ref={canvas} aria-hidden="true" />
         <BitePrompt />
       </div>

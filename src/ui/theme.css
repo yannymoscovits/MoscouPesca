@@ -1381,3 +1381,72 @@ ul {
     transform: translate(4px, 2px);
   }
 }
+
+/* ---------- Mapa dos episódios ---------- */
+
+/* A lista dos episódios usa a tela toda; só os botões ficam embaixo (ACES-08). */
+.map__top {
+  justify-content: flex-start;
+  gap: 10px;
+  padding-bottom: 0;
+}
+
+.map__actions {
+  flex: 0 0 auto;
+}
+
+.map__episodes {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+/* Um trecho do caminho por episódio, ligados por uma trilha tracejada. */
+.map__episode {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+
+.map__episode--locked {
+  border-style: dashed;
+  border-color: var(--ink-soft);
+  background: var(--bg-raised);
+  color: var(--ink);
+}
+
+.map__number {
+  flex: 0 0 40px;
+  display: grid;
+  place-items: center;
+  height: 40px;
+  border: 3px solid var(--outline);
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 22px / 1 var(--font-title);
+}
+
+.map__title {
+  font-weight: 700;
+}
+
+.map__lock {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.map__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}

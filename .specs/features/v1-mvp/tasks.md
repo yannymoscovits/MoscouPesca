@@ -1337,11 +1337,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: perfil novo → só Poço do Magro liberada; Rio Jacuípe e Ponte da Cetrel com cadeado e "Vença a GuanambiCup" (EPI-03)
-- [ ] e2e: com o Episódio 1 vencido, os dois locais de Jacuípe aparecem liberados; tocar na Ponte da Cetrel abre a pesca com o cenário e os peixes de água salgada (EPI-04, EPI-08)
-- [ ] e2e: recarregar o jogo volta ao último local de pesca (EPI-07)
-- [ ] Viajar pelo Mapa com uma cena pendente (ex.: `ep1-vitoria`) não descarta a cena: o Mapa espera a cena terminar ou o controlador guarda a cena (risco apontado na Fase 7)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: perfil novo → só Poço do Magro liberada; Rio Jacuípe e Ponte da Cetrel com cadeado e "Vença a GuanambiCup" (EPI-03)
+- [x] e2e: com o Episódio 1 vencido, os dois locais de Jacuípe aparecem liberados; tocar na Ponte da Cetrel abre a pesca com o cenário e os peixes de água salgada (EPI-04, EPI-08)
+- [x] e2e: recarregar o jogo volta ao último local de pesca (EPI-07)
+- [x] Viajar pelo Mapa com uma cena pendente (ex.: `ep1-vitoria`) não descarta a cena: o Mapa espera a cena terminar ou o controlador guarda a cena (risco apontado na Fase 7)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full
