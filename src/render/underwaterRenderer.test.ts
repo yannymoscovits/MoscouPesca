@@ -1,29 +1,71 @@
 // Vista debaixo d'água (pesca-bass T10; ISCA-01, BRIGA-13): a câmera e a conversão de metros para a
 // tela, e o desenho de cada fase da isca com as formas provisórias.
 import { describe, expect, it } from 'vitest';
+import { episodes } from '../content';
 import { ep1 } from '../content/episodes/ep1';
+import type { Species } from '../content/types';
 import { barRulesFor, startBar } from '../domain/catchBar';
-import { spawnWater, type Water } from '../domain/lure';
+import { spawnWater, type FishAgent, type Water } from '../domain/lure';
 import type { PescaState } from '../domain/pesca';
 import { createRng } from '../domain/rng';
-import { colorOf, computeLayout } from './fishingRenderer';
+import { colorOf, computeLayout, fishBox } from './fishingRenderer';
 import {
   camera,
   createUnderwaterRenderer,
   fromScene,
   toScene,
+  TURN_S,
   UNDERWATER_COLORS,
   UNDERWATER_PX_PER_M,
   WATER_BOTTOM_SHARE,
   type UnderwaterView,
 } from './underwaterRenderer';
 
-/** Contexto 2D de mentira: aceita qualquer chamada e guarda cada uma com os argumentos. */
+/**
+ * Contexto 2D de mentira: aceita qualquer chamada e guarda cada uma com os argumentos. Acompanha
+ * save/restore/translate/scale/rotate e grava cada fillRect já em coordenadas da tela (a caixa dos
+ * cantos transformados): os peixes agora viram, inclinam e encolhem por transformações, e os testes
+ * continuam conferindo ONDE as coisas aparecem.
+ */
 function fakeCtx() {
   const calls: { name: string; args: unknown[]; fillStyle: unknown }[] = [];
   const props: Record<string | symbol, unknown> = {};
+  type M = [number, number, number, number, number, number];
+  let m: M = [1, 0, 0, 1, 0, 0];
+  const stack: M[] = [];
+  const mul = (a: M, b: M): M => [
+    a[0] * b[0] + a[2] * b[1],
+    a[1] * b[0] + a[3] * b[1],
+    a[0] * b[2] + a[2] * b[3],
+    a[1] * b[2] + a[3] * b[3],
+    a[0] * b[4] + a[2] * b[5] + a[4],
+    a[1] * b[4] + a[3] * b[5] + a[5],
+  ];
+  const apply = (x: number, y: number) => ({ x: m[0] * x + m[2] * y + m[4], y: m[1] * x + m[3] * y + m[5] });
+  const special: Record<string, (...args: number[]) => void> = {
+    save: () => void stack.push(m),
+    restore: () => void (m = stack.pop() ?? m),
+    translate: (tx, ty) => void (m = mul(m, [1, 0, 0, 1, tx, ty])),
+    scale: (sx, sy) => void (m = mul(m, [sx, 0, 0, sy, 0, 0])),
+    rotate: (a) => void (m = mul(m, [Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), 0, 0])),
+  };
   const ctx = new Proxy(props, {
-    get: (t, k) => (k in t ? t[k] : (...args: unknown[]) => void calls.push({ name: String(k), args, fillStyle: t.fillStyle })),
+    get: (t, k) =>
+      k in t
+        ? t[k]
+        : (...args: unknown[]) => {
+            const name = String(k);
+            let logged = args;
+            if (name === 'fillRect') {
+              const [x, y, w, h] = args as number[];
+              const pts = [apply(x, y), apply(x + w, y), apply(x, y + h), apply(x + w, y + h)];
+              const xs = pts.map((p) => p.x);
+              const ys = pts.map((p) => p.y);
+              logged = [Math.min(...xs), Math.min(...ys), Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)];
+            }
+            calls.push({ name, args: logged, fillStyle: t.fillStyle });
+            special[name]?.(...(args as number[]));
+          },
     set: (t, k, v) => {
       t[k] = v;
       return true;
@@ -197,5 +239,75 @@ describe('desenho debaixo d’água', () => {
     const p = toScene(camera(water.lure.xM, water.bottomM, PIXEL_7), water.lure.xM, water.lure.depthM);
     const lure = fillsOf(calls, UNDERWATER_COLORS.lure);
     expect(lure.some(([x, y]) => Math.abs(x - p.x) <= 3 && Math.abs(y - p.y) <= 2)).toBe(true);
+  });
+});
+
+describe('peixes vivos e do tamanho da espécie', () => {
+  const all = episodes.flatMap((ep) => ep.species);
+  const big = all.find((sp) => sp.kg.max >= 20)!;
+  const small = all.find((sp) => sp.kg.max <= 1)!;
+  const mid = all.find((sp) => sp.kg.max > 1 && sp.kg.max < 20)!;
+
+  /** Uma água com um peixe só, da espécie dada, nadando no meio da tela. */
+  const alone = (species: Species, over: Partial<FishAgent> = {}): Water => ({
+    ...water,
+    fish: [{ ...water.fish[0], id: 1, species, xM: water.lure.xM + 2, depthM: 1, dir: 1, mode: 'nadando', attackInS: null, ...over }],
+  });
+  const lureIn = (w: Water) => view({ ...lureS, water: w } as UnderwaterView['pesca']);
+  /** Caixa (largura, altura e centro) de tudo o que foi pintado na cor da espécie. */
+  const bodyBox = (calls: ReturnType<typeof fakeCtx>['calls'], species: Species) => {
+    const rects = fillsOf(calls, colorOf(species.id));
+    const x0 = Math.min(...rects.map(([x]) => x));
+    const x1 = Math.max(...rects.map(([x, , w]) => x + w));
+    const y0 = Math.min(...rects.map(([, y]) => y));
+    const y1 = Math.max(...rects.map(([, y, , h]) => y + h));
+    return { w: x1 - x0, h: y1 - y0, cy: (y0 + y1) / 2 };
+  };
+
+  it('o peixe é desenhado na caixa da faixa dele: o gigante bem maior que o pequeno', () => {
+    const width = (sp: Species) => {
+      const { renderer, calls } = mounted();
+      renderer.draw(lureIn(alone(sp)), 0);
+      return bodyBox(calls, sp).w;
+    };
+    const [w36, w18, w12] = [width(big), width(mid), width(small)];
+    expect(w36).toBeGreaterThan(w18 * 1.6);
+    expect(w18).toBeGreaterThan(w12);
+    expect(fishBox(big).w).toBe(36);
+    expect(fishBox(small).w).toBe(12);
+  });
+
+  it('nadando, o peixe balança devagar para cima e para baixo', () => {
+    const { renderer, calls } = mounted();
+    const ys = [0, 0.35, 0.7, 1.05].map((t) => {
+      calls.length = 0;
+      renderer.draw(lureIn(alone(mid)), t);
+      return bodyBox(calls, mid).cy;
+    });
+    expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThan(0.5);
+    expect(Math.max(...ys) - Math.min(...ys)).toBeLessThan(5); // de leve
+  });
+
+  it('ao virar de lado, o peixe dá uma guinada curta: encolhe e volta ao tamanho', () => {
+    const { renderer, calls } = mounted();
+    renderer.draw(lureIn(alone(mid, { dir: 1 })), 0);
+    const width = (t: number) => {
+      calls.length = 0;
+      renderer.draw(lureIn(alone(mid, { dir: -1 })), t);
+      return bodyBox(calls, mid).w;
+    };
+    const turning = width(1);
+    const done = width(1 + TURN_S + 0.2);
+    expect(turning).toBeLessThan(done * 0.75);
+  });
+
+  it('ISCA-08: o "!" do ataque fica acima até do peixe gigante', () => {
+    const { renderer, calls } = mounted();
+    const w = alone(big, { xM: water.lure.xM, depthM: water.lure.depthM + 1, mode: 'seguindo', attackInS: 0 });
+    renderer.draw(view({ phase: 'Strike', gear, water: w, fishId: 1, sinceS: 0.2 } as UnderwaterView['pesca']), 0);
+    const body = bodyBox(calls, big);
+    const mark = calls.find((c) => c.name === 'fillText' && c.args[0] === '!')!;
+    const [, , y] = mark.args as [string, number, number];
+    expect(y + 9).toBeLessThan(body.cy - body.h / 2); // o balão (17 px) termina acima do peixe
   });
 });

@@ -8,7 +8,7 @@
 import type { LocationId, Point } from '../content/types';
 import type { FishAgent } from '../domain/lure';
 import type { PescaState } from '../domain/pesca';
-import { computeLayout, colorOf, PALETTE, SCENE_H, SCENE_W, type Layout } from './fishingRenderer';
+import { computeLayout, colorOf, fishBox, PALETTE, SCENE_H, SCENE_W, type Layout } from './fishingRenderer';
 import { drawBottomFeature, sceneryOf, type StandKind } from './scenery';
 import { createSprite, loadImage, resolveAsset, type ImageLoader, type SheetSpec, type Sprite } from './sprites';
 
@@ -29,7 +29,8 @@ export const LINEAR_DEPTH_M = 10;
 const DEEP_SHARE = 0.2;
 /** Ponta da vara acima da superfície, em px lógicos. */
 const ROD_ABOVE_PX = 18;
-const FISH = { w: 18, h: 8 };
+/** A guinada quando o peixe vira de lado: o corpo encolhe e estica de novo neste tempo. */
+export const TURN_S = 0.25;
 
 export const UNDERWATER_COLORS = {
   sky: '#bfe3f5',
@@ -122,6 +123,8 @@ export function createUnderwaterRenderer(
   const load = opts.load ?? loadImage;
   const resolve = opts.resolve ?? resolveAsset;
   const sprites = new Map<string, Sprite>();
+  /** A última direção de cada peixe e quando ele virou: a guinada é só do desenho. */
+  const turns = new Map<number, { dir: 1 | -1; atT: number }>();
   let canvas: HTMLCanvasElement | null = null;
   let ctx: CanvasRenderingContext2D | null = null;
   let layout = computeLayout(SCENE_W * 2, SCENE_H * 2);
@@ -182,14 +185,16 @@ export function createUnderwaterRenderer(
       drawBottomFeature(c, view.place, m, at(m + hash(m + 901), 0).x, floorY, t);
     }
 
-    // Peixes; na briga, o fisgado se debate na isca (BRIGA-13).
+    // Peixes; na briga, o fisgado se debate na isca (BRIGA-13). Quem saiu da água sai da memória
+    // das viradas (os ids recomeçam a cada arremesso).
+    for (const id of turns.keys()) if (!water.fish.some((f) => f.id === id)) turns.delete(id);
     const hookedId = s.phase === 'Fight' ? s.fishId : null;
     for (const f of water.fish) if (f.id !== hookedId) fish(f, at(f.xM, f.depthM));
     if (s.phase === 'Strike') {
       const f = water.fish.find((g) => g.id === s.fishId);
       if (f) {
         const p = at(f.xM, f.depthM);
-        alert({ x: p.x, y: p.y - 16 }); // ISCA-08
+        alert({ x: p.x, y: p.y - fishBox(f.species).h / 2 - 12 }); // ISCA-08, acima até do peixão
       }
     }
 
@@ -201,7 +206,7 @@ export function createUnderwaterRenderer(
       const f = water.fish.find((g) => g.id === s.fishId);
       const thrash = { x: lure.x + Math.sin(t * 18) * 3, y: lure.y + Math.sin(t * 11) * 2 + (0.5 - s.bar.fishY) * 8 };
       line(tip, thrash, 0);
-      if (f) fish({ ...f, dir: Math.sin(t * 9) > 0 ? 1 : -1 }, thrash);
+      if (f) fish({ ...f, dir: Math.sin(t * 9) > 0 ? 1 : -1 }, thrash, true);
       bubbles(thrash);
     } else {
       line(tip, lure, 10 + Math.sin(t * 1.5) * 2);
@@ -209,25 +214,46 @@ export function createUnderwaterRenderer(
       px(UNDERWATER_COLORS.lure, lure.x - 2, lure.y - 1, 4, 2);
     }
 
-    /** Peixe virado para onde nada: sprite da espécie ou a silhueta na cor dela. */
-    function fish(f: FishAgent, p: Point) {
+    /**
+     * Peixe vivo, no tamanho da espécie (fishBox): balança devagar para cima e para baixo (fase
+     * própria por peixe), inclina o nariz para onde vai (atrás da isca quando segue) e, quando vira
+     * de lado, dá uma guinada curta (o corpo encolhe e estica, com bolhinhas atrás do rabo).
+     * O fisgado (`hooked`) se debate como antes, sem balanço nem inclinação.
+     */
+    function fish(f: FishAgent, p: Point, hooked = false) {
       const { species } = f;
-      const x = Math.round(p.x - FISH.w / 2);
-      const y = Math.round(p.y - FISH.h / 2);
-      const flip = f.dir < 0;
-      c.save();
-      if (flip) {
-        c.translate(x * 2 + FISH.w, 0); // espelha na caixa do peixe
-        c.scale(-1, 1);
+      const box = fishBox(species);
+      const prev = turns.get(f.id);
+      // Só conta como virada a troca de direção com o tempo andando para a frente; o primeiro
+      // quadro de um peixe (ou o relógio voltando) não dá guinada.
+      if (!prev || t < prev.atT) turns.set(f.id, { dir: f.dir, atT: -Infinity });
+      else if (prev.dir !== f.dir) turns.set(f.id, { dir: f.dir, atT: t });
+      const sinceTurn = t - turns.get(f.id)!.atT;
+      const burst = hooked ? 1 : Math.min(1, Math.max(0.45, sinceTurn / TURN_S));
+      const sway = hooked ? 0 : Math.sin(t * 2.2 + f.id * 1.7);
+      let tilt = sway * 0.06;
+      if (!hooked && f.mode === 'seguindo') {
+        const lp = at(water.lure.xM, water.lure.depthM);
+        tilt = Math.max(-0.35, Math.min(0.35, Math.atan2(lp.y - p.y, Math.max(10, Math.abs(lp.x - p.x)))));
       }
+      c.save();
+      c.translate(Math.round(p.x), Math.round(p.y + sway * 1.5));
+      if (f.dir < 0) c.scale(-1, 1); // espelha no próprio centro
+      if (!hooked) c.rotate(tilt);
+      if (burst < 1) c.scale(burst, 1); // a guinada
       sprite(species.sprite, {
         frames: 4,
         fps: 8,
         color: colorOf(species.id),
-        fallback: (cc, bx, by) => silhouette(cc, bx, by, colorOf(species.id), t),
-      }).draw(c, x, y, FISH.w, FISH.h, t);
+        fallback: (cc, bx, by, bw, bh, tt) => silhouette(cc, bx, by, bw, bh, colorOf(species.id), tt),
+      }).draw(c, -box.w / 2, -box.h / 2, box.w, box.h, t);
       c.restore();
-      if (f.mode === 'recusou') balloon({ x: p.x, y: p.y - 12 }, 'não gostou'); // ISCA-06
+      if (!hooked && sinceTurn >= 0 && sinceTurn < TURN_S) {
+        for (let i = 0; i < 3; i++) {
+          px(UNDERWATER_COLORS.surface, p.x - f.dir * (box.w / 2 + 2 + i * 3), p.y - 1 + ((f.id + i) % 3), 1, 1);
+        }
+      }
+      if (f.mode === 'recusou') balloon({ x: p.x, y: p.y - box.h / 2 - 8 }, 'não gostou'); // ISCA-06
     }
 
     function rod(end: Point) {
@@ -305,17 +331,21 @@ export function createUnderwaterRenderer(
   };
 }
 
-/** Silhueta provisória de peixe virado para a direita, na caixa FISH: corpo, rabo e olho. */
-function silhouette(c: CanvasRenderingContext2D, x: number, y: number, color: string, t: number) {
+/** Silhueta provisória de peixe virado para a direita, esticada para a caixa (w × h) da espécie. */
+function silhouette(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string, t: number) {
+  const u = w / 18; // a forma base tem 18 × 8
+  const v = h / 8;
   const wag = Math.sin(t * 10) > 0 ? 1 : 0;
+  const r = (rx: number, ry: number, rw: number, rh: number) =>
+    c.fillRect(Math.round(x + rx * u), Math.round(y + ry * v), Math.max(1, Math.round(rw * u)), Math.max(1, Math.round(rh * v)));
   c.fillStyle = PALETTE.outline;
-  c.fillRect(x + 3, y + 1, 14, 6);
-  c.fillRect(x, y + wag, 4, 3); // rabo
-  c.fillRect(x, y + 5 - wag, 4, 3);
+  r(3, 1, 14, 6);
+  r(0, wag, 4, 3); // rabo
+  r(0, 5 - wag, 4, 3);
   c.fillStyle = color;
-  c.fillRect(x + 4, y + 2, 12, 4);
-  c.fillRect(x + 1, y + 1 + wag, 2, 2);
-  c.fillRect(x + 1, y + 5 - wag, 2, 2);
+  r(4, 2, 12, 4);
+  r(1, 1 + wag, 2, 2);
+  r(1, 5 - wag, 2, 2);
   c.fillStyle = PALETTE.outline;
-  c.fillRect(x + 13, y + 3, 1, 1); // olho
+  r(13, 3, 1, 1); // olho
 }
