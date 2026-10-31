@@ -126,8 +126,8 @@ const veraCruz = {
 } satisfies Location;
 
 const rods = [
-  { id: 'baia', name: 'Vara Baía', price: 2600, force: 9, reach: 9, episode: 3 },
-  { id: 'pedra-fina', name: 'Vara Pedra Fina', price: 5000, force: 9, reach: 10, episode: 3 },
+  { id: 'baia', name: 'Vara Baía', price: 2600, force: 8, reach: 9, episode: 3 },
+  { id: 'pedra-fina', name: 'Vara Pedra Fina', price: 5000, force: 8, reach: 10, episode: 3 },
 ] satisfies Rod[];
 
 // O roteiro não dá nome à isca nova do episódio; lula é isca clássica de garoupa e cioba.

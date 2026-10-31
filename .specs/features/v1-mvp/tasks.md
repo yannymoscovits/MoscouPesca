@@ -1273,7 +1273,7 @@ T53 → T54
 **Done when**:
 
 - [x] e2e: primeira vitória abre a carta com remetente e texto; a última página leva ao encerramento e ao "Episódio 2 liberado!" (CAMP-06, HIST-08)
-- [ ] e2e: vitória na Copa Adilson Moscovits leva ao encerramento final e a "A pescaria continua: todos os lugares seguem abertos" (HIST-10)
+- [x] e2e: vitória na Copa Adilson Moscovits leva ao encerramento final e a "A pescaria continua: todos os lugares seguem abertos" (HIST-10)
 - [x] e2e: carta longa é dividida em páginas, nenhuma com rolagem vertical
 - [x] e2e: a carta aparece em "Mensagens" e reabre igual depois de recarregar (CAMP-10)
 - [x] Gate check passes: `npm test && npm run test:e2e`
@@ -1525,11 +1525,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`, inclusive força e fôlego das espécies entre 1 e 10
-- [ ] Teste: `index.ts` lista os episódios em ordem, com o 5º sendo Alto-mar da Bahia (EPI-01)
-- [ ] A espécie rara é limitada pela isca nova e pela força da vara, não pelo alcance (que já chega a 10)
-- [ ] Teste: a carta do `ep5` existe e não contém `{{PENDENTE}}`; Didi, Denise e Tininho não têm falas no `ep5` (só são citados por quem está no barco)
-- [ ] Gate check passes: `npm test`
+- [x] Os testes de regras e de consistência de conteúdo passam incluindo o `ep5`, inclusive força e fôlego das espécies entre 1 e 10
+- [x] Teste: `index.ts` lista os episódios em ordem, com o 5º sendo Alto-mar da Bahia (EPI-01)
+- [x] A espécie rara é limitada pela isca nova e pela força da vara, não pelo alcance (que já chega a 10)
+- [x] Teste: a carta do `ep5` existe e não contém `{{PENDENTE}}`; Didi, Denise e Tininho não têm falas no `ep5` (só são citados por quem está no barco)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

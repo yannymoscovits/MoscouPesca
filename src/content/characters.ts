@@ -36,6 +36,16 @@ export const characters = [
   // Episódio 4 (docs/historia/episodio-4.md).
   { id: 'marcio', name: 'Márcio', epithet: 'Funcionário 01 (e Faz-Tudo)', portraits: portraits('marcio') },
   { id: 'higashi', name: 'Sr. Higashi', epithet: 'O Homem do GPS', portraits: portraits('higashi') },
+  // Episódio 5 (docs/historia/episodio-5.md). A Ninha adulta tem ID próprio: a do Episódio 2 é criança.
+  // O Ruan, namorado da Lavínia, aparece no mar ao lado da Piranha Lavínia.
+  {
+    id: 'ninha-adulta',
+    name: 'Ninha',
+    epithet: 'A Nerd de TI que Programou Este Jogo',
+    portraits: portraits('ninha-adulta'),
+  },
+  { id: 'angela', name: 'Ângela', epithet: 'Mais Alta que a Ninha (e Adora Lembrar Disso)', portraits: portraits('angela') },
+  { id: 'ruan', name: 'Ruan', epithet: 'Mais Conhecido como Cervero', portraits: portraits('ruan') },
 ] satisfies Character[];
 
 /** Quem fala: ninguém na narração, um personagem ou vários na fala conjunta. */

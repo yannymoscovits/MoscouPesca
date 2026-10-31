@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { episodes } from '../content';
 import { ep1 } from '../content/episodes/ep1';
-import { ep3 } from '../content/episodes/ep3';
-import type { EpisodeContent, Profile } from '../content/types';
+import { ep5 } from '../content/episodes/ep5';
+import type { Profile } from '../content/types';
 import type { FishingState } from '../domain/fishing';
 import { newProfile } from '../domain/profile';
 import type { Rng } from '../domain/rng';
@@ -395,37 +395,17 @@ describe('abertura do jogo', () => {
   });
 });
 
-// SPEC_DEVIATION: o Episódio 5 só entra no conteúdo na Fase 9 (T59).
-// Reason: até lá, um Episódio 5 de teste prova o caminho do GameController na vitória da final (HIST-10).
-describe('HIST-10: vitória na Copa Adilson Moscovits (Episódio 5 de teste)', () => {
-  const ep5: EpisodeContent = {
-    ...ep3,
-    id: 5,
-    locations: ep3.locations.map((l) => ({ ...l, id: 'alto-mar-teste' })),
-    chapter: { ...ep3.chapter, openingScene: 'ep5-abertura', closingScene: 'ep5-encerramento' },
-    scenes: [
-      { id: 'ep5-abertura', lines: [{ speaker: 'jane', text: 'Abertura de teste.' }] },
-      { id: 'ep5-encerramento', lines: [{ speaker: 'jane', text: 'Encerramento de teste.' }] },
-    ],
-    tournament: {
-      ...ep3.tournament,
-      id: 'copa-adilson-moscovits',
-      name: 'Copa Adilson Moscovits',
-      trophy: 'trofeu-copa-adilson-moscovits',
-      message: 'carta-copa-adilson-moscovits',
-    },
-    letter: { ...ep3.letter, id: 'carta-copa-adilson-moscovits' },
-  };
-
+// O Episódio 5 entrou no conteúdo em T59: o teste usa o episódio real em vez do Episódio 5 de teste.
+describe('HIST-10: vitória na Copa Adilson Moscovits (Episódio 5)', () => {
   it('primeira vitória: encerramento final, aviso "A pescaria continua: todos os lugares seguem abertos" e carta', () => {
     const best = Math.max(...ep5.tournament.rivals.map((r) => r.kg));
     const profile: Profile = {
       ...played(),
       unlockedEpisodes: [1, 2, 3, 4, 5],
-      currentLocation: 'alto-mar-teste',
+      currentLocation: ep5.locations[0].id,
       story: {
         episodes: { 5: { objectiveIndex: ep5.chapter.objectives.length, progress: 0, won: false } },
-        scenesSeen: ['ep5-abertura'],
+        scenesSeen: [ep5.chapter.openingScene],
         pendingScene: null,
       },
       tournament: { id: ep5.tournament.id, castsLeft: 1, catches: [{ species: ep5.species[0].id, kg: best + 1 }] },
@@ -435,7 +415,7 @@ describe('HIST-10: vitória na Copa Adilson Moscovits (Episódio 5 de teste)', (
       store,
       save: { save: () => ({ ok: true }) },
       platform: { vibrate: () => {} },
-      episodes: [...episodes, ep5],
+      episodes,
       rng: scriptedRng(),
     });
 
@@ -444,7 +424,7 @@ describe('HIST-10: vitória na Copa Adilson Moscovits (Episódio 5 de teste)', (
 
     const s = store.getState();
     expect(s.tournamentResult?.won).toBe(true);
-    expect(s.profile.story.pendingScene).toBe('ep5-encerramento');
+    expect(s.profile.story.pendingScene).toBe('ep5-final');
     expect(s.notice).toBe('A pescaria continua: todos os lugares seguem abertos');
     expect(s.profile.messagesUnlocked).toEqual(['carta-copa-adilson-moscovits']);
     expect(s.profile.unlockedEpisodes).toEqual([1, 2, 3, 4, 5]);

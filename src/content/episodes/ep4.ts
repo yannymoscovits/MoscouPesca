@@ -139,7 +139,7 @@ const parqueDosVentos = {
 
 const rods = [
   { id: 'helice', name: 'Vara Hélice', price: 8000, force: 9, reach: 10, episode: 4 },
-  { id: 'torre', name: 'Vara Torre', price: 14000, force: 10, reach: 10, episode: 4 },
+  { id: 'torre', name: 'Vara Torre', price: 14000, force: 9, reach: 10, episode: 4 },
 ] satisfies Rod[];
 
 // O roteiro não dá nome à isca nova do episódio; a cata-vento gira no vento como as pás das torres.
