@@ -120,7 +120,7 @@ T43 → T44
 
 ```
 T75 → T76
-T75 → T77 → T78
+T75 → T77 → T78 → T79 → T80
 T58 → T61
 T59 → T61
 T59 → T63
@@ -1447,6 +1447,51 @@ T53 → T54
 
 ---
 
+#### T79: Refazer a cena da pescaria
+
+**What**: `FishingRenderer` no estilo dos jogos de pesca de 16 bits, com arte própria: água com textura de pixel animada (ondas e brilhos) na paleta de cada local; o Adilson visto de costas embaixo da tela, de chapéu de pescador, segurando a vara (forma provisória desenhada em código até o sprite do PixelLab); o lugar de onde ele pesca por local (píer, barranco, ponte, pedras, barragem ou barco); vara saindo das mãos dele, linha com curva, isca, respingo ao cair, ondinhas, sombra do peixe se aproximando e brigando, e o "!" na mordida.
+**Where**: `src/render/fishingRenderer.ts`
+**Depends on**: T78
+**Reuses**: `sprites.ts` (troca para os sprites do PixelLab quando existirem), `ROD_TIP`, zonas do conteúdo
+**Requirement**: PESCA-01, PESCA-06, PESCA-10, PESCA-11 (visual); EPI-08 (cada local com seu cenário)
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] Teste de unidade: para cada local registrado, o renderizador escolhe a paleta da água e o tipo de lugar (píer, barranco, ponte, pedras, barragem, barco); cada estado da pesca desenha seus elementos (isca no voo, respingo ao cair, sombra do peixe na espera e na briga, "!" na mordida)
+- [ ] e2e: prints do Pixel 7 em espera, mordida e briga, salvos em `docs/arte/mockups/pesca-depois-*.png`
+- [ ] Desenho a no máximo 30 qps, sem custo extra na pausa; quando o sprite do PixelLab existir, o renderizador usa o sprite no lugar da forma provisória
+- [ ] Os e2e existentes da pescaria continuam passando sem mudança nas asserções
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(render): refaz a cena da pescaria`
+
+---
+
+#### T80: Criar os medidores da pescaria
+
+**What**: Medidores nas laterais da cena: Tensão numa barra vertical (verde, amarela e vermelha, como PESCA-12), Linha (metros soltos, da distância da isca), Profundidade (da zona onde a isca está) e um quadradinho com a isca atual. Textos com no mínimo 18 px.
+**Where**: `src/ui/FishingGauges.tsx`
+**Depends on**: T79
+**Reuses**: `tensionBand()`, estado da pesca, zonas do conteúdo (cada zona ganha `depthM`, a profundidade em metros)
+**Requirement**: PESCA-12; ACES-05, ACES-07
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: na briga, a barra vertical de tensão muda de cor em 69/70 e 89/90 (PESCA-12); Linha diminui ao segurar e aumenta ao soltar; Profundidade mostra a da zona da isca
+- [ ] Teste de conteúdo: toda zona tem `depthM` maior que zero
+- [ ] e2e: textos dos medidores com no mínimo 18 px e contraste de no mínimo 4,5:1; os medidores não cobrem os botões nem o "FISGAR!"
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): cria os medidores da pescaria`
+
+---
+
 #### T58: Cadastrar o Episódio 4: Parque dos Ventos
 
 **What**: Pacote `ep4` completo a partir de `docs/historia/episodio-4.md`: local e zonas (Parque dos Ventos, açude no pé das torres eólicas); espécies fantasiosas Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (raro), com descrição engraçada; 2 varas (Vara Hélice e Vara Torre) e 1 isca novas; roteiro com 7 objetivos, a Lavínia como piranha-pipa e encerramento; Copa dos Ventos com os rivais Márcio, Sr. Higashi e Edvaldo e suas provocações; carta do Márcio transcrita de `docs/historia/cartas.md`. Os personagens novos (Márcio e Sr. Higashi) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
@@ -1824,7 +1869,7 @@ T53 → T54
 
 #### T51: Gerar o Adilson na cena
 
-**What**: Sprites do Adilson na margem (gordinho, de cabelo branco): parado, arremessando, recolhendo e posando com o peixe, nos caminhos que o renderizador já espera: `src/assets/adilson/{parado,arremessando,recolhendo,posando}.png`, 4 quadros cada.
+**What**: Sprites do Adilson (gordinho, de cabelo branco, de chapéu de pescador): **de costas** para a pescaria (parado, arremessando, recolhendo) e **de frente** posando com o peixe, nos caminhos que o renderizador espera: `src/assets/adilson/{parado,arremessando,recolhendo,posando}.png`, 4 quadros cada. Prévia aprovada pelo usuário antes de gerar as animações.
 **Where**: `src/assets/adilson/`
 **Depends on**: T33
 **Reuses**: descrição a partir das fotos em `Fotos/`
@@ -1973,7 +2018,7 @@ T43 → T44
 
 Fase 9
 T75 → T76
-T75 → T77 → T78
+T75 → T77 → T78 → T79 → T80
 T58 → T61
 T59 → T61
 T59 → T63
@@ -2003,7 +2048,7 @@ T53 → T54
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
 
-**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (10) · Fase 11 (6) · Fases 12 e 13 (10).
+**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (12) · Fase 11 (6) · Fases 12 e 13 (10).
 
 ---
 
@@ -2067,6 +2112,8 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T76 | `src/ui/TitleArt.tsx` | ✅ Granular |
 | T77 | `src/ui/DialogBox.tsx` | ✅ Granular |
 | T78 | `src/ui/FishingScreen.tsx` | ✅ Granular |
+| T79 | `src/render/fishingRenderer.ts` | ✅ Granular |
+| T80 | `src/ui/FishingGauges.tsx` | ✅ Granular |
 | T58 | `src/content/episodes/ep4.ts` | ✅ Granular |
 | T59 | `src/content/episodes/ep5.ts` | ✅ Granular |
 | T61 | `src/content/progression.test.ts` | ✅ Granular |
@@ -2152,6 +2199,8 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T76 | T75 | T75 → T76 | ✅ Match |
 | T77 | T75 | T75 → T77 | ✅ Match |
 | T78 | T77 | T77 → T78 | ✅ Match |
+| T79 | T78 | T78 → T79 | ✅ Match |
+| T80 | T79 | T79 → T80 | ✅ Match |
 | T58 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T59 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T61 | T56 (fase 5), T57 (fase 5), T58, T59, T60 (fase 5) | T58 → T61, T59 → T61 | ✅ Match |
@@ -2235,6 +2284,8 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T76 | Telas | e2e | e2e | ✅ OK |
 | T77 | Telas | e2e | e2e | ✅ OK |
 | T78 | Telas | e2e | e2e | ✅ OK |
+| T79 | Telas (cena) | e2e | e2e | ✅ OK |
+| T80 | Telas | e2e | e2e | ✅ OK |
 | T58 | Conteúdo | unit | unit | ✅ OK |
 | T59 | Conteúdo | unit | unit | ✅ OK |
 | T61 | Conteúdo | unit | unit | ✅ OK |
