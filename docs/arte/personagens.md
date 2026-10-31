@@ -26,3 +26,19 @@
 | Ninha (adulta) | `Fotos/Ninha.png` | Nerd de TI; cabelo escuro curto, cacheado e volumoso em cima; óculos de armação fina prateada, formato hexagonal; pele clara; piercing de argola no nariz e alargador preto na orelha; camisa social preta |
 | Ângela | sem foto | Companheira da Ninha; ruiva, gordinha, sardenta e mais alta que a Ninha |
 | Ruan (Cervero) | sem foto | Namorado da Lavínia; aparece como peixe ao lado da Piranha Lavínia, com o olho torto (o apelido vem daí), num traço carinhoso e engraçado |
+
+## Descrições para o PixelLab (Episódio 1)
+
+> Escritas a partir das fotos e das notas acima. Só este texto vai para o PixelLab; as fotos ficam no computador.
+> Estilo comum a todos: retrato em pixel art 96 × 96, busto de frente, cabeça grande (caricatura fofa), contorno escuro grosso, cores vivas, fundo transparente, clima de Game Boy Advance.
+
+| Personagem | Descrição (português) | Prompt (inglês) |
+| ---------- | --------------------- | --------------- |
+| Adilson | Senhor de uns 60 anos, gordinho, pele morena clara, cabelo branco curto e arrepiado, barba e bigode brancos aparados, óculos de armação retangular preta grossa, sorriso largo; camisa clara de botão com colete de pescador. Usa **chapéu de pescador** (escolha do usuário); o cabelo branco aparece nas laterais. As 3 versões da prévia variam a cor do chapéu e do colete | chubby man around 60, light brown skin, short spiky white hair, trimmed white beard and mustache, thick black rectangular glasses, wide warm smile, light button-up shirt with a fishing vest, wearing a fishing bucket hat with white hair showing at the sides |
+| Jane | Senhora de uns 55 anos, pele clara, cabelo preto longo, volumoso e ondulado, óculos de armação preta grossa, brincos grandes brilhantes, batom rosado, sorriso de canto | woman around 55, fair skin, long voluminous wavy black hair, thick black glasses, big sparkly drop earrings, pink lipstick, knowing half smile |
+| Lavínia (piranha) | Piranha de desenho com o rosto debochado da Lavínia: cabelo castanho escuro longo e bem cacheado, sorriso enorme mostrando os dentinhos de piranha, colares dourados | cartoon piranha fish with a cheeky human-like face, long very curly dark brown hair, huge grin showing tiny sharp piranha teeth, gold necklaces |
+| Ricardo | Senhor de uns 60 anos, pele morena, cabelo branco bem curto, rosto barbeado, sorriso largo; blazer azul-marinho e camisa listrada; um bongô debaixo do braço | man around 60, tan skin, very short white hair, clean-shaven, big grin, navy blazer over a striped shirt, holding a bongo drum under one arm |
+| Bem | Senhora de uns 70 anos, pele clara, cabelo grisalho cacheado na altura do queixo, óculos de armação vinho, sorriso doce; casaquinho de tweed preto e branco e colar; uma latinha de cerveja na mão | woman around 70, fair skin, chin-length curly gray hair, burgundy glasses, sweet smile, black-and-white tweed cardigan and pendant necklace, holding a beer can |
+| Kris | Senhora de uns 60 anos, pele clara, cabelo castanho escuro na altura dos ombros, óculos de armação fina prateada, sorriso, colar dourado, blusa preta com estampa branca; um pen drive na mão | woman around 60, fair skin, shoulder-length dark brown hair, thin silver glasses, smiling, gold chain necklace, black blouse with white print, holding a USB flash drive |
+| Edvaldo | Senhor de uns 60 anos, cabelo e barba brancos, avental de dono de loja de pesca, sorriso de vendedor | man around 60, white hair and white beard, fishing-shop apron, salesman grin |
+
