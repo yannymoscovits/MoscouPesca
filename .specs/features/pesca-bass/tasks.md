@@ -133,12 +133,12 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Começo: faixa no fundo, medidor em 30%, faixa com 18% + 1,5% × Força (× 1,4 no Tranquilo)
-- [ ] Segurando, a faixa sobe a 2,8 − 1,4 barra/s² até 1,2 barra/s; solta, cai a 1,4 barra/s²; no fundo quica com 60%; no topo para; solta no topo cai do repouso
-- [ ] Peixe troca de destino a cada 0,5 a 1,5 s (× 1,5 no Tranquilo) e fica dentro da barra; `saltador` sorteia destinos mais longe que `calmo`; `afundador` fica na metade de baixo; força maior chega mais rápido
-- [ ] Medidor: enche (15% − 0,7% × fôlego)/s com o peixe dentro; esvazia 12%/s (6%/s no Tranquilo) fora; no Tranquilo nunca desce de 10%; 100% = `pegou`, 0% = `fugiu`
-- [ ] Mesma semente, mesmo resultado; `dt` de 0,1 s dá o mesmo que 3 passos de 1/30 s
-- [ ] Gate check passes: `npm test`
+- [x] Começo: faixa no fundo, medidor em 30%, faixa com 18% + 1,5% × Força (× 1,4 no Tranquilo)
+- [x] Segurando, a faixa sobe a 2,8 − 1,4 barra/s² até 1,2 barra/s; solta, cai a 1,4 barra/s²; no fundo quica com 60%; no topo para; solta no topo cai do repouso
+- [x] Peixe troca de destino a cada 0,5 a 1,5 s (× 1,5 no Tranquilo) e fica dentro da barra; `saltador` sorteia destinos mais longe que `calmo`; `afundador` fica na metade de baixo; força maior chega mais rápido
+- [x] Medidor: enche (15% − 0,7% × fôlego)/s com o peixe dentro; esvazia 12%/s (6%/s no Tranquilo) fora; no Tranquilo nunca desce de 10%; 100% = `pegou`, 0% = `fugiu`
+- [x] Mesma semente, mesmo resultado; `dt` de 0,1 s dá o mesmo que 3 passos de 1/30 s
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

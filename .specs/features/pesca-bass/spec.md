@@ -257,20 +257,20 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | ISCA-13 | P1: Trabalhar a isca debaixo d'água | - | Pending |
 | ISCA-14 | Edge Cases | - | Pending |
 | ISCA-15 | Edge Cases | - | Pending |
-| BRIGA-01 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-02 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-03 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-04 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-05 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-06 | P1: Brigar com o peixe na barra de captura | T1 | Implementing |
-| BRIGA-07 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-08 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-09 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-10 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-11 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-12 | P1: Brigar com o peixe na barra de captura | - | Pending |
+| BRIGA-01 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-02 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-03 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-04 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-05 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-06 | P1: Brigar com o peixe na barra de captura | T1, T3 | Implementing |
+| BRIGA-07 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-08 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-09 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-10 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-11 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-12 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
 | BRIGA-13 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-14 | Edge Cases | - | Pending |
+| BRIGA-14 | Edge Cases | T3 | Implementing |
 | BOTAO-01 | P1: Botões grandes na tela | - | Pending |
 | BOTAO-02 | P1: Botões grandes na tela | - | Pending |
 | BOTAO-03 | P1: Botões grandes na tela | - | Pending |
@@ -284,7 +284,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | SIMB-02 | P1: Simulação com as regras novas | - | Pending |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 8 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 20 em implementação
 
 ---
 
