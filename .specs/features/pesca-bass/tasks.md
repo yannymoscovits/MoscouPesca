@@ -182,9 +182,9 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Poço do Magro com Bambu (alcance 2): 3 pontos, o meio e o fundo com cadeado e "Precisa de vara com alcance N"
-- [ ] Espécie já pescada aparece pelo nome; não pescada, "???"
-- [ ] Gate check passes: `npm test`
+- [x] Poço do Magro com Bambu (alcance 2): 3 pontos, o meio e o fundo com cadeado e "Precisa de vara com alcance N"
+- [x] Espécie já pescada aparece pelo nome; não pescada, "???"
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
