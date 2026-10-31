@@ -32,6 +32,7 @@ const FISH: Species[] = steps(FISH_POWER.min, FISH_POWER.max, 4).flatMap((power)
     rarity: 1,
     description: '',
     rare: false,
+    medals: { bronze: 1.5, prata: 1.75, ouro: 1.9 },
   })),
 );
 

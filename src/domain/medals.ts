@@ -24,8 +24,7 @@ export interface CatchOutcome {
 export function onCatch(p: Profile, species: Species, kg: number, goals: GoalDef, episode: EpisodeId): CatchOutcome {
   const id = species.id;
   const owned = p.medals[id] ?? [];
-  const limits = species.medals;
-  const medals = limits ? TIERS.filter((tier) => kg >= limits[tier] && !owned.includes(tier)) : [];
+  const medals = TIERS.filter((tier) => kg >= species.medals[tier] && !owned.includes(tier));
 
   const count = (p.catchCounts[id] ?? 0) + 1;
   const reached = [...goals.counts].sort((a, b) => a - b).filter((c) => count >= c && !p.goalsDone.includes(goalId(id, c)));

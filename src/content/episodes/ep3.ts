@@ -20,10 +20,11 @@ import type {
   SpeciesId,
   TournamentDef,
 } from '../types';
+import { withMedals } from '../goals';
 
 const sprite = (id: string) => `src/assets/fish/ep3/${id}.png`;
 
-const species = [
+const species = withMedals([
   {
     id: 'xareu',
     name: 'Xaréu',
@@ -102,7 +103,7 @@ const species = [
     description: 'A rainha da pedra. Só aparece pra quem tem paciência.',
     rare: true,
   },
-] satisfies Species[];
+] satisfies Omit<Species, 'medals'>[]);
 
 // Cena de 180 × 400 px lógicos, com a margem embaixo e a ponta da vara em (90, 370).
 // Com a Maré Alta ou a Vara Baía (alcance 276 px) o jogador chega à baía, mas não à pedra, que

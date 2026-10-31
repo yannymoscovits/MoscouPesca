@@ -102,6 +102,7 @@ function species(id: string, over: Partial<Species> = {}): Species {
     rarity: 1,
     description: '',
     rare: false,
+    medals: { bronze: 1.5, prata: 1.75, ouro: 1.9 },
     ...over,
   };
 }

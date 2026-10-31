@@ -20,12 +20,13 @@ import type {
   SpeciesId,
   TournamentDef,
 } from '../types';
+import { withMedals } from '../goals';
 
 const sprite = (id: string) => `src/assets/fish/ep4/${id}.png`;
 
 // O alcance das varas já chega a 10 no Episódio 3: aqui a rara é limitada pela isca nova (só a
 // Isca Cata-vento atrai o Dourado-dos-Ventos) e pela força da vara (a Vara Torre vem antes dele).
-const species = [
+const species = withMedals([
   {
     id: 'peixe-voador',
     name: 'Peixe-voador',
@@ -104,7 +105,7 @@ const species = [
     description: 'Quando bate a cauda, acende as luzes de uma cidade inteira. Nem o GPS acha.',
     rare: true,
   },
-] satisfies Species[];
+] satisfies Omit<Species, 'medals'>[]);
 
 // Cena de 180 × 400 px lógicos, com a margem embaixo e a ponta da vara em (90, 370).
 // Da margem para o pé das torres: a beira, o meio do açude e as torres, onde moram os lambaris

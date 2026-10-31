@@ -20,11 +20,12 @@ import type {
   SpeciesId,
   TournamentDef,
 } from '../types';
+import { withMedals } from '../goals';
 
 const sprite = (id: string) => `src/assets/fish/ep2/${id}.png`;
 
 // Tilápia e Traíra têm IDs próprios: o álbum e os objetivos do Jacuípe contam separado do Poço do Magro.
-const rioSpecies = [
+const rioSpecies = withMedals([
   {
     id: 'tilapia-jacuipe',
     name: 'Tilápia',
@@ -90,9 +91,9 @@ const rioSpecies = [
     description: 'Prateada, educada e difícil de convencer.',
     rare: false,
   },
-] satisfies Species[];
+] satisfies Omit<Species, 'medals'>[]);
 
-const ponteSpecies = [
+const ponteSpecies = withMedals([
   {
     id: 'robalo-flecha',
     name: 'Robalo-flecha',
@@ -158,7 +159,7 @@ const ponteSpecies = [
     description: 'O prata da Barra: salta alto e briga por muito tempo.',
     rare: true,
   },
-] satisfies Species[];
+] satisfies Omit<Species, 'medals'>[]);
 
 const species = [...rioSpecies, ...ponteSpecies] satisfies Species[];
 

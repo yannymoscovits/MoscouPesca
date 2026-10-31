@@ -1646,9 +1646,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste de conteúdo: toda espécie tem bronze < prata < ouro, todos dentro da faixa de peso dela
-- [ ] Teste de conteúdo: metas 10, 25 e 50 com recompensa maior que zero e crescente por episódio
-- [ ] Gate check passes: `npm test`
+- [x] Teste de conteúdo: toda espécie tem bronze < prata < ouro, todos dentro da faixa de peso dela
+- [x] Teste de conteúdo: metas 10, 25 e 50 com recompensa maior que zero e crescente por episódio
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

@@ -35,8 +35,7 @@ export interface Species {
   description: string; // texto engraçado da ficha (HUMOR-03)
   rare: boolean; // espécie rara do local (PROG-03)
   valueLabel?: string; // texto da ficha no lugar do R$ (ex.: "inestimável" na Piranha Lavínia); o saldo recebe o valor normal
-  // Opcional só até o conteúdo dos 5 episódios receber os limites (T83).
-  medals?: MedalLimits; // kg mínimos de cada medalha (MEDAL-01)
+  medals: MedalLimits; // kg mínimos de cada medalha (MEDAL-01)
 }
 
 export type MedalTier = 'bronze' | 'prata' | 'ouro';

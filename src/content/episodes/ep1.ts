@@ -20,10 +20,11 @@ import type {
   SpeciesId,
   TournamentDef,
 } from '../types';
+import { withMedals } from '../goals';
 
 const sprite = (id: string) => `src/assets/fish/ep1/${id}.png`;
 
-const species = [
+const species = withMedals([
   {
     id: 'tilapia',
     name: 'Tilápia',
@@ -129,7 +130,7 @@ const species = [
     rare: false,
     valueLabel: 'inestimável', // spec, "Ficha da Piranha Lavínia"
   },
-] satisfies Species[];
+] satisfies Omit<Species, 'medals'>[]);
 
 // Cena composta em 180 × 400 px lógicos, com a margem embaixo e a ponta da vara em (90, 370).
 // Faixas da margem para o meio: a Vara de Bambu alcança o raso, a de Fibra o meio e a de Carbono o fundo.

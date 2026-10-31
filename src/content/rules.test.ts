@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { newProfile, START_BAIT, START_ROD } from '../domain/profile';
 import { FISH_POWER, FISH_STAMINA } from '../domain/tuning';
 import { characters, speakersOf } from './characters';
+import { goals } from './goals';
 import { episodes } from './index';
 import type { DialogLine, EpisodeContent, GameEvent, Profile, SpeciesId } from './types';
 
@@ -86,6 +87,20 @@ describe('todos os episódios', () => {
   });
 });
 
+describe('medalhas e metas', () => {
+  it('MEDAL-04, MEDAL-05: metas de 10, 25 e 50 capturas, com recompensa inteira, maior que zero e crescente por episódio', () => {
+    expect(goals.counts).toEqual([10, 25, 50]);
+    for (const count of goals.counts) {
+      const rewards = episodes.map((ep) => goals.reward(ep.id, count));
+      for (const [i, r] of rewards.entries()) {
+        expect(r, `meta de ${count}, Ep. ${i + 1}`).toBeGreaterThan(0);
+        expect(Number.isInteger(r), `meta de ${count}, Ep. ${i + 1}: R$ inteiro`).toBe(true);
+        if (i > 0) expect(r, `meta de ${count}, Ep. ${i + 1} > Ep. ${i}`).toBeGreaterThan(rewards[i - 1]);
+      }
+    }
+  });
+});
+
 describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, ep) => {
   const zones = () => ep.locations.flatMap((l) => l.zones);
 
@@ -127,6 +142,21 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
     }
     const inZones = new Set(zones().flatMap((z) => z.species));
     for (const sp of ep.species) expect(inZones.has(sp.id), sp.id).toBe(true);
+  });
+
+  it('MEDAL-01: toda espécie tem bronze < prata < ouro, todos dentro da faixa de peso dela', () => {
+    for (const sp of ep.species) {
+      const { bronze, prata, ouro } = sp.medals;
+      expect(bronze, `${sp.id}: bronze na faixa`).toBeGreaterThanOrEqual(sp.kg.min);
+      expect(ouro, `${sp.id}: ouro na faixa`).toBeLessThanOrEqual(sp.kg.max);
+      if (sp.kg.max > sp.kg.min) {
+        expect(bronze, `${sp.id}: bronze < prata`).toBeLessThan(prata);
+        expect(prata, `${sp.id}: prata < ouro`).toBeLessThan(ouro);
+      } else {
+        // Peso fixo (a Piranha Lavínia, "0,80 kg" no roteiro): as três vêm juntas, no peso dela.
+        expect([bronze, prata, ouro], sp.id).toEqual([sp.kg.min, sp.kg.min, sp.kg.min]);
+      }
+    }
   });
 
   it('T80: toda zona tem profundidade (depthM) maior que zero, para o medidor de Profundidade', () => {

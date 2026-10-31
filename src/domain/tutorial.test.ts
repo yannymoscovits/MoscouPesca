@@ -22,6 +22,7 @@ function species(power: number): Species {
     rarity: 1,
     description: '',
     rare: false,
+    medals: { bronze: 1.25, prata: 1.6, ouro: 1.85 },
   };
 }
 

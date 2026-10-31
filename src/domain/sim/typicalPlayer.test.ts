@@ -47,6 +47,7 @@ function testEpisode(rods: Rod[] = [BAMBU]): Episode {
         rarity: 1,
         description: 'Peixe de teste.',
         rare: false,
+        medals: { bronze: 2, prata: 2.5, ouro: 2.8 },
       },
     ],
     rods,

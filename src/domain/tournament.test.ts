@@ -30,6 +30,7 @@ function species(id: string): Species {
     rarity: 1,
     description: '',
     rare: false,
+    medals: { bronze: 5, prata: 7.5, ouro: 9 },
   };
 }
 

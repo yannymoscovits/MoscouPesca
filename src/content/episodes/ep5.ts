@@ -21,12 +21,13 @@ import type {
   SpeciesId,
   TournamentDef,
 } from '../types';
+import { withMedals } from '../goals';
 
 const sprite = (id: string) => `src/assets/fish/ep5/${id}.png`;
 
 // O alcance das varas já chega a 10 no Episódio 3: aqui o chefão é limitado pela isca nova (só a
 // Isca de Corrico atrai o Marlim-azul) e pela força da vara (a Vara Lendária vem antes dele).
-const species = [
+const species = withMedals([
   {
     id: 'dourado-do-mar',
     name: 'Dourado-do-mar',
@@ -92,7 +93,7 @@ const species = [
     description: 'O chefão do mar. Luta até o fim, e por isso merece voltar pra água.',
     rare: true,
   },
-] satisfies Species[];
+] satisfies Omit<Species, 'medals'>[]);
 
 // Cena de 180 × 400 px lógicos, vista de cima, com o costado do barco embaixo e a ponta da vara em
 // (90, 370). Do barco para o mar aberto: o costado, o mar aberto e o azul profundo do marlim.
