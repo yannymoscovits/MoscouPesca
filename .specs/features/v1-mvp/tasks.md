@@ -119,7 +119,7 @@ T43 → T44
 ### Phase 9: Episódios 4 e 5 e progressão
 
 ```
-T75 (independente)
+T75 → T76
 T58 → T61
 T59 → T61
 T59 → T63
@@ -1375,6 +1375,30 @@ T53 → T54
 
 ---
 
+#### T76: Dar profundidade ao fundo do mar
+
+**What**: Fundo do mar da tela inicial com sensação de profundidade, pedido do usuário: gradiente da superfície clara até um azul quase preto; camadas longe, meio e perto (rochas e algas pequenas, claras e desbotadas ao longe; grandes e escuras perto, nas bordas) mexendo em velocidades diferentes (parallax); cardumes em três tamanhos e velocidades; raios de luz que somem com a profundidade; neve marinha e bolhas subindo do fundo; vinheta escura nas bordas.
+**Where**: `src/ui/TitleArt.tsx`
+**Depends on**: T75
+**Reuses**: cena em SVG pixel de T75, tokens de `theme.css`
+**Requirement**: visual da tela inicial (Assumptions); ACES-05 a ACES-08 preservados
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: o fundo tem as camadas `data-depth="far"`, `"mid"` e `"near"`, com escala e opacidade crescendo de longe para perto, e cardumes e partículas animados
+- [ ] e2e: com `prefers-reduced-motion: reduce`, nenhuma animação do fundo roda
+- [ ] As animações usam só `transform` e `opacity` em CSS, no máximo 6 camadas animadas, sem código por quadro em JavaScript
+- [ ] Os e2e existentes da tela inicial (INST-01 a INST-04, ordem dos elementos, ACES-05 a ACES-08 com contraste medido) continuam passando sem mudança nas asserções
+- [ ] Print do Pixel 7 atualizado em `docs/arte/mockups/tela-inicial-implementada.png`
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): dá profundidade ao fundo do mar`
+
+---
+
 #### T58: Cadastrar o Episódio 4: Parque dos Ventos
 
 **What**: Pacote `ep4` completo a partir de `docs/historia/episodio-4.md`: local e zonas (Parque dos Ventos, açude no pé das torres eólicas); espécies fantasiosas Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (raro), com descrição engraçada; 2 varas (Vara Hélice e Vara Torre) e 1 isca novas; roteiro com 7 objetivos, a Lavínia como piranha-pipa e encerramento; Copa dos Ventos com os rivais Márcio, Sr. Higashi e Edvaldo e suas provocações; carta do Márcio transcrita de `docs/historia/cartas.md`. Os personagens novos (Márcio e Sr. Higashi) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
@@ -1900,7 +1924,7 @@ T74, T41, T42, T45, T46, T62 (independentes)
 T43 → T44
 
 Fase 9
-T75 (independente)
+T75 → T76
 T58 → T61
 T59 → T61
 T59 → T63
@@ -1930,7 +1954,7 @@ T53 → T54
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
 
-**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (7) · Fase 11 (6) · Fases 12 e 13 (10).
+**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (8) · Fase 11 (6) · Fases 12 e 13 (10).
 
 ---
 
@@ -1991,6 +2015,7 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T46 | `src/ui/Celebration.tsx` | ✅ Granular |
 | T62 | `src/ui/MapScreen.tsx` | ✅ Granular |
 | T75 | `src/ui/TitleScreen.tsx` | ✅ Granular |
+| T76 | `src/ui/TitleArt.tsx` | ✅ Granular |
 | T58 | `src/content/episodes/ep4.ts` | ✅ Granular |
 | T59 | `src/content/episodes/ep5.ts` | ✅ Granular |
 | T61 | `src/content/progression.test.ts` | ✅ Granular |
@@ -2073,6 +2098,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T46 | T37 (fase 7) | - | ✅ Match |
 | T62 | T36 (fase 7), T56 (fase 5) | - | ✅ Match |
 | T75 | T34 (fase 7), T35 (fase 7) | - | ✅ Match |
+| T76 | T75 | T75 → T76 | ✅ Match |
 | T58 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T59 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T61 | T56 (fase 5), T57 (fase 5), T58, T59, T60 (fase 5) | T58 → T61, T59 → T61 | ✅ Match |
@@ -2153,6 +2179,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T46 | Telas | e2e | e2e | ✅ OK |
 | T62 | Telas | e2e | e2e | ✅ OK |
 | T75 | Telas | e2e | e2e | ✅ OK |
+| T76 | Telas | e2e | e2e | ✅ OK |
 | T58 | Conteúdo | unit | unit | ✅ OK |
 | T59 | Conteúdo | unit | unit | ✅ OK |
 | T61 | Conteúdo | unit | unit | ✅ OK |
