@@ -234,7 +234,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | PONTO-03 | P1: Escolher o ponto | T1 | Implementing |
 | PONTO-04 | P1: Escolher o ponto | - | Pending |
 | PONTO-05 | P1: Escolher o ponto | - | Pending |
-| PONTO-06 | P1: Escolher o ponto | - | Pending |
+| PONTO-06 | P1: Escolher o ponto | T4 | Implementing |
 | ARREM-01 | P1: Mirar e arremessar com força | T2 | Implementing |
 | ARREM-02 | P1: Mirar e arremessar com força | T2 | Implementing |
 | ARREM-03 | P1: Mirar e arremessar com força | T2 | Implementing |
@@ -242,21 +242,21 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | ARREM-05 | P1: Mirar e arremessar com força | - | Pending |
 | ARREM-06 | P1: Mirar e arremessar com força | T2 | Implementing |
 | ARREM-07 | Edge Cases | T2 | Implementing |
-| ISCA-01 | P1: Trabalhar a isca debaixo d'água | - | Pending |
-| ISCA-02 | P1: Trabalhar a isca debaixo d'água | - | Pending |
-| ISCA-03 | P1: Trabalhar a isca debaixo d'água | - | Pending |
-| ISCA-04 | P1: Trabalhar a isca debaixo d'água | - | Pending |
-| ISCA-05 | P1: Trabalhar a isca debaixo d'água | - | Pending |
-| ISCA-06 | P1: Trabalhar a isca debaixo d'água | - | Pending |
-| ISCA-07 | P1: Trabalhar a isca debaixo d'água | - | Pending |
+| ISCA-01 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
+| ISCA-02 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
+| ISCA-03 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
+| ISCA-04 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
+| ISCA-05 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
+| ISCA-06 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
+| ISCA-07 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
 | ISCA-08 | P1: Trabalhar a isca debaixo d'água | - | Pending |
 | ISCA-09 | P1: Trabalhar a isca debaixo d'água | - | Pending |
 | ISCA-10 | P1: Trabalhar a isca debaixo d'água | - | Pending |
-| ISCA-11 | P1: Trabalhar a isca debaixo d'água | - | Pending |
+| ISCA-11 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
 | ISCA-12 | P1: Trabalhar a isca debaixo d'água | - | Pending |
 | ISCA-13 | P1: Trabalhar a isca debaixo d'água | - | Pending |
-| ISCA-14 | Edge Cases | - | Pending |
-| ISCA-15 | Edge Cases | - | Pending |
+| ISCA-14 | Edge Cases | T4 | Implementing |
+| ISCA-15 | Edge Cases | T4 | Implementing |
 | BRIGA-01 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
 | BRIGA-02 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
 | BRIGA-03 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
@@ -277,14 +277,14 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | BOTAO-04 | P1: Botões grandes na tela | - | Pending |
 | BOTAO-05 | P1: Botões grandes na tela | - | Pending |
 | TUTOB-01 | P1: Tutorial da pescaria nova | - | Pending |
-| TUTOB-02 | P1: Tutorial da pescaria nova | - | Pending |
+| TUTOB-02 | P1: Tutorial da pescaria nova | T4 | Implementing |
 | TUTOB-03 | P1: Tutorial da pescaria nova | - | Pending |
 | TUTOB-04 | P1: Tutorial da pescaria nova | - | Pending |
 | SIMB-01 | P1: Simulação com as regras novas | - | Pending |
 | SIMB-02 | P1: Simulação com as regras novas | - | Pending |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 20 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 32 em implementação
 
 ---
 

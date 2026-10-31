@@ -157,13 +157,13 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Nascem de 3 a 6 peixes, só de espécies do ponto, com a raridade de cada uma; isca na distância do arremesso e na superfície
-- [ ] Recolhendo: isca anda 1 m/s para o Adilson e sobe 0,2 m/s; tranco: 0,6 m e 0,4 m; parada: afunda 0,3 m/s e para no fundo
-- [ ] A 2 m: espécie que aceita a isca segue; a que não aceita recusa e foge
-- [ ] Quem segue ataca entre 2 e 5 s; cada tranco adianta 1 s, mínimo 0,5 s; dois ataques no mesmo passo: só o primeiro vale, o outro foge
-- [ ] Com `followWithinS = 3`, um peixe que aceita a isca começa a seguir em até 3 s
-- [ ] `scare` faz o peixe fugir e mantém a isca
-- [ ] Gate check passes: `npm test`
+- [x] Nascem de 3 a 6 peixes, só de espécies do ponto, com a raridade de cada uma; isca na distância do arremesso e na superfície
+- [x] Recolhendo: isca anda 1 m/s para o Adilson e sobe 0,2 m/s; tranco: 0,6 m e 0,4 m; parada: afunda 0,3 m/s e para no fundo
+- [x] A 2 m: espécie que aceita a isca segue; a que não aceita recusa e foge
+- [x] Quem segue ataca entre 2 e 5 s; cada tranco adianta 1 s, mínimo 0,5 s; dois ataques no mesmo passo: só o primeiro vale, o outro foge
+- [x] Com `followWithinS = 3`, um peixe que aceita a isca começa a seguir em até 3 s
+- [x] `scare` faz o peixe fugir e mantém a isca
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

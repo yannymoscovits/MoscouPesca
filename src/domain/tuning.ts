@@ -70,3 +70,41 @@ export const TRANQUILO_METER_FLOOR = 0.1;
 export const TRANQUILO_ZONE_SCALE = 1.4;
 export const TRANQUILO_FISH_SPEED_SCALE = 0.6;
 export const TRANQUILO_RETARGET_SCALE = 1.5;
+
+// ---------- Pescaria nova: isca e peixes debaixo d'água (spec pesca-bass, "Movimento da isca") ----------
+// Metros e segundos; `xM` é a distância até o Adilson e a profundidade cresce para baixo.
+
+/** Maior passo da água; `dt` maior é dividido em passos iguais a este ou menores. */
+export const WATER_MAX_STEP_S = 1 / 30;
+/** RECOLHER: a isca vem para o Adilson e sobe. */
+export const LURE_REEL_MPS = 1;
+export const LURE_RISE_MPS = 0.2;
+/** PUXAR: tranco para o Adilson e para cima. */
+export const TWITCH_FORWARD_M = 0.6;
+export const TWITCH_UP_M = 0.4;
+/** Isca parada afunda até o fundo do ponto. */
+export const LURE_SINK_MPS = 0.3;
+/** Peixes por arremesso. */
+export const SCHOOL_SIZE = { min: 3, max: 6 };
+/** Distância da isca em que o peixe se interessa (segue ou recusa). */
+export const INTEREST_RADIUS_M = 2;
+/** Tempo do começo da perseguição até o ataque; cada PUXAR adianta 1 s, sem passar de 0,5 s. */
+export const ATTACK_S = { min: 2, max: 5 };
+export const TWITCH_HURRY_S = 1;
+export const ATTACK_MIN_S = 0.5;
+// Padrões sem número na spec, para a calibragem: nado, perseguição, fuga e onde os peixes nascem.
+/** Velocidade do peixe nadando à toa, seguindo a isca e fugindo. */
+export const FISH_CRUISE_MPS = 0.4;
+export const FISH_FOLLOW_MPS = 2;
+export const FISH_FLEE_MPS = 2.5;
+/** Quem segue fica esta distância atrás da isca. */
+export const FISH_FOLLOW_GAP_M = 0.4;
+/** Os peixes nascem até esta distância (para os dois lados) do ponto onde a isca caiu... */
+export const FISH_SPREAD_M = 4;
+/** ...e nadando à toa dão a volta quando se afastam isto da isca. */
+export const FISH_RANGE_M = 4;
+/** Peixe nenhum chega mais perto do Adilson que isto. */
+export const FISH_MIN_X_M = 0.5;
+/** Faixa de profundidade em que os peixes nadam, acima do fundo; o teto deixa os pontos fundos jogáveis. */
+export const FISH_SWIM_DEPTH_M = { min: 0.3, max: 6 };
+export const FISH_BOTTOM_GAP_M = 0.2;
