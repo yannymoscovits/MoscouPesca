@@ -7,7 +7,7 @@ test('INST-01: a tela inicial mostra "MoscouFishing", o subtítulo, "Colocar na 
   await page.goto('/');
 
   await expect(page.getByRole('heading', { level: 1, name: 'MoscouFishing' })).toBeVisible();
-  await expect(page.getByText('A Jornada de Adilson Moscovits')).toBeVisible();
+  await expect(page.getByText('Para Adilson Moscovits')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Colocar na tela' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Jogar' })).toBeVisible();
 });
@@ -76,7 +76,7 @@ test('Tela inicial do mockup: título, slogan e subtítulo em cima; botões azul
 
   const title = page.getByRole('heading', { level: 1, name: 'MoscouFishing' });
   const tagline = page.getByText('Um peixinho de cada vez', { exact: true });
-  const subtitle = page.getByText('A Jornada de Adilson Moscovits', { exact: true });
+  const subtitle = page.getByText('Para Adilson Moscovits', { exact: true });
   await expect(title).toBeVisible();
   await expect(tagline).toBeVisible();
   await expect(subtitle).toBeVisible();
@@ -151,7 +151,7 @@ test('ACES-05 a ACES-08 na tela inicial: botões >= 56 × 56 px na metade de bai
     return found;
   });
   expect(texts.map((t) => t.text)).toEqual(
-    expect.arrayContaining(['Moscou', 'Fishing', 'Um peixinho de cada vez', 'A Jornada de Adilson Moscovits', ...BUTTONS]),
+    expect.arrayContaining(['Moscou', 'Fishing', 'Um peixinho de cada vez', 'Para Adilson Moscovits', ...BUTTONS]),
   );
   expect(texts.filter((t) => t.size < 18)).toEqual([]);
 
@@ -164,7 +164,7 @@ test('ACES-05 a ACES-08 na tela inicial: botões >= 56 × 56 px na metade de bai
   }
   // Sobre o fundo do mar desenhado o axe não sabe medir ("incomplete"): esses textos, e só eles, são medidos
   // contra os pixels do fundo que fica atrás deles.
-  const overScene = ['Moscou', 'Fishing', 'Um peixinho de cada vez', 'A Jornada de Adilson Moscovits'];
+  const overScene = ['Moscou', 'Fishing', 'Um peixinho de cada vez', 'Para Adilson Moscovits'];
   for (const html of nodes(axe.incomplete)) {
     expect(overScene.some((text) => html.includes(text)), `sem medida: ${html}`).toBe(true);
   }
@@ -172,7 +172,7 @@ test('ACES-05 a ACES-08 na tela inicial: botões >= 56 × 56 px na metade de bai
     ['Moscou', page.getByText('Moscou', { exact: true })],
     ['Fishing', page.getByRole('heading', { level: 1, name: 'MoscouFishing' })], // o h1 tem a cor de "Fishing"
     ['Um peixinho de cada vez', page.getByText('Um peixinho de cada vez', { exact: true })],
-    ['A Jornada de Adilson Moscovits', page.getByText('A Jornada de Adilson Moscovits', { exact: true })],
+    ['Para Adilson Moscovits', page.getByText('Para Adilson Moscovits', { exact: true })],
   ];
   for (const [text, target] of targets) {
     expect(await worstContrast(page, target), `contraste de "${text}"`).toBeGreaterThanOrEqual(4.5);

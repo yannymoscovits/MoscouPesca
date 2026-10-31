@@ -43,7 +43,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Assumption / decision | Chosen default | Rationale | Confirmed? |
 | --------------------- | -------------- | --------- | ---------- |
 | Nome do jogo | MoscouFishing | Escolhido pelo usuário | y |
-| Subtítulo da tela inicial | "A Jornada de Adilson Moscovits" | Põe o nome dele logo na abertura | y |
+| Subtítulo da tela inicial | "Para Adilson Moscovits" (dedicatória) | Trocado pelo usuário; antes era "A Jornada de Adilson Moscovits" | y |
 | Visual da tela inicial e do tema | Segue o mockup do usuário (`docs/arte/mockups/tela-inicial.png`): fundo do mar em pixel art azul-marinho com raios de luz, bolhas, cardume e algas; peixe amarelo; título com "Moscou" claro e "Fishing" amarelo na fonte pixel e o peixe da logo do usuário (`docs/arte/mockups/logo.png`); logo abaixo, a frase "Um peixinho de cada vez" entre dois tracinhos, escolhida pelo usuário; depois o subtítulo claro; botões "Colocar na tela" (azul), "Ajustes" (marinho) e "Jogar" (amarelo, maior), com ícone e seta. A mesma paleta vale para as outras telas | Desenho do usuário | y |
 | Distribuição | PWA instalável, aberta por link enviado no WhatsApp | Decidido com o usuário; sem loja, no ar no mesmo dia | y |
 | Hospedagem | Site estático gratuito (Cloudflare Pages ou Vercel) a partir de repositório privado, com `noindex` | Mensagens da família não ficam públicas e o link não aparece em busca | y |

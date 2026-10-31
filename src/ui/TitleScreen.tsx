@@ -27,7 +27,7 @@ export function TitleScreen() {
           <span class="logo-title__moscou">Moscou</span>Fishing
         </h1>
         <p class="tagline">Um peixinho de cada vez</p>
-        <p class="subtitle">A Jornada de Adilson Moscovits</p>
+        <p class="subtitle">Para Adilson Moscovits</p>
       </div>
       <div class="screen__actions">
         {/* INST-04: instalado, o jogo já está na tela */}
