@@ -276,10 +276,10 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | BOTAO-03 | P1: Botões grandes na tela | T11 | Implementing |
 | BOTAO-04 | P1: Botões grandes na tela | T11 | Implementing |
 | BOTAO-05 | P1: Botões grandes na tela | T11, T15 | Implementing |
-| TUTOB-01 | P1: Tutorial da pescaria nova | T7 | Implementing |
-| TUTOB-02 | P1: Tutorial da pescaria nova | T4, T7 | Implementing |
-| TUTOB-03 | P1: Tutorial da pescaria nova | T7 | Implementing |
-| TUTOB-04 | P1: Tutorial da pescaria nova | T7 | Implementing |
+| TUTOB-01 | P1: Tutorial da pescaria nova | T7, T16 | Implementing |
+| TUTOB-02 | P1: Tutorial da pescaria nova | T4, T7, T16 | Implementing |
+| TUTOB-03 | P1: Tutorial da pescaria nova | T7, T16 | Implementing |
+| TUTOB-04 | P1: Tutorial da pescaria nova | T7, T16 | Implementing |
 | SIMB-01 | P1: Simulação com as regras novas | T8 | Implementing |
 | SIMB-02 | P1: Simulação com as regras novas | T8 | Implementing |
 | PAUSA-01 | Edge Cases | T15 | Implementing |

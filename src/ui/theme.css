@@ -1416,11 +1416,13 @@ ul {
   font-weight: 700;
 }
 
-/* A ponta da seta fica no ponto (left, top): ela desce até ele. */
+/* A ponta da seta fica no alvo (left, top): ela desce até ele. Por cima dos botões e da barra de força
+   (25), sem pegar o toque que vai para eles. */
 .coach-arrow {
   position: absolute;
-  z-index: 22;
+  z-index: 26;
   transform: translate(-50%, -100%);
+  pointer-events: none;
 }
 
 .coach-arrow svg {
@@ -1432,16 +1434,6 @@ ul {
   50% {
     transform: translateY(-10px);
   }
-}
-
-.coach-arrow--fisgar {
-  left: 50%;
-  top: calc(50% - 4px);
-}
-
-.coach-arrow--tela {
-  left: 50%;
-  top: 62%;
 }
 
 /* TUTO-07: 10 s sem toque, a seta pisca. */
@@ -2342,4 +2334,12 @@ ul {
     -3px 3px 0 var(--outline);
   animation: estourar 0.3s ease-out;
   pointer-events: none;
+}
+
+/* ---------- Tutorial da pescaria nova (pesca-bass T16) ---------- */
+
+/* A barra de captura começa abaixo do painel e da fala da Jane (--spots-top, medido pela tela de pesca),
+   com lugar para a seta do passo "manter" por cima dela. */
+.catch-bar {
+  top: max(22%, calc(var(--spots-top, 0px) + 72px));
 }

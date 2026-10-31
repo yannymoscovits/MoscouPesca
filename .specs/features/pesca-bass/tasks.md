@@ -422,9 +422,9 @@ T17 → T18
 
 **Done when**:
 
-- [ ] e2e (`e2e/tutorial.spec.ts` reescrito): jogo novo, seguir só as falas e setas até pegar o primeiro peixe, passando pelos 9 passos na ordem; o objetivo mostra 1 de 3
-- [ ] e2e: no tutorial, um peixe segue a isca em até 3 s; a fisgada espera o toque; o medidor não desce de 10%
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e (`e2e/tutorial.spec.ts` reescrito): jogo novo, seguir só as falas e setas até pegar o primeiro peixe, passando pelos 9 passos na ordem; o objetivo mostra 1 de 3
+- [x] e2e: no tutorial, um peixe segue a isca em até 3 s; a fisgada espera o toque; o medidor não desce de 10%
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

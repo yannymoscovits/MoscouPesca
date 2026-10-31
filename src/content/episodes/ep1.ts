@@ -1,7 +1,7 @@
 // Episódio 1: Tirando a Ferrugem, na Barragem do Poço do Magro (Guanambi, BA).
 // Fonte: docs/historia/episodio-1.md. Números de peso, preço e força são iniciais; T61 calibra.
 
-import type { TutorialStep } from '../../domain/tutorial';
+import type { TutorialPescaStep } from '../../domain/tutorialPesca';
 import type {
   Bait,
   CharacterId,
@@ -305,18 +305,23 @@ const objectives = [
   },
 ] satisfies Objective[];
 
-/** Cena 2: a Jane conduz o tutorial, uma fala por passo (TUTO-02, TUTO-03). */
+/** Cena 2: a Jane conduz o tutorial da pescaria nova, uma fala por passo (TUTO-02; pesca-bass TUTOB-01). */
 export const tutorial = {
-  cast: { speaker: 'jane', text: 'Toca na água onde você quer jogar a isca. Só um dedinho, Adilson, não precisa de força.' },
-  wait: { speaker: 'jane', text: 'Agora espera. Paciência, que nem quando você conta aquele causo do peixe de 5 quilos.' },
-  hook: { speaker: 'jane', text: 'Mordeu! Toca na tela, rápido! Quer dizer… no seu tempo, ele não vai fugir.' },
-  reel: { speaker: 'jane', text: 'Segura o dedo na tela pra recolher a linha.' },
-  release: { speaker: 'jane', text: 'Ficou vermelho? Solta! Deixa o peixe cansar.' },
+  ponto: { speaker: 'jane', text: 'Primeiro escolhe onde pescar. Toca no ponto e depois em "Pescar aqui".' },
+  direcao: { speaker: 'jane', text: 'Tá vendo a seta balançando? Toca em ARREMESSAR quando ela apontar pra onde você quer.' },
+  forca: { speaker: 'jane', text: 'Agora a força. Toca em ARREMESSAR de novo com a barra cheia. Sem exagero, Adilson.' },
+  recolher: { speaker: 'jane', text: 'Segura RECOLHER pra trazer a isca. Devagar, que peixe não gosta de pressa.' },
+  atrair: { speaker: 'jane', text: 'Olha ele vindo atrás! Toca em PUXAR pra dar uns trancos na isca e atiçar o bicho.' },
+  fisgar: { speaker: 'jane', text: 'Atacou! Aperta FISGAR! No seu tempo, que esse aí espera.' },
+  subir: { speaker: 'jane', text: 'Segura SEGURAR pra faixa verde subir até o peixe.' },
+  descer: { speaker: 'jane', text: 'Agora solta, que a faixa desce sozinha.' },
+  manter: { speaker: 'jane', text: 'Segura e solta pra deixar o peixe dentro da faixa verde até o medidor encher.' },
   done: {
     speaker: 'jane',
     text: 'Pegou! Viu, seu pegador? Peixe você até pega. Faltam dois. E nada de aumentar o peso na hora de contar.',
   },
-} satisfies Record<TutorialStep, DialogLine>;
+} satisfies Record<TutorialPescaStep, DialogLine>;
+
 
 // Cena 9: as provocações aparecem antes do primeiro arremesso (HUMOR-04).
 // Placar dos rivais em kg (soma dos 3 mais pesados): valores provisórios, T61 calibra.

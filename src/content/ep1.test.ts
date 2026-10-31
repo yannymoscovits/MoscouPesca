@@ -204,8 +204,9 @@ describe('Episódio 1: roteiro', () => {
     expect(currentObjective(p.story, ep1)?.text).toBe('Pegar a Piranha Lavínia');
   });
 
-  it('TUTO-03: as falas da Jane existem para os 6 passos do tutorial', () => {
-    expect(Object.keys(tutorial).sort()).toEqual(['cast', 'done', 'hook', 'reel', 'release', 'wait']);
+  it('TUTOB-01: as falas da Jane existem para os 9 passos do tutorial da pescaria nova e para o peixe pego', () => {
+    expect(Object.keys(tutorial)).toEqual(['ponto', 'direcao', 'forca', 'recolher', 'atrair', 'fisgar', 'subir', 'descer', 'manter', 'done']);
+
     for (const line of Object.values(tutorial)) {
       expect(line.speaker).toBe('jane');
       expect(line.text.trim()).not.toBe('');
