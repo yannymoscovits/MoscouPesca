@@ -3,9 +3,10 @@
 import { ep1 } from './episodes/ep1';
 import { ep2 } from './episodes/ep2';
 import { ep3 } from './episodes/ep3';
+import { ep4 } from './episodes/ep4';
 import type { EpisodeContent } from './types';
 
-export const episodes: EpisodeContent[] = [ep1, ep2, ep3];
+export const episodes: EpisodeContent[] = [ep1, ep2, ep3, ep4];
 
 /** Falas da Jane no tutorial da primeira pescaria (Episódio 1). */
 export { tutorial } from './episodes/ep1';

@@ -33,6 +33,9 @@ export const characters = [
   { id: 'geane', name: 'Geane', epithet: 'A Canceriana que Já Viu Disco Voador', portraits: portraits('geane') },
   { id: 'louise', name: 'Louise', epithet: 'A Sobrinha Preferida (Ele Nega, Mas É)', portraits: portraits('louise') },
   { id: 'lucca', name: 'Lucca', epithet: 'O Xodó do Xô', portraits: portraits('lucca') },
+  // Episódio 4 (docs/historia/episodio-4.md).
+  { id: 'marcio', name: 'Márcio', epithet: 'Funcionário 01 (e Faz-Tudo)', portraits: portraits('marcio') },
+  { id: 'higashi', name: 'Sr. Higashi', epithet: 'O Homem do GPS', portraits: portraits('higashi') },
 ] satisfies Character[];
 
 /** Quem fala: ninguém na narração, um personagem ou vários na fala conjunta. */

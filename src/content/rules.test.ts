@@ -129,6 +129,10 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
     for (const sp of ep.species) expect(inZones.has(sp.id), sp.id).toBe(true);
   });
 
+  it('T80: toda zona tem profundidade (depthM) maior que zero, para o medidor de Profundidade', () => {
+    for (const zone of zones()) expect(zone.depthM, zone.id).toBeGreaterThan(0);
+  });
+
   it('EQUIP-02: toda isca citada pelas espécies existe neste episódio ou num anterior', () => {
     const available = new Set(episodes.filter((e) => e.id <= ep.id).flatMap((e) => e.baits.map((b) => b.id)));
     for (const sp of ep.species) for (const b of sp.baits) expect(available.has(b), `${sp.id} → ${b}`).toBe(true);

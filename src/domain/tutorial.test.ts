@@ -34,6 +34,7 @@ const ZONE: Zone = {
     { x: -40, y: -10 },
   ],
   species: ['tilapia'],
+  depthM: 1,
 };
 
 function ctx(t: TutorialState, seed: number, power = 5): TickContext {

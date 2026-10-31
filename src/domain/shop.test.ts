@@ -129,7 +129,7 @@ describe('isca de uso ilimitado', () => {
       description: '',
       rare: false,
     };
-    const zone: Zone = { id: 'z', polygon: [{ x: -50, y: -50 }, { x: 50, y: -50 }, { x: 50, y: 50 }, { x: -50, y: 50 }], species: ['tilapia'] };
+    const zone: Zone = { id: 'z', polygon: [{ x: -50, y: -50 }, { x: 50, y: -50 }, { x: 50, y: 50 }, { x: -50, y: 50 }], species: ['tilapia'], depthM: 1 };
     let p = equip(buy(profile(100), CARNE), 'carne');
     const ctx: TickContext = { rng: createRng(7), rules: rulesFor('tranquilo'), zones: [zone], species: [tilapia] };
 

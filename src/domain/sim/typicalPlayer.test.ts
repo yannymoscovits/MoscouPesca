@@ -29,6 +29,7 @@ function testEpisode(rods: Rod[] = [BAMBU]): Episode {
               { x: 0, y: 360 },
             ],
             species: ['peixe'],
+            depthM: 1,
           },
         ],
       },

@@ -1503,10 +1503,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os testes de regras e de consistência de conteúdo passam incluindo o `ep4`, inclusive força e fôlego das espécies entre 1 e 10
-- [ ] Teste: `index.ts` lista os episódios em ordem, com o 4º sendo Parque dos Ventos (EPI-01)
-- [ ] O alcance das varas já chega a 10 no Episódio 3, então a espécie rara é limitada pela isca nova e pela força da vara, não pelo alcance; teste prova que sem a isca nova ela não morde
-- [ ] Gate check passes: `npm test`
+- [x] Os testes de regras e de consistência de conteúdo passam incluindo o `ep4`, inclusive força e fôlego das espécies entre 1 e 10
+- [x] Teste: `index.ts` lista os episódios em ordem, com o 4º sendo Parque dos Ventos (EPI-01)
+- [x] O alcance das varas já chega a 10 no Episódio 3, então a espécie rara é limitada pela isca nova e pela força da vara, não pelo alcance; teste prova que sem a isca nova ela não morde
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

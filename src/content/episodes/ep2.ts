@@ -178,12 +178,18 @@ const rioJacuipe = {
   background: 'src/assets/scene/rio-jacuipe.png',
   zones: [
     // "Robalo-peva gosta de beirada de mangue. Joga rente, sem medo." (cena 4)
-    { id: 'mangue', polygon: rect(0, 130, 45, 360), species: ['robalo-peva', 'traira-jacuipe', 'carapeba'] },
-    { id: 'beira', polygon: rect(45, 250, 180, 360), species: ['tilapia-jacuipe', 'carapeba', 'tainha'] },
+    {
+      id: 'mangue',
+      polygon: rect(0, 130, 45, 360),
+      species: ['robalo-peva', 'traira-jacuipe', 'carapeba'],
+      depthM: 1,
+    },
+    { id: 'beira', polygon: rect(45, 250, 180, 360), species: ['tilapia-jacuipe', 'carapeba', 'tainha'], depthM: 1.5 },
     {
       id: 'correnteza',
       polygon: rect(45, 130, 180, 250),
       species: ['tainha', 'tilapia-jacuipe', 'traira-jacuipe', 'robalo-peva'],
+      depthM: 3,
     },
   ],
 } satisfies Location;
@@ -193,13 +199,19 @@ const ponteDaCetrel = {
   name: 'Ponte da Cetrel',
   background: 'src/assets/scene/ponte-da-cetrel.png',
   zones: [
-    { id: 'pedras', polygon: rect(0, 250, 180, 360), species: ['baiacu', 'vermelho', 'robalo-flecha'] },
+    { id: 'pedras', polygon: rect(0, 250, 180, 360), species: ['baiacu', 'vermelho', 'robalo-flecha'], depthM: 2 },
     {
       id: 'pilares',
       polygon: rect(0, 115, 180, 250),
       species: ['robalo-flecha', 'pescada-amarela', 'vermelho', 'baiacu'],
+      depthM: 6,
     },
-    { id: 'canal', polygon: rect(0, 0, 180, 115), species: ['camurupim', 'pescada-amarela', 'robalo-flecha'] },
+    {
+      id: 'canal',
+      polygon: rect(0, 0, 180, 115),
+      species: ['camurupim', 'pescada-amarela', 'robalo-flecha'],
+      depthM: 12,
+    },
   ],
 } satisfies Location;
 
