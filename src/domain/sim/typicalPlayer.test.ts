@@ -1,8 +1,9 @@
 // Jogador típico simulado (design.md, "Domain: typical player simulation"): o instrumento que mede
 // a progressão (PROG-01, PROG-04, PROG-05). Os episódios aqui são de teste, pequenos e previsíveis.
 import { describe, expect, it } from 'vitest';
-import type { Episode, Rod } from '../../content/types';
+import type { Episode, GoalDef, Rod } from '../../content/types';
 import { rulesFor } from '../fishing';
+import { goalId } from '../medals';
 import { newProfile } from '../profile';
 import { FIGHT_START_DISTANCE, REEL_SPEED } from '../tuning';
 import { CARD_S, simulateEpisode, type Achievement } from './typicalPlayer';
@@ -47,7 +48,7 @@ function testEpisode(rods: Rod[] = [BAMBU]): Episode {
         rarity: 1,
         description: 'Peixe de teste.',
         rare: false,
-        medals: { bronze: 2, prata: 2.5, ouro: 2.8 },
+        medals: { bronze: 4, prata: 5, ouro: 6 }, // acima da faixa: sem medalhas (o teste de medalhas troca os limites)
       },
     ],
     rods,
@@ -131,5 +132,53 @@ describe('jogador típico simulado', () => {
         .sort((x, y) => x.atMinute - y.atMinute || x.kind.localeCompare(y.kind));
     expect(normalize(r.achievements)).toEqual(normalize(expected));
     expect(new Set(r.achievements.map((a) => a.kind))).toEqual(new Set(['objetivo', 'item', 'especie', 'recorde']));
+  });
+
+  it('T86, PROG-04: medalhas e metas entram na linha do tempo no minuto da captura que as conquista, com a recompensa no saldo', () => {
+    const base = testEpisode();
+    const limits = { bronze: 1.5, prata: 2, ouro: 2.5 };
+    const ep: Episode = { ...base, species: [{ ...base.species[0], medals: limits }] };
+    const goals: GoalDef = { counts: [2, 5, 9], reward: (_ep, count) => count * 10 };
+    const r = simulateEpisode(ep, newProfile(), 3, { goals });
+
+    // Linha do tempo esperada, refeita a partir dos arremessos: cada medalha na primeira captura que
+    // alcança o limite dela e cada meta na captura que completa a contagem.
+    const expected: Achievement[] = [];
+    const owned = new Set<string>();
+    let seconds = 0;
+    let caught = 0;
+    let money = 0;
+    for (const c of r.casts) {
+      seconds += c.seconds;
+      if (c.outcome !== 'Result_Caught') continue;
+      const atMinute = seconds / 60;
+      for (const tier of ['bronze', 'prata', 'ouro'] as const) {
+        if (c.kg! >= limits[tier] && !owned.has(tier)) {
+          owned.add(tier);
+          expected.push({ atMinute, kind: 'medalha', id: `peixe:${tier}` });
+        }
+      }
+      caught++;
+      for (const count of goals.counts) {
+        if (caught === count) {
+          expected.push({ atMinute, kind: 'meta', id: goalId('peixe', count) });
+          money += count * 10;
+        }
+      }
+      money += c.value!;
+    }
+
+    const normalize = (xs: Achievement[]) =>
+      xs
+        .map((a) => ({ ...a, atMinute: Math.round(a.atMinute * 1e6) / 1e6 }))
+        .sort((x, y) => x.atMinute - y.atMinute || x.kind.localeCompare(y.kind) || x.id.localeCompare(y.id));
+    const awards = r.achievements.filter((a) => a.kind === 'medalha' || a.kind === 'meta');
+    expect(normalize(awards)).toEqual(normalize(expected));
+    expect(new Set(awards.map((a) => a.kind))).toEqual(new Set(['medalha', 'meta']));
+    expect(r.profile.money).toBe(money); // só a Vara de Bambu: nenhuma compra
+    expect(r.profile.goalsDone).toEqual(goals.counts.map((c) => goalId('peixe', c)));
+
+    // Mesma semente, mesmo resultado.
+    expect(simulateEpisode(ep, newProfile(), 3, { goals })).toEqual(r);
   });
 });

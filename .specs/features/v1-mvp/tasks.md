@@ -1712,9 +1712,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Episódio de teste com limites de medalha conhecidos: a linha do tempo traz as medalhas e as metas no minuto certo
-- [ ] Mesma semente, mesmo resultado
-- [ ] Gate check passes: `npm test`
+- [x] Episódio de teste com limites de medalha conhecidos: a linha do tempo traz as medalhas e as metas no minuto certo
+- [x] Mesma semente, mesmo resultado
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

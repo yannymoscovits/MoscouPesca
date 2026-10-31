@@ -11,6 +11,7 @@ import type {
   Difficulty,
   Episode,
   GameEvent,
+  GoalDef,
   Location,
   Point,
   Profile,
@@ -19,6 +20,7 @@ import type {
   SpeciesId,
 } from '../../content/types';
 import { record } from '../album';
+import { onCatch } from '../medals';
 import { cast, maxCastDistance, press, rulesFor, tensionBand, tick, type FishingState, type TensionBand } from '../fishing';
 import { createRng } from '../rng';
 import { buy, canBuy, equip, type Item } from '../shop';
@@ -38,13 +40,13 @@ const DT = 1 / 30;
 const MAX_MINUTES = 600;
 const MAX_FIGHT_S = 120;
 
-export type AchievementKind = 'objetivo' | 'item' | 'especie' | 'recorde';
+export type AchievementKind = 'objetivo' | 'item' | 'especie' | 'recorde' | 'medalha' | 'meta';
 
 /** Conquista da PROG-04, no minuto de jogo em que aconteceu. */
 export interface Achievement {
   atMinute: number;
   kind: AchievementKind;
-  id: string; // objetivo, item ou espécie
+  id: string; // objetivo, item, espécie, "espécie:medalha" ou a meta ("espécie:contagem")
 }
 
 export interface SimCast {
@@ -59,12 +61,15 @@ export interface SimCast {
 export interface SimOptions {
   difficulty?: Difficulty; // padrão: Tranquilo, o jogador conservador do design
   earlier?: Episode[]; // episódios anteriores, cujas varas e iscas o perfil já pode ter
+  goals?: GoalDef; // metas de quantidade (src/content/goals.ts); sem elas, nenhuma meta conta
 }
+
+const NO_GOALS: GoalDef = { counts: [], reward: () => 0 };
 
 // SPEC_DEVIATION: o design devolve só minutos, conquistas e tentativas e não tem opções.
 // Reason: `casts` permite conferir que o tempo total é a soma dos arremessos; `won` separa a vitória
 // de quem esbarrou em MAX_MINUTES; `profile` encadeia um episódio no seguinte; `earlier` dá as varas
-// dos episódios anteriores; `difficulty` escolhe Tranquilo ou Desafio.
+// dos episódios anteriores; `difficulty` escolhe Tranquilo ou Desafio; `goals` traz as metas do conteúdo.
 export interface SimResult {
   minutes: number;
   achievements: Achievement[];
@@ -131,6 +136,7 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
   const allRods = catalog.flatMap((e) => e.rods);
   const rng = createRng(seed);
   const rules = rulesFor(opts.difficulty ?? 'tranquilo');
+  const goals = opts.goals ?? NO_GOALS;
 
   let p = start;
   let seconds = 0;
@@ -267,7 +273,7 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
     return { result: s, seconds: t };
   }
 
-  /** Soma o tempo do arremesso e aplica o peixe: R$ (PESCA-17), álbum e recorde, e a história. */
+  /** Soma o tempo do arremesso e aplica o peixe: R$ (PESCA-17), álbum e recorde, medalhas e metas, e a história. */
   function land(result: FishingState, castSeconds: number, tournament: boolean) {
     seconds += castSeconds;
     if (result.phase !== 'Result_Caught') {
@@ -281,6 +287,10 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
     p = { ...p, money: p.money + value, album };
     if (isNew) note('especie', species.id);
     else if (isNewRecord) note('recorde', species.id);
+    const won = onCatch(p, species, kg, goals, ep.id); // o mesmo do jogo (MEDAL-02 a MEDAL-05)
+    p = won.profile;
+    for (const tier of won.medals) note('medalha', `${species.id}:${tier}`);
+    for (const id of won.goalsDone) note('meta', id);
     story({ type: 'Caught', species: species.id, kg });
     noteItems();
   }
