@@ -2,9 +2,11 @@
 // primeiro arremesso até vencer o campeonato, com as funções reais do domínio, para medir a
 // progressão (PROG-01, PROG-04, PROG-05). Usado só por testes.
 //
-// O jogador arremessa nas zonas da isca equipada, segura a linha até o amarelo e solta no
-// vermelho, compra a melhor vara que o saldo permite e entra no campeonato assim que ele libera.
-// O tempo conta voo, espera, briga e ficha do peixe; o tempo de ler falas e cenas fica de fora.
+// Cada arremesso passa por pesca.ts (SIMB-01) com a política da SIMB-02: o melhor ponto liberado,
+// a seta travada no meio, a força com até 20% de erro, a isca recolhida direto, PUXAR quando um
+// peixe segue, a fisgada certa em 90% das vezes e a briga pela holdPolicy, vendo o peixe 0,3 s
+// atrasado. Ele compra a melhor vara que o saldo permite e entra no campeonato assim que ele libera.
+// O tempo conta mira, força, voo, isca, briga e ficha do peixe; ler falas e cenas fica de fora.
 
 import type {
   BaitId,
@@ -18,12 +20,25 @@ import type {
   Rod,
   Species,
   SpeciesId,
+  Zone,
 } from '../../content/types';
 import { record } from '../album';
+import { aimAngleDeg } from '../castAim';
+import type { CatchBar } from '../catchBar';
 import { onCatch } from '../medals';
-import { cast, maxCastDistance, press, rulesFor, tensionBand, tick, type FishingState, type TensionBand } from '../fishing';
-import { createRng } from '../rng';
+import {
+  press,
+  rulesFor,
+  startPesca,
+  tick,
+  type PescaButton,
+  type PescaContext,
+  type PescaRules,
+  type PescaState,
+} from '../pesca';
+import { createRng, type Rng } from '../rng';
 import { buy, canBuy, equip, type Item } from '../shop';
+import { spotsFor } from '../spots';
 import { currentObjective, isTournamentUnlocked, onEvent } from '../story';
 import { applyVictory, recordCast, standings, start as startTournament } from '../tournament';
 import { isUnlocked, onChampionshipWon, shopItems, travel } from '../world';
@@ -32,13 +47,22 @@ import { isUnlocked, onChampionshipWon, shopItems, travel } from '../world';
 export const ROD_TIP: Point = { x: 90, y: 370 };
 /** Segundos para ler a ficha do peixe. */
 export const CARD_S = 3;
-/** Tempo de reação do jogador, sorteado a cada arremesso (o mesmo do balanceamento da briga). */
-const REACTION_S = { min: 0.2, max: 0.5 };
-/** O jogo desenha a 30 quadros por segundo. */
-const DT = 1 / 30;
+/** Atraso do jogador para reagir ao que vê: o peixe na barra (SIMB-02), o peixe seguindo e o ataque. */
+export const REACTION_S = 0.3;
+/** Ele quer a força cheia e erra para menos até isto (SIMB-02). */
+export const POWER_ERROR = 0.2;
+/** Chance de acertar a fisgada (SIMB-02). */
+export const HOOK_CHANCE = 0.9;
+/** Com um peixe seguindo, um PUXAR a cada tanto; a spec não dá o ritmo (padrão para a calibragem). */
+export const TWITCH_EVERY_S = 1;
+/** Passo da simulação (design.md da pesca-bass); a física ainda se divide em passos de 1/30 s. */
+const DT = 0.1;
 /** Desiste do episódio depois disso: o campeonato está difícil demais para o jogador típico. */
 const MAX_MINUTES = 600;
-const MAX_FIGHT_S = 120;
+/** Um arremesso mais longo que isto é defeito da simulação. */
+const MAX_CAST_S = 300;
+/** Folga para comparar tempos somados em ponto flutuante. */
+const EPS = 1e-9;
 
 export type AchievementKind = 'objetivo' | 'item' | 'especie' | 'recorde' | 'medalha' | 'meta';
 
@@ -49,9 +73,12 @@ export interface Achievement {
   id: string; // objetivo, item, espécie, "espécie:medalha" ou a meta ("espécie:contagem")
 }
 
+/** Como um arremesso termina: peixe pego, peixe fugido ou nada dessa vez. */
+export type PescaResult = Extract<PescaState, { phase: `Result_${string}` }>;
+
 export interface SimCast {
-  seconds: number; // voo, espera, briga e, com peixe, a ficha
-  outcome: FishingState['phase'];
+  seconds: number; // mira, força, voo, isca, briga e, com peixe, a ficha
+  outcome: PescaResult['phase'];
   tournament: boolean;
   species?: SpeciesId;
   kg?: number;
@@ -79,11 +106,11 @@ export interface SimResult {
   profile: Profile;
 }
 
-/** Zona, isca e os pontos da zona ao alcance da vara; `takers` são as espécies que podem morder. */
+/** Ponto liberado e isca; `takers` são as espécies do ponto que aceitam a isca. */
 interface Plan {
   location: Location;
+  zone: Zone;
   bait: BaitId;
-  points: Point[];
   takers: Species[];
 }
 
@@ -91,20 +118,6 @@ const quality = (r: Rod) => r.reach * 100 + r.force; // o alcance abre zonas; a 
 const avgKg = (sp: Species) => (sp.kg.min + sp.kg.max) / 2;
 /** Evento neutro: um objetivo que já se cumpre com ele não depende do jogador. */
 const PROBE: GameEvent = { type: 'GameStarted' };
-
-/** Pontos dentro de uma zona convexa: o centro e passos do centro até os cantos e os meios das bordas. */
-function innerPoints(polygon: Point[]): Point[] {
-  const c = {
-    x: polygon.reduce((s, p) => s + p.x, 0) / polygon.length,
-    y: polygon.reduce((s, p) => s + p.y, 0) / polygon.length,
-  };
-  const toward = (p: Point, k: number) => ({ x: c.x + (p.x - c.x) * k, y: c.y + (p.y - c.y) * k });
-  const mids = polygon.map((p, i) => {
-    const q = polygon[(i + 1) % polygon.length];
-    return { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
-  });
-  return [c, ...[...polygon, ...mids].flatMap((p) => [toward(p, 0.5), toward(p, 0.9)])];
-}
 
 /** Fração do sorteio da zona que cai nas espécies do conjunto. */
 function share(plan: Plan, ids: Set<SpeciesId>): number {
@@ -129,6 +142,68 @@ function best(plans: Plan[], scores: (plan: Plan) => number[]): Plan {
   }
   return top;
 }
+
+/** O que o jogador faz num passo: segurar (RECOLHER na água, SEGURAR na briga) e tocar um botão. */
+export interface PlayerInput {
+  holding: boolean;
+  button: PescaButton | null;
+}
+
+/** SIMB-02, briga: segura com o peixe visto acima do centro da faixa e solta com ele abaixo. */
+export function holdPolicy(b: CatchBar, delayedFishY: number): boolean {
+  return delayedFishY > b.zoneY + b.zoneH / 2;
+}
+
+/**
+ * SIMB-02: o jogador típico de um arremesso. Chamado a cada passo, antes do `tick`, com o estado da
+ * pesca e o `dt` que vai passar; guarda a força que quer, o peixe que viu e o sorteio da fisgada.
+ * Joga com um dedo só (BOTAO-04): com um peixe seguindo, solta RECOLHER para tocar PUXAR.
+ */
+export function typicalPlayer(rng: Rng, rules: PescaRules): (s: PescaState, dt: number) => PlayerInput {
+  const wanted = 1 - rng.range(0, POWER_ERROR);
+  const idle: PlayerInput = { holding: false, button: null };
+  let clock = 0;
+  let followSeenS: number | null = null; // quando ele viu um peixe começar a seguir
+  let twitchedS = -Infinity;
+  let hooks: boolean | null = null; // sorteio da fisgada do ataque atual
+  const seen: { atS: number; y: number }[] = []; // o peixe na barra a cada passo, para o atraso
+
+  return (s, dt) => {
+    const now = clock;
+    clock += dt;
+    if (s.phase !== 'Lure') followSeenS = null;
+    if (s.phase !== 'Strike') hooks = null;
+    if (s.phase !== 'Fight') seen.length = 0;
+    switch (s.phase) {
+      case 'Aim': // trava a seta quando ela passa pelo meio
+        return { holding: false, button: aimAngleDeg(s.sinceS, rules.sweepS) >= 0 ? 'arremessar' : null };
+      case 'Power': // a barra sobe de 0 a 1 em meio ciclo
+        return { holding: false, button: s.sinceS >= (wanted * rules.sweepS) / 2 - EPS ? 'arremessar' : null };
+      case 'Lure': {
+        if (!s.water.fish.some((f) => f.mode === 'seguindo')) {
+          followSeenS = null;
+          return { holding: true, button: null }; // recolhe direto
+        }
+        followSeenS ??= now;
+        if (now - followSeenS < REACTION_S - EPS || now - twitchedS < TWITCH_EVERY_S - EPS) return idle;
+        twitchedS = now;
+        return { holding: false, button: 'puxar' };
+      }
+      case 'Strike':
+        hooks ??= rng.next() < HOOK_CHANCE;
+        return { holding: false, button: hooks && s.sinceS >= REACTION_S - EPS ? 'puxar' : null };
+      case 'Fight': {
+        seen.push({ atS: now, y: s.bar.fishY });
+        while (seen.length > 1 && seen[1].atS <= now - REACTION_S + EPS) seen.shift();
+        return { holding: holdPolicy(s.bar, seen[0].y), button: null };
+      }
+      default:
+        return idle;
+    }
+  };
+}
+
+const isResult = (s: PescaState): s is PescaResult => s.phase.startsWith('Result_');
 
 export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts: SimOptions = {}): SimResult {
   if (!isUnlocked(start, ep.id)) throw new Error(`Episódio ${ep.id} bloqueado no perfil inicial`);
@@ -195,21 +270,20 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
     p = equip(p, bestOwnedRod().id);
   }
 
-  /** Zonas ao alcance da vara equipada, com cada isca que tem alguma espécie para morder. */
+  /** Pontos liberados para a vara equipada (PONTO-03), com cada isca que tem alguma espécie para morder. */
   function plans(baits: BaitId[]): Plan[] {
-    const reach = maxCastDistance(rodOf(p.rods.equipped).reach);
+    const rod = rodOf(p.rods.equipped);
     const out: Plan[] = [];
     for (const location of ep.locations) {
-      for (const zone of location.zones) {
-        const points = innerPoints(zone.polygon).filter((pt) => Math.hypot(pt.x - ROD_TIP.x, pt.y - ROD_TIP.y) <= reach);
-        if (points.length === 0) continue;
+      for (const { zone, locked } of spotsFor(location, rod, ep.species, p.album)) {
+        if (locked) continue;
         for (const bait of baits) {
           const takers = ep.species.filter((sp) => zone.species.includes(sp.id) && sp.baits.includes(bait));
-          if (takers.length > 0) out.push({ location, bait, points, takers });
+          if (takers.length > 0) out.push({ location, zone, bait, takers });
         }
       }
     }
-    if (out.length === 0) throw new Error(`Nenhuma zona ao alcance aceita as iscas no Episódio ${ep.id}`);
+    if (out.length === 0) throw new Error(`Nenhum ponto liberado aceita as iscas no Episódio ${ep.id}`);
     return out;
   }
 
@@ -242,39 +316,33 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
   /** Campeonato: o que pesa mais, com as iscas que ele já tem. */
   const planTournament = (): Plan => best(plans(p.baits.owned), (pl) => [expected(pl, avgKg)]);
 
-  /** Um arremesso completo; devolve o resultado e quanto tempo levou. */
-  function fish(plan: Plan): { result: FishingState; seconds: number } {
+  /** Um arremesso completo no ponto do plano (SIMB-01); devolve o resultado e quanto tempo levou. */
+  function fish(plan: Plan): { result: PescaResult; seconds: number } {
     p = equip(travel(p, plan.location.id, catalog), plan.bait);
-    const target = plan.points[Math.floor(rng.next() * plan.points.length)];
-    const ctx = { rng, rules, zones: plan.location.zones, species: ep.species };
-    const reaction = rng.range(REACTION_S.min, REACTION_S.max);
-    let s: FishingState = cast({ phase: 'Idle' }, target, { origin: ROD_TIP, rod: rodOf(p.rods.equipped), bait: p.baits.equipped });
-    let t = 0;
-    const step = (holding: boolean) => {
-      s = tick(s, DT, { holding }, ctx);
-      t += DT;
+    const ctx: PescaContext = {
+      rod: rodOf(p.rods.equipped),
+      bait: p.baits.equipped,
+      rng,
+      rules,
+      spot: plan.zone,
+      species: ep.species,
     };
-
-    while (s.phase === 'Flying' || s.phase === 'Waiting') step(false);
-    while (s.phase === 'Bite' && s.sinceBite < reaction) step(false);
-    if (s.phase === 'Bite') s = press(s, ctx);
-
-    // Segura enquanto vê a barra verde ou amarela e solta quando vê vermelha, com o atraso da reação.
-    const lag = Math.round(reaction / DT);
-    const seen: TensionBand[] = [];
-    let fightS = 0;
-    while (s.phase === 'Fight') {
-      if (fightS > MAX_FIGHT_S) throw new Error(`Briga sem fim com ${s.species.id}`);
-      seen.push(tensionBand(s.tension));
-      step((seen.length > lag ? seen[seen.length - 1 - lag] : 'verde') !== 'vermelho');
-      fightS += DT;
+    const player = typicalPlayer(rng, rules);
+    let s = startPesca();
+    let t = 0;
+    while (!isResult(s)) {
+      if (t > MAX_CAST_S) throw new Error(`Arremesso sem fim no ponto ${plan.zone.id}`);
+      const input = player(s, DT);
+      if (input.button) s = press(s, input.button, ctx);
+      s = tick(s, DT, { holding: input.holding }, ctx);
+      t += DT;
     }
     if (s.phase === 'Result_Caught') t += CARD_S;
     return { result: s, seconds: t };
   }
 
   /** Soma o tempo do arremesso e aplica o peixe: R$ (PESCA-17), álbum e recorde, medalhas e metas, e a história. */
-  function land(result: FishingState, castSeconds: number, tournament: boolean) {
+  function land(result: PescaResult, castSeconds: number, tournament: boolean) {
     seconds += castSeconds;
     if (result.phase !== 'Result_Caught') {
       casts.push({ seconds: castSeconds, outcome: result.phase, tournament });

@@ -2,11 +2,15 @@
 // a progressão (PROG-01, PROG-04, PROG-05). Os episódios aqui são de teste, pequenos e previsíveis.
 import { describe, expect, it } from 'vitest';
 import type { Episode, GoalDef, Rod } from '../../content/types';
-import { rulesFor } from '../fishing';
 import { goalId } from '../medals';
 import { newProfile } from '../profile';
-import { FIGHT_START_DISTANCE, REEL_SPEED } from '../tuning';
-import { CARD_S, simulateEpisode, type Achievement } from './typicalPlayer';
+import { CAST_FLIGHT_S, METER_FILL_LOSS_PER_STAMINA, METER_FILL_PER_S, METER_START } from '../tuning';
+import { powerAt } from '../castAim';
+import { barRulesFor, startBar } from '../catchBar';
+import { spawnWater } from '../lure';
+import { rulesFor as pescaRulesFor, type PescaState } from '../pesca';
+import { createRng } from '../rng';
+import { CARD_S, holdPolicy, REACTION_S, simulateEpisode, typicalPlayer, type Achievement } from './typicalPlayer';
 
 const BAMBU: Rod = { id: 'bambu', name: 'Vara de Bambu', price: 0, force: 1, reach: 2, episode: 1 };
 const VARA_BOA: Rod = { id: 'vara-boa', name: 'Vara Boa', price: 5, force: 2, reach: 3, episode: 1 };
@@ -97,10 +101,12 @@ describe('jogador típico simulado', () => {
     expect(r.profile.trophies).toEqual(['trofeu-teste']);
 
     expect(r.minutes * 60).toBeCloseTo(sum(r.casts.map((c) => c.seconds)), 6);
-    // Cada arremesso com peixe inclui a espera (mordida a partir de 3 s), a briga (recolher a linha
-    // toda leva pelo menos distância ÷ velocidade) e a ficha.
-    const minimum = rulesFor('tranquilo').biteS.min + FIGHT_START_DISTANCE / REEL_SPEED + CARD_S;
-    for (const c of r.casts) expect(c.seconds).toBeGreaterThanOrEqual(minimum);
+    // Todo arremesso inclui o voo da isca; o que pega peixe inclui também a briga (encher o medidor
+    // de 30% a 100% com o peixe sempre na faixa, stamina 3, leva pelo menos esse tempo) e a ficha.
+    const fight = (1 - METER_START) / (METER_FILL_PER_S - METER_FILL_LOSS_PER_STAMINA * 3);
+    for (const c of r.casts) {
+      expect(c.seconds).toBeGreaterThanOrEqual(CAST_FLIGHT_S + (c.outcome === 'Result_Caught' ? fight + CARD_S : 0));
+    }
   });
 
   it('a linha do tempo registra objetivo cumprido, item ao alcance do saldo, espécie nova e recorde, com o minuto de cada um', () => {
@@ -182,5 +188,135 @@ describe('jogador típico simulado', () => {
 
     // Mesma semente, mesmo resultado.
     expect(simulateEpisode(ep, newProfile(), 3, { goals })).toEqual(r);
+  });
+});
+
+// ---------- Pescaria nova (pesca-bass, SIMB-01 e SIMB-02) ----------
+
+/** Um quadro do jogo a 30 quadros por segundo. */
+const FRAME = 1 / 30;
+const GEAR = { rod: BAMBU, bait: 'minhoca' };
+const ZONE = testEpisode().locations[0].zones[0];
+const PEIXE = testEpisode().species[0];
+
+/** Isca na água a 8 m com os peixes do ponto; os `followers` primeiros seguem a isca. */
+function lureState(followers: number): Extract<PescaState, { phase: 'Lure' }> {
+  const w = spawnWater(ZONE, [PEIXE], 8, createRng(5), null, 'minhoca');
+  const fish = w.fish.map((f, i) => (i < followers ? { ...f, mode: 'seguindo' as const, attackInS: 4 } : f));
+  return { phase: 'Lure', gear: GEAR, water: { ...w, fish }, notice: null };
+}
+
+/** Raso com um peixe barato e um Fundão (alcance 5) com um peixe valioso, os dois na minhoca. */
+function twoSpotEpisode(rods: Rod[]): Episode {
+  const base = testEpisode(rods);
+  const raso = base.locations[0].zones[0];
+  const fundo = { ...raso, id: 'fundo', name: 'Fundão', minReach: 5, depthM: 4, species: ['dourado'] };
+  const dourado = { ...base.species[0], id: 'dourado', name: 'Dourado', kg: { min: 4, max: 6 }, pricePerKg: 30 };
+  return {
+    ...base,
+    locations: [{ ...base.locations[0], zones: [raso, fundo] }],
+    species: [...base.species, dourado],
+  };
+}
+
+describe('jogador típico com a pescaria nova', () => {
+  it('SIMB-01: joga o Desafio pela pescaria nova; mesma semente, mesma linha do tempo, e outra semente, outra', () => {
+    const a = simulateEpisode(testEpisode(), newProfile(), 42, { difficulty: 'desafio' });
+    expect(simulateEpisode(testEpisode(), newProfile(), 42, { difficulty: 'desafio' })).toEqual(a);
+    expect(simulateEpisode(testEpisode(), newProfile(), 43, { difficulty: 'desafio' }).achievements).not.toEqual(
+      a.achievements,
+    );
+    expect(a.won).toBe(true);
+    for (const c of a.casts) expect(['Result_Caught', 'Result_Escaped', 'Result_Nothing']).toContain(c.outcome);
+  });
+
+  it('SIMB-01, BRIGA-12: no Tranquilo nenhum peixe fisgado escapa', () => {
+    for (const seed of [1, 2, 3]) {
+      const r = simulateEpisode(testEpisode(), newProfile(), seed);
+      expect(r.casts.map((c) => c.outcome)).not.toContain('Result_Escaped');
+    }
+  });
+
+  it('SIMB-02: pesca no melhor ponto liberado; o ponto com cadeado fica de fora', () => {
+    const LONGA: Rod = { id: 'longa', name: 'Vara Longa', price: 0, force: 3, reach: 5, episode: 1 };
+    const caughtIn = (r: ReturnType<typeof simulateEpisode>) => new Set(r.casts.map((c) => c.species).filter(Boolean));
+
+    // Bambu (alcance 2): o Fundão pede alcance 5 e fica com cadeado.
+    const short = simulateEpisode(twoSpotEpisode([BAMBU]), newProfile(), 1);
+    expect(caughtIn(short)).toEqual(new Set(['peixe']));
+
+    // Vara Longa (alcance 5): o Fundão rende mais e o campeonato vai atrás do mais pesado.
+    const owned = { ...newProfile(), rods: { owned: ['bambu', 'longa'], equipped: 'longa' } };
+    const long = simulateEpisode(twoSpotEpisode([BAMBU, LONGA]), owned, 1);
+    expect(caughtIn(long).has('dourado')).toBe(true);
+    expect(long.casts.filter((c) => c.tournament && c.species).every((c) => c.species === 'dourado')).toBe(true);
+  });
+
+  it('SIMB-02: trava a força querendo a barra cheia e erra para menos, até 20%', () => {
+    const rules = pescaRulesFor('desafio');
+    const powers: number[] = [];
+    for (let seed = 1; seed <= 200; seed++) {
+      const player = typicalPlayer(createRng(seed), rules);
+      let s: PescaState = { phase: 'Power', angleDeg: 0, sinceS: 0 };
+      while (player(s, FRAME).button !== 'arremessar') s = { ...s, sinceS: s.sinceS + FRAME };
+      powers.push(powerAt(s.sinceS, rules.sweepS));
+    }
+    expect(Math.min(...powers)).toBeGreaterThanOrEqual(0.8);
+    expect(Math.max(...powers)).toBeLessThanOrEqual(1);
+    expect(Math.min(...powers)).toBeLessThan(0.85); // o erro chega perto dos 20%
+  });
+
+  it('SIMB-02: recolhe direto e, quando um peixe segue a isca, toca PUXAR (um dedo só: sem RECOLHER)', () => {
+    const player = typicalPlayer(createRng(1), pescaRulesFor('tranquilo'));
+    const alone = lureState(0);
+    for (let i = 0; i < 30; i++) expect(player(alone, FRAME)).toEqual({ holding: true, button: null });
+
+    const followed = lureState(1);
+    const inputs = Array.from({ length: 60 }, () => player(followed, FRAME)); // 2 s com o peixe seguindo
+    expect(inputs.some((i) => i.holding)).toBe(false);
+    expect(inputs.filter((i) => i.button === 'puxar').length).toBeGreaterThanOrEqual(1);
+    expect(inputs.every((i) => i.button === null || i.button === 'puxar')).toBe(true);
+  });
+
+  it('SIMB-02: acerta a fisgada em 90% das vezes, dentro da janela', () => {
+    const rules = pescaRulesFor('desafio'); // janela de 2 s
+    const { water } = lureState(1);
+    const rng = createRng(7);
+    const N = 2000;
+    let hooked = 0;
+    for (let n = 0; n < N; n++) {
+      const player = typicalPlayer(rng, rules);
+      for (let i = 0; i * FRAME < rules.hookWindowS!; i++) {
+        const s: PescaState = { phase: 'Strike', gear: GEAR, water, fishId: 1, sinceS: i * FRAME };
+        if (player(s, FRAME).button === 'puxar') {
+          hooked++;
+          break;
+        }
+      }
+    }
+    expect(hooked / N).toBeGreaterThan(0.88);
+    expect(hooked / N).toBeLessThan(0.92);
+  });
+
+  it('SIMB-02: na briga segura com o peixe acima do centro da faixa e solta com ele abaixo', () => {
+    const bar = { ...startBar(PEIXE, BAMBU, barRulesFor('desafio'), createRng(1)), zoneY: 0.2, zoneH: 0.2 }; // centro em 0,3
+    expect(holdPolicy(bar, 0.35)).toBe(true);
+    expect(holdPolicy(bar, 0.25)).toBe(false);
+  });
+
+  it('SIMB-02: na briga reage ao peixe com 0,3 s de atraso', () => {
+    const player = typicalPlayer(createRng(1), pescaRulesFor('desafio'));
+    const { water } = lureState(1);
+    const bar = { ...startBar(PEIXE, BAMBU, barRulesFor('desafio'), createRng(1)), zoneY: 0, zoneH: 0.2 }; // centro em 0,1
+    const fight = (fishY: number): PescaState => ({ phase: 'Fight', gear: GEAR, water, fishId: 1, bar: { ...bar, fishY } });
+
+    // O peixe passa para acima do centro no quadro 30 (1 s) e fica lá.
+    let firstHold: number | null = null;
+    for (let i = 0; i < 60; i++) {
+      const holding = player(fight(i < 30 ? 0.05 : 0.5), FRAME).holding;
+      if (holding && firstHold === null) firstHold = i * FRAME;
+    }
+    expect(firstHold).toBeCloseTo(1.3, 6);
+    expect(REACTION_S).toBe(0.3);
   });
 });

@@ -246,10 +246,10 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Mesma semente, mesma linha do tempo; outra semente, outra
-- [ ] Política: melhor ponto liberado, força com erro de até 20%, recolhe direto, tranco quando um peixe segue, fisgada certa em 90%, briga com `holdPolicy` e 0,3 s de atraso
-- [ ] Testes existentes da simulação continuam passando (linha do tempo, medalhas e metas)
-- [ ] Gate check passes: `npm test`
+- [x] Mesma semente, mesma linha do tempo; outra semente, outra
+- [x] Política: melhor ponto liberado, força com erro de até 20%, recolhe direto, tranco quando um peixe segue, fisgada certa em 90%, briga com `holdPolicy` e 0,3 s de atraso
+- [x] Testes existentes da simulação continuam passando (linha do tempo, medalhas e metas)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

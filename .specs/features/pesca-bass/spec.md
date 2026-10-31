@@ -280,11 +280,11 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | TUTOB-02 | P1: Tutorial da pescaria nova | T4, T7 | Implementing |
 | TUTOB-03 | P1: Tutorial da pescaria nova | T7 | Implementing |
 | TUTOB-04 | P1: Tutorial da pescaria nova | T7 | Implementing |
-| SIMB-01 | P1: Simulação com as regras novas | - | Pending |
-| SIMB-02 | P1: Simulação com as regras novas | - | Pending |
+| SIMB-01 | P1: Simulação com as regras novas | T8 | Implementing |
+| SIMB-02 | P1: Simulação com as regras novas | T8 | Implementing |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 49 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 51 em implementação
 
 ---
 
