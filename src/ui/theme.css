@@ -2191,3 +2191,54 @@ ul {
   grid-template-columns: 1fr 1.4fr;
   gap: 12px;
 }
+
+/* ---------- Barra de força e "Trocar de ponto" (pesca-bass ARREM-02, PONTO-05) ----------
+   Uma fileira logo acima dos botões da pescaria (80 px + 8 px de folga), na metade de baixo.
+   Rótulo creme sobre o marinho (15,0:1); a barra enche em amarelo sobre o marinho elevado. */
+.cast-hud {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(var(--hud-row) + 100px);
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cast-hud__power {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--touch);
+  padding: 6px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.cast-hud__label {
+  font: 700 var(--text) / 1 var(--font-title);
+  color: var(--ink);
+}
+
+.cast-hud__bar {
+  flex: 1;
+  height: 24px;
+  border: 3px solid var(--outline);
+  border-radius: 6px;
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+
+.cast-hud__fill {
+  height: 100%;
+  background: var(--accent);
+}
+
+.cast-hud__leave {
+  flex: none;
+  padding: 8px 12px;
+  line-height: 1.15;
+}

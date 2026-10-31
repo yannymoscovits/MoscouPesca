@@ -356,9 +356,9 @@ T17 → T18
 
 **Done when**:
 
-- [ ] A barra mostra `powerAt` em % na fase `Power`
-- [ ] "Trocar de ponto" chama `leaveSpot` e só aparece em `Aim` e `Power`
-- [ ] Gate check passes: `npm test`
+- [x] A barra mostra `powerAt` em % na fase `Power`
+- [x] "Trocar de ponto" chama `leaveSpot` e só aparece em `Aim` e `Power`
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

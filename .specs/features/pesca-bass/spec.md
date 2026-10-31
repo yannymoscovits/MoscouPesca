@@ -233,10 +233,10 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | PONTO-02 | P1: Escolher o ponto | T5, T12 | Implementing |
 | PONTO-03 | P1: Escolher o ponto | T1, T5, T12 | Implementing |
 | PONTO-04 | P1: Escolher o ponto | T12 | Implementing |
-| PONTO-05 | P1: Escolher o ponto | - | Pending |
+| PONTO-05 | P1: Escolher o ponto | T13 | Implementing |
 | PONTO-06 | P1: Escolher o ponto | T4 | Implementing |
 | ARREM-01 | P1: Mirar e arremessar com força | T2, T9 | Implementing |
-| ARREM-02 | P1: Mirar e arremessar com força | T2, T6 | Implementing |
+| ARREM-02 | P1: Mirar e arremessar com força | T2, T6, T13 | Implementing |
 | ARREM-03 | P1: Mirar e arremessar com força | T2, T6 | Implementing |
 | ARREM-04 | P1: Mirar e arremessar com força | T6 | Implementing |
 | ARREM-05 | P1: Mirar e arremessar com força | T6, T9 | Implementing |
@@ -284,7 +284,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | SIMB-02 | P1: Simulação com as regras novas | - | Pending |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 48 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 49 em implementação
 
 ---
 
