@@ -235,13 +235,13 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | PONTO-04 | P1: Escolher o ponto | - | Pending |
 | PONTO-05 | P1: Escolher o ponto | - | Pending |
 | PONTO-06 | P1: Escolher o ponto | - | Pending |
-| ARREM-01 | P1: Mirar e arremessar com força | - | Pending |
-| ARREM-02 | P1: Mirar e arremessar com força | - | Pending |
-| ARREM-03 | P1: Mirar e arremessar com força | - | Pending |
+| ARREM-01 | P1: Mirar e arremessar com força | T2 | Implementing |
+| ARREM-02 | P1: Mirar e arremessar com força | T2 | Implementing |
+| ARREM-03 | P1: Mirar e arremessar com força | T2 | Implementing |
 | ARREM-04 | P1: Mirar e arremessar com força | - | Pending |
 | ARREM-05 | P1: Mirar e arremessar com força | - | Pending |
-| ARREM-06 | P1: Mirar e arremessar com força | - | Pending |
-| ARREM-07 | Edge Cases | - | Pending |
+| ARREM-06 | P1: Mirar e arremessar com força | T2 | Implementing |
+| ARREM-07 | Edge Cases | T2 | Implementing |
 | ISCA-01 | P1: Trabalhar a isca debaixo d'água | - | Pending |
 | ISCA-02 | P1: Trabalhar a isca debaixo d'água | - | Pending |
 | ISCA-03 | P1: Trabalhar a isca debaixo d'água | - | Pending |
@@ -284,7 +284,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | SIMB-02 | P1: Simulação com as regras novas | - | Pending |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 3 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 8 em implementação
 
 ---
 

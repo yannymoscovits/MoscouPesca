@@ -112,9 +112,9 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Seta vai de -45° a 45° e volta em 2 s (Desafio) e 4 s (Tranquilo); força faz 0 → 1 → 0 no mesmo período
-- [ ] Força 0 dá 30% do alcance máximo; força 1 dá 100%; Bambu com força 1 chega a 10,8 m
-- [ ] Gate check passes: `npm test`
+- [x] Seta vai de -45° a 45° e volta em 2 s (Desafio) e 4 s (Tranquilo); força faz 0 → 1 → 0 no mesmo período
+- [x] Força 0 dá 30% do alcance máximo; força 1 dá 100%; Bambu com força 1 chega a 10,8 m
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

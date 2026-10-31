@@ -18,3 +18,12 @@ export const FATIGUE_S_PER_STAMINA = 1;
 /** Faixa de força e fôlego das espécies que o balanceamento cobre; o conteúdo fica dentro dela. */
 export const FISH_POWER = { min: 1, max: 10 };
 export const FISH_STAMINA = { min: 1, max: 10 };
+
+// ---------- Pescaria nova: arremesso (spec pesca-bass, "Seta da mira" e "Barra de força") ----------
+
+/** Metade do arco da seta: ela balança de -45° (esquerda) a 45° (direita). */
+export const AIM_HALF_ARC_DEG = 45;
+/** Parte do alcance máximo que o arremesso mais fraco já alcança (força 0). */
+export const CAST_MIN_SHARE = 0.3;
+/** Metros por px lógico do alcance da v1: a Vara de Bambu (108 px) chega a 10,8 m. */
+export const M_PER_PX = 0.1;
