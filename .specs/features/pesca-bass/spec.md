@@ -257,7 +257,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | ISCA-13 | P1: Trabalhar a isca debaixo d'água | - | Pending |
 | ISCA-14 | Edge Cases | T4 | Implementing |
 | ISCA-15 | Edge Cases | T4 | Implementing |
-| BRIGA-01 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
+| BRIGA-01 | P1: Brigar com o peixe na barra de captura | T3, T14 | Implementing |
 | BRIGA-02 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
 | BRIGA-03 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
 | BRIGA-04 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
@@ -269,7 +269,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | BRIGA-10 | P1: Brigar com o peixe na barra de captura | T3, T6 | Implementing |
 | BRIGA-11 | P1: Brigar com o peixe na barra de captura | T3, T6 | Implementing |
 | BRIGA-12 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
-| BRIGA-13 | P1: Brigar com o peixe na barra de captura | T10 | Implementing |
+| BRIGA-13 | P1: Brigar com o peixe na barra de captura | T10, T14 | Implementing |
 | BRIGA-14 | Edge Cases | T3 | Implementing |
 | BOTAO-01 | P1: Botões grandes na tela | T11 | Implementing |
 | BOTAO-02 | P1: Botões grandes na tela | T11 | Implementing |

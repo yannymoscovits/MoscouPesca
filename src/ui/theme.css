@@ -2242,3 +2242,72 @@ ul {
   padding: 8px 12px;
   line-height: 1.15;
 }
+
+/* ---------- Barra de captura da briga (pesca-bass BRIGA-01, BRIGA-13) ----------
+   À direita da vista debaixo d'água, do terço de cima até acima da fileira do SEGURAR. Arte própria:
+   trilho marinho com contorno grosso, faixa verde que clareia com o peixe dentro e o medidor ao lado,
+   enchendo de baixo para cima. As posições vêm em % da altura (0 = fundo, 100% = topo). */
+:root {
+  --catch-zone: #2e7d32;
+  --catch-zone-inside: #7ee07f;
+  --catch-meter: #fecd42;
+}
+
+.catch-bar {
+  position: absolute;
+  right: var(--gutter);
+  top: 22%;
+  bottom: calc(var(--hud-row) + 104px);
+  z-index: 25;
+  display: flex;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.catch-bar__track,
+.catch-bar__meter {
+  position: relative;
+  border: 3px solid var(--outline);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  box-shadow: 0 4px 0 var(--outline);
+  overflow: hidden;
+}
+
+.catch-bar__track {
+  width: 56px;
+}
+
+.catch-bar__meter {
+  width: 20px;
+}
+
+.catch-bar__zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--catch-zone);
+  border-top: 2px solid var(--outline);
+  border-bottom: 2px solid var(--outline);
+}
+
+.catch-bar__zone--inside {
+  background: var(--catch-zone-inside);
+}
+
+/* O centro do peixe fica na altura dele. */
+.catch-bar__fish {
+  position: absolute;
+  left: 8px;
+  width: 40px;
+  height: 28px;
+  transform: translateY(50%);
+}
+
+.catch-bar__meter-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--catch-meter);
+}

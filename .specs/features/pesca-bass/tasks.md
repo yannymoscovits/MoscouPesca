@@ -377,9 +377,9 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Faixa com `bottom` e `height` em % de `zoneY` e `zoneH`; peixe em % de `fishY`; medidor em % de `meter`
-- [ ] A faixa muda de cor quando o peixe está dentro
-- [ ] Gate check passes: `npm test`
+- [x] Faixa com `bottom` e `height` em % de `zoneY` e `zoneH`; peixe em % de `fishY`; medidor em % de `meter`
+- [x] A faixa muda de cor quando o peixe está dentro
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
