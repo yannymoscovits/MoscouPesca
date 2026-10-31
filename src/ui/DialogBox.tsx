@@ -7,6 +7,7 @@ import { characters, speakersOf } from '../content/characters';
 import type { Character, CharacterId, DialogLine, Expression } from '../content/types';
 import { resolveAsset } from '../render/sprites';
 import { useServices } from './context';
+import { FishIcon } from './TitleArt';
 
 /** Cores dos retratos provisórios; todas com contraste >= 6:1 com o texto branco. */
 const PORTRAIT_COLORS = [
@@ -75,32 +76,54 @@ export function Portrait({ character, expression, big = false }: { character: Ch
   );
 }
 
-/** Uma fala. O toque em qualquer ponto da caixa (ou da tela em volta) chama `onNext`; nada avança sozinho. */
+/** Triângulo amarelo que pisca na borda de baixo: "toque para continuar". */
+function NextArrow() {
+  return (
+    <svg class="dialog-next" data-continue viewBox="0 0 11 7" shape-rendering="crispEdges" aria-hidden="true">
+      <path fill="var(--outline)" d="M0 0h11v1H0zM0 1h1v1H0zM10 1h1v1h-1zM1 2h1v1H1zM9 2h1v1H9zM2 3h1v1H2zM8 3h1v1H8zM3 4h1v1H3zM7 4h1v1H7zM4 5h1v1H4zM6 5h1v1H6zM5 6h1v1H5z" />
+      <path fill="#ffe27a" d="M1 1h9v1H1z" />
+      <path fill="var(--accent)" d="M2 2h7v1H2zM3 3h5v1H3zM4 4h1v1H4zM6 4h1v1H6z" />
+      <path fill="#d9921f" d="M5 4h1v2H5z" />
+    </svg>
+  );
+}
+
+/**
+ * Uma fala, no quadro dos mockups do usuário (docs/arte/mockups): caixa azul-marinho com borda amarela
+ * em pixel, retrato em cima à esquerda, aba amarela com o peixinho e o nome, e o triângulo piscando.
+ * O toque em qualquer ponto da caixa (ou da tela em volta) chama `onNext`; nada avança sozinho.
+ */
 export function DialogBox({ line, onNext }: { line: DialogLine; onNext: () => void }) {
   const cast = speakersOf(line).map(characterById);
   const expression = line.expression ?? 'normal';
   const narration = cast.length === 0;
   return (
     <div class="dialog-layer" role="dialog" aria-label="Conversa" onClick={onNext}>
-      <div class={`panel dialog-box${narration ? ' dialog-box--narration' : ''}`}>
+      <div class={`dialog-box${narration ? ' dialog-box--narration' : ''}`}>
         {!narration && (
-          <div class="dialog-box__portraits">
-            {cast.map((c) => (
-              <Portrait key={c.id} character={c} expression={expression} />
-            ))}
+          <div class="dialog-box__head">
+            <div class="dialog-box__portraits">
+              {cast.map((c) => (
+                <Portrait key={c.id} character={c} expression={expression} />
+              ))}
+            </div>
+            <p class="dialog-box__tab">
+              <FishIcon class="dialog-box__fish" />
+              <span class="dialog-box__name">{joinNames(cast.map((c) => c.name))}</span>
+            </p>
           </div>
         )}
-        {!narration && <p class="dialog-box__name">{joinNames(cast.map((c) => c.name))}</p>}
         <p class="dialog-box__text">{line.text}</p>
         <p class="dialog-box__hint" aria-hidden="true">
-          Toque para continuar ▸
+          Toque para continuar
         </p>
+        <NextArrow />
       </div>
     </div>
   );
 }
 
-/** HUMOR-01: retrato grande, nome e apelido cômico; fica até o toque. */
+/** HUMOR-01: retrato grande, nome e apelido cômico, no mesmo quadro das falas; fica até o toque. */
 export function CharacterIntroCard({ character, onClose }: { character: Character; onClose: () => void }) {
   return (
     <div
@@ -109,12 +132,13 @@ export function CharacterIntroCard({ character, onClose }: { character: Characte
       aria-label={`Apresentação: ${character.name}`}
       onClick={onClose}
     >
-      <div class="intro-card__burst">
+      <div class="dialog-box intro-card__burst">
         <Portrait character={character} expression="normal" big />
         <p class="intro-card__name">{character.name.toUpperCase()}</p>
         <p class="intro-card__epithet">{character.epithet}</p>
+        <p class="dialog-box__hint">Toque para continuar</p>
+        <NextArrow />
       </div>
-      <p class="intro-card__hint">Toque para continuar</p>
     </div>
   );
 }

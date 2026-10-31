@@ -1411,11 +1411,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os e2e existentes de HIST-02, HIST-03, HUMOR-01, HUMOR-02, narração e fala conjunta continuam passando sem mudança nas asserções
-- [ ] e2e: a aba mostra o nome de quem fala, o triângulo de continuar aparece e o retrato traz `data-expression`
-- [ ] e2e: textos com no mínimo 18 px, contraste de no mínimo 4,5:1 e o quadro inteiro tocável para avançar
-- [ ] Print do Pixel 7 comparado com os mockups, salvo em `docs/arte/mockups/dialogo-implementado.png`
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] Os e2e existentes de HIST-02, HIST-03, HUMOR-01, HUMOR-02, narração e fala conjunta continuam passando sem mudança nas asserções
+- [x] e2e: a aba mostra o nome de quem fala, o triângulo de continuar aparece e o retrato traz `data-expression`
+- [x] e2e: textos com no mínimo 18 px, contraste de no mínimo 4,5:1 e o quadro inteiro tocável para avançar
+- [x] Print do Pixel 7 comparado com os mockups, salvo em `docs/arte/mockups/dialogo-implementado.png`
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

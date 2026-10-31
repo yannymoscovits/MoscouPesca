@@ -62,6 +62,15 @@ export function LogoFish() {
   );
 }
 
+/** O peixe do logo sem as bolhas (as 25 primeiras colunas), para ícones pequenos como a aba do diálogo. */
+export function FishIcon({ class: className }: { class?: string }) {
+  return (
+    <svg class={className} viewBox={`0 0 25 ${FISH.length}`} shape-rendering="crispEdges" aria-hidden="true">
+      <Pixels rows={FISH} colors={FISH_COLORS} />
+    </svg>
+  );
+}
+
 // ---------- Fundo do mar ----------
 
 // Cena de 103 × 229 pixels grossos (4 px CSS num celular de 412 px), cortada para cobrir a tela.

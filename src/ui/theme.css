@@ -961,40 +961,99 @@ ul {
   cursor: pointer;
 }
 
+/* Quadro dos mockups (docs/arte/mockups/dialogo.png e tela-de-pesca.png): caixa azul-marinho com borda
+   amarela em pixels de 3 px, cantos chanfrados e pontinhos amarelos. Creme sobre o marinho: 13,2:1. */
 .dialog-box {
+  position: relative;
   display: grid;
   gap: 6px;
+  padding: 2px 6px 10px;
+  border: 24px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 17 17' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M3 0h11v1H3zM2 1h1v1H2zM14 1h1v1H14zM1 2h1v1H1zM15 2h1v1H15zM0 3h1v11H0zM16 3h1v11H16zM5 4h7v1H5zM4 5h1v7H4zM12 5h1v7H12zM5 12h7v1H5zM1 14h1v1H1zM15 14h1v1H15zM2 15h1v1H2zM14 15h1v1H14zM3 16h11v1H3z'/%3E%3Cpath fill='%23ffe27a' d='M3 1h11v1H3zM2 2h1v1H2zM1 3h1v11H1z'/%3E%3Cpath fill='%23fecd42' d='M3 2h12v1H3zM2 3h13v1H2zM2 4h3v1H2zM12 4h3v1H12zM2 5h2v7H2zM13 5h2v7H13zM2 12h3v1H2zM12 12h3v1H12zM2 13h13v1H2zM2 14h12v1H2zM7 6h1v1H7zM9 6h1v1H9zM6 7h1v1H6zM10 7h1v1H10zM6 9h1v1H6zM10 9h1v1H10zM7 10h1v1H7zM9 10h1v1H9z'/%3E%3Cpath fill='%23d9921f' d='M15 3h1v11H15zM14 14h1v1H14zM3 15h11v1H3z'/%3E%3Cpath fill='%230a2a5e' d='M5 5h7v1H5zM5 6h2v1H5zM8 6h1v1H8zM10 6h2v1H10zM5 7h1v1H5zM7 7h3v1H7zM11 7h1v1H11zM5 8h7v1H5zM5 9h1v1H5zM7 9h3v1H7zM11 9h1v1H11zM5 10h2v1H5zM8 10h1v1H8zM10 10h2v1H10zM5 11h7v1H5z'/%3E%3C/svg%3E")
+    8 / 24px stretch;
+  background: padding-box #0a2a5e;
+  color: var(--ink);
+}
+
+/* Retrato em cima, à esquerda, saltando para fora da caixa; a aba com o nome fica sobre a borda. */
+.dialog-box__head {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin: -68px 0 0 -16px;
 }
 
 .dialog-box__portraits {
   display: flex;
-  gap: 12px;
-  margin-top: -64px; /* os retratos saltam para fora da caixa, como num gibi */
+  gap: 8px;
 }
 
-.dialog-box__name {
-  font: 700 24px / 1.2 var(--font-title);
+.dialog-box__head .portrait {
+  width: 84px;
+  height: 84px;
 }
 
+.dialog-box__head .portrait__initials {
+  font-size: 32px;
+}
+
+.dialog-box__head .portrait__face {
+  font-size: var(--text-min);
+}
+
+/* Aba amarela com o peixinho do logo e o nome: tinta escura sobre amarelo, 11,8:1. */
+.dialog-box__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  padding: 0 2px;
+  border: 12px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 9 9' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M2 0h5v1H2zM1 1h1v1H1zM7 1h1v1H7zM0 2h1v6H0zM8 2h1v6H8zM0 8h9v1H0z'/%3E%3Cpath fill='%23ffe27a' d='M2 1h5v1H2zM1 2h1v5H1z'/%3E%3Cpath fill='%23fecd42' d='M2 2h5v5H2zM1 7h1v1H1z'/%3E%3Cpath fill='%23d9921f' d='M7 2h1v5H7zM2 7h6v1H2z'/%3E%3C/svg%3E")
+    4 / 12px stretch;
+  background: padding-box var(--accent);
+  color: var(--accent-ink);
+  font: 700 22px / 1 var(--font-title);
+}
+
+.dialog-box__fish {
+  flex: none;
+  width: 35px;
+  height: 24px;
+}
+
+/* "Toque para continuar": texto secundário sobre o marinho, 8,1:1. O triângulo fica na borda de baixo. */
 .dialog-box__hint {
   justify-self: end;
+  margin-right: 36px;
   font-size: var(--text-min);
   font-weight: 700;
-  animation: cutucar 1.2s ease-in-out infinite;
+  color: var(--ink-soft);
 }
 
-/* Chama o toque sem apagar o texto (o contraste fica sempre >= 4,5:1). */
-@keyframes cutucar {
-  50% {
-    transform: translateX(6px);
+.dialog-next {
+  position: absolute;
+  right: 18px;
+  bottom: -33px;
+  width: 33px;
+  height: 21px;
+}
+
+/* O triângulo pisca; o texto nunca some (o contraste fica sempre >= 4,5:1). */
+@media (prefers-reduced-motion: no-preference) {
+  .dialog-next {
+    animation: piscar-triangulo 1s steps(1) infinite;
   }
 }
 
-/* Narração: sem retrato, em itálico, num papel azul-escuro que "ondula". */
+@keyframes piscar-triangulo {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Narração: sem retrato nem aba, em itálico, num quadro que "ondula". */
 .dialog-box--narration {
-  background: var(--bg-raised);
-  color: var(--ink);
-  border-color: var(--ink);
   text-align: center;
   animation: ondular 2.4s ease-in-out infinite;
 }
@@ -1054,41 +1113,37 @@ ul {
   font-size: 32px;
 }
 
-/* Cartão de apresentação: estouro de cor, retrato grande, nome em caixa alta e o apelido. */
+/* Cartão de apresentação: o mesmo quadro das falas, com um clarão atrás, o retrato grande saltando
+   para fora, o nome em caixa alta e o apelido. Amarelo sobre o marinho: 9,3:1. */
 .intro-card {
   z-index: 26;
   justify-content: center;
   align-items: center;
-  gap: 24px;
-  background: var(--bg);
+  background: radial-gradient(circle at 50% 42%, #164a8c 0, var(--bg) 62%);
 }
 
 .intro-card__burst {
-  display: grid;
+  align-self: stretch;
   justify-items: center;
-  gap: 12px;
-  padding: 28px 20px;
-  border: 4px solid var(--outline);
-  border-radius: 18px;
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: 0 8px 0 var(--outline);
+  gap: 10px;
+  margin-top: 96px;
+  padding: 0 6px 12px;
   text-align: center;
-  transform: rotate(-3deg);
+  transform: rotate(-2deg);
   animation: entrar 0.35s ease-out;
+}
+
+.intro-card__burst .portrait {
+  margin-top: -96px;
 }
 
 .intro-card__name {
   font: 700 44px / 1.05 var(--font-title);
+  color: var(--accent);
 }
 
 .intro-card__epithet {
   font: italic 700 24px / 1.2 var(--font-body);
-}
-
-.intro-card__hint {
-  font-weight: 700;
-  animation: cutucar 1.2s ease-in-out infinite;
 }
 
 @keyframes entrar {
