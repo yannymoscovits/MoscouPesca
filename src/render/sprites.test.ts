@@ -57,6 +57,30 @@ describe('createSprite', () => {
     expect(ctx.fillRect).toHaveBeenCalledWith(0, 0, 8, 8);
   });
 
+  it('com a forma provisória: sem a imagem, desenha a forma na caixa, e não o retângulo', () => {
+    const fallback = vi.fn();
+    const sprite = createSprite(null, { color: '#00f', fallback });
+    const ctx = fakeCtx();
+
+    sprite.draw(ctx as unknown as CanvasRenderingContext2D, 5, 6, 24, 29, 0.5);
+
+    expect(fallback).toHaveBeenCalledWith(ctx, 5, 6, 24, 29, 0.5);
+    expect(ctx.fillRect).not.toHaveBeenCalled();
+  });
+
+  it('com a forma provisória: com a imagem carregada, desenha a imagem e não a forma', async () => {
+    const sheet = { naturalWidth: 96, naturalHeight: 29 } as HTMLImageElement;
+    const fallback = vi.fn();
+    const sprite = createSprite('/adilson.png', { frames: 4, color: '#00f', fallback }, async () => sheet);
+    await flush();
+    const ctx = fakeCtx();
+
+    sprite.draw(ctx as unknown as CanvasRenderingContext2D, 5, 6, 24, 29, 0);
+
+    expect(ctx.drawImage).toHaveBeenCalledWith(sheet, 0, 0, 24, 29, 5, 6, 24, 29);
+    expect(fallback).not.toHaveBeenCalled();
+  });
+
   it('arte que não existe no build: retângulo, sem tentar baixar', () => {
     const load = vi.fn(async () => ({}) as HTMLImageElement);
     const sprite = createSprite(resolveAsset('src/assets/nao-existe.png'), { color: '#00f' }, load);

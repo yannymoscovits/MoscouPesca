@@ -1458,11 +1458,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Teste de unidade: para cada local registrado, o renderizador escolhe a paleta da água e o tipo de lugar (píer, barranco, ponte, pedras, barragem, barco); cada estado da pesca desenha seus elementos (isca no voo, respingo ao cair, sombra do peixe na espera e na briga, "!" na mordida)
-- [ ] e2e: prints do Pixel 7 em espera, mordida e briga, salvos em `docs/arte/mockups/pesca-depois-*.png`
-- [ ] Desenho a no máximo 30 qps, sem custo extra na pausa; quando o sprite do PixelLab existir, o renderizador usa o sprite no lugar da forma provisória
-- [ ] Os e2e existentes da pescaria continuam passando sem mudança nas asserções
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] Teste de unidade: para cada local registrado, o renderizador escolhe a paleta da água e o tipo de lugar (píer, barranco, ponte, pedras, barragem, barco); cada estado da pesca desenha seus elementos (isca no voo, respingo ao cair, sombra do peixe na espera e na briga, "!" na mordida)
+- [x] e2e: prints do Pixel 7 em espera, mordida e briga, salvos em `docs/arte/mockups/pesca-depois-*.png`
+- [x] Desenho a no máximo 30 qps, sem custo extra na pausa; quando o sprite do PixelLab existir, o renderizador usa o sprite no lugar da forma provisória
+- [x] Os e2e existentes da pescaria continuam passando sem mudança nas asserções
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

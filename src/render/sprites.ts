@@ -1,5 +1,6 @@
 // Folhas de sprite (design.md, "FishingRenderer"): carrega, escolhe o quadro pelo tempo e, sem a
-// imagem, desenha um retângulo colorido para o jogo seguir jogável ("Sprite não carregou").
+// imagem, desenha a forma provisória (ou um retângulo colorido) para o jogo seguir jogável
+// ("Sprite não carregou").
 
 /** Arte embutida no build, por caminho do conteúdo (ex.: 'src/assets/fish/ep1/tilapia.png'). */
 const bundled = import.meta.glob<string>('/src/assets/**/*.png', { eager: true, query: '?url', import: 'default' });
@@ -14,10 +15,14 @@ export function frameAt(t: number, frames: number, fps: number): number {
   return Math.floor(t * fps) % frames;
 }
 
+/** Desenho no lugar da imagem que falta, na mesma caixa. */
+export type Fallback = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, t: number) => void;
+
 export interface SheetSpec {
   frames?: number; // quadros lado a lado na horizontal; padrão 1
   fps?: number; // padrão 0 (parado)
   color: string; // cor do retângulo quando a imagem falta
+  fallback?: Fallback; // forma provisória quando a imagem falta; no lugar do retângulo
 }
 
 export interface Sprite {
@@ -34,7 +39,7 @@ export const loadImage: ImageLoader = (url) =>
     img.src = url;
   });
 
-/** `url` null: a arte não está no build e o retângulo fica no lugar. */
+/** `url` null: a arte não está no build e a forma provisória (ou o retângulo) fica no lugar. */
 export function createSprite(url: string | null, spec: SheetSpec, load: ImageLoader = loadImage): Sprite {
   const frames = spec.frames ?? 1;
   const fps = spec.fps ?? 0;
@@ -49,6 +54,7 @@ export function createSprite(url: string | null, spec: SheetSpec, load: ImageLoa
   return {
     draw(ctx, x, y, w, h, t) {
       if (!image) {
+        if (spec.fallback) return spec.fallback(ctx, x, y, w, h, t);
         ctx.fillStyle = spec.color;
         ctx.fillRect(x, y, w, h);
         return;
