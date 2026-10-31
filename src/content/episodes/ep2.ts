@@ -51,6 +51,7 @@ const rioSpecies = withMedals([
     rarity: 6,
     description: 'A mesma braveza de Guanambi, agora com vista pro mar.',
     rare: false,
+    fightStyle: 'saltador',
   },
   {
     id: 'tainha',
@@ -106,6 +107,7 @@ const ponteSpecies = withMedals([
     rarity: 5,
     description: 'O dono da Ponte da Cetrel. Ataca rápido e foge pras pedras.',
     rare: false,
+    fightStyle: 'saltador',
   },
   {
     id: 'pescada-amarela',
@@ -179,18 +181,30 @@ const rioJacuipe = {
   background: 'src/assets/scene/rio-jacuipe.png',
   zones: [
     // "Robalo-peva gosta de beirada de mangue. Joga rente, sem medo." (cena 4)
+    // Alcance mínimo pela profundidade: o mangue é o raso, a beira o meio e a correnteza o fundo.
     {
       id: 'mangue',
       polygon: rect(0, 130, 45, 360),
       species: ['robalo-peva', 'traira-jacuipe', 'carapeba'],
       depthM: 1,
+      name: 'Beirada do mangue',
+      minReach: 0,
     },
-    { id: 'beira', polygon: rect(45, 250, 180, 360), species: ['tilapia-jacuipe', 'carapeba', 'tainha'], depthM: 1.5 },
+    {
+      id: 'beira',
+      polygon: rect(45, 250, 180, 360),
+      species: ['tilapia-jacuipe', 'carapeba', 'tainha'],
+      depthM: 1.5,
+      name: 'Beira dos coqueiros',
+      minReach: 3,
+    },
     {
       id: 'correnteza',
       polygon: rect(45, 130, 180, 250),
       species: ['tainha', 'tilapia-jacuipe', 'traira-jacuipe', 'robalo-peva'],
       depthM: 3,
+      name: 'Correnteza',
+      minReach: 5,
     },
   ],
 } satisfies Location;
@@ -200,18 +214,29 @@ const ponteDaCetrel = {
   name: 'Ponte da Cetrel',
   background: 'src/assets/scene/ponte-da-cetrel.png',
   zones: [
-    { id: 'pedras', polygon: rect(0, 250, 180, 360), species: ['baiacu', 'vermelho', 'robalo-flecha'], depthM: 2 },
+    {
+      id: 'pedras',
+      polygon: rect(0, 250, 180, 360),
+      species: ['baiacu', 'vermelho', 'robalo-flecha'],
+      depthM: 2,
+      name: 'Pedras da ponte',
+      minReach: 0,
+    },
     {
       id: 'pilares',
       polygon: rect(0, 115, 180, 250),
       species: ['robalo-flecha', 'pescada-amarela', 'vermelho', 'baiacu'],
       depthM: 6,
+      name: 'Pé dos pilares',
+      minReach: 3,
     },
     {
       id: 'canal',
       polygon: rect(0, 0, 180, 115),
       species: ['camurupim', 'pescada-amarela', 'robalo-flecha'],
       depthM: 12,
+      name: 'Canal da maré',
+      minReach: 5,
     },
   ],
 } satisfies Location;

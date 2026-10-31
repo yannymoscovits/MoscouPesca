@@ -36,7 +36,11 @@ export interface Species {
   rare: boolean; // espécie rara do local (PROG-03)
   valueLabel?: string; // texto da ficha no lugar do R$ (ex.: "inestimável" na Piranha Lavínia); o saldo recebe o valor normal
   medals: MedalLimits; // kg mínimos de cada medalha (MEDAL-01)
+  fightStyle?: FightStyle; // jeito na barra de captura; sem campo, vale o padrão pela força (BRIGA-06)
 }
+
+/** Jeito do peixe na briga: destinos perto, longe ou na metade de baixo da barra (BRIGA-06). */
+export type FightStyle = 'calmo' | 'saltador' | 'afundador';
 
 export type MedalTier = 'bronze' | 'prata' | 'ouro';
 export type MedalLimits = Record<MedalTier, number>;
@@ -74,6 +78,8 @@ export interface Zone {
   // SPEC_DEVIATION: `depthM` não existe no design.
   // Reason: o medidor de Profundidade da pescaria (T80) mostra a profundidade da zona onde a isca está.
   depthM: number; // profundidade da zona, em metros
+  name: string; // nome do ponto no pesqueiro (PONTO-01)
+  minReach: number; // alcance mínimo da vara para pescar no ponto (PONTO-03)
 }
 
 export type Expression = 'normal' | 'rindo' | 'bravo' | 'chocado';

@@ -50,6 +50,7 @@ const species = withMedals([
     rarity: 6,
     description: 'Cara de brava, dente de brava, é brava mesmo. Cuidado com o dedo.',
     rare: false,
+    fightStyle: 'saltador',
   },
   {
     id: 'curimata',
@@ -89,6 +90,7 @@ const species = withMedals([
     rarity: 4,
     description: 'Gordinho, simpático e mais forte do que parece.',
     rare: false,
+    fightStyle: 'afundador',
   },
   {
     id: 'tucunare',
@@ -115,6 +117,7 @@ const species = withMedals([
     rarity: 1,
     description: 'Primo do gigante de 90 quilos que saiu em Ceraíma. Ninguém acredita até ver.',
     rare: true,
+    fightStyle: 'afundador',
   },
   {
     id: 'piranha-lavinia',
@@ -151,18 +154,24 @@ const pocoDoMagro = {
       polygon: band(250, 360),
       species: ['tilapia', 'piau', 'traira', 'curimata', 'piranha-lavinia'],
       depthM: 1.5,
+      name: 'Beira do píer',
+      minReach: 0,
     },
     {
       id: 'meio',
       polygon: band(150, 250),
       species: ['tilapia', 'traira', 'tambaqui', 'tucunare', 'piranha-lavinia'],
       depthM: 4,
+      name: 'Pedral',
+      minReach: 3,
     },
     {
       id: 'fundo',
       polygon: band(0, 150),
       species: ['curimata', 'traira', 'tambaqui', 'tucunare', 'pirarucu-lendario'],
       depthM: 9,
+      name: 'Fundão',
+      minReach: 5,
     },
   ],
 } satisfies Location;

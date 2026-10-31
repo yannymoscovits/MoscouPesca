@@ -229,9 +229,9 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| PONTO-01 | P1: Escolher o ponto | - | Pending |
+| PONTO-01 | P1: Escolher o ponto | T1 | Implementing |
 | PONTO-02 | P1: Escolher o ponto | - | Pending |
-| PONTO-03 | P1: Escolher o ponto | - | Pending |
+| PONTO-03 | P1: Escolher o ponto | T1 | Implementing |
 | PONTO-04 | P1: Escolher o ponto | - | Pending |
 | PONTO-05 | P1: Escolher o ponto | - | Pending |
 | PONTO-06 | P1: Escolher o ponto | - | Pending |
@@ -262,7 +262,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | BRIGA-03 | P1: Brigar com o peixe na barra de captura | - | Pending |
 | BRIGA-04 | P1: Brigar com o peixe na barra de captura | - | Pending |
 | BRIGA-05 | P1: Brigar com o peixe na barra de captura | - | Pending |
-| BRIGA-06 | P1: Brigar com o peixe na barra de captura | - | Pending |
+| BRIGA-06 | P1: Brigar com o peixe na barra de captura | T1 | Implementing |
 | BRIGA-07 | P1: Brigar com o peixe na barra de captura | - | Pending |
 | BRIGA-08 | P1: Brigar com o peixe na barra de captura | - | Pending |
 | BRIGA-09 | P1: Brigar com o peixe na barra de captura | - | Pending |
@@ -284,7 +284,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | SIMB-02 | P1: Simulação com as regras novas | - | Pending |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, 0 mapped to tasks, 54 unmapped ⚠️ (mapeamento no tasks.md)
+**Coverage:** 54 total, todos mapeados no tasks.md; 3 em implementação
 
 ---
 

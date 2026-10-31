@@ -101,6 +101,30 @@ describe('medalhas e metas', () => {
   });
 });
 
+describe('jeito dos peixes na briga', () => {
+  it('BRIGA-06: traíras e robalo-flecha saltam; tambaqui, pirarucu e garoupa afundam; o Marlim-azul salta', () => {
+    const all = episodes.flatMap((ep) => ep.species);
+    const styleOf = (id: SpeciesId) => all.find((sp) => sp.id === id)?.fightStyle;
+    expect({
+      traira: styleOf('traira'),
+      'traira-jacuipe': styleOf('traira-jacuipe'),
+      'robalo-flecha': styleOf('robalo-flecha'),
+      tambaqui: styleOf('tambaqui'),
+      'pirarucu-lendario': styleOf('pirarucu-lendario'),
+      garoupa: styleOf('garoupa'),
+      'marlim-azul': styleOf('marlim-azul'),
+    }).toEqual({
+      traira: 'saltador',
+      'traira-jacuipe': 'saltador',
+      'robalo-flecha': 'saltador',
+      tambaqui: 'afundador',
+      'pirarucu-lendario': 'afundador',
+      garoupa: 'afundador',
+      'marlim-azul': 'saltador',
+    });
+  });
+});
+
 describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, ep) => {
   const zones = () => ep.locations.flatMap((l) => l.zones);
 
@@ -161,6 +185,26 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
 
   it('T80: toda zona tem profundidade (depthM) maior que zero, para o medidor de Profundidade', () => {
     for (const zone of zones()) expect(zone.depthM, zone.id).toBeGreaterThan(0);
+  });
+
+  it('PONTO-01, PONTO-03: todo local tem 3 pontos com nome próprio; alcance mínimo de 0 a 10, raso 0, meio 3 e fundo 5', () => {
+    for (const loc of ep.locations) {
+      expect(loc.zones, loc.id).toHaveLength(3);
+      for (const zone of loc.zones) {
+        expect(zone.name.trim(), zone.id).not.toBe('');
+        expect(zone.minReach, zone.id).toBeGreaterThanOrEqual(0);
+        expect(zone.minReach, zone.id).toBeLessThanOrEqual(10);
+      }
+      expect(new Set(loc.zones.map((z) => z.name)).size, loc.id).toBe(3);
+      const shallowFirst = [...loc.zones].sort((a, b) => a.depthM - b.depthM);
+      expect(shallowFirst.map((z) => z.minReach), loc.id).toEqual([0, 3, 5]);
+    }
+  });
+
+  it('BRIGA-06: todo jeito de peixe (fightStyle) é calmo, saltador ou afundador', () => {
+    for (const sp of ep.species) {
+      if (sp.fightStyle !== undefined) expect(['calmo', 'saltador', 'afundador'], sp.id).toContain(sp.fightStyle);
+    }
   });
 
   it('EQUIP-02: toda isca citada pelas espécies existe neste episódio ou num anterior', () => {

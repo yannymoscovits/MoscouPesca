@@ -92,6 +92,7 @@ const species = withMedals([
     rarity: 1,
     description: 'O chefão do mar. Luta até o fim, e por isso merece voltar pra água.',
     rare: true,
+    fightStyle: 'saltador',
   },
 ] satisfies Omit<Species, 'medals'>[]);
 
@@ -109,14 +110,30 @@ const altoMar = {
   name: 'Alto-mar da Bahia',
   background: 'src/assets/scene/alto-mar-da-bahia.png',
   zones: [
-    { id: 'costado', polygon: band(250, 360), species: ['cavala', 'dourado-do-mar'], depthM: 20 },
+    {
+      id: 'costado',
+      polygon: band(250, 360),
+      species: ['cavala', 'dourado-do-mar'],
+      depthM: 20,
+      name: 'Costado do barco',
+      minReach: 0,
+    },
     {
       id: 'mar-aberto',
       polygon: band(130, 250),
       species: ['cavala', 'dourado-do-mar', 'olho-de-boi', 'atum'],
       depthM: 60,
+      name: 'Mar aberto',
+      minReach: 3,
     },
-    { id: 'azul-profundo', polygon: band(0, 130), species: ['olho-de-boi', 'atum', 'marlim-azul'], depthM: 200 },
+    {
+      id: 'azul-profundo',
+      polygon: band(0, 130),
+      species: ['olho-de-boi', 'atum', 'marlim-azul'],
+      depthM: 200,
+      name: 'Azul profundo',
+      minReach: 5,
+    },
   ],
 } satisfies Location;
 

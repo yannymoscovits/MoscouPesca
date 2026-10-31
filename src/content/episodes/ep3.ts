@@ -102,6 +102,7 @@ const species = withMedals([
     rarity: 1,
     description: 'A rainha da pedra. Só aparece pra quem tem paciência.',
     rare: true,
+    fightStyle: 'afundador',
   },
 ] satisfies Omit<Species, 'medals'>[]);
 
@@ -120,9 +121,30 @@ const veraCruz = {
   name: 'Vera Cruz, Ilha de Itaparica',
   background: 'src/assets/scene/vera-cruz.png',
   zones: [
-    { id: 'praia', polygon: band(250, 360), species: ['guaricema', 'agulhinha', 'budiao'], depthM: 1.5 },
-    { id: 'baia', polygon: band(90, 250), species: ['xareu', 'cioba', 'budiao', 'guaricema'], depthM: 7 },
-    { id: 'pedra', polygon: band(0, 90), species: ['garoupa', 'cioba', 'xareu'], depthM: 15 },
+    {
+      id: 'praia',
+      polygon: band(250, 360),
+      species: ['guaricema', 'agulhinha', 'budiao'],
+      depthM: 1.5,
+      name: 'Beira da praia',
+      minReach: 0,
+    },
+    {
+      id: 'baia',
+      polygon: band(90, 250),
+      species: ['xareu', 'cioba', 'budiao', 'guaricema'],
+      depthM: 7,
+      name: 'Meio da baía',
+      minReach: 3,
+    },
+    {
+      id: 'pedra',
+      polygon: band(0, 90),
+      species: ['garoupa', 'cioba', 'xareu'],
+      depthM: 15,
+      name: 'Pedra da garoupa',
+      minReach: 5,
+    },
   ],
 } satisfies Location;
 

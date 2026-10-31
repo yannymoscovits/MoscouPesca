@@ -119,6 +119,8 @@ const POND: Zone = {
   ],
   species: ['tilapia', 'dourado'],
   depthM: 1,
+  name: 'Represa',
+  minReach: 0,
 };
 const SPOT: Point = { x: 100, y: 300 }; // dentro da represa e do alcance
 const OUTSIDE: Point = { x: 250, y: 380 }; // dentro do alcance, fora de qualquer zona

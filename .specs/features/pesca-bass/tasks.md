@@ -91,9 +91,9 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Teste de conteúdo: todo ponto tem nome não vazio e `minReach` entre 0 e 10; todo `fightStyle` é um dos 3 valores
-- [ ] Gate check passes: `npm test`
-- [ ] Contagem de testes só sobe (base: 422 unitários)
+- [x] Teste de conteúdo: todo ponto tem nome não vazio e `minReach` entre 0 e 10; todo `fightStyle` é um dos 3 valores
+- [x] Gate check passes: `npm test`
+- [x] Contagem de testes só sobe (base: 422 unitários)
 
 **Tests**: unit
 **Gate**: quick

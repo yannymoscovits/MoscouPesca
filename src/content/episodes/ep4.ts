@@ -122,18 +122,29 @@ const parqueDosVentos = {
   name: 'Parque dos Ventos',
   background: 'src/assets/scene/parque-dos-ventos.png',
   zones: [
-    { id: 'beira', polygon: band(250, 360), species: ['peixe-voador', 'tilapia-helice'], depthM: 1.5 },
+    {
+      id: 'beira',
+      polygon: band(250, 360),
+      species: ['peixe-voador', 'tilapia-helice'],
+      depthM: 1.5,
+      name: 'Beira do açude',
+      minReach: 0,
+    },
     {
       id: 'acude',
       polygon: band(130, 250),
       species: ['peixe-voador', 'tilapia-helice', 'traira-pipa', 'pacu-planador'],
       depthM: 5,
+      name: 'Meio do açude',
+      minReach: 3,
     },
     {
       id: 'torres',
       polygon: band(0, 130),
       species: ['lambari-rajada', 'traira-pipa', 'pacu-planador', 'dourado-dos-ventos'],
       depthM: 10,
+      name: 'Pé das torres',
+      minReach: 5,
     },
   ],
 } satisfies Location;

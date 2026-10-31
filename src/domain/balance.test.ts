@@ -46,6 +46,8 @@ const LAKE: Zone = {
   ],
   species: FISH.map((f) => f.id),
   depthM: 1,
+  name: 'Lago',
+  minReach: 0,
 };
 
 const RODS: Rod[] = steps(1, 10, 10).map((force) => ({
