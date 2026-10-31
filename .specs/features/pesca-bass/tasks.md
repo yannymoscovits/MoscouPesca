@@ -334,10 +334,10 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Mostra os 3 pontos com nome; tocar destaca e lista espécies com nome ou "???"
-- [ ] Ponto bloqueado: cadeado, frase do alcance e "Pescar aqui" desabilitado
-- [ ] "Pescar aqui" chama `chooseSpot` com o ponto
-- [ ] Gate check passes: `npm test`
+- [x] Mostra os 3 pontos com nome; tocar destaca e lista espécies com nome ou "???"
+- [x] Ponto bloqueado: cadeado, frase do alcance e "Pescar aqui" desabilitado
+- [x] "Pescar aqui" chama `chooseSpot` com o ponto
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

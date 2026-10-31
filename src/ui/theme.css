@@ -2111,3 +2111,83 @@ ul {
     background: #ffffff;
   }
 }
+
+/* ---------- Pesqueiro (pesca-bass PONTO-01 a PONTO-04) ----------
+   A cena de cima atrás (a .stage ancora o canvas embaixo) e um botão por ponto no centro dele.
+   Ponto: azul com texto branco (5,8:1); tocado, amarelo com tinta escura (11,8:1); com cadeado,
+   marinho com creme e borda tracejada (10,3:1). O nome quebra em duas linhas, até 40% da tela. */
+.spots {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.spots__spot {
+  position: absolute;
+  z-index: 10;
+  max-width: 40%;
+  padding: 8px 14px;
+  line-height: 1.15;
+  background: var(--secondary);
+  color: var(--secondary-ink);
+  transform: translate(-50%, 50%);
+}
+
+.spots__spot:active {
+  transform: translate(-50%, calc(50% + 3px));
+}
+
+.spots__spot--locked {
+  background: var(--bg-raised);
+  color: var(--ink);
+  border-style: dashed;
+  border-color: var(--ink-soft);
+}
+
+.spots__spot[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 3px solid var(--outline);
+  outline: 3px solid var(--ink);
+}
+
+.spots__lock-icon {
+  margin-right: 6px;
+}
+
+/* O ponto tocado: nome, peixes e cadeado num papel, logo acima da fileira do HUD. */
+.spots__sheet {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: var(--hud-row);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+  box-shadow: 0 4px 0 var(--outline);
+}
+
+.spots__species {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.spots__lock {
+  font-weight: 700;
+}
+
+.spots__actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 12px;
+}
