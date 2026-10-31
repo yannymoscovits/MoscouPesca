@@ -13,10 +13,12 @@ import {
   CAST_ROD_TIP,
   castLanding,
   castPlacement,
+  castSpot,
   createCastRenderer,
   landingPoint,
   spotAnchor,
   type CastView,
+  type ShadowFish,
 } from './castRenderer';
 import { computeLayout, PALETTE, SCENE_H, SCENE_W } from './fishingRenderer';
 import { DEFAULT_SCENERY, sceneryOf, type StandKind } from './scenery';
@@ -406,32 +408,65 @@ describe('ambiente de cada local (céu, horizonte e fundo próprios)', () => {
   });
 });
 
-describe('sombras dos peixes do ponto (a água reflete quem vive ali)', () => {
+describe('sombras do cardume (onde a sombra está, o peixe está)', () => {
   const zone = loc.zones[0];
+  const fish = (over: Partial<ShadowFish> = {}): ShadowFish => ({
+    id: 1,
+    xM: 2,
+    yM: 6,
+    faceRight: true,
+    sprite: 'src/assets/fish/ep1/tilapia.png',
+    kgMax: 4,
+    ...over,
+  });
   const shadowFills = (view: CastView) => {
     const { renderer, calls } = mountedWithProps();
     renderer.draw(view, 0.3);
     return fills(calls, CAST_COLORS.shadow);
   };
+  const center = (dots: number[][]) => ({
+    x: (Math.min(...dots.map(([x]) => x)) + Math.max(...dots.map(([x, , w]) => x + w))) / 2,
+    y: (Math.min(...dots.map(([, y]) => y)) + Math.max(...dots.map(([, y, , h]) => y + h))) / 2,
+  });
 
-  it('com o ponto escolhido e a fauna dele, cada espécie vira uma sombra na água', () => {
-    const dots = shadowFills({ ...base, zone, fauna: [{ id: 'tilapia', kgMax: 4 }, { id: 'piau', kgMax: 1.6 }] });
-    expect(dots.length).toBeGreaterThan(0);
+  it('cada peixe do cardume vira uma sombra no lugar dele, na mesma conta da queda da isca', () => {
     const p = castPlacement(l, DEFAULT_MAX_M);
-    for (const [, y] of dots) {
-      expect(y).toBeLessThan(p.ground); // na água, nunca na beira
-      expect(y).toBeGreaterThan(p.topY - 20);
+    for (const [xM, yM] of [
+      [0, 5],
+      [-3, 8],
+      [2.5, 3],
+    ]) {
+      const dots = shadowFills({ ...base, zone, school: [fish({ xM, yM })] });
+      expect(dots.length, `${xM}, ${yM}`).toBeGreaterThan(0);
+      // O arremesso que cai no peixe: ângulo e distância do ponto dele, como o domínio conta.
+      const landing = castLanding(p, (Math.atan2(xM, yM) * 180) / Math.PI, Math.hypot(xM, yM));
+      expect(castSpot(p, xM, yM).x).toBeCloseTo(landing.x, 6);
+      expect(castSpot(p, xM, yM).y).toBeCloseTo(landing.y, 6);
+      const c = center(dots);
+      expect(Math.abs(c.x - landing.x), `${xM}, ${yM}`).toBeLessThan(3);
+      expect(Math.abs(c.y - landing.y), `${xM}, ${yM}`).toBeLessThan(3);
     }
   });
 
-  it('sem fauna, nenhuma sombra', () => {
+  it('sem cardume, nenhuma sombra', () => {
     expect(shadowFills({ ...base, zone })).toEqual([]);
+    expect(shadowFills({ ...base, zone, school: [] })).toEqual([]);
   });
 
   it('a espécie grande (>= 20 kg) tem sombra bem maior que a pequena (<= 1 kg)', () => {
-    const widest = (kgMax: number) =>
-      Math.max(...shadowFills({ ...base, zone, fauna: [{ id: 'peixe', kgMax }] }).map(([, , w]) => w));
+    const widest = (kgMax: number) => Math.max(...shadowFills({ ...base, zone, school: [fish({ kgMax })] }).map(([, , w]) => w));
     expect(widest(25)).toBeGreaterThan(widest(0.8) * 2);
+  });
+
+  it('na força, o anel de quem nota a isca fica em volta do X, no raio dado', () => {
+    const { renderer, calls } = mountedWithProps();
+    renderer.draw({ ...base, aim: { angleDeg: 0, locked: true, previewM: 6 }, noticeM: 3 }, 0);
+    const p = castPlacement(l, DEFAULT_MAX_M);
+    const at = castLanding(p, 0, 6);
+    const ring = fills(calls, CAST_COLORS.marker)
+      .map(([x, y]) => Math.hypot(x + 0.5 - at.x, y + 0.5 - at.y))
+      .filter((d) => Math.abs(d - 3 * p.pxPerM) < 1.5);
+    expect(ring.length).toBeGreaterThan(6);
   });
 });
 

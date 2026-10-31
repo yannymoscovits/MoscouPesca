@@ -104,9 +104,26 @@ export interface CastView {
   flight: { angleDeg: number; distanceM: number; sinceS: number } | null;
   maxM?: number; // alcance máximo da vara equipada, em metros: calibra a escala do arremesso
   zone?: Zone | null; // o ponto escolhido, marcado na água da tela de arremesso
-  // As espécies que vivem no ponto escolhido: cada uma vira uma sombra patrulhando a água do
-  // arremesso (maior o kg, maior a sombra; as maiores ficam mais longe da beira). Só visual.
-  fauna?: { id: string; kgMax: number }[];
+  // O cardume do ponto (domain/school.ts), visto de cima: cada peixe é uma sombra onde ele está de
+  // verdade, em metros (`xM` para o lado, `yM` para a frente), no tamanho da faixa de kg da espécie.
+  // A isca que cai em cima de uma sombra cai em cima daquele peixe.
+  school?: ShadowFish[];
+  noticeM?: number; // raio em que o peixe nota a isca: anel em volta do X na força
+}
+
+/** Um peixe do cardume na vista de cima. */
+export interface ShadowFish {
+  id: number;
+  xM: number;
+  yM: number;
+  faceRight: boolean;
+  sprite: string; // folha da espécie (4 quadros), pintada de sombra
+  kgMax: number;
+}
+
+/** Onde fica, na vista do arremesso, um ponto do cardume em metros vistos de cima. */
+export function castSpot(p: CastPlacement, xM: number, yM: number): Point {
+  return { x: p.tip.x + xM * p.pxPerM, y: p.tip.y - yM * p.pxPerM };
 }
 
 export interface CastRenderer {
@@ -166,6 +183,32 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
     return s;
   };
 
+  /** Folhas de peixe pintadas de sombra (azul-marinho), uma vez por folha; null enquanto não há. */
+  const shadows = new Map<string, HTMLCanvasElement | null>();
+  const tinted = (path: string): HTMLCanvasElement | null => {
+    if (shadows.has(path)) return shadows.get(path)!;
+    shadows.set(path, null);
+    const url = resolve(path);
+    if (url) {
+      load(url).then(
+        (img) => {
+          const sheet = document.createElement('canvas');
+          sheet.width = img.naturalWidth;
+          sheet.height = img.naturalHeight;
+          const sc = sheet.getContext('2d');
+          if (!sc) return;
+          sc.drawImage(img, 0, 0);
+          sc.globalCompositeOperation = 'source-in'; // só onde o peixe tem pixel
+          sc.fillStyle = CAST_COLORS.shadow;
+          sc.fillRect(0, 0, sheet.width, sheet.height);
+          shadows.set(path, sheet);
+        },
+        () => {}, // sem a folha: fica a silhueta
+      );
+    }
+    return null;
+  };
+
   function resize(size: { width: number; height: number }) {
     layout = computeLayout(size.width, size.height);
     if (!canvas) return;
@@ -202,8 +245,8 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
 
     // O ponto escolhido, marcado na água do arremesso na escala nova: dá para mirar nele.
     if (casting && view.zone) zoneBand(view.zone);
-    // As sombras do que vive no ponto: o jogador vê o peixão de cima antes de arremessar.
-    if (casting && view.zone && view.fauna?.length) shadows(view.zone, view.fauna);
+    // O cardume de verdade, em sombras: onde a sombra está, o peixe está.
+    if (casting && view.school?.length) for (const f of view.school) shadow(f);
 
     for (const s of view.spots) spot(s);
 
@@ -236,7 +279,12 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
     if (view.aim) {
       const reach = (view.maxM ?? DEFAULT_MAX_M) * place.pxPerM; // a seta vai até o alcance máximo
       arrow(tip, view.aim.angleDeg, view.aim.locked ? CAST_COLORS.arrowLocked : CAST_COLORS.arrow, reach);
-      if (view.aim.previewM != null) marker(onView(tip, viewW, castLanding(place, view.aim.angleDeg, view.aim.previewM)));
+      if (view.aim.previewM != null) {
+        const at = castLanding(place, view.aim.angleDeg, view.aim.previewM);
+        // O anel de quem nota a isca: peixe dentro dele vem ver (no lugar de verdade, sem puxar para a tela).
+        if (casting && view.noticeM) noticeRing(at, view.noticeM * place.pxPerM);
+        marker(onView(tip, viewW, at));
+      }
     }
     if (view.flight) {
       const { angleDeg, distanceM, sinceS } = view.flight;
@@ -297,25 +345,35 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
     }
 
     /**
-     * As sombras dos peixes do ponto, patrulhando devagar dentro da faixa dele: uma por espécie
-     * (até 5), maior quanto maior o kg máximo, e as maiores mais longe da beira. Só visual: os
-     * peixes de verdade são sorteados quando a isca cai (PONTO-06).
+     * Um peixe do cardume em sombra, onde ele está (metros vistos de cima → vista do arremesso), no
+     * tamanho da faixa de kg da espécie e virado para onde nada: a folha da espécie pintada de
+     * azul-marinho a 60%; sem a folha (ou carregando), a silhueta em pixels.
      */
-    function shadows(zone: Zone, fauna: { id: string; kgMax: number }[]) {
-      const ys = zone.polygon.map((p) => zonePoint(p).y);
-      const top = Math.min(...ys) + 6;
-      const bottom = Math.min(Math.max(...ys), place.ground - 10) - 4;
-      const sorted = fauna.slice(0, 5).sort((a, b) => a.kgMax - b.kgMax);
-      sorted.forEach((f, i) => {
-        let seed = 0;
-        for (const ch of f.id) seed = (seed * 31 + ch.charCodeAt(0)) % 997;
-        const yBase = bottom + ((top - bottom) * (i + 0.5)) / sorted.length; // pequenos perto da beira
-        const range = 14 + hash(seed + 1) * 16;
-        const cx = viewW * (0.22 + 0.56 * hash(seed + 2));
-        const ph = t * (0.25 + hash(seed) * 0.2) * Math.PI * 2 + hash(seed + 3) * Math.PI * 2;
-        const box = fishBox({ kg: { max: f.kgMax } });
-        shadowFish(cx + Math.sin(ph) * range, yBase + Math.sin(t * 0.8 + seed) * 2, box.w, Math.cos(ph) >= 0 ? 1 : -1);
-      });
+    function shadow(f: ShadowFish) {
+      const p = castSpot(place, f.xM, f.yM);
+      if (p.y < horizon + 2 || p.y > place.ground - 4) return; // fora da água à vista
+      const box = fishBox({ kg: { max: f.kgMax } });
+      const sheet = tinted(f.sprite);
+      if (!sheet) return shadowFish(p.x, p.y, box.w, f.faceRight ? 1 : -1);
+      const fw = sheet.width / 4;
+      const frame = Math.floor(t * 6 + f.id) % 4;
+      c.save();
+      c.globalAlpha = 0.6;
+      c.translate(Math.round(p.x), Math.round(p.y));
+      if (!f.faceRight) c.scale(-1, 1);
+      c.drawImage(sheet, frame * fw, 0, fw, sheet.height, -box.w / 2, -box.h / 2, box.w, box.h);
+      c.restore();
+    }
+
+    /** Anel pontilhado do raio em que os peixes notam a isca, em volta de onde ela cairia. */
+    function noticeRing(p: Point, r: number) {
+      c.globalAlpha = 0.55;
+      const n = Math.max(16, Math.round(r / 2));
+      for (let i = 0; i < n; i += 2) {
+        const a = (i / n) * Math.PI * 2;
+        px(CAST_COLORS.marker, p.x + Math.cos(a) * r - 0.5, p.y + Math.sin(a) * r - 0.5, 1, 1);
+      }
+      c.globalAlpha = 1;
     }
 
     /** Silhueta escura de peixe visto de cima: corpo afinando nas pontas e o rabo atrás. */

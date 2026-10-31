@@ -14,9 +14,10 @@ import type { EpisodeContent, Profile } from '../content/types';
 import { aimAngleDeg, castDistanceM, powerAt } from '../domain/castAim';
 import { rulesFor } from '../domain/pesca';
 import { spotsFor } from '../domain/spots';
+import { fishAt } from '../domain/school';
 import { currentObjective } from '../domain/story';
 import { score } from '../domain/tournament';
-import { CAST_FLIGHT_S } from '../domain/tuning';
+import { CAST_FLIGHT_S, SCHOOL_NOTICE_RADIUS_M } from '../domain/tuning';
 import { createCastRenderer, SPLASH_S, type CastView } from '../render/castRenderer';
 import { createUnderwaterRenderer } from '../render/underwaterRenderer';
 import { useNav, useServices } from './context';
@@ -58,7 +59,7 @@ export function FishingScreen() {
     const draw = (t: number) => {
       const s = store.getState();
       if (s.spot === null) return; // o pesqueiro tem o desenho dele
-      const { episode, location } = currentPlace(s.profile, episodes);
+      const { location } = currentPlace(s.profile, episodes);
       const f = s.fishing;
       if (f.phase === 'Flying') landed = { angleDeg: f.angleDeg, distanceM: f.distanceM, atT: null };
       else if (f.phase !== 'Lure') landed = null;
@@ -75,10 +76,11 @@ export function FishingScreen() {
       }
       const sweepS = rulesFor(s.profile.settings.difficulty ?? 'tranquilo').sweepS;
       // A escala do arremesso segue a vara equipada; o ponto escolhido fica marcado na água, com
-      // as sombras das espécies que vivem nele (o fundo reflete os peixes do ponto).
+      // o cardume dele em sombras, cada peixe onde ele está de verdade (domain/school.ts).
       const allRods = episodes.flatMap((ep) => ep.rods);
       const rod = allRods.find((r) => r.id === s.profile.rods.equipped) ?? allRods[0];
       const zone = location.zones.find((z) => z.id === s.spot) ?? null;
+      const school = s.school;
       const view: CastView = {
         background: location.background,
         place: location.id,
@@ -87,7 +89,13 @@ export function FishingScreen() {
         flight: null,
         maxM: castDistanceM(1, rod.reach),
         zone,
-        fauna: zone?.species.map((id) => ({ id, kgMax: episode.species.find((sp) => sp.id === id)?.kg.max ?? 2 })),
+        school: school?.fish.map((sf) => ({
+          id: sf.id,
+          ...fishAt(sf, school.tS),
+          sprite: sf.species.sprite,
+          kgMax: sf.species.kg.max,
+        })),
+        noticeM: SCHOOL_NOTICE_RADIUS_M,
       };
       if (f.phase === 'Aim') view.aim = { angleDeg: aimAngleDeg(f.sinceS, sweepS), locked: false };
       // Na força, o X mostra onde a isca cairia com a força de agora (a barra ↔ a distância).
