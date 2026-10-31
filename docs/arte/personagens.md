@@ -12,20 +12,20 @@
 | Ricardo | `Fotos/Ricardo.png` | Toca bongô |
 | Bem | `Fotos/Bem.png` | Gosta de cerveja |
 | Kris | `Fotos/Kris.png` | - |
-| Tininho | sem foto | Magrelo, careca, de cavanhaque |
+| Tininho | sem foto | Velhinho magrelo e careca, com o pouco cabelo dos lados branco e cavanhaque branco |
 | Denise | sem foto | Cabelo curto, vestida de delegada (para ficar engraçado) |
 | Didi | sem foto (descrição proposta pelo agente) | Senhor grisalho de uns 60 anos, de óculos e bigode, jaleco branco com estetoscópio, uma seringa gigante no bolso e a chinela na mão (exageros cômicos); por baixo do jaleco, camisa listrada azul, vermelha e branca, sem escudo de time |
 | Capenga | sem foto | O típico pescador |
 | Ninha (criança) | sem foto | Menina com jeito de moleca: cabelo escuro curtinho e bagunçado, pele morena de sol, descalça, de short e camiseta, sempre com a varinha na mão. Personagem original (a referência do usuário foi "parecia um menino da selva de desenho, só que menina"; nada de copiar personagem existente) |
-| Lu | sem foto | Irmã do Adilson; loira clara e magra; sempre com o celular na mão (trabalho) e um cigarro |
+| Lu | sem foto | Irmã do Adilson; loira escura e magra; sempre com o celular na mão (trabalho) e um cigarro |
 | Geane | sem foto | Irmã do Adilson; bem gorda, de cabelo preto e pele branca; dramática, olhando pro céu procurando E.T. |
 | Louise | sem foto | Sobrinha preferida do Adilson; parecida com a Lu, mas mais nova (loira clara); advogada, de terninho |
-| Lucca | sem foto | Filho da Louise, criança; loiro claro e gordinho |
+| Lucca | sem foto | Filho da Louise, criança; loiro escuro e gordinho |
 | Márcio | sem foto | Funcionário 01 do Adilson, o faz-tudo; negro, magro e alto; uniforme de trabalho de parque eólico (no Episódio 5, quepe de capitão) |
 | Sr. Higashi | sem foto | Chefe da Ninha; japonês e gordinho; sempre com um aparelho de GPS na mão |
 | Ninha (adulta) | `Fotos/Ninha.png` | Nerd de TI; cabelo escuro curto, cacheado e volumoso em cima; óculos de armação fina prateada, formato hexagonal; pele clara; piercing de argola no nariz e alargador preto na orelha; camisa social preta |
 | Ângela | sem foto | Companheira da Ninha; ruiva, gordinha, sardenta e mais alta que a Ninha |
-| Ruan (Cervero) | sem foto | Namorado da Lavínia; aparece como peixe ao lado da Piranha Lavínia, com o olho torto (o apelido vem daí), num traço carinhoso e engraçado |
+| Ruan (Cervero) | sem foto | Namorado da Lavínia; negro, de olhos escuros e vesgo (o apelido vem daí), com barba e trancinhas; aparece de capuz de peixe ao lado da Piranha Lavínia, num traço carinhoso e engraçado |
 
 ## Descrições para o PixelLab (Episódio 1)
 
