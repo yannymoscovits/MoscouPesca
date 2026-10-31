@@ -1,7 +1,8 @@
-// Desenhos da tela inicial, em SVG e sem arquivos de imagem (mockup e logo do usuário em docs/arte/mockups):
-// o fundo do mar em pixel art, o peixe amarelo do logo e os ícones dos botões.
+// Desenhos da tela inicial (mockup e logo do usuário em docs/arte/mockups): o fundo do mar em pixel art
+// e os ícones dos botões, em SVG; o peixinho fofo do logo, na arte aprovada pelo usuário (T81).
 
 import type { ComponentChildren, VNode } from 'preact';
+import { resolveAsset } from '../render/sprites';
 
 type Rect = [x: number, y: number, w: number, h: number];
 
@@ -22,43 +23,46 @@ export function Pixels({ rows, colors }: { rows: string[]; colors: Record<string
 
 // ---------- Peixe do logo ----------
 
-const FISH = [
-  '..............................LL..',
-  '.............................LbbB.',
-  '...........kkkkkk............bbbB.',
-  '.........kkhhhhyykk...........BB..',
-  '........khhwwwwhyyykk.............',
-  'kkk....khhhyyyywwwyyyk.....L......',
-  'khhk..khhyyyyyyyyyyyyyk...Lbb.....',
-  'khyyk.kyyyyyyyyyyykkkkyk...B......',
-  '.kyyykkyyyyyyyyyyykkwkyyk.........',
-  '.kyyyyyyyyyyyyyyyykkkkyyk...bb....',
-  '..kyyyyyyyyyyyyyyykkkkyyk...bB....',
-  '..kOOOyyyyyyyyyyyyyyyyyyk.........',
-  '.kooOOkOOOyyyyyyyyyyyyyk...b......',
-  '.koook.kooOOOOOOyyyyOOOk..........',
-  'kook...kkoooooooooooookk..........',
-  'kkk.....kkoooooooooookk...........',
-  '.........kkkkkkkkkkkk.............',
+/** Arte aprovada pelo usuário (arte-previa/peixe/fofo.png), 128 × 112. */
+const FOFO = 'src/assets/ui/peixe-fofo.png';
+
+// As bolhas do peixe antigo, subindo da boca do peixinho (7 × 13 pixels de 4 px).
+const LOGO_BUBBLES = [
+  '....LL.',
+  '...LbbB',
+  '...bbbB',
+  '....BB.',
+  '.......',
+  '.L.....',
+  'Lbb....',
+  '.B.....',
+  '.......',
+  '..bb...',
+  '..bB...',
+  '.......',
+  '.b.....',
 ];
 
-const FISH_COLORS = {
-  k: '#0a1226', // contorno e olho
-  y: '#ffd23f',
-  h: '#ffe680', // brilho no alto do corpo
-  w: '#fffbe8',
-  O: '#fbb92f', // sombra da barriga e do rabo
-  o: '#f29a1f',
-  b: '#3aa8f5', // bolhas
+const BUBBLE_COLORS = {
+  b: '#3aa8f5',
   L: '#a6e1ff',
   B: '#1f7fd6',
 };
 
+/** O peixinho fofo em escala 1 (pixels nítidos, `image-rendering: pixelated`), nadando com as bolhas. */
 export function LogoFish() {
+  const url = resolveAsset(FOFO);
   return (
-    <svg class="logo-fish" viewBox={`0 0 ${FISH[0].length} ${FISH.length}`} shape-rendering="crispEdges" aria-hidden="true">
-      <Pixels rows={FISH} colors={FISH_COLORS} />
-    </svg>
+    <div class="logo-fish" aria-hidden="true">
+      {url && <img class="logo-fish__art" src={url} width={128} height={112} alt="" />}
+      <svg
+        class="logo-fish__bubbles"
+        viewBox={`0 0 ${LOGO_BUBBLES[0].length} ${LOGO_BUBBLES.length}`}
+        shape-rendering="crispEdges"
+      >
+        <Pixels rows={LOGO_BUBBLES} colors={BUBBLE_COLORS} />
+      </svg>
+    </div>
   );
 }
 // ---------- Fundo do mar ----------
@@ -339,7 +343,7 @@ export function TitleScene() {
       <svg class="title-scene__bubbles" viewBox={`0 0 ${W} 60`} shape-rendering="crispEdges">
         {BUBBLES.map(([x, y, sprite]) => (
           <g key={`${x},${y}`} transform={`translate(${x} ${y})`}>
-            <Pixels rows={sprite} colors={FISH_COLORS} />
+            <Pixels rows={sprite} colors={BUBBLE_COLORS} />
           </g>
         ))}
       </svg>

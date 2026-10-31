@@ -1579,9 +1579,9 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os e2e da tela inicial continuam passando sem mudança nas asserções
-- [ ] Print do Pixel 7 atualizado em `docs/arte/mockups/tela-inicial-implementada.png`
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] Os e2e da tela inicial continuam passando sem mudança nas asserções
+- [x] Print do Pixel 7 atualizado em `docs/arte/mockups/tela-inicial-implementada.png`
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

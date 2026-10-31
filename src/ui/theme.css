@@ -340,11 +340,27 @@ ul {
   gap: 10px;
 }
 
-/* Peixe do logo: 34 × 17 pixels de 5 px. */
+/* Peixinho fofo do logo (T81): 128 × 112 em escala 1, com as bolhas saindo da boca, à direita. */
 .logo-fish {
-  width: 170px;
-  height: 85px;
+  position: relative;
+  width: 128px;
+  height: 112px;
   animation: nadar 2.4s ease-in-out infinite;
+}
+
+.logo-fish__art {
+  display: block;
+  width: 128px;
+  height: 112px;
+  image-rendering: pixelated;
+}
+
+.logo-fish__bubbles {
+  position: absolute;
+  left: calc(100% - 6px);
+  top: -6px;
+  width: 28px;
+  height: 52px;
 }
 
 /* "Moscou" creme e "Fishing" amarelo, com contorno grosso e sombra embaixo. */

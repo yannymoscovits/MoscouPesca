@@ -365,3 +365,40 @@ async function worstContrast(page: Page, target: Locator, animations: 'disabled'
     [shot.toString('base64'), color] as const,
   );
 }
+
+// T81: o peixe da tela inicial é a arte aprovada pelo usuário (src/assets/ui/peixe-fofo.png, 128 × 112).
+
+/** Print do Pixel 7: em docs/arte/mockups com SAVE_SHOTS=1, senão na saída do teste. */
+const shotPath = (name: string) => (process.env.SAVE_SHOTS ? `docs/arte/mockups/${name}` : test.info().outputPath(name));
+
+test('T81: o peixe da tela inicial é o peixinho fofo, em escala inteira e pixelado, nadando e com bolhas', async ({ page }) => {
+  await page.goto('/');
+  const fish = page.locator('.logo-fish');
+  const art = fish.locator('img');
+  await expect(art).toBeVisible();
+  await expect.poll(() => art.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
+
+  const img = await art.evaluate((el: HTMLImageElement) => ({
+    src: el.currentSrc,
+    natural: [el.naturalWidth, el.naturalHeight],
+    shown: [el.offsetWidth, el.offsetHeight], // tamanho no layout, sem a inclinação da animação
+    rendering: getComputedStyle(el).imageRendering,
+  }));
+  expect(img.src).toContain('peixe-fofo');
+  expect(img.natural).toEqual([128, 112]);
+  const scale = img.shown[0] / img.natural[0];
+  expect(Number.isInteger(scale) && scale >= 1, `escala ${scale}`).toBe(true);
+  expect(img.shown[1]).toBe(img.natural[1] * scale);
+  expect(img.rendering).toBe('pixelated');
+
+  // A mesma animação de nadar do peixe antigo, com as bolhas subindo ao lado dele.
+  expect(await fish.evaluate((el) => getComputedStyle(el).animationName)).toBe('nadar');
+  await expect(fish.locator('.logo-fish__bubbles')).toBeVisible();
+
+  // O peixe continua em cima do título.
+  const title = (await page.getByRole('heading', { level: 1, name: 'MoscouFishing' }).boundingBox())!;
+  const fishBox = (await fish.boundingBox())!;
+  expect(fishBox.y + fishBox.height).toBeLessThanOrEqual(title.y + 1);
+
+  await page.screenshot({ path: shotPath('tela-inicial-implementada.png'), animations: 'disabled' });
+});
