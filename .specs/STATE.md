@@ -36,11 +36,11 @@
 
 ## Handoff
 
-- **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute, Fase 10 (T80, T81, T82 a T86, T61 e T87 por último) com sub-agente
-- **Completed**: Fases 1 a 9 (até `b838c50`: visual novo, episódios 4 e 5, sala de troféus); gate verde com 394 unitários e 104 e2e; arte aprovada em `arte-previa/`: Adilson (4 expressões e corpo), Jane (4 expressões), Lavínia (capuz azul, cabelo liso; expressões em andamento), peixinho fofo
-- **In-progress** (file:line): lote da Fase 10
-- **Next step**: Terminar as expressões da Lavínia antes de o sub-agente chegar na T87; depois seguir a arte do elenco do Episódio 1 (Ricardo, Bem, Kris, Edvaldo) com prévia e aprovação.
+- **Feature**: `.specs/features/pesca-bass` (a v1-mvp continua depois dela)
+- **Phase / Task**: Execute da pescaria nova, T1 a T18 em 3 sub-agentes, depois o Verificador
+- **Completed**: v1-mvp Fases 1 a 10 até `3b2208c`, menos a T61 (calibragem), que volta depois da pescaria nova; spec, contexto, desenho e tarefas da pescaria nova aprovados; retratos do elenco inteiro em `arte-previa/` esperando aprovação
+- **In-progress** (file:line): lote 1 da pescaria nova (T1 a T7)
+- **Next step**: Rodar os lotes 2 e 3 e o Verificador; depois a T61 da v1-mvp com a simulação nova e as Fases 11 a 14.
 - **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`
