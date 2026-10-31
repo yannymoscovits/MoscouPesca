@@ -73,6 +73,6 @@ test('TUTO-09: "Rever tutorial" em Ajustes faz o tutorial começar na próxima p
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 
   expect((await gameState(page)).profile.tutorialDone).toBe(false);
-  // primeiro passo do tutorial: arremessar (TUTO-03)
-  await expect.poll(async () => (await gameState(page)).tutorial?.step).toBe('cast');
+  // primeiro passo do tutorial da pescaria nova: escolher o ponto (pesca-bass TUTOB-01)
+  await expect.poll(async () => (await gameState(page)).tutorial?.step).toBe('ponto');
 });

@@ -2311,3 +2311,35 @@ ul {
   bottom: 0;
   background: var(--catch-meter);
 }
+
+/* ---------- Pescaria nova ligada (pesca-bass T15) ---------- */
+
+/* O pesqueiro ocupa a tela; a cena da pesca fica escondida até escolher o ponto. */
+.stage[hidden] {
+  display: none;
+}
+
+/* Os medidores ficam à esquerda: a direita é da barra de captura na briga. */
+.gauges__side {
+  align-items: stretch;
+  max-width: 156px;
+}
+
+/* ISCA-11: "Escapou!" no alto da água, por cima da cena e sem pegar toque. */
+.pesca-notice {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 32%;
+  z-index: 24;
+  text-align: center;
+  font: 700 56px / 1 var(--font-title);
+  color: var(--accent);
+  text-shadow:
+    5px 5px 0 var(--outline),
+    -3px -3px 0 var(--outline),
+    3px -3px 0 var(--outline),
+    -3px 3px 0 var(--outline);
+  animation: estourar 0.3s ease-out;
+  pointer-events: none;
+}

@@ -232,14 +232,14 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | PONTO-01 | P1: Escolher o ponto | T1, T5, T9, T12 | Implementing |
 | PONTO-02 | P1: Escolher o ponto | T5, T12 | Implementing |
 | PONTO-03 | P1: Escolher o ponto | T1, T5, T12 | Implementing |
-| PONTO-04 | P1: Escolher o ponto | T12 | Implementing |
-| PONTO-05 | P1: Escolher o ponto | T13 | Implementing |
+| PONTO-04 | P1: Escolher o ponto | T12, T15 | Implementing |
+| PONTO-05 | P1: Escolher o ponto | T13, T15 | Implementing |
 | PONTO-06 | P1: Escolher o ponto | T4 | Implementing |
-| ARREM-01 | P1: Mirar e arremessar com força | T2, T9 | Implementing |
+| ARREM-01 | P1: Mirar e arremessar com força | T2, T9, T15 | Implementing |
 | ARREM-02 | P1: Mirar e arremessar com força | T2, T6, T13 | Implementing |
 | ARREM-03 | P1: Mirar e arremessar com força | T2, T6 | Implementing |
-| ARREM-04 | P1: Mirar e arremessar com força | T6 | Implementing |
-| ARREM-05 | P1: Mirar e arremessar com força | T6, T9 | Implementing |
+| ARREM-04 | P1: Mirar e arremessar com força | T6, T15 | Implementing |
+| ARREM-05 | P1: Mirar e arremessar com força | T6, T9, T15 | Implementing |
 | ARREM-06 | P1: Mirar e arremessar com força | T2 | Implementing |
 | ARREM-07 | Edge Cases | T2 | Implementing |
 | ISCA-01 | P1: Trabalhar a isca debaixo d'água | T4, T10 | Implementing |
@@ -249,12 +249,12 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | ISCA-05 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
 | ISCA-06 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
 | ISCA-07 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
-| ISCA-08 | P1: Trabalhar a isca debaixo d'água | T6, T11 | Implementing |
-| ISCA-09 | P1: Trabalhar a isca debaixo d'água | - | Pending |
+| ISCA-08 | P1: Trabalhar a isca debaixo d'água | T6, T11, T15 | Implementing |
+| ISCA-09 | P1: Trabalhar a isca debaixo d'água | T15 | Implementing |
 | ISCA-10 | P1: Trabalhar a isca debaixo d'água | T6 | Implementing |
-| ISCA-11 | P1: Trabalhar a isca debaixo d'água | T4, T6 | Implementing |
-| ISCA-12 | P1: Trabalhar a isca debaixo d'água | T6 | Implementing |
-| ISCA-13 | P1: Trabalhar a isca debaixo d'água | - | Pending |
+| ISCA-11 | P1: Trabalhar a isca debaixo d'água | T4, T6, T15 | Implementing |
+| ISCA-12 | P1: Trabalhar a isca debaixo d'água | T6, T15 | Implementing |
+| ISCA-13 | P1: Trabalhar a isca debaixo d'água | T15 | Implementing |
 | ISCA-14 | Edge Cases | T4 | Implementing |
 | ISCA-15 | Edge Cases | T4 | Implementing |
 | BRIGA-01 | P1: Brigar com o peixe na barra de captura | T3, T14 | Implementing |
@@ -266,25 +266,25 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | BRIGA-07 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
 | BRIGA-08 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
 | BRIGA-09 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
-| BRIGA-10 | P1: Brigar com o peixe na barra de captura | T3, T6 | Implementing |
-| BRIGA-11 | P1: Brigar com o peixe na barra de captura | T3, T6 | Implementing |
+| BRIGA-10 | P1: Brigar com o peixe na barra de captura | T3, T6, T15 | Implementing |
+| BRIGA-11 | P1: Brigar com o peixe na barra de captura | T3, T6, T15 | Implementing |
 | BRIGA-12 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
-| BRIGA-13 | P1: Brigar com o peixe na barra de captura | T10, T14 | Implementing |
+| BRIGA-13 | P1: Brigar com o peixe na barra de captura | T10, T14, T15 | Implementing |
 | BRIGA-14 | Edge Cases | T3 | Implementing |
-| BOTAO-01 | P1: Botões grandes na tela | T11 | Implementing |
-| BOTAO-02 | P1: Botões grandes na tela | T11 | Implementing |
+| BOTAO-01 | P1: Botões grandes na tela | T11, T15 | Implementing |
+| BOTAO-02 | P1: Botões grandes na tela | T11, T15 | Implementing |
 | BOTAO-03 | P1: Botões grandes na tela | T11 | Implementing |
 | BOTAO-04 | P1: Botões grandes na tela | T11 | Implementing |
-| BOTAO-05 | P1: Botões grandes na tela | T11 | Implementing |
+| BOTAO-05 | P1: Botões grandes na tela | T11, T15 | Implementing |
 | TUTOB-01 | P1: Tutorial da pescaria nova | T7 | Implementing |
 | TUTOB-02 | P1: Tutorial da pescaria nova | T4, T7 | Implementing |
 | TUTOB-03 | P1: Tutorial da pescaria nova | T7 | Implementing |
 | TUTOB-04 | P1: Tutorial da pescaria nova | T7 | Implementing |
 | SIMB-01 | P1: Simulação com as regras novas | T8 | Implementing |
 | SIMB-02 | P1: Simulação com as regras novas | T8 | Implementing |
-| PAUSA-01 | Edge Cases | - | Pending |
+| PAUSA-01 | Edge Cases | T15 | Implementing |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 51 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 54 em implementação
 
 ---
 

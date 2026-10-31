@@ -3,10 +3,10 @@
 // (nome ou "???"), o cadeado com o alcance pedido e "Pescar aqui". Não sabe do jogo: recebe os pontos
 // (spotsFor) e chama `chooseSpot`.
 
-import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { LocationId, Point } from '../content/types';
 import type { SpotView } from '../domain/spots';
-import { createLoop } from '../app/loop';
+import { createLoop, type GameLoop } from '../app/loop';
 import { createCastRenderer, spotAnchor } from '../render/castRenderer';
 import { computeLayout, SCENE_H, type Layout } from '../render/fishingRenderer';
 
@@ -15,6 +15,7 @@ export interface SpotScreenProps {
   background: string; // Location.background
   spots: SpotView[]; // spotsFor(local, vara, espécies, álbum)
   chooseSpot: (spotId: string) => void; // "Pescar aqui" num ponto liberado (PONTO-04)
+  paused?: boolean; // SAVE-01: pausado, o desenho para
 }
 
 /** Largura máxima do botão de um ponto, em fração da tela: o nome quebra em duas linhas se precisar. */
@@ -36,8 +37,11 @@ export function spotButtonPos(anchor: Point, layout: Layout, cssWidth: number): 
 
 const screenSize = () => ({ width: window.innerWidth, height: window.innerHeight });
 
-export function SpotScreen({ place, background, spots, chooseSpot }: SpotScreenProps) {
+export function SpotScreen({ place, background, spots, chooseSpot, paused = false }: SpotScreenProps) {
   const canvas = useRef<HTMLCanvasElement>(null);
+  const loop = useRef<GameLoop | null>(null);
+  const stopped = useRef(paused);
+  stopped.current = paused;
   const [selected, setSelected] = useState<string | null>(null);
   const [size, setSize] = useState(screenSize);
   // O desenho lê a vista mais recente a cada quadro.
@@ -47,7 +51,7 @@ export function SpotScreen({ place, background, spots, chooseSpot }: SpotScreenP
   useLayoutEffect(() => {
     const renderer = createCastRenderer();
     renderer.mount(canvas.current!, screenSize());
-    const loop = createLoop({
+    const drawing = createLoop({
       tick: () => {},
       draw: (t) => {
         const v = view.current;
@@ -62,20 +66,26 @@ export function SpotScreen({ place, background, spots, chooseSpot }: SpotScreenP
           t,
         );
       },
-      isPaused: () => false,
+      isPaused: () => stopped.current,
     });
+    loop.current = drawing;
     const onResize = () => {
       renderer.resize(screenSize());
       setSize(screenSize());
     };
     window.addEventListener('resize', onResize);
-    loop.start();
+    drawing.start();
     return () => {
       window.removeEventListener('resize', onResize);
-      loop.stop();
+      drawing.stop();
       renderer.destroy();
     };
   }, []);
+
+  // Ao sair da pausa, o desenho volta a rodar.
+  useEffect(() => {
+    if (!paused) loop.current?.start();
+  }, [paused]);
 
   const layout = computeLayout(size.width, size.height);
   const chosen = spots.find((s) => s.id === selected) ?? null;
@@ -94,7 +104,12 @@ export function SpotScreen({ place, background, spots, chooseSpot }: SpotScreenP
             class={`btn spots__spot${s.locked ? ' spots__spot--locked' : ''}`}
             data-spot={s.id}
             aria-pressed={s.id === selected}
-            style={{ left: `${pos.left}px`, bottom: `max(${pos.bottom}px, calc(var(--hud-row) + 40px))` }}
+            // Entre a fileira de baixo e o painel de cima (--spots-top, posto pela tela de pesca).
+            style={{
+              left: `${pos.left}px`,
+              bottom: `clamp(calc(var(--hud-row) + 40px), ${pos.bottom}px, calc(100% - var(--spots-top, 0px) - 40px))`,
+            }}
+
             onClick={() => setSelected(s.id)}
           >
             {s.locked && (

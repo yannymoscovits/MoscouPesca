@@ -1,53 +1,38 @@
-// Medidores da pescaria (T80; spec, "Visual da pescaria"): nas laterais da cena, a Tensão numa barra
-// vertical com as cores da PESCA-12, a Linha solta em metros, a Profundidade da zona onde a isca está e
-// um quadradinho com a isca equipada. Ficam entre o painel e o meio da tela (theme.css, ".hud"): não
-// cobrem o painel, o "FISGAR!" da metade de baixo nem os botões.
+// Medidores da pescaria (T80; pesca-bass ISCA-13): com a isca na água, a Linha solta e a Profundidade
+// da isca, em metros, e sempre um quadradinho com a isca equipada. Ficam na lateral esquerda, entre o
+// painel e o meio da tela (theme.css, ".hud"): a direita fica para a barra de captura da briga, e a
+// metade de baixo para os botões.
 
-import { ROD_TIP } from '../app/controller';
 import { useGame } from '../app/store';
-import { tensionBand, zoneAt, type FishingState } from '../domain/fishing';
-import { FIGHT_START_DISTANCE } from '../domain/tuning';
+import type { Lure } from '../domain/lure';
+import type { PescaState } from '../domain/pesca';
 import { useServices } from './context';
-import { currentPlace } from './format';
-
-/**
- * Metros por px lógico da cena de 180 × 400 px. A spec não fixa a escala: 0,1 m por px dá de 10 m
- * (Vara de Bambu) a 30 m (alcance 10) de linha, perto de uma pescaria de verdade.
- */
-const METERS_PER_PX = 0.1;
 
 /** Metros com vírgula e no máximo `digits` casas: "1,5 m", "200 m". */
 const formatMeters = (m: number, digits: number) =>
   `${m.toLocaleString('pt-BR', { minimumFractionDigits: digits, maximumFractionDigits: digits })} m`;
 
-/** Isca na água: onde caiu; na briga, a linha encurta e alonga com a distância do peixe. */
-function lureInWater(f: FishingState) {
-  if (f.phase !== 'Waiting' && f.phase !== 'Bite' && f.phase !== 'Fight') return null;
-  const castPx = Math.hypot(f.at.x - ROD_TIP.x, f.at.y - ROD_TIP.y);
-  const k = f.phase === 'Fight' ? f.distance / FIGHT_START_DISTANCE : 1;
-  return { at: f.at, lineM: castPx * k * METERS_PER_PX };
-}
+/** A isca na água (ISCA-13): na isca, no ataque e na briga, quando ela está na boca do peixe. */
+const lureOf = (f: PescaState): Lure | null =>
+  f.phase === 'Lure' || f.phase === 'Strike' || f.phase === 'Fight' ? f.water.lure : null;
 
 export function FishingGauges() {
   const { episodes } = useServices();
-  const fishing = useGame((s) => s.fishing);
-  const profile = useGame((s) => s.profile);
-  const { location } = currentPlace(profile, episodes);
-  const lure = lureInWater(fishing);
-  const zone = lure ? zoneAt(lure.at, location.zones) : undefined;
-  const bait = episodes.flatMap((ep) => ep.baits).find((b) => b.id === profile.baits.equipped);
+  const lure = useGame((s) => lureOf(s.fishing));
+  const baitId = useGame((s) => s.profile.baits.equipped);
+  const bait = episodes.flatMap((ep) => ep.baits).find((b) => b.id === baitId);
 
   return (
     <div class="gauges" role="group" aria-label="Medidores">
-      <div class="gauges__side">{fishing.phase === 'Fight' && <TensionGauge tension={fishing.tension} />}</div>
-      <div class="gauges__side gauges__side--right">
-        {lure && <Gauge name="Linha" value={formatMeters(lure.lineM, 1)} />}
-        {zone && <Gauge name="Profundidade" value={formatMeters(zone.depthM, zone.depthM % 1 === 0 ? 0 : 1)} />}
+      <div class="gauges__side">
+        {/* A linha vai da beira até a isca: a distância na água e a profundidade. */}
+        {lure && <Gauge name="Linha" value={formatMeters(Math.hypot(lure.xM, lure.depthM), 1)} />}
+        {lure && <Gauge name="Profundidade" value={formatMeters(lure.depthM, 1)} />}
         <div class="gauge gauge--bait" role="group" aria-label="Isca">
           <span class="gauge__label">Isca</span>
           <span class="gauge__bait">
             <BaitIcon />
-            <span class="gauge__value">{bait?.name ?? profile.baits.equipped}</span>
+            <span class="gauge__value">{bait?.name ?? baitId}</span>
           </span>
         </div>
       </div>
@@ -60,26 +45,6 @@ function Gauge({ name, value }: { name: string; value: string }) {
     <div class="gauge" role="group" aria-label={name}>
       <span class="gauge__label">{name}</span>
       <span class="gauge__value">{value}</span>
-    </div>
-  );
-}
-
-/** PESCA-12: de 0 a 100, enchendo de baixo para cima; verde abaixo de 70, amarela de 70 a 89, vermelha de 90 a 100. */
-function TensionGauge({ tension }: { tension: number }) {
-  return (
-    <div class="gauge-tension">
-      <span class="gauge__label">Tensão</span>
-      <div
-        class="gauge-tension__bar"
-        role="meter"
-        aria-label="Tensão"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={Math.floor(tension)}
-        data-band={tensionBand(tension)}
-      >
-        <div class="gauge-tension__fill" data-fill style={{ height: `${tension}%` }} />
-      </div>
     </div>
   );
 }

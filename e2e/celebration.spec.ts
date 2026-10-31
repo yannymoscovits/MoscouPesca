@@ -1,9 +1,22 @@
 import { expect, test, type Page } from '@playwright/test';
 import { characters } from '../src/content/characters';
-import { advanceUntil, gameState, manualClock, openWithProfile, toScreen, veteran } from './support';
+import {
+  advanceUntil,
+  castNothing,
+  castNow,
+  catchFish,
+  chooseSpot,
+  gameState,
+  hookNow,
+  manualClock,
+  openWithProfile,
+  reelUntilStrike,
+  veteran,
+} from './support';
 
 // Celebração exagerada: pose com "PEGOU!" antes da ficha (HUMOR-05) e onomatopeia com tremor de no
-// máximo 300 ms na fisgada, na linha arrebentada e na vitória do torneio (HUMOR-06).
+// máximo 300 ms na fisgada, no peixe que foge da briga e na vitória do torneio (HUMOR-06). Na pescaria
+// nova a linha não arrebenta: o "PLOFT!" passou para "O peixe fugiu!" (BRIGA-11).
 
 const SHAKE_MAX_MS = 300;
 const celebration = (page: Page) => page.getByRole('dialog', { name: 'Comemoração' });
@@ -14,11 +27,6 @@ async function play(page: Page) {
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
-async function castAndBite(page: Page) {
-  const p = toScreen(page, 90, 300);
-  await page.mouse.click(p.x, p.y);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-}
 
 /** Anota quando a classe de tremor entra e sai do contêiner da cena. */
 const watchShake = (page: Page) =>
@@ -47,10 +55,7 @@ test('HUMOR-05: peixe pego → o Adilson posa com o peixe e "PEGOU!" antes da fi
   await openWithProfile(page, veteran());
   await manualClock(page);
   await play(page);
-  await castAndBite(page);
-  await page.evaluate(() => (window as any).__mf.press());
-  expect(await advanceUntil(page, 'Result_Caught', 40)).toBe('Result_Caught');
-  await page.evaluate(() => (window as any).__mf.release());
+  expect(await catchFish(page)).toBe('Result_Caught');
   const species = (await gameState(page)).fishing.species.name as string;
 
   await expect(celebration(page)).toBeVisible();
@@ -69,26 +74,28 @@ test('HUMOR-06: a fisgada mostra "NHAC!" e a cena treme por no máximo 300 ms', 
   await openWithProfile(page, veteran());
   await manualClock(page);
   await play(page);
-  await castAndBite(page);
+  await chooseSpot(page);
+  expect(await castNow(page)).toBe('Lure');
+  expect(await reelUntilStrike(page)).toBe('Strike');
   await watchShake(page);
 
-  await page.evaluate(() => (window as any).__mf.press()); // fisga
+  await page.evaluate(() => (window as any).__mf.button('puxar')); // fisga
   expect((await gameState(page)).fishing.phase).toBe('Fight');
   await expect(page.getByText('NHAC!')).toBeVisible();
   await expectShortShake(page);
 });
 
-test('HUMOR-06: a linha arrebentada mostra "PLOFT!" e a cena treme por no máximo 300 ms', async ({ page }) => {
-  await openWithProfile(page, veteran('desafio')); // só no Desafio a linha arrebenta
+test('HUMOR-06: o peixe que foge da briga mostra "PLOFT!" e a cena treme por no máximo 300 ms', async ({ page }) => {
+  await openWithProfile(page, veteran('desafio')); // só no Desafio o peixe foge da briga
   await manualClock(page);
   await play(page);
-  await castAndBite(page);
-  await page.evaluate(() => (window as any).__mf.press());
-  // O tremor da fisgada ("NHAC!") acaba antes de observar o da linha arrebentada.
+  await chooseSpot(page);
+  expect(await hookNow(page)).toBe('Fight');
+  // O tremor da fisgada ("NHAC!") acaba antes de observar o do peixe que fugiu.
   await expect(page.getByRole('region', { name: 'Pescaria' })).not.toHaveClass(/tremor/);
   await watchShake(page);
 
-  expect(await advanceUntil(page, 'Result_Broken', 40)).toBe('Result_Broken');
+  expect(await advanceUntil(page, 'Result_Escaped', 60)).toBe('Result_Escaped');
   await expect(page.getByText('PLOFT!')).toBeVisible();
   await expectShortShake(page);
 });
@@ -110,12 +117,9 @@ test('HUMOR-06: a vitória no torneio mostra "É CAMPEÃO!" e a cena treme por n
   });
   await manualClock(page);
   await play(page);
-  await page.evaluate(() => {
-    const mf = (window as any).__mf;
-    mf.tap(90, 365); // último arremesso, sem peixe
-    for (let t = 0; t < 20 && mf.state().fishing.phase !== 'Result_Nothing'; t += 0.5) mf.advance(0.5);
-  });
+  expect(await castNothing(page)).toBe('Result_Nothing'); // último arremesso, sem peixe
   await watchShake(page);
+
   await page.getByRole('dialog', { name: 'Resultado do arremesso' }).getByRole('button', { name: 'Continuar' }).click();
 
   await expect(page.getByRole('dialog', { name: 'Classificação' })).toContainText('Você venceu');

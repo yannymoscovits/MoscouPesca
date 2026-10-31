@@ -1,8 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
-import { advance, advanceUntil, gameState, manualClock, openWithProfile, toScreen, veteran } from './support';
+import { castNow, chooseSpot, fishingButton, gameState, hookNow, manualClock, openWithProfile, veteran } from './support';
 
-// Cena da pescaria (T79; spec, "Visual da pescaria"): o Adilson de costas no lugar de pesca, a linha,
-// a boia, a sombra do peixe e o "!"; desenho a no máximo 30 quadros por segundo e nada na pausa.
+// Cena da pescaria (T79, refeita na pesca-bass): a vista de cima na mira, a vista debaixo d'água com a
+// isca e os peixes e a briga; desenho a no máximo 30 quadros por segundo e nada na pausa.
 
 /** Print do Pixel 7: em docs/arte/mockups com SAVE_SHOTS=1, senão na saída do teste. */
 const shotPath = (name: string) => (process.env.SAVE_SHOTS ? `docs/arte/mockups/${name}` : test.info().outputPath(name));
@@ -16,10 +16,21 @@ async function play(page: Page) {
 const nextFrames = (page: Page) =>
   page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 80)))));
 
-/** Pixels vermelhos da boia na tela, perto de um ponto da cena. */
-async function bobberAt(page: Page, x: number, y: number) {
-  const p = toScreen(page, x, y);
-  const shot = await page.screenshot({ clip: { x: p.x - 12, y: p.y - 16, width: 24, height: 24 } });
+/**
+ * Onde fica a isca que acabou de cair, na tela: a câmera a deixa a 40% da largura, e na superfície, que
+ * fica a 30% dos três quartos de cima da vista (underwaterRenderer). Vista em px lógicos de escala 2
+ * (abaixo de 540 px de largura), com o canvas ancorado embaixo.
+ */
+function landedLure(page: Page) {
+  const { width, height } = page.viewportSize()!;
+  const viewW = Math.ceil(width / 2);
+  const viewH = Math.ceil(height / 2);
+  return { x: Math.round(viewW * 0.4) * 2, y: height - viewH * 2 + viewH * 0.75 * 0.3 * 2 };
+}
+
+/** Pixels vermelhos da isca na tela, em volta de um ponto da tela. */
+async function lureAt(page: Page, p: { x: number; y: number }) {
+  const shot = await page.screenshot({ clip: { x: p.x - 12, y: p.y - 12, width: 24, height: 24 } });
   return page.evaluate(async (png) => {
     const img = new Image();
     img.src = `data:image/png;base64,${png}`;
@@ -36,29 +47,25 @@ async function bobberAt(page: Page, x: number, y: number) {
   }, shot.toString('base64'));
 }
 
-test('T79: prints do Pixel 7 da pescaria em espera, mordida e briga, com a boia na água', async ({ page }) => {
+test('T79, ISCA-01: prints do Pixel 7 da mira, da isca na água e da briga, com a isca vermelha onde ela está', async ({ page }) => {
   await openWithProfile(page, veteran());
   await manualClock(page);
   await play(page);
-
-  const p = toScreen(page, 120, 260);
-  await page.mouse.click(p.x, p.y);
-  await advance(page, 1.5);
-  const { phase, at } = (await gameState(page)).fishing;
-  expect(phase).toBe('Waiting');
+  await chooseSpot(page);
   await nextFrames(page);
-  expect(await bobberAt(page, at.x, at.y), 'boia vermelha na água').toBeGreaterThan(0);
-  await page.screenshot({ path: shotPath('pesca-depois-espera.png'), animations: 'disabled' });
+  await page.screenshot({ path: shotPath('pesca-depois-mira.png'), animations: 'disabled' });
 
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
+  expect(await castNow(page)).toBe('Lure'); // relógio parado: a isca fica na superfície, onde caiu
+  await page.waitForTimeout(700); // o respingo na vista de cima acaba (ARREM-05)
   await nextFrames(page);
-  await page.screenshot({ path: shotPath('pesca-depois-mordida.png'), animations: 'disabled' });
+  expect((await gameState(page)).fishing.water.lure.depthM).toBe(0);
+  expect(await lureAt(page, landedLure(page)), 'isca vermelha na água').toBeGreaterThan(0);
 
-  await page.evaluate(() => (window as any).__mf.press());
-  await advance(page, 1);
-  expect((await gameState(page)).fishing.phase).toBe('Fight');
+  await page.screenshot({ path: shotPath('pesca-depois-isca.png'), animations: 'disabled' });
+
+  expect(await hookNow(page)).toBe('Fight');
   await nextFrames(page);
-  await expect(page.getByRole('meter', { name: 'Tensão da linha' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Barra de captura' })).toBeVisible();
   await page.screenshot({ path: shotPath('pesca-depois-briga.png'), animations: 'disabled' });
 });
 
@@ -102,4 +109,19 @@ test('T79, SAVE-01: a cena desenha a no máximo 30 quadros por segundo e, pausad
   await page.getByRole('button', { name: 'Continuar' }).click();
   await page.waitForTimeout(500);
   expect(await frames(), 'volta a desenhar').toBeGreaterThan(paused);
+
+  // O mesmo na cena do ponto escolhido (vista de cima), com a seta balançando.
+  await chooseSpot(page);
+  await expect(fishingButton(page, 'arremessar')).toBeVisible();
+  const atSpot = await frames();
+  await page.waitForTimeout(1000);
+  const spotDrawn = (await frames()) - atSpot;
+  expect(spotDrawn, 'quadros em 1 s no ponto').toBeGreaterThan(10);
+  expect(spotDrawn, 'quadros em 1 s no ponto').toBeLessThanOrEqual(31);
+  await page.getByRole('button', { name: 'Pausar' }).click();
+  await page.waitForTimeout(200);
+  const pausedAtSpot = await frames();
+  await page.waitForTimeout(1000);
+  expect((await frames()) - pausedAtSpot, 'quadros na pausa, no ponto').toBe(0);
 });
+

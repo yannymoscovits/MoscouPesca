@@ -2,10 +2,12 @@ import { expect, test, type Page } from '@playwright/test';
 import { ep1 } from '../src/content/episodes/ep1';
 import { goals } from '../src/content/goals';
 import type { MedalTier, Profile } from '../src/content/types';
-import { cast, press, rulesFor, tick, type FishingState } from '../src/domain/fishing';
+import { AUTOPLAY_SEED, STEP_S } from '../src/app/testHooks';
+import { press, rulesFor, startPesca, tick, type PescaContext, type PescaState } from '../src/domain/pesca';
 import { createRng } from '../src/domain/rng';
+import { typicalPlayer } from '../src/domain/sim/typicalPlayer';
 import { expectContrast } from './contrast';
-import { advanceUntil, gameState, manualClock, money, openWithProfile, veteran } from './support';
+import { chooseSpot, gameState, manualClock, money, openWithProfile, veteran } from './support';
 
 // Medalhas e metas nas telas (MEDAL-02, MEDAL-05, MEDAL-06; ACES-05 a ACES-08): a ficha do peixe mostra a
 // medalha nova e "Meta cumprida!" com a recompensa; o álbum, as medalhas e a contagem rumo à próxima meta.
@@ -13,19 +15,23 @@ import { advanceUntil, gameState, manualClock, money, openWithProfile, veteran }
 const fishCard = (page: Page) => page.getByRole('dialog', { name: 'Ficha do peixe' });
 const album = (page: Page) => page.getByRole('region', { name: 'Álbum' });
 const TILAPIA = ep1.species.find((sp) => sp.id === 'tilapia')!;
-const SPOT = { x: 90, y: 300 }; // o raso do Poço do Magro, onde a tilápia morde a minhoca
+const SPOT = ep1.locations[0].zones.find((z) => z.id === 'raso')!; // a Beira do píer, onde a tilápia morde a minhoca
 
 /**
- * Peixe que o jogo dá com a semente `seed` num arremesso no SPOT com a Vara de Bambu e a Minhoca, segurando
- * até pegar: as mesmas funções do domínio que o jogo usa, para escolher sementes por faixa de peso.
+ * Peixe que o jogo dá com a semente `seed` num arremesso do `__mf.autoplay` no raso, com a Vara de Bambu e
+ * a Minhoca, no Tranquilo: o mesmo jogador típico, os mesmos passos de 1/30 s e as mesmas funções do
+ * domínio que o jogo usa, para escolher sementes por faixa de peso.
  */
 function catchWith(seed: number): { species: string; kg: number } | null {
-  const rng = createRng(seed);
-  const ctx = { rng, rules: rulesFor('tranquilo'), zones: ep1.locations[0].zones, species: ep1.species };
-  let s: FishingState = cast({ phase: 'Idle' }, SPOT, { origin: { x: 90, y: 370 }, rod: ep1.rods[0], bait: 'minhoca' });
-  while (s.phase === 'Flying' || s.phase === 'Waiting') s = tick(s, 0.1, { holding: false }, ctx);
-  s = press(s, ctx);
-  while (s.phase === 'Fight') s = tick(s, 0.1, { holding: true }, ctx);
+  const rules = rulesFor('tranquilo');
+  const ctx: PescaContext = { rod: ep1.rods[0], bait: 'minhoca', rng: createRng(seed), rules, spot: SPOT, species: ep1.species };
+  const player = typicalPlayer(createRng(AUTOPLAY_SEED), rules);
+  let s: PescaState = startPesca();
+  for (let t = 0; t < 300 && !s.phase.startsWith('Result_'); t += STEP_S) {
+    const input = player(s, STEP_S);
+    if (input.button) s = press(s, input.button, ctx);
+    s = tick(s, STEP_S, { holding: input.holding }, ctx);
+  }
   return s.phase === 'Result_Caught' ? { species: s.species.id, kg: s.kg } : null;
 }
 
@@ -38,24 +44,25 @@ function seedFor(from: number, to: number): { seed: number; kg: number } {
   throw new Error(`nenhuma semente dá tilápia entre ${from} e ${to} kg`);
 }
 
+/** Abre a pesca e escolhe o raso: a mira parada no começo, como `catchWith` começa. */
 async function play(page: Page) {
   await page.getByRole('button', { name: 'Jogar' }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
+  await chooseSpot(page);
 }
 
-/** Com a semente dada, arremessa no SPOT, fisga e segura até pegar; espera a ficha (depois do "PEGOU!"). */
+/** Com a semente dada, joga o arremesso pelo `autoplay` até pegar; espera a ficha (depois do "PEGOU!"). */
 async function catchSeeded(page: Page, seed: number) {
-  await page.evaluate(([n, p]) => {
+  expect((await gameState(page)).fishing).toEqual({ phase: 'Aim', sinceS: 0 });
+  const phase = await page.evaluate((n) => {
     const mf = (window as any).__mf;
     mf.seed(n);
-    mf.tap(p.x, p.y);
-  }, [seed, SPOT] as const);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  await page.evaluate(() => (window as any).__mf.press());
-  expect(await advanceUntil(page, 'Result_Caught', 60)).toBe('Result_Caught');
-  await page.evaluate(() => (window as any).__mf.release());
+    return mf.autoplay(300);
+  }, seed);
+  expect(phase).toBe('Result_Caught');
   await expect(fishCard(page)).toBeVisible();
 }
+
 
 const medalText = (tier: MedalTier) => `Medalha de ${tier}!`;
 

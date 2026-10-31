@@ -36,7 +36,8 @@ test('HIST-01, HUMOR-01: o jogo novo abre com o cartão "JANE: A Que Sempre Teve
   await expect(dialog(page)).toHaveCount(0); // o cartão vem antes da primeira fala
   const s = await gameState(page);
   expect(s.profile.story.pendingScene).toBe('ep1-abertura'); // a abertura vem antes da pesca
-  expect(s.fishing.phase).toBe('Idle');
+  expect(s.spot).toBeNull(); // nem o ponto foi escolhido
+  expect(s.fishing).toEqual({ phase: 'Aim', sinceS: 0 });
 
   // O cartão só fecha com toque: o tempo passando não fecha.
   await page.clock.fastForward('00:30');

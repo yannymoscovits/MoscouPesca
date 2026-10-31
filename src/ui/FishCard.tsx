@@ -1,11 +1,10 @@
-// Aviso de mordida (BitePrompt, PESCA-06) e o fim do arremesso: a ficha do peixe (FishCard, PESCA-15,
-// HUMOR-03, ALBUM-02), depois da comemoração (HUMOR-05), ou o aviso de quando não vem peixe
-// (PESCA-05, PESCA-09, PESCA-13).
+// O fim do arremesso: a ficha do peixe (FishCard, PESCA-15, HUMOR-03, ALBUM-02), depois da
+// comemoração (HUMOR-05), ou o aviso de quando não vem peixe (pesca-bass ISCA-12, BRIGA-11).
 
 import { useState } from 'preact/hooks';
 import { useGame, type GameState } from '../app/store';
 import type { MedalTier, Species } from '../content/types';
-import type { FishingState } from '../domain/fishing';
+import type { PescaState } from '../domain/pesca';
 import { colorOf } from '../render/fishingRenderer';
 import { resolveAsset } from '../render/sprites';
 import { CatchCelebration } from './Celebration';
@@ -13,30 +12,9 @@ import { useServices } from './context';
 import { formatKg, formatMoney } from './format';
 import { Pixels } from './TitleArt';
 
-/**
- * PESCA-06: "!" grande e o botão "FISGAR!" na metade de baixo. Fica dentro da área dos toques da
- * cena: apertar o botão chega ao InputController como qualquer toque, fisga (PESCA-08) e, com o
- * dedo segurando, já começa a recolher a linha (PESCA-10).
- */
-export function BitePrompt() {
-  const biting = useGame((s) => s.fishing.phase === 'Bite');
-  if (!biting) return null;
-  return (
-    <div class="bite">
-      <p class="bite__alert" aria-live="assertive">
-        !
-      </p>
-      <button type="button" class="btn bite__hook">
-        FISGAR!
-      </button>
-    </div>
-  );
-}
-
 const MISSES = {
-  Result_Nothing: 'Nada por aqui… tente outro ponto', // PESCA-05
-  Result_Escaped: 'Escapou! Tente de novo', // PESCA-09
-  Result_Broken: 'A linha arrebentou!', // PESCA-13
+  Result_Nothing: 'Nada dessa vez', // ISCA-12: a isca chegou ao Adilson sem peixe
+  Result_Escaped: 'O peixe fugiu!', // BRIGA-11: o medidor zerou no Desafio
 } as const;
 
 /** O resultado do arremesso até o toque em "Continuar", que volta para o arremesso. */
@@ -46,7 +24,8 @@ export function ResultOverlay() {
   const newRecord = useGame((s) => s.newRecord);
   const awards = useGame((s) => s.awards);
   // HUMOR-05: cada peixe pego é comemorado antes da ficha.
-  const [celebrated, setCelebrated] = useState<FishingState | null>(null);
+  const [celebrated, setCelebrated] = useState<PescaState | null>(null);
+
   const next = (
     <div class="overlay__actions">
       <button type="button" class="btn btn--big" onClick={() => controller.dismissResult()}>

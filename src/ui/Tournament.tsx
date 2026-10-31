@@ -104,7 +104,12 @@ export function RivalTaunts() {
   const { controller, episodes } = useServices();
   const run = useGame((s) => s.profile.tournament);
   const introduced = useGame((s) => s.profile.charactersIntroduced);
-  const busy = useGame((s) => s.paused || s.profile.story.pendingScene !== null || s.fishing.phase !== 'Idle' || s.tournamentResult !== null);
+  // Antes do primeiro arremesso: no pesqueiro ou com a isca ainda na mão (mira e força).
+  const casting = (phase: string) => phase !== 'Aim' && phase !== 'Power';
+  const busy = useGame(
+    (s) => s.paused || s.profile.story.pendingScene !== null || casting(s.fishing.phase) || s.tournamentResult !== null,
+  );
+
   // Até onde as provocações deste torneio já foram vistas; um torneio novo (Tentar de novo) recomeça.
   const [seen, setSeen] = useState<{ run: TournamentRun | null; count: number }>({ run: null, count: 0 });
   const def = run && episodes.find((ep) => ep.tournament.id === run.id)?.tournament;

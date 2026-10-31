@@ -3,9 +3,10 @@ import { episodes } from '../content';
 import { ep1 } from '../content/episodes/ep1';
 import { ep5 } from '../content/episodes/ep5';
 import type { Profile } from '../content/types';
-import type { FishingState } from '../domain/fishing';
+import type { PescaState } from '../domain/pesca';
 import { newProfile } from '../domain/profile';
-import type { Rng } from '../domain/rng';
+import { createRng, type Rng } from '../domain/rng';
+import { typicalPlayer } from '../domain/sim/typicalPlayer';
 import { goals } from '../content/goals';
 import { goalId } from '../domain/medals';
 import { createSaveService, CURRENT_KEY, type SaveOutcome, type SaveService } from '../platform/save';
@@ -13,14 +14,15 @@ import { bootGame, createController } from './controller';
 import { createStore, initialState } from './store';
 
 /**
- * Sorteio previsível: mordida no início da janela, peso no mínimo da faixa e,
- * entre as espécies que podem morder, a pedida (ou a primeira).
- * `share` (0 a 1) leva os sorteios para dentro da faixa: 1 dá o peso máximo.
+ * Sorteio previsível: todo sorteio no começo da faixa (peixes juntos, ataque em 2 s, peixe calmo parado
+ * na briga) e, entre as espécies do ponto, a pedida (ou a primeira).
+ * `share` (0 a 1) leva só o peso do peixe pedido para dentro da faixa dele: 1 dá o peso máximo.
  */
 function scriptedRng(speciesId?: string, share = 0): Rng {
+  const kg = episodes.flatMap((ep) => ep.species).find((sp) => sp.id === speciesId)?.kg;
   return {
     next: () => 0,
-    range: (min, max) => min + (max - min) * share,
+    range: (min, max) => (kg && min === kg.min && max === kg.max ? min + (max - min) * share : min),
     pick: (weighted) => (weighted.find((w) => (w.item as { id?: string }).id === speciesId) ?? weighted[0]).item,
   };
 }
@@ -60,29 +62,57 @@ function setup(profile: Profile, opts: { species?: string; saveOk?: boolean; sha
   const state = () => store.getState();
   const lastSaved = () => saved[saved.length - 1];
 
-  function tickUntil(phase: FishingState['phase'], maxS = 60) {
-    for (let t = 0; t < maxS && state().fishing.phase !== phase; t += 0.1) controller.tick(0.1);
+  function tickUntil(phase: PescaState['phase'], maxS = 120) {
+    for (let t = 0; t < maxS && state().fishing.phase !== phase; t += DT) controller.tick(DT);
     expect(state().fishing.phase).toBe(phase);
   }
 
-  /** Toca na água, espera a mordida, fisga e segura até pegar. */
-  function catchFish(at = { x: 90, y: 300 }) {
-    controller.tapWater(at.x, at.y);
-    tickUntil('Bite');
-    controller.pressStart();
-    tickUntil('Result_Caught');
-    controller.pressEnd();
-    return state().fishing as Extract<FishingState, { phase: 'Result_Caught' }>;
+  /** O ponto, se a pesca ainda está no pesqueiro. */
+  function at(spot: string) {
+    if (state().spot === null) controller.chooseSpot(spot);
+    expect(state().spot).toBe(spot);
   }
 
-  /** Arremessa fora de qualquer zona: nada morde e a isca volta em 15 s. */
-  function castNothing() {
-    controller.tapWater(90, 365);
-    tickUntil('Result_Nothing');
+  /** ARREMESSAR duas vezes seguidas (a força mais fraca) e espera a isca na água. */
+  function castNow() {
+    controller.pressButton('arremessar');
+    controller.pressButton('arremessar');
+    tickUntil('Lure');
   }
 
-  return { store, save, saved, lastSaved, platform, controller, state, tickUntil, catchFish, castNothing };
+  /** O jogador típico da simulação (SIMB-02) joga o arremesso inteiro até o resultado. */
+  function playCast(maxS = 300) {
+    const player = typicalPlayer(createRng(1), controller.rules());
+    for (let t = 0; t < maxS && !state().fishing.phase.startsWith('Result_'); t += DT) {
+      const s = state();
+      const input = player(s.fishing, DT);
+      if (input.holding !== s.holding) (input.holding ? controller.holdStart : controller.holdEnd)();
+      if (input.button) controller.pressButton(input.button);
+      controller.tick(DT);
+    }
+  }
+
+  /** No ponto (o raso, se nenhum for dado), joga o arremesso e pega o peixe. */
+  function catchFish(spot = 'raso') {
+    at(spot);
+    playCast();
+    expect(state().fishing.phase).toBe('Result_Caught');
+    return state().fishing as Extract<PescaState, { phase: 'Result_Caught' }>;
+  }
+
+  /** Arremessa e recolhe sem nunca fisgar: quem ataca escapa e a isca chega ao Adilson (ISCA-11, ISCA-12). */
+  function castNothing(spot = 'raso') {
+    at(spot);
+    castNow();
+    controller.holdStart();
+    tickUntil('Result_Nothing', 300);
+    controller.holdEnd();
+  }
+
+  return { store, save, saved, lastSaved, platform, controller, state, tickUntil, at, castNow, playCast, catchFish, castNothing };
 }
+
+const DT = 0.1;
 
 /** Armazenamento de mentira com só o que o SaveService usa. */
 function memoryStorage() {
@@ -102,43 +132,122 @@ describe('pesca', () => {
     expect(g.state().profile.money).toBe(credited);
   });
 
-  it('PESCA-17: fechar a ficha volta a pesca para Idle sem creditar de novo', () => {
+  it('PESCA-17: fechar a ficha volta a mirar no mesmo ponto sem creditar de novo', () => {
     const g = setup(played({ money: 10 }), { species: 'tilapia' });
     g.catchFish();
     const money = g.state().profile.money;
 
     g.controller.dismissResult();
 
-    expect(g.state().fishing).toEqual({ phase: 'Idle' });
+    expect(g.state().fishing).toEqual({ phase: 'Aim', sinceS: 0 });
+    expect(g.state().spot).toBe('raso');
     expect(g.state().profile.money).toBe(money);
   });
 
-  it('PESCA-09: resultado sem peixe também volta para Idle ao fechar, pronto para arremessar', () => {
+  it('ISCA-12: resultado sem peixe também volta ao arremesso ao fechar, pronto para arremessar', () => {
     const g = setup(played());
     g.castNothing();
 
     g.controller.dismissResult();
-    g.controller.tapWater(90, 300);
+    g.controller.pressButton('arremessar');
 
-    expect(g.state().fishing.phase).toBe('Flying');
+    expect(g.state().fishing.phase).toBe('Power');
   });
 
-  it('PESCA-07: mordida com a vibração ligada chama vibrate(300) uma vez', () => {
+  it('ISCA-09: ataque com a vibração ligada chama vibrate(300) uma vez', () => {
     const g = setup(played());
-    g.controller.tapWater(90, 300);
-    g.tickUntil('Bite');
+    g.at('raso');
+    g.castNow();
+    g.controller.holdStart();
+    g.tickUntil('Strike');
     for (let i = 0; i < 5; i++) g.controller.tick(0.1);
 
     expect(g.platform.vibrate).toHaveBeenCalledTimes(1);
     expect(g.platform.vibrate).toHaveBeenCalledWith(300);
   });
 
-  it('PESCA-07: mordida com a vibração desligada não vibra', () => {
+  it('ISCA-09: ataque com a vibração desligada não vibra', () => {
     const g = setup(played({ settings: { difficulty: 'tranquilo', vibration: false } }));
-    g.controller.tapWater(90, 300);
-    g.tickUntil('Bite');
+    g.at('raso');
+    g.castNow();
+    g.controller.holdStart();
+    g.tickUntil('Strike');
 
     expect(g.platform.vibrate).not.toHaveBeenCalled();
+  });
+});
+
+describe('pesqueiro e botões', () => {
+  it('PONTO-03: ponto com cadeado (Fundão pede alcance 5, a Vara de Bambu tem 2) não abre o arremesso', () => {
+    const g = setup(played());
+    g.controller.chooseSpot('fundo');
+    expect(g.state().spot).toBeNull();
+
+    g.controller.chooseSpot('raso');
+    expect(g.state().spot).toBe('raso');
+    expect(g.state().fishing).toEqual({ phase: 'Aim', sinceS: 0 });
+  });
+
+  it('PONTO-05: "Trocar de ponto" volta ao pesqueiro na mira e na força; com a isca no ar, não', () => {
+    const g = setup(played());
+    g.at('raso');
+    g.controller.leaveSpot();
+    expect(g.state().spot).toBeNull();
+
+    g.at('raso');
+    g.controller.pressButton('arremessar');
+    g.controller.leaveSpot();
+    expect(g.state().spot).toBeNull();
+
+    g.at('raso');
+    g.controller.pressButton('arremessar');
+    g.controller.pressButton('arremessar');
+    g.controller.leaveSpot();
+    expect(g.state().spot).toBe('raso');
+    expect(g.state().fishing.phase).toBe('Flying');
+  });
+
+  it('BOTAO-03, ARREM-04: botão sem efeito não muda o estado (no pesqueiro e com a isca no ar)', () => {
+    const g = setup(played());
+    let before = g.state();
+    g.controller.pressButton('arremessar');
+    g.controller.pressButton('puxar');
+    expect(g.state()).toBe(before);
+
+    g.at('raso');
+    g.controller.pressButton('arremessar');
+    g.controller.pressButton('arremessar');
+    before = g.state();
+    g.controller.pressButton('arremessar');
+    g.controller.pressButton('puxar');
+    expect(g.state()).toBe(before);
+  });
+
+  it('BRIGA-11, ISCA-12, BRIGA-10: no torneio, cada resultado gasta 1 arremesso (nada, peixe fugido e peixe)', () => {
+    const g = setup(tournamentReady({ settings: { difficulty: 'desafio', vibration: true } }), { species: 'tilapia' });
+    g.controller.enterTournament();
+
+    g.castNothing();
+    expect(g.state().profile.tournament?.castsLeft).toBe(7);
+    g.controller.dismissResult();
+
+    // Segurando SEGURAR, a faixa sobe e deixa no fundo o peixe calmo: o medidor zera no Desafio.
+    g.castNow();
+    g.controller.holdStart();
+    g.tickUntil('Strike');
+    g.controller.holdEnd();
+    g.controller.pressButton('puxar');
+    g.controller.holdStart();
+    g.tickUntil('Result_Escaped');
+    g.controller.holdEnd();
+
+    expect(g.state().profile.tournament?.castsLeft).toBe(6);
+    expect(g.state().profile.tournament?.catches).toEqual([]);
+    g.controller.dismissResult();
+
+    const fish = g.catchFish();
+    expect(g.state().profile.tournament?.castsLeft).toBe(5);
+    expect(g.state().profile.tournament?.catches).toEqual([{ species: 'tilapia', kg: fish.kg }]);
   });
 });
 
@@ -194,11 +303,12 @@ describe('medalhas e metas', () => {
     const p = played({
       unlockedEpisodes: [1, 2],
       currentLocation: 'rio-jacuipe',
+      rods: { owned: ['bambu', 'fibra'], equipped: 'fibra' }, // a beira do rio pede alcance 3
       catchCounts: { 'tilapia-jacuipe': 9 },
       story: { episodes: {}, scenesSeen: [ep1.chapter.openingScene, 'ep2-abertura'], pendingScene: null },
     });
     const g = setup(p, { species: 'tilapia-jacuipe' });
-    g.catchFish({ x: 120, y: 300 }); // a beira do rio
+    g.catchFish('beira'); // a beira do rio
     expect(g.state().awards).toMatchObject({ goals: [10], reward: goals.reward(2, 10) });
   });
 
@@ -215,10 +325,15 @@ describe('medalhas e metas', () => {
     createSaveService(storage).save(played({ catchCounts: { tilapia: 9 } }));
 
     const first = boot();
-    first.controller.tapWater(90, 300);
-    for (let t = 0; t < 60 && first.store.getState().fishing.phase !== 'Bite'; t += 0.1) first.controller.tick(0.1);
-    first.controller.pressStart();
-    for (let t = 0; t < 60 && first.store.getState().fishing.phase !== 'Result_Caught'; t += 0.1) first.controller.tick(0.1);
+    first.controller.chooseSpot('raso');
+    const player = typicalPlayer(createRng(1), first.controller.rules());
+    for (let t = 0; t < 300 && first.store.getState().fishing.phase !== 'Result_Caught'; t += DT) {
+      const s = first.store.getState();
+      const input = player(s.fishing, DT);
+      if (input.holding !== s.holding) (input.holding ? first.controller.holdStart : first.controller.holdEnd)();
+      if (input.button) first.controller.pressButton(input.button);
+      first.controller.tick(DT);
+    }
     const before = first.store.getState().profile;
     expect(before.goalsDone).toEqual([goalId('tilapia', 10)]);
 
@@ -292,7 +407,7 @@ describe('SAVE-04: salva depois de cada peixe, compra, objetivo e arremesso de t
 });
 
 describe('SAVE-06: jogo fechado no meio de uma briga', () => {
-  it('reabre em Idle e sem gastar o arremesso do torneio', () => {
+  it('reabre no pesqueiro, sem arremesso e sem gastar o arremesso do torneio', () => {
     const storage = memoryStorage();
     const platform = { vibrate: vi.fn(), onVisibilityChange: () => () => {} };
     const boot = () =>
@@ -301,15 +416,20 @@ describe('SAVE-06: jogo fechado no meio de uma briga', () => {
 
     const first = boot();
     first.controller.enterTournament();
-    first.controller.tapWater(90, 300);
-    for (let t = 0; t < 10 && first.store.getState().fishing.phase !== 'Bite'; t += 0.1) first.controller.tick(0.1);
-    first.controller.pressStart();
+    first.controller.chooseSpot('raso');
+    first.controller.pressButton('arremessar');
+    first.controller.pressButton('arremessar');
+    first.controller.holdStart();
+    for (let t = 0; t < 30 && first.store.getState().fishing.phase !== 'Strike'; t += 0.1) first.controller.tick(0.1);
+    first.controller.holdEnd();
+    first.controller.pressButton('puxar');
     first.controller.tick(0.5);
     expect(first.store.getState().fishing.phase).toBe('Fight');
 
     const reopened = boot(); // o Android matou o app na briga
 
-    expect(reopened.store.getState().fishing).toEqual({ phase: 'Idle' });
+    expect(reopened.store.getState().spot).toBeNull();
+    expect(reopened.store.getState().fishing).toEqual({ phase: 'Aim', sinceS: 0 });
     expect(reopened.store.getState().profile.tournament).toEqual({ id: 'guanambicup', castsLeft: 8, catches: [] });
   });
 });
@@ -319,7 +439,7 @@ describe('TUTO-08: peixe do tutorial', () => {
     const g = setup({ ...newProfile(), settings: { difficulty: 'desafio', vibration: true } }, { species: 'tilapia' });
     g.controller.openFishing();
     while (g.state().profile.story.pendingScene) g.controller.advanceDialog();
-    expect(g.state().tutorial?.step).toBe('cast');
+    expect(g.state().tutorial?.step).toBe('ponto');
 
     g.catchFish();
 
@@ -338,8 +458,9 @@ describe('história', () => {
     expect(g.state().profile.story.pendingScene).toBe('ep1-abertura');
     expect(g.state().dialogLine).toBe(0);
 
-    g.controller.tapWater(90, 300); // a cena vem antes da pesca
-    expect(g.state().fishing.phase).toBe('Idle');
+    g.controller.chooseSpot('raso'); // a cena vem antes da pesca
+    expect(g.state().spot).toBeNull();
+    expect(g.state().fishing).toEqual({ phase: 'Aim', sinceS: 0 });
 
     const lines = ep1.scenes.find((s) => s.id === 'ep1-abertura')!.lines.length;
     for (let i = 1; i < lines; i++) {
@@ -412,7 +533,7 @@ describe('torneio', () => {
     g.controller.enterTournament();
 
     for (let i = 0; i < 8; i++) {
-      g.catchFish({ x: 90, y: 140 }); // fundo da represa
+      g.catchFish('fundo'); // fundo da represa
       g.controller.dismissResult();
     }
 
@@ -487,9 +608,12 @@ describe('abertura do jogo', () => {
       rng: scriptedRng(),
       persist: async () => true,
     });
-    controller.tapWater(90, 300);
+    controller.chooseSpot('raso');
+    controller.pressButton('arremessar');
+    controller.pressButton('arremessar');
     controller.tick(0.1);
     const flying = store.getState().fishing;
+    expect(flying.phase).toBe('Flying');
 
     pl.hide();
     controller.tick(0.1);
@@ -523,8 +647,14 @@ describe('HIST-10: vitória na Copa Adilson Moscovits (Episódio 5)', () => {
       rng: scriptedRng(),
     });
 
-    controller.tapWater(90, 365); // fora das zonas: o último arremesso volta sem peixe
-    for (let t = 0; t < 20 && store.getState().fishing.phase !== 'Result_Nothing'; t += 0.1) controller.tick(0.1);
+    // O último arremesso volta sem peixe: recolhe sem fisgar até a isca chegar ao Adilson.
+    controller.chooseSpot(ep5.locations[0].zones[0].id);
+    controller.pressButton('arremessar');
+    controller.pressButton('arremessar');
+    controller.holdStart();
+    for (let t = 0; t < 300 && store.getState().fishing.phase !== 'Result_Nothing'; t += 0.1) controller.tick(0.1);
+    expect(store.getState().fishing.phase).toBe('Result_Nothing');
+
 
     const s = store.getState();
     expect(s.tournamentResult?.won).toBe(true);

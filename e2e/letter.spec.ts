@@ -3,7 +3,7 @@ import { episodes } from '../src/content';
 import { characters } from '../src/content/characters';
 import { ep1 } from '../src/content/episodes/ep1';
 import type { EpisodeContent, EpisodeId, Message, Profile } from '../src/content/types';
-import { gameState, manualClock, openWithProfile, reopen, veteran } from './support';
+import { castNothing, gameState, manualClock, openWithProfile, reopen, veteran } from './support';
 
 // Carta da família em páginas (CAMP-06), o encerramento e o aviso do episódio (HIST-08, HIST-10)
 // e a caixa de mensagens para reler (CAMP-10).
@@ -37,15 +37,12 @@ function aboutToWin(ep: EpisodeContent): Partial<Profile> {
 }
 
 /** O último arremesso (sem peixe), o aviso dele e a classificação da vitória. */
-async function winLastCast(page: Page) {
+async function winLastCast(page: Page, spot = 'raso') {
   await manualClock(page);
   await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.evaluate(() => {
-    const mf = (window as any).__mf;
-    mf.tap(90, 365);
-    for (let t = 0; t < 20 && mf.state().fishing.phase !== 'Result_Nothing'; t += 0.5) mf.advance(0.5);
-  });
+  expect(await castNothing(page, 1, spot)).toBe('Result_Nothing');
   await page.getByRole('dialog', { name: 'Resultado do arremesso' }).getByRole('button', { name: 'Continuar' }).click();
+
   await page.getByRole('dialog', { name: 'Classificação' }).getByRole('button', { name: 'Continuar' }).click();
 }
 
@@ -113,7 +110,7 @@ for (const ep of episodes) {
     page,
   }) => {
     await openWithProfile(page, aboutToWin(ep));
-    await winLastCast(page);
+    await winLastCast(page, ep.locations[0].zones[0].id);
     await expect(letter(page)).toContainText(`De: ${ep.letter.from}`);
     expect(flat((await readLetter(page)).text)).toBe(flat(ep.letter.text));
     const closing = ep.scenes.find((s) => s.id === ep.chapter.closingScene)!.lines;

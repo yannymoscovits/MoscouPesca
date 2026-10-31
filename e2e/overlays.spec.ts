@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { advanceUntil, gameState, manualClock, openWithProfile, toScreen, veteran } from './support';
+import { chooseSpot, fishingButton, gameState, hookNow, manualClock, openWithProfile, veteran } from './support';
 
 // Pausa, celular deitado e aviso de salvamento (SAVE-01, SAVE-02, ACES-10, edge case do armazenamento cheio).
 
@@ -21,32 +21,31 @@ const setVisibility = (page: Page, state: 'hidden' | 'visible') =>
 
 const fight = async (page: Page) => {
   const { fishing } = await gameState(page);
-  return { phase: fishing.phase, tension: fishing.tension, distance: fishing.distance };
+  return { phase: fishing.phase, bar: fishing.bar };
 };
 
 test('SAVE-01, SAVE-02: oculto no meio da briga, nada muda em 3 s; ao voltar, "Pausado" espera o toque', async ({ page }) => {
   await openWithProfile(page, veteran());
   await manualClock(page);
   await play(page);
-  const p = toScreen(page, 90, 300);
-  await page.mouse.click(p.x, p.y);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
+  await chooseSpot(page);
+  expect(await hookNow(page)).toBe('Fight'); // fisga
   await page.evaluate(() => {
     const mf = (window as any).__mf;
-    mf.press(); // fisga e segura
+    mf.hold(true); // e segura SEGURAR
     mf.advance(0.5);
     mf.clock('real'); // daqui em diante, o laço do jogo move a briga
   });
 
   // Com o relógio de verdade, a briga anda sozinha.
   const moving = await fight(page);
-  await expect.poll(async () => (await fight(page)).distance).not.toBe(moving.distance);
+  await expect.poll(async () => (await fight(page)).bar.fishY).not.toBe(moving.bar.fishY);
 
   await setVisibility(page, 'hidden');
   const frozen = await fight(page);
   expect(frozen.phase).toBe('Fight');
   await page.waitForTimeout(3000);
-  expect(await fight(page)).toEqual(frozen); // SAVE-01: tensão e distância congeladas
+  expect(await fight(page)).toEqual(frozen); // SAVE-01: faixa, peixe e medidor congelados
 
   await setVisibility(page, 'visible');
   await expect(page.getByText(PAUSED)).toBeVisible();
@@ -56,7 +55,7 @@ test('SAVE-01, SAVE-02: oculto no meio da briga, nada muda em 3 s; ao voltar, "P
   await page.getByText(PAUSED).click();
   await expect(page.getByText(PAUSED)).toBeHidden();
   expect((await gameState(page)).paused).toBe(false);
-  await expect.poll(async () => (await fight(page)).distance).not.toBe(frozen.distance); // retomou
+  await expect.poll(async () => (await fight(page)).bar.fishY).not.toBe(frozen.bar.fishY); // retomou
 });
 
 test('SAVE-02: o botão de pausa mostra "Pausado - toque para continuar" e o toque retoma', async ({ page }) => {
@@ -128,7 +127,8 @@ test('armazenamento cheio: "Não consegui salvar" aparece uma vez só na sessão
   expect((await gameState(page)).saveWarning).toBe(false);
   await expect(warning).toHaveCount(0);
 
-  const p = toScreen(page, 90, 300);
-  await page.mouse.click(p.x, p.y);
-  expect((await gameState(page)).fishing.phase).toBe('Flying'); // segue jogável
+  await chooseSpot(page);
+  await fishingButton(page, 'arremessar').click();
+  expect((await gameState(page)).fishing.phase).toBe('Power'); // segue jogável
+
 });

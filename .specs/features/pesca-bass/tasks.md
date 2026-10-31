@@ -398,12 +398,12 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Unit do controlador: ponto bloqueado não abre; botão sem efeito não muda o estado; vibração no ataque com a opção ligada; resultado do torneio conta 1 arremesso por resultado
-- [ ] e2e (`e2e/pescaria.spec.ts`): pesqueiro → Pescar aqui → ARREMESSAR × 2 → isca na água → RECOLHER/PUXAR até o ataque → FISGAR → briga com `autoplay` → ficha e saldo
-- [ ] e2e: fisgada perdida mostra "Escapou!" e mantém a isca; isca no Adilson mostra "Nada dessa vez"; no Desafio sem segurar, "O peixe fugiu!"; no Tranquilo sem segurar, o medidor para em 10%
-- [ ] e2e: botões no quarto de baixo, cada um com pelo menos 40% da largura e 72 px de altura; "Trocar de ponto" volta ao pesqueiro; pausar congela isca, faixa e medidor
-- [ ] Testes de tela da v1 que usavam toque na cena ou fases antigas migrados para as ajudas novas; os que testavam PESCA-01 a 14 trocados pelos da spec nova
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] Unit do controlador: ponto bloqueado não abre; botão sem efeito não muda o estado; vibração no ataque com a opção ligada; resultado do torneio conta 1 arremesso por resultado
+- [x] e2e (`e2e/pescaria.spec.ts`): pesqueiro → Pescar aqui → ARREMESSAR × 2 → isca na água → RECOLHER/PUXAR até o ataque → FISGAR → briga com `autoplay` → ficha e saldo
+- [x] e2e: fisgada perdida mostra "Escapou!" e mantém a isca; isca no Adilson mostra "Nada dessa vez"; no Desafio sem segurar, "O peixe fugiu!"; no Tranquilo sem segurar, o medidor para em 10%
+- [x] e2e: botões no quarto de baixo, cada um com pelo menos 40% da largura e 72 px de altura; "Trocar de ponto" volta ao pesqueiro; pausar congela isca, faixa e medidor
+- [x] Testes de tela da v1 que usavam toque na cena ou fases antigas migrados para as ajudas novas; os que testavam PESCA-01 a 14 trocados pelos da spec nova
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

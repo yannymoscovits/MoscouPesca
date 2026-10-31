@@ -4,19 +4,21 @@
 import { createContext } from 'preact';
 import { useContext, useEffect, useReducer, useRef } from 'preact/hooks';
 import type { MedalTier, Profile } from '../content/types';
-import type { FishingState } from '../domain/fishing';
+import { startPesca, type PescaState } from '../domain/pesca';
 import type { Standing } from '../domain/tournament';
-import type { TutorialState } from '../domain/tutorial';
+import type { TutorialPescaState } from '../domain/tutorialPesca';
 
 export interface GameState {
   /** O que é salvo. A cena em exibição é `profile.story.pendingScene`. */
   profile: Profile;
-  /** Arremesso atual. Não é salvo: reabrir o jogo volta para `Idle` (SAVE-06). */
-  fishing: FishingState;
-  /** Dedo na tela: recolhe a linha na briga (PESCA-10). */
+  /** Arremesso atual. Não é salvo: reabrir o jogo volta ao pesqueiro, sem arremesso (SAVE-06). */
+  fishing: PescaState;
+  /** Ponto escolhido no pesqueiro (Zone.id do local atual); null mostra o pesqueiro. Não é salvo. */
+  spot: string | null;
+  /** Dedo segurando RECOLHER (na água) ou SEGURAR (na briga). */
   holding: boolean;
   /** Tutorial em andamento; null fora dele. */
-  tutorial: TutorialState | null;
+  tutorial: TutorialPescaState | null;
   /** SAVE-01, SAVE-02: nada anda até o toque de "continuar". */
   paused: boolean;
   /** Fala atual da cena pendente (HIST-03). */
@@ -36,7 +38,8 @@ export interface GameState {
 export function initialState(profile: Profile): GameState {
   return {
     profile,
-    fishing: { phase: 'Idle' },
+    fishing: startPesca(),
+    spot: null,
     holding: false,
     tutorial: null,
     paused: false,

@@ -1,73 +1,123 @@
-// Tela de pesca (design.md, "UI (Preact)"; mockup docs/arte/mockups/tela-de-pesca-v2.png): o fundo do
-// mar da tela inicial, o canvas da cena por cima e o HUD em HTML. Saldo e objetivo (HIST-04), barra de
-// tensão (PESCA-12), medidores da pescaria (T80), pausa sempre à mão (SAVE-03), arremessos e pontos do
+// Tela de pesca (design.md, "UI (Preact)"; pesca-bass, "Telas"): sem ponto escolhido, o pesqueiro
+// (SpotScreen); com ponto, o canvas da cena escolhe a vista pela fase: de cima na mira, na força e no
+// voo (castRenderer, com o respingo depois da queda) e de lado com a isca na água e na briga
+// (underwaterRenderer). Por cima, em HTML: o painel com saldo e objetivo (HIST-04), os medidores, a
+// barra de força e "Trocar de ponto" (CastHud), a barra de captura (CatchBar), os botões da pescaria
+// (FishingButtons), o aviso "Escapou!" (ISCA-11), a pausa sempre à mão (SAVE-03), os arremessos do
 // torneio (CAMP-03) e a tela acesa enquanto ela está aberta (TELA-01).
 
 import { useContext, useLayoutEffect, useRef } from 'preact/hooks';
-import { attachInput } from '../app/input';
 import { createLoop } from '../app/loop';
 import { GameStoreContext, useGame, type GameStore } from '../app/store';
 import type { ComponentChildren } from 'preact';
 import type { EpisodeContent, Profile } from '../content/types';
-import { tensionBand } from '../domain/fishing';
+import { aimAngleDeg } from '../domain/castAim';
+import { rulesFor } from '../domain/pesca';
+import { spotsFor } from '../domain/spots';
 import { currentObjective } from '../domain/story';
 import { score } from '../domain/tournament';
-import { createFishingRenderer } from '../render/fishingRenderer';
+import { CAST_FLIGHT_S } from '../domain/tuning';
+import { createCastRenderer, SPLASH_S, type CastView } from '../render/castRenderer';
+import { createUnderwaterRenderer } from '../render/underwaterRenderer';
 import { useNav, useServices } from './context';
+import { CastHud } from './CastHud';
+import { CatchBar } from './CatchBar';
 import { ImpactFx } from './Celebration';
 import { DialogLayer } from './DialogBox';
-import { BitePrompt, ResultOverlay } from './FishCard';
+import { ResultOverlay } from './FishCard';
+import { FishingButtons } from './FishingButtons';
 import { FishingGauges } from './FishingGauges';
 import { EpisodeBanner } from './Letter';
 import { currentPlace, formatKg, formatMoney } from './format';
 import { PauseOverlay } from './Overlays';
+import { SpotScreen } from './SpotScreen';
 import { Pixels, TitleScene } from './TitleArt';
 import { RivalTaunts, Standings } from './Tournament';
 import { TutorialCoach } from './TutorialCoach';
+
+/** Quanto o aviso "Escapou!" fica na tela depois da fisgada perdida (ISCA-11). */
+export const NOTICE_S = 1.5;
 
 export function FishingScreen() {
   const store = useContext(GameStoreContext) as GameStore;
   const { controller, browser, episodes } = useServices();
   const screen = useRef<HTMLElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
-  // O cenário do local atual (EPI-04, EPI-08), o mesmo que o renderizador desenha.
+  // O cenário do local atual (EPI-04, EPI-08), o mesmo que os renderizadores desenham.
   const background = useGame((s) => currentPlace(s.profile, episodes).location.background);
   const paused = useGame((s) => s.paused);
+  const atSpot = useGame((s) => s.spot !== null);
   const canvas = useRef<HTMLCanvasElement>(null);
 
-  // Layout effect: a cena já aceita toques no mesmo quadro em que aparece.
   useLayoutEffect(() => {
-    const renderer = createFishingRenderer();
+    const cast = createCastRenderer();
+    const under = createUnderwaterRenderer();
     const size = () => ({ width: window.innerWidth, height: window.innerHeight });
-    const view = () => {
+    // ARREM-05: a pesca passa à água quando a isca cai; a vista de cima fica mais SPLASH_S com o respingo.
+    let landed: { angleDeg: number; distanceM: number; atT: number | null } | null = null;
+
+    const draw = (t: number) => {
       const s = store.getState();
+      if (s.spot === null) return; // o pesqueiro tem o desenho dele
       const { location } = currentPlace(s.profile, episodes);
-      return { fishing: s.fishing, background: location.background, place: location.id };
+      const f = s.fishing;
+      if (f.phase === 'Flying') landed = { angleDeg: f.angleDeg, distanceM: f.distanceM, atT: null };
+      else if (f.phase !== 'Lure') landed = null;
+      if (landed && f.phase === 'Lure') {
+        landed.atT ??= t;
+        if (t - landed.atT >= SPLASH_S) landed = null;
+      }
+
+      if (f.phase === 'Lure' || f.phase === 'Strike' || f.phase === 'Fight') {
+        if (!landed) {
+          under.draw({ place: location.id, pesca: f }, t);
+          return;
+        }
+      }
+      const sweepS = rulesFor(s.profile.settings.difficulty ?? 'tranquilo').sweepS;
+      const view: CastView = { background: location.background, place: location.id, spots: [], aim: null, flight: null };
+      if (f.phase === 'Aim') view.aim = { angleDeg: aimAngleDeg(f.sinceS, sweepS), locked: false };
+      if (f.phase === 'Power') view.aim = { angleDeg: f.angleDeg, locked: true };
+      if (f.phase === 'Flying') view.flight = { angleDeg: f.angleDeg, distanceM: f.distanceM, sinceS: f.sinceS };
+      if (landed?.atT != null) view.flight = { angleDeg: landed.angleDeg, distanceM: landed.distanceM, sinceS: CAST_FLIGHT_S + t - landed.atT };
+      cast.draw(view, t);
     };
-    const draw = (t: number) => renderer.draw(view(), t);
-    renderer.mount(canvas.current!, size());
+    cast.mount(canvas.current!, size());
+    under.mount(canvas.current!, size());
 
     // `controller.tick` é lido a cada quadro: o relógio manual dos testes troca essa função.
     const loop = createLoop({ tick: (dt) => controller.tick(dt), draw, isPaused: () => store.getState().paused });
-    const detach = attachInput(stage.current!, { controller, getState: store.getState, toLogical: renderer.toLogical });
-    // A pausa para o laço (SAVE-01); ao retomar, ele volta a rodar.
+    // A pausa para o laço (SAVE-01); ao retomar, ele volta a rodar. Só na volta da pausa: chamar
+    // `start` a cada mudança, de dentro do próprio quadro, agendava um quadro a mais a cada tick.
+    let wasPaused = store.getState().paused;
     const unsubscribe = store.subscribe(() => {
-      if (!store.getState().paused) loop.start();
+      const now = store.getState().paused;
+      if (wasPaused && !now) loop.start();
+      wasPaused = now;
     });
     const onResize = () => {
-      renderer.resize(size());
+      cast.resize(size());
+      under.resize(size());
       draw(performance.now() / 1000); // redimensionar apaga o canvas, mesmo pausado
     };
     window.addEventListener('resize', onResize);
+
+    // Os botões dos pontos ficam abaixo do painel e da dica da Jane (--spots-top).
+    const top = screen.current!.querySelector<HTMLElement>('.hud__top');
+    const markTop = () => screen.current?.style.setProperty('--spots-top', `${top?.getBoundingClientRect().bottom ?? 0}px`);
+    const watcher = typeof ResizeObserver === 'undefined' || !top ? null : new ResizeObserver(markTop);
+    watcher?.observe(top!);
+    markTop();
 
     controller.openFishing();
     void browser.keepScreenOn(true); // TELA-01
     loop.start();
     return () => {
       window.removeEventListener('resize', onResize);
+      watcher?.disconnect();
       unsubscribe();
-      detach();
       loop.stop();
+      cast.destroy();
+      under.destroy();
       void browser.keepScreenOn(false);
     };
   }, [store, controller, browser, episodes]);
@@ -76,11 +126,12 @@ export function FishingScreen() {
     <section class="fishing" aria-label="Pescaria" ref={screen} data-paused={paused ? 'true' : undefined}>
       {/* O fundo do mar da tela inicial; pausado, as animações dele param junto com o desenho. */}
       <TitleScene />
-      <div class="stage" ref={stage} data-background={background}>
+      {!atSpot && <Spots paused={paused} />}
+      <div class="stage" data-background={background} hidden={!atSpot}>
         <canvas ref={canvas} aria-hidden="true" />
-        <BitePrompt />
       </div>
-      <Hud />
+      {atSpot && <PescaControls />}
+      <Hud atSpot={atSpot} />
       <ResultOverlay />
       <Standings />
       <ImpactFx scene={screen} />
@@ -92,7 +143,53 @@ export function FishingScreen() {
   );
 }
 
-function Hud() {
+/** PONTO-01 a PONTO-04: o pesqueiro do local atual, com os pontos da vara equipada. */
+function Spots({ paused }: { paused: boolean }) {
+  const { controller, episodes } = useServices();
+  const profile = useGame((s) => s.profile);
+  const { episode, location } = currentPlace(profile, episodes);
+  const allRods = episodes.flatMap((ep) => ep.rods);
+  const rod = allRods.find((r) => r.id === profile.rods.equipped) ?? allRods[0];
+  return (
+    <SpotScreen
+      place={location.id}
+      background={location.background}
+      spots={spotsFor(location, rod, episode.species, profile.album)}
+      chooseSpot={(id) => controller.chooseSpot(id)}
+      paused={paused}
+    />
+  );
+}
+
+/** O que fica por cima da cena no ponto: força, captura, aviso e os botões (por último: acima da cena). */
+function PescaControls() {
+  const { controller } = useServices();
+  const fishing = useGame((s) => s.fishing);
+  const sweepS = useGame((s) => rulesFor(s.profile.settings.difficulty ?? 'tranquilo').sweepS);
+  // A classificação do torneio, a carta e o aviso do episódio ficam por cima: os botões esperam por eles.
+  const covered = useGame((s) => s.tournamentResult !== null || s.notice !== null);
+  const escaped = fishing.phase === 'Lure' && fishing.notice !== null && fishing.notice.sinceS < NOTICE_S;
+  if (covered) return null;
+  return (
+    <>
+      <CastHud pesca={fishing} sweepS={sweepS} leaveSpot={() => controller.leaveSpot()} />
+      {fishing.phase === 'Fight' && <CatchBar bar={fishing.bar} />}
+      {escaped && (
+        <p class="pesca-notice" role="status">
+          {fishing.notice!.text}
+        </p>
+      )}
+      <FishingButtons
+        phase={fishing.phase}
+        onButton={(b) => controller.pressButton(b)}
+        onHoldStart={() => controller.holdStart()}
+        onHoldEnd={() => controller.holdEnd()}
+      />
+    </>
+  );
+}
+
+function Hud({ atSpot }: { atSpot: boolean }) {
   const { controller, episodes } = useServices();
   const go = useNav();
   const profile = useGame((s) => s.profile);
@@ -125,11 +222,11 @@ function Hud() {
               <span>{objectiveText(profile, episode)}</span>
             )}
           </p>
-          <TensionBar />
         </div>
         <TutorialCoach />
       </div>
-      <FishingGauges />
+      {/* No pesqueiro, os medidores cobririam os pontos; a vara e a isca já estão no painel. */}
+      {atSpot ? <FishingGauges /> : <div />}
       <div class="hud__actions">
         <button type="button" class="btn btn--secondary hud__btn" onClick={() => controller.pause()}>
           <ButtonIcon>
@@ -198,26 +295,4 @@ function objectiveText(profile: Profile, episode: EpisodeContent): string {
   }
   const count = objective.count ?? 1;
   return `Objetivo: ${objective.text}${count > 1 ? ` · ${st?.progress ?? 0} de ${count}` : ''}`;
-}
-
-/** PESCA-12: de 0 a 100; verde abaixo de 70, amarela de 70 a 89, vermelha de 90 a 100. */
-function TensionBar() {
-  const tension = useGame((s) => (s.fishing.phase === 'Fight' ? s.fishing.tension : null));
-  if (tension === null) return null;
-  return (
-    <div class="tension">
-      <span class="tension__label">Tensão</span>
-      <div
-        class="tension__bar"
-        role="meter"
-        aria-label="Tensão da linha"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={Math.floor(tension)}
-        data-band={tensionBand(tension)}
-      >
-        <div class="tension__fill" data-fill style={{ width: `${tension}%` }} />
-      </div>
-    </div>
-  );
 }

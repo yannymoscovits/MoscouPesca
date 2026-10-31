@@ -20,7 +20,9 @@ export const LURE_AT = 0.4;
 export const BANK_M = 1.5;
 /** A vista vai até o começo do quarto de baixo da tela; a superfície fica abaixo do céu. */
 export const WATER_BOTTOM_SHARE = 0.75;
-const SKY_SHARE = 0.15; // do topo da vista até a superfície, em fração da área acima dos botões
+// SPEC_DEVIATION: o T10 punha a superfície em 15% da área acima dos botões.
+// Reason: na tela ligada (T15), o painel de cima cobria a superfície e a isca que sobe até ela.
+const SKY_SHARE = 0.3; // do topo da vista até a superfície, em fração da área acima dos botões
 const FLOOR_GAP_SHARE = 0.05; // do fundo até o quarto de baixo
 /** Até esta profundidade a escala é linear; abaixo dela, o resto do ponto cabe em DEEP_SHARE da água. */
 export const LINEAR_DEPTH_M = 10;

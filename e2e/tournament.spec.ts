@@ -3,7 +3,7 @@ import { episodes } from '../src/content';
 import { characters } from '../src/content/characters';
 import { ep1 } from '../src/content/episodes/ep1';
 import type { EpisodeContent, EpisodeId, Profile } from '../src/content/types';
-import { gameState, manualClock, money, openWithProfile, toScreen, veteran } from './support';
+import { castNothing, chooseSpot, fishingButton, gameState, manualClock, money, openWithProfile, spotScreen, veteran } from './support';
 
 // Telas do torneio: lobby bloqueado ou aberto (CAMP-01, CAMP-02), provocações dos rivais antes do
 // primeiro arremesso (HUMOR-04) e classificação com vitória ou "Tentar de novo" (CAMP-05, CAMP-09).
@@ -53,17 +53,6 @@ async function skipTaunts(page: Page) {
   await expect(dialog(page)).toHaveCount(0);
 }
 
-/** Gasta arremessos sem peixe (beirada fora das zonas): cada um acaba em 15 s com "Nada por aqui". */
-const castNothing = (page: Page, n: number) =>
-  page.evaluate((count) => {
-    const mf = (window as any).__mf;
-    for (let i = 0; i < count; i++) {
-      if (mf.state().fishing.phase !== 'Idle') mf.controller.dismissResult();
-      mf.tap(90, 365);
-      for (let t = 0; t < 20 && mf.state().fishing.phase !== 'Result_Nothing'; t += 0.5) mf.advance(0.5);
-    }
-    return mf.state().fishing.phase as string;
-  }, n);
 
 test('CAMP-01: antes do último objetivo, o campeonato aparece bloqueado com o objetivo que falta', async ({ page }) => {
   await openWithProfile(page, veteran()); // primeiro objetivo do Episódio 1
@@ -114,19 +103,21 @@ test('HUMOR-04: as provocações de Ricardo, Bem e Kris aparecem antes do primei
   for (const rival of ep1.tournament.rivals) {
     await expect(dialog(page)).toContainText(nameOf(rival.character));
     await expect(dialog(page)).toContainText(rival.taunt.text);
-    // Um toque na água enquanto o rival fala não arremessa: só passa para a provocação seguinte.
-    const water = toScreen(page, 90, 300);
-    await page.mouse.click(water.x, water.y);
+    // Um toque no ponto do pesqueiro enquanto o rival fala não escolhe o ponto: só passa para a provocação seguinte.
+    const spot = (await spotScreen(page).locator('[data-spot="raso"]').boundingBox())!;
+    await page.mouse.click(spot.x + spot.width / 2, spot.y + spot.height / 2);
     const s = await gameState(page);
-    expect(s.fishing.phase).toBe('Idle');
+    expect(s.spot).toBeNull();
+    expect(s.fishing).toEqual({ phase: 'Aim', sinceS: 0 });
     expect(s.profile.tournament.castsLeft).toBe(8);
   }
   await expect(dialog(page)).toHaveCount(0);
 
-  const water = toScreen(page, 90, 300); // acabaram as provocações: agora o toque arremessa
-  await page.mouse.click(water.x, water.y);
-  expect((await gameState(page)).fishing.phase).toBe('Flying');
+  await chooseSpot(page); // acabaram as provocações: agora o toque escolhe o ponto e arremessa
+  await fishingButton(page, 'arremessar').click();
+  expect((await gameState(page)).fishing.phase).toBe('Power');
 });
+
 
 test('HUMOR-01: rival que aparece pela primeira vez nas provocações ganha o cartão de apresentação', async ({ page }) => {
   await openWithProfile(page, readyFor(ep1, { charactersIntroduced: ['jane', 'adilson', 'lavinia', 'edvaldo'] }));

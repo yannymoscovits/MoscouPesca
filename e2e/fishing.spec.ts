@@ -5,16 +5,21 @@ import { ep2 } from '../src/content/episodes/ep2';
 import {
   advance,
   advanceUntil,
+  castNothing,
+  castNow,
+  catchFish,
+  chooseSpot,
   gameState,
+  hookNow,
   manualClock,
-  money,
   openWithProfile,
+  reelUntilStrike,
   toScreen,
   veteran,
 } from './support';
 import { expectContrast } from './contrast';
 
-// Tela de pesca e HUD (HIST-04, PESCA-12, SAVE-03, CAMP-03, TELA-01).
+// Tela de pesca e HUD (HIST-04, SAVE-03, CAMP-03, TELA-01). A pescaria em si está em pescaria.spec.ts.
 
 const hud = (page: Page) => page.getByRole('group', { name: 'Painel da pescaria' });
 const pauseButton = (page: Page) => page.getByRole('button', { name: 'Pausar' });
@@ -24,36 +29,6 @@ async function play(page: Page) {
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
-/** Toque na água num ponto da cena lógica. */
-async function tapWater(page: Page, x: number, y: number) {
-  const p = toScreen(page, x, y);
-  await page.mouse.click(p.x, p.y);
-}
-
-test('tocar na água arremessa até o ponto tocado e a pesca segue até a ficha, com o saldo atualizado', async ({ page }) => {
-  await openWithProfile(page, veteran());
-  await manualClock(page);
-  await play(page);
-  await expect(hud(page)).toContainText('R$ 0');
-
-  await tapWater(page, 90, 300);
-  const cast = (await gameState(page)).fishing;
-  expect(cast.phase).toBe('Flying');
-  expect(cast.to.x).toBeCloseTo(90, 0);
-  expect(cast.to.y).toBeCloseTo(300, 0);
-
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  const p = toScreen(page, 90, 300);
-  await page.mouse.move(p.x, p.y);
-  await page.mouse.down(); // fisga (PESCA-08) e segura para recolher (PESCA-10)
-  expect((await gameState(page)).fishing.phase).toBe('Fight');
-  expect(await advanceUntil(page, 'Result_Caught', 40)).toBe('Result_Caught');
-  await page.mouse.up();
-
-  const s = await gameState(page);
-  expect(s.profile.money).toBe(s.fishing.value); // PESCA-17
-  await expect(hud(page)).toContainText(money(s.fishing.value));
-});
 
 test('HIST-04: o objetivo atual do capítulo, com a contagem, e o saldo aparecem na tela de pesca', async ({ page }) => {
   await openWithProfile(page, {
@@ -75,60 +50,10 @@ test('HIST-04: o objetivo atual do capítulo, com a contagem, e o saldo aparecem
   await expect(hud(page)).not.toContainText('Pegar 3 peixes');
 });
 
-/** Faixa da barra pela spec (PESCA-12): verde abaixo de 70, amarela de 70 a 89, vermelha de 90 a 100. */
-const bandFor = (value: number) => (value < 70 ? 'verde' : value < 90 ? 'amarelo' : 'vermelho');
-
-test('PESCA-12: a barra de tensão vai de 0 a 100 e muda de cor em 69/70 e em 89/90', async ({ page }) => {
-  await openWithProfile(page, veteran());
-  await manualClock(page);
-  await play(page);
-  await tapWater(page, 90, 300);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  await page.evaluate(() => (window as any).__mf.press()); // fisga e segura
-
-  const meter = page.getByRole('meter', { name: 'Tensão da linha' });
-  await expect(meter).toBeVisible();
-  await expect(meter).toHaveAttribute('aria-valuemin', '0');
-  await expect(meter).toHaveAttribute('aria-valuemax', '100');
-
-  // Segura em passos curtos e lê a barra depois de cada um: valor, faixa e matiz da cor.
-  const samples = await page.evaluate(async () => {
-    const mf = (window as any).__mf;
-    const hue = (rgb: string) => {
-      const [r, g, b] = rgb.match(/\d+/g)!.slice(0, 3).map((n) => Number(n) / 255);
-      const max = Math.max(r, g, b);
-      const d = max - Math.min(r, g, b);
-      if (d === 0) return -1;
-      const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-      return (h * 60 + 360) % 360;
-    };
-    const out: { value: number; band: string | null; hue: number }[] = [];
-    while (mf.state().fishing.phase === 'Fight' && mf.state().fishing.tension < 95) {
-      mf.advance(0.005);
-      await new Promise((r) => setTimeout(r, 0));
-      const el = document.querySelector('[role="meter"]')!;
-      const fill = el.querySelector('[data-fill]')!;
-      out.push({
-        value: Number(el.getAttribute('aria-valuenow')),
-        band: el.getAttribute('data-band'),
-        hue: hue(getComputedStyle(fill).backgroundColor),
-      });
-    }
-    return out;
-  });
-
-  const seen = new Set(samples.map((s) => s.value));
-  for (const v of [69, 70, 89, 90]) expect(seen.has(v), `valor ${v} lido na barra`).toBe(true);
-  for (const s of samples) {
-    expect(s.band, `tensão ${s.value}`).toBe(bandFor(s.value));
-    const color = s.hue >= 80 && s.hue <= 160 ? 'verde' : s.hue >= 40 && s.hue < 70 ? 'amarelo' : s.hue <= 15 || s.hue >= 345 ? 'vermelho' : `matiz ${s.hue}`;
-    expect(color, `cor da barra em ${s.value}`).toBe(bandFor(s.value));
-  }
-});
-
 /** O botão de pausa está visível e é o que recebe o toque no centro dele (nada o cobre). */
 async function expectPauseOnTop(page: Page, phase: string) {
-  expect((await gameState(page)).fishing.phase).toBe(phase);
+  const s = await gameState(page);
+  expect(phase === 'Pesqueiro' ? (s.spot === null ? 'Pesqueiro' : s.spot) : s.fishing.phase).toBe(phase);
   await expect(pauseButton(page), phase).toBeVisible();
   const onTop = await pauseButton(page).evaluate((btn) => {
     const r = btn.getBoundingClientRect();
@@ -145,37 +70,34 @@ test('SAVE-03: o botão de pausa fica visível em todos os estados da pesca', as
   const mf = (fn: string, ...args: unknown[]) =>
     page.evaluate(([f, a]) => (window as any).__mf.controller[f as string](...(a as unknown[])), [fn, args] as const);
 
-  await expectPauseOnTop(page, 'Idle');
-  await tapWater(page, 90, 300);
+  await expectPauseOnTop(page, 'Pesqueiro');
+  await chooseSpot(page);
+  await expectPauseOnTop(page, 'Aim');
+  await page.evaluate(() => (window as any).__mf.button('arremessar'));
+  await expectPauseOnTop(page, 'Power');
+  await page.evaluate(() => (window as any).__mf.button('arremessar'));
   await expectPauseOnTop(page, 'Flying');
   await advance(page, 1);
-  await expectPauseOnTop(page, 'Waiting');
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  await expectPauseOnTop(page, 'Bite');
-  expect(await advanceUntil(page, 'Result_Escaped')).toBe('Result_Escaped'); // não fisgou (PESCA-09)
-  await expectPauseOnTop(page, 'Result_Escaped');
+  await expectPauseOnTop(page, 'Lure');
+  expect(await reelUntilStrike(page)).toBe('Strike');
+  await expectPauseOnTop(page, 'Strike');
+  await page.evaluate(() => (window as any).__mf.button('puxar'));
+  await expectPauseOnTop(page, 'Fight');
+  expect(await advanceUntil(page, 'Result_Caught', 60)).toBe('Result_Caught'); // a semente 7 traz um piau calmo
+  await expectPauseOnTop(page, 'Result_Caught');
   await mf('dismissResult');
 
-  await tapWater(page, 90, 365); // beirada sem peixe (PESCA-05)
-  expect(await advanceUntil(page, 'Result_Nothing')).toBe('Result_Nothing');
+  expect(await castNothing(page)).toBe('Result_Nothing'); // ISCA-12
   await expectPauseOnTop(page, 'Result_Nothing');
   await mf('dismissResult');
 
-  await tapWater(page, 90, 300);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  await page.evaluate(() => (window as any).__mf.press());
-  await expectPauseOnTop(page, 'Fight');
-  expect(await advanceUntil(page, 'Result_Caught', 40)).toBe('Result_Caught');
-  await expectPauseOnTop(page, 'Result_Caught');
-  await page.evaluate(() => (window as any).__mf.release());
-  await mf('dismissResult');
-
-  await mf('setDifficulty', 'desafio'); // só no Desafio a linha arrebenta (PESCA-13)
-  await tapWater(page, 90, 300);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  await page.evaluate(() => (window as any).__mf.press());
-  expect(await advanceUntil(page, 'Result_Broken', 40)).toBe('Result_Broken');
-  await expectPauseOnTop(page, 'Result_Broken');
+  await mf('setDifficulty', 'desafio'); // só no Desafio o peixe foge da briga (BRIGA-11)
+  expect(await castNow(page)).toBe('Lure');
+  expect(await reelUntilStrike(page)).toBe('Strike');
+  await page.evaluate(() => (window as any).__mf.button('puxar'));
+  await page.evaluate(() => (window as any).__mf.hold(true)); // segurando sempre, a faixa sobe e deixa o peixe
+  expect(await advanceUntil(page, 'Result_Escaped', 60)).toBe('Result_Escaped');
+  await expectPauseOnTop(page, 'Result_Escaped');
 });
 
 test('CAMP-03: no torneio, aparecem quantos dos 8 arremessos restam e a pontuação parcial', async ({ page }) => {
@@ -198,10 +120,7 @@ test('CAMP-03: no torneio, aparecem quantos dos 8 arremessos restam e a pontuaç
   await expect(hud(page)).toContainText('5 de 8 arremessos');
   await expect(hud(page)).toContainText('4,70 kg'); // soma dos 3 mais pesados: 2,5 + 1,2 + 1 (CAMP-04)
 
-  await tapWater(page, 90, 300);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  await page.evaluate(() => (window as any).__mf.press());
-  expect(await advanceUntil(page, 'Result_Caught', 40)).toBe('Result_Caught');
+  expect(await catchFish(page, { tries: 1 })).toBe('Result_Caught');
 
   const kgs = (await gameState(page)).profile.tournament.catches.map((c: { kg: number }) => c.kg);
   const best3 = kgs.sort((a: number, b: number) => b - a).slice(0, 3).reduce((a: number, b: number) => a + b, 0);
@@ -369,6 +288,7 @@ test('T78, EPI-04: viajar pelo Mapa troca o fundo da cena (data-background e a c
       await page.getByRole('button', { name: 'Mapa', exact: true }).click();
       await page.getByRole('region', { name: 'Mapa' }).getByRole('button', { name: loc.name }).click();
     }
+    await chooseSpot(page, loc.zones[0].id); // a vista de cima do arremesso, sem os pontos por cima
     await expect(stage).toHaveAttribute('data-background', loc.background);
     await expect(hud(page)).toContainText(loc.name);
     await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 50)))));
@@ -378,7 +298,9 @@ test('T78, EPI-04: viajar pelo Mapa troca o fundo da cena (data-background e a c
   }
 });
 
-test('T78, PESCA-12, CAMP-03: os arremessos do torneio e a barra de tensão continuam visíveis no painel', async ({ page }) => {
+test('T78, CAMP-03, BRIGA-01: na briga, os arremessos do torneio continuam no painel e a barra de captura não o cobre', async ({
+  page,
+}) => {
   await openWithProfile(page, {
     ...veteran(),
     story: { episodes: { 1: { objectiveIndex: 6, progress: 0, won: false } }, scenesSeen: ['ep1-abertura'], pendingScene: null },
@@ -388,12 +310,13 @@ test('T78, PESCA-12, CAMP-03: os arremessos do torneio e a barra de tensão cont
   await play(page);
   await expect(hud(page).getByText(/restam 5 de 8 arremessos/)).toBeVisible();
 
-  await tapWater(page, 90, 300);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  await page.evaluate(() => (window as any).__mf.press());
-  const meter = hud(page).getByRole('meter', { name: 'Tensão da linha' });
-  await expect(meter).toBeVisible();
+  await chooseSpot(page);
+  expect(await hookNow(page)).toBe('Fight');
+  const catchBar = page.getByRole('group', { name: 'Barra de captura' });
+  await expect(catchBar).toBeVisible();
+  await expect(hud(page).getByText(/restam 5 de 8 arremessos/)).toBeVisible();
   const panel = (await hud(page).boundingBox())!;
-  const bar = (await meter.boundingBox())!;
-  expect(bar.y + bar.height).toBeLessThanOrEqual(panel.y + panel.height);
+  const bar = (await catchBar.boundingBox())!;
+  expect(bar.y).toBeGreaterThanOrEqual(panel.y + panel.height);
 });
+

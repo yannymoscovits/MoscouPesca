@@ -3,7 +3,7 @@ import { characters } from '../src/content/characters';
 import { ep1 } from '../src/content/episodes/ep1';
 import { ep2 } from '../src/content/episodes/ep2';
 import type { Profile } from '../src/content/types';
-import { advanceUntil, gameState, manualClock, openWithProfile, reopen, toScreen, veteran } from './support';
+import { catchFish, gameState, manualClock, openWithProfile, reopen, veteran } from './support';
 
 // Mapa dos episódios (EPI-03, EPI-04, EPI-07, EPI-08) e a cena pendente que não se perde na viagem.
 
@@ -72,12 +72,9 @@ test('EPI-04, EPI-08: com o Episódio 1 vencido, os dois locais de Jacuípe est�
   expect((await gameState(page)).profile.currentLocation).toBe(ponte.id);
 
   // O peixe que vem é um dos da Ponte, e não do Rio Jacuípe.
-  const p = toScreen(page, 90, 300);
-  await page.mouse.click(p.x, p.y);
-  expect(await advanceUntil(page, 'Bite')).toBe('Bite');
-  await page.evaluate(() => (window as any).__mf.press());
-  expect(await advanceUntil(page, 'Result_Caught', 40)).toBe('Result_Caught');
+  expect(await catchFish(page, { spot: ponte.zones[0].id })).toBe('Result_Caught');
   const caught = (await gameState(page)).fishing.species.id as string;
+
   const here = new Set(ponte.zones.flatMap((z) => z.species));
   const river = new Set(rio.zones.flatMap((z) => z.species));
   expect(here.has(caught)).toBe(true);
