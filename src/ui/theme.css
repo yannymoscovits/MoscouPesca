@@ -122,25 +122,72 @@ ul {
   color: var(--ink-soft);
 }
 
-/* ---------- Botões: >= 56 × 56 px, contorno grosso e sombra de "apertar" ---------- */
+/* ---------- Botões: >= 56 × 56 px, "de videogame" ----------
+   Contorno marinho grosso, brilho em cima e sombra embaixo por dentro (o chanfro), a beirada escura
+   e a sombra macia por fora; apertado, desce até encostar na beirada. As cores de fundo ficam lisas:
+   o contraste do texto é medido contra elas. */
 
 .btn {
+  --bevel-hi: rgba(255, 255, 255, 0.45);
+  --bevel-lo: rgba(0, 12, 34, 0.22);
   min-width: var(--touch);
   min-height: var(--touch);
   padding: 12px 20px;
   border: 3px solid var(--outline);
-  border-radius: 10px;
+  border-radius: 14px;
   background: var(--accent);
   color: var(--accent-ink);
   font: 700 var(--text) / 1.2 var(--font-body);
-  box-shadow: 0 4px 0 var(--outline);
+  box-shadow:
+    inset 0 3px 0 var(--bevel-hi),
+    inset 0 -5px 0 var(--bevel-lo),
+    0 5px 0 var(--outline),
+    0 9px 14px rgba(0, 0, 0, 0.35);
   cursor: pointer;
   touch-action: manipulation;
+  transition: transform 50ms ease-out;
 }
 
 .btn:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 var(--outline);
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 3px 0 var(--bevel-hi),
+    inset 0 -2px 0 var(--bevel-lo),
+    0 1px 0 var(--outline);
+}
+
+/* Placa de madeira: títulos das telas e o local da pesca. Creme sobre a madeira: 8,3:1. */
+.plaque {
+  padding: 6px 18px 8px;
+  border: 3px solid var(--outline);
+  border-radius: 10px;
+  background-color: #6b4421;
+  color: var(--ink);
+  font: 700 22px / 1.15 var(--font-title);
+  text-shadow: 0 2px 0 var(--outline);
+  box-shadow:
+    inset 0 3px 0 #a0703c,
+    inset 0 -4px 0 #4a2c12,
+    inset 0 0 0 1px #8a5a2c,
+    0 4px 0 var(--outline);
+}
+
+.screen h1.title,
+.screen h1.title-2 {
+  padding: 6px 22px 10px;
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+  background-color: #6b4421;
+  box-shadow:
+    inset 0 3px 0 #a0703c,
+    inset 0 -4px 0 #4a2c12,
+    0 5px 0 var(--outline);
+}
+
+/* No título creme ou amarelo da placa, a mesma sombra escura das letras. */
+.screen h1.title-2 {
+  color: var(--accent);
+  text-shadow: 0 2px 0 var(--outline);
 }
 
 .btn--secondary {
@@ -187,13 +234,17 @@ ul {
   gap: 12px;
 }
 
+/* Painel de papel com a borda amarela do jogo por dentro do contorno. */
 .panel {
   padding: 20px;
   border: 3px solid var(--outline);
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--paper);
   color: var(--paper-ink);
-  box-shadow: 0 6px 0 var(--outline);
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    inset 0 0 0 5px rgba(0, 12, 34, 0.12),
+    0 6px 0 var(--outline);
 }
 
 /* ---------- Tela inicial (mockup e logo do usuário) ---------- */
@@ -672,17 +723,13 @@ ul {
   pointer-events: none;
 }
 
-/* Painel do mockup (tela-de-pesca-v2.png): marinho com borda azul-clara em pixels de 2 px e cantos
-   chanfrados; três linhas com ícone. Creme sobre o marinho: 14,4:1; texto secundário: 8,7:1. */
+/* Painel do mockup do pesqueiro: em cima, a pílula da moeda e a placa de madeira com o local; embaixo,
+   um cartão marinho com borda amarela e duas linhas com ícone (vara · isca e o objetivo com os
+   peixinhos). Creme sobre o marinho: 14,4:1; texto secundário: 8,7:1. */
 .hud__panel {
   display: grid;
-  gap: 2px;
+  gap: 8px;
   margin: 8px;
-  padding: 0 4px;
-  border: 12px solid transparent;
-  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 13 13' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M2 0h9v1H2zM1 1h1v1H1zM11 1h1v1H11zM0 2h1v1H0zM12 2h1v1H12zM0 3h1v1H0zM12 3h1v1H12zM0 4h1v1H0zM12 4h1v1H12zM0 5h1v1H0zM12 5h1v1H12zM0 6h1v1H0zM12 6h1v1H12zM0 7h1v1H0zM12 7h1v1H12zM0 8h1v1H0zM12 8h1v1H12zM0 9h1v1H0zM12 9h1v1H12zM0 10h1v1H0zM12 10h1v1H12zM1 11h1v1H1zM11 11h1v1H11zM2 12h9v1H2z'/%3E%3Cpath fill='%237cc4ff' d='M2 1h9v1H2zM1 2h1v1H1zM11 2h1v1H11zM1 3h1v1H1zM11 3h1v1H11zM1 4h1v1H1zM11 4h1v1H11zM1 5h1v1H1zM11 5h1v1H11zM1 6h1v1H1zM11 6h1v1H11zM1 7h1v1H1zM11 7h1v1H11zM1 8h1v1H1zM11 8h1v1H11zM1 9h1v1H1zM11 9h1v1H11zM1 10h1v1H1zM11 10h1v1H11zM2 11h9v1H2z'/%3E%3Cpath fill='%232f7fc8' d='M2 2h9v1H2zM2 3h1v1H2zM10 3h1v1H10zM2 4h1v1H2zM10 4h1v1H10zM2 5h1v1H2zM10 5h1v1H10zM2 6h1v1H2zM10 6h1v1H10zM2 7h1v1H2zM10 7h1v1H10zM2 8h1v1H2zM10 8h1v1H10zM2 9h1v1H2zM10 9h1v1H10zM2 10h9v1H2z'/%3E%3Cpath fill='%230a2350' d='M3 3h7v1H3zM3 4h1v1H3zM5 4h3v1H5zM9 4h1v1H9zM3 5h7v1H3zM3 6h3v1H3zM7 6h3v1H7zM3 7h7v1H3zM3 8h1v1H3zM5 8h3v1H5zM9 8h1v1H9zM3 9h7v1H3z'/%3E%3Cpath fill='%237cc4ff' d='M4 4h1v1H4zM8 4h1v1H8zM4 8h1v1H4zM8 8h1v1H8z'/%3E%3C/svg%3E")
-    6 / 12px stretch;
-  background: padding-box #0a2350;
   color: var(--ink-soft);
   font-size: var(--text-min);
 }
@@ -694,25 +741,37 @@ ul {
   gap: 0 10px;
 }
 
-.hud__line > span:last-child {
+.hud__line > span:not(.hud__pips):last-of-type {
   flex: 1 1 0;
   min-width: 0;
 }
 
-/* Saldo e local: o local desce para a linha de baixo se não couber. */
-.hud__line:first-child {
-  flex-wrap: wrap;
-  align-items: center;
+/* Linha de cima: a pílula do saldo e a placa do local lado a lado; a placa quebra em duas linhas. */
+.hud__line--top {
+  align-items: stretch;
+  gap: 8px;
 }
 
-.hud__line:first-child > span:last-child {
-  flex: 0 1 auto;
+.hud__line--top > span:last-of-type {
+  flex: 1 1 0;
 }
 
 .hud__item {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+}
+
+.hud__coin {
+  flex: none;
+  padding: 6px 14px 6px 10px;
+  border: 3px solid var(--outline);
+  border-radius: 999px;
+  background: #0a2350;
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    inset 0 4px 0 rgba(255, 255, 255, 0.12),
+    0 4px 0 var(--outline);
 }
 
 .hud__icon {
@@ -723,20 +782,61 @@ ul {
 }
 
 .hud__item .hud__icon {
+  width: 24px;
+  height: 24px;
   margin-top: 0;
 }
 
 .hud__money {
-  font: 700 22px / 1.2 var(--font-title);
+  font: 700 24px / 1.1 var(--font-title);
   color: var(--accent);
 }
 
-/* Local da pesca (EPI-07), depois de um traço: creme em negrito. */
+/* Local da pesca (EPI-07) na placa de madeira. */
 .hud__place {
-  padding-left: 10px;
-  border-left: 2px solid #2f5f99;
-  font-weight: 700;
-  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hud__info {
+  display: grid;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 14px;
+  background: #0a2350;
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    0 4px 0 var(--outline);
+}
+
+.hud__gear {
+  padding-bottom: 4px;
+  border-bottom: 2px solid #1f4a80;
+}
+
+/* Peixinhos do objetivo: cheio (azul com contorno) até o progresso, vazio (só o contorno) depois. */
+.hud__pips {
+  flex: none;
+  display: inline-flex;
+  gap: 3px;
+  align-self: center;
+}
+
+.hud__pip {
+  width: 22px;
+  height: 14px;
+  background: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 7' shape-rendering='crispEdges'%3E%3Cpath fill='%237cc4ff' d='M0 1h1v1H0zM0 5h1v1H0zM1 2h1v3H1zM4 1h5v1H4zM3 2h7v3H3zM4 5h5v1H4z'/%3E%3Cpath fill='%23000c22' d='M8 3h1v1H8z'/%3E%3C/svg%3E");
+  opacity: 0.4; /* ainda falta: apagado */
+}
+
+.hud__pip[data-filled='true'] {
+  opacity: 1;
+  filter: drop-shadow(1px 0 0 var(--outline)) drop-shadow(-1px 0 0 var(--outline)) drop-shadow(0 1px 0 var(--outline))
+    drop-shadow(0 -1px 0 var(--outline));
 }
 
 /* Fileira de baixo: pausa à esquerda, menu à direita, o Adilson livre no meio. */
@@ -760,11 +860,7 @@ ul {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  min-width: 136px;
-  border-radius: 8px;
-  box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.3),
-    0 4px 0 var(--outline);
+  min-width: 140px;
 }
 
 .hud__btn-icon {
@@ -816,9 +912,11 @@ ul {
   align-items: center;
   padding: 4px 10px;
   border: 3px solid var(--outline);
-  border-radius: 8px;
+  border-radius: 12px;
   background: #0a2350;
-  box-shadow: inset 0 0 0 2px #2f7fc8;
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    0 4px 0 var(--outline);
   font-size: var(--text-min);
   line-height: 1.2;
 }
@@ -1051,10 +1149,12 @@ ul {
   gap: 12px;
   padding: 12px 16px;
   border: 3px solid var(--outline);
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--paper);
   color: var(--paper-ink);
-  box-shadow: 0 6px 0 var(--outline);
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    0 6px 0 var(--outline);
 }
 
 .toast p {
@@ -1273,10 +1373,12 @@ ul {
   margin: 0 8px;
   padding: 10px 12px;
   border: 3px solid var(--outline);
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--paper);
   color: var(--paper-ink);
-  box-shadow: 0 5px 0 var(--outline);
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    0 5px 0 var(--outline);
   animation: entrar 0.3s ease-out;
 }
 
@@ -1967,8 +2069,17 @@ ul {
 .pesca-btn {
   min-height: 80px;
   padding: 8px 4px;
+  border-width: 4px;
+  border-radius: 18px;
   font: 700 28px / 1.1 var(--font-title);
+  letter-spacing: 1px;
   touch-action: none; /* o dedo encostado não vira rolagem nem zoom */
+  --bevel-hi: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 4px 0 var(--bevel-hi),
+    inset 0 -7px 0 var(--bevel-lo),
+    0 6px 0 var(--outline),
+    0 10px 16px rgba(0, 0, 0, 0.4);
 }
 
 .pesca-btn--wide {
@@ -2088,8 +2199,11 @@ ul {
   min-height: var(--touch);
   padding: 6px 12px;
   border: 3px solid var(--outline);
-  border-radius: 10px;
+  border-radius: 14px;
   background: var(--bg);
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    0 5px 0 var(--outline);
 }
 
 .cast-hud__label {

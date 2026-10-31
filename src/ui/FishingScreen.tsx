@@ -215,28 +215,33 @@ function Hud({ atSpot }: { atSpot: boolean }) {
   return (
     <div class="hud">
       <div class="hud__top">
+        {/* Mockup do pesqueiro: a moeda numa pílula e o local numa placa de madeira, em cima; vara,
+            isca e objetivo num cartão embaixo, com um peixinho por peixe pedido. */}
         <div class="hud__panel" role="group" aria-label="Painel da pescaria">
-          <p class="hud__line">
-            <span class="hud__item">
+          <p class="hud__line hud__line--top">
+            <span class="hud__item hud__coin">
               <HudIcon rows={COIN} />
               <span class="hud__money">{formatMoney(profile.money)}</span>
             </span>
-            <span class="hud__place">{location.name}</span>
+            <span class="hud__place plaque">{location.name}</span>
           </p>
-          <p class="hud__line hud__gear">
-            <HudIcon rows={PIN} />
-            <span>{gear(profile, episodes)}</span>
-          </p>
-          <p class="hud__line">
-            <HudIcon rows={TARGET} />
-            {run ? (
-              <span>
-                {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
-              </span>
-            ) : (
-              <span>{objectiveText(profile, episode)}</span>
-            )}
-          </p>
+          <div class="hud__info">
+            <p class="hud__line hud__gear">
+              <HudIcon rows={PIN} />
+              <span>{gear(profile, episodes)}</span>
+            </p>
+            <p class="hud__line">
+              <HudIcon rows={TARGET} />
+              {run ? (
+                <span>
+                  {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
+                </span>
+              ) : (
+                <span>{objectiveText(profile, episode)}</span>
+              )}
+              {!run && <ObjectivePips profile={profile} episode={episode} />}
+            </p>
+          </div>
         </div>
         <TutorialCoach />
       </div>
@@ -299,6 +304,24 @@ function gear(profile: Profile, episodes: EpisodeContent[]): string {
   const rod = name(profile.rods.equipped, episodes.flatMap((ep) => ep.rods));
   const bait = name(profile.baits.equipped, episodes.flatMap((ep) => ep.baits));
   return `${rod} · ${bait}`;
+}
+
+/**
+ * Os peixinhos do objetivo (mockup do pesqueiro): um por peixe pedido, cheios até o progresso.
+ * Só com contagem de 2 a 6; desenhados no CSS, sem texto (a contagem já está escrita ao lado).
+ */
+function ObjectivePips({ profile, episode }: { profile: Profile; episode: EpisodeContent }) {
+  const objective = currentObjective(profile.story, episode);
+  const count = objective?.count ?? 1;
+  if (!objective || count < 2 || count > 6) return null;
+  const done = Math.min(count, profile.story.episodes[episode.id]?.progress ?? 0);
+  return (
+    <span class="hud__pips" aria-hidden="true">
+      {Array.from({ length: count }, (_, i) => (
+        <span key={i} class="hud__pip" data-filled={i < done ? 'true' : 'false'} />
+      ))}
+    </span>
+  );
 }
 
 /** HIST-04: o objetivo atual, com a contagem quando ele pede mais de um ("1 de 3"). */
