@@ -1350,19 +1350,25 @@ ul {
 /* ---------- Guia do tutorial ---------- */
 
 .hud__top {
+  position: relative;
   display: grid;
   gap: 8px;
 }
 
-/* A dica fica sobre a ficha do peixe (20), para o "Pegou!" da Jane aparecer junto. */
+/* A fala da Jane fica por cima do painel de cima, fora do fluxo: não empurra os medidores (a Isca
+   não some cortada) e não cobre a água, onde a pesca acontece. Sobre a ficha do peixe (20), para o
+   "Pegou!" da Jane aparecer junto. */
 .coach {
-  position: relative;
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
   z-index: 22;
   display: flex;
   align-items: center;
   gap: 12px;
   margin: 0 8px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   border: 3px solid var(--outline);
   border-radius: 16px;
   background: var(--paper);
@@ -1374,9 +1380,9 @@ ul {
 }
 
 .coach .portrait {
-  flex: 0 0 72px;
-  width: 72px;
-  height: 72px;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
 }
 
 .coach .portrait__initials {
@@ -1392,7 +1398,8 @@ ul {
 }
 
 /* A ponta da seta fica no alvo (left, top): ela desce até ele. Por cima dos botões e da barra de força
-   (25), sem pegar o toque que vai para eles. */
+   (25), sem pegar o toque que vai para eles. Branca de contorno marinho, curta e larga: não se confunde
+   com a seta amarela pontilhada da mira, que sai da cabeça do Adilson. */
 .coach-arrow {
   position: absolute;
   z-index: 26;

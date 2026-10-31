@@ -72,7 +72,7 @@ function useTarget(selectors: string[]): { left: number; top: number } | null {
   return at;
 }
 
-/** Seta para baixo; a ponta fica no alvo. */
+/** Seta branca para baixo, curta e larga (não parece a mira amarela); a ponta fica no alvo. */
 function Arrow({ step, at, blink }: { step: TutorialPescaStep; at: { left: number; top: number }; blink: boolean }) {
   return (
     <div
@@ -82,8 +82,9 @@ function Arrow({ step, at, blink }: { step: TutorialPescaStep; at: { left: numbe
       data-target={step}
       aria-hidden="true"
     >
-      <svg viewBox="0 0 48 64" width="48" height="64">
-        <path d="M16 2 h16 v30 h14 L24 62 L2 32 h14 z" fill="var(--accent)" stroke="var(--outline)" stroke-width="4" stroke-linejoin="round" />
+      <svg viewBox="0 0 48 48" width="48" height="48">
+        <path d="M15 2 h18 v18 h13 L24 46 L2 20 h13 z" fill="#ffffff" stroke="var(--outline)" stroke-width="4" stroke-linejoin="round" />
+        <path d="M19 6 h4 v16 h-4 z" fill="#b5c6e1" />
       </svg>
     </div>
   );
