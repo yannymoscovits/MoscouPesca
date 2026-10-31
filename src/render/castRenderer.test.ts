@@ -3,9 +3,21 @@
 import { describe, expect, it } from 'vitest';
 import { episodes } from '../content';
 import { ep1 } from '../content/episodes/ep1';
-import { CAST_FLIGHT_S } from '../domain/tuning';
-import { ADILSON_BOX, ADILSON_PALETTE, rodHand } from './adilson';
-import { CAST_COLORS, CAST_ROD_TIP, createCastRenderer, landingPoint, spotAnchor, type CastView } from './castRenderer';
+import { CAST_FLIGHT_S, M_PER_PX } from '../domain/tuning';
+import { ADILSON_BOX, ADILSON_PALETTE, rodHandIn } from './adilson';
+import {
+  CAST_ADILSON_SCALE,
+  CAST_COLORS,
+  CAST_CONTROLS_CSS,
+  CAST_FULL_SHARE,
+  CAST_ROD_TIP,
+  castLanding,
+  castPlacement,
+  createCastRenderer,
+  landingPoint,
+  spotAnchor,
+  type CastView,
+} from './castRenderer';
 import { computeLayout, PALETTE, SCENE_H, SCENE_W } from './fishingRenderer';
 import { DEFAULT_SCENERY, sceneryOf, type StandKind } from './scenery';
 import { STAND_PALETTE } from './stands';
@@ -49,11 +61,14 @@ const VIEWS: Record<string, CastView> = {
     spots: loc.zones.map((zone, i) => ({ zone, locked: i > 0, selected: i === 0 })),
   },
   mira: { ...base, aim: { angleDeg: -30, locked: false } },
-  força: { ...base, aim: { angleDeg: 20, locked: true } },
+  força: { ...base, aim: { angleDeg: 20, locked: true, previewM: 5 } },
   voo: { ...base, flight: { angleDeg: -45, distanceM: 10.8, sinceS: CAST_FLIGHT_S / 2 } },
   respingo: { ...base, flight: { angleDeg: 0, distanceM: 6, sinceS: CAST_FLIGHT_S + 0.1 } },
-  'longe demais': { ...base, flight: { angleDeg: 45, distanceM: 25.2, sinceS: CAST_FLIGHT_S + 0.1 } },
+  'longe demais': { ...base, maxM: 25.2, flight: { angleDeg: 45, distanceM: 25.2, sinceS: CAST_FLIGHT_S + 0.1 } },
 };
+
+/** A vista sem pontos é a tela de arremesso: a disposição dela no Pixel 7, com a Vara de Bambu. */
+const DEFAULT_MAX_M = 10.8;
 
 describe('landingPoint', () => {
   it('ARREM-01, ARREM-03: 0° cai reto à frente da ponta da vara, a 10 px por metro', () => {
@@ -75,6 +90,34 @@ describe('landingPoint', () => {
 
   it('a ponta da vara é a do sprite do Adilson: pixel (0, 2) da caixa dele', () => {
     expect(CAST_ROD_TIP).toEqual({ x: ADILSON_BOX.x, y: ADILSON_BOX.y + 2 });
+  });
+});
+
+describe('castPlacement (disposição da tela de arremesso)', () => {
+  const p = castPlacement(l, DEFAULT_MAX_M);
+
+  it('a beira fica acima dos controles e o campo todo acima dela', () => {
+    expect(p.ground).toBe(l.viewH - Math.round(CAST_CONTROLS_CSS / l.scale));
+    expect(p.topY).toBeLessThan(p.tip.y);
+    expect(p.box.y + p.box.h).toBeLessThanOrEqual(p.ground + 10 + 1); // os pés afundam só um pouco
+  });
+
+  it('o Adilson fica 2× maior e exatamente no centro da tela, com a mira em cima da cabeça', () => {
+    expect([p.box.w, p.box.h]).toEqual([ADILSON_BOX.w * CAST_ADILSON_SCALE, ADILSON_BOX.h * CAST_ADILSON_SCALE]);
+    expect(p.box.x + p.box.w / 2).toBeCloseTo(l.viewW / 2, 0);
+    expect(p.tip.x).toBeCloseTo(l.viewW / 2, 0); // o leque de -45° a 45° fica simétrico
+    expect(p.tip.y).toBe(p.box.y + 2 * CAST_ADILSON_SCALE);
+  });
+
+  it('a escala segue a vara: o arremesso de força cheia cai perto do alto jogável, o fraco bem antes', () => {
+    for (const maxM of [DEFAULT_MAX_M, 18, 25.2]) {
+      const pm = castPlacement(l, maxM);
+      const full = castLanding(pm, 0, maxM);
+      expect(full.y, `força cheia com ${maxM} m`).toBeCloseTo(pm.tip.y - CAST_FULL_SHARE * (pm.tip.y - pm.topY), 6);
+      const weak = castLanding(pm, 0, maxM * 0.3);
+      // A diferença entre fraco e forte aparece grande na tela: mais da metade do campo jogável.
+      expect(full.y - weak.y, `fraco × forte com ${maxM} m`).toBeLessThan(-0.5 * CAST_FULL_SHARE * (pm.tip.y - pm.topY));
+    }
   });
 });
 
@@ -127,52 +170,87 @@ describe('desenho da vista de cima', () => {
   it.each([
     ['mira', CAST_COLORS.arrow],
     ['força', CAST_COLORS.arrowLocked],
-  ])('ARREM-01, ARREM-02: na %s, a seta sai da ponta da vara na direção do ângulo', (name, color) => {
+  ])('ARREM-01, ARREM-02: na %s, a seta sai de cima do Adilson na direção do ângulo', (name, color) => {
     const { renderer, calls } = mounted();
     const view = VIEWS[name];
     renderer.draw(view, 0);
-    const tip = v(CAST_ROD_TIP);
+    const { tip } = castPlacement(l, DEFAULT_MAX_M);
     const a = (view.aim!.angleDeg * Math.PI) / 180;
     const dots = calls.filter((c) => c.name === 'fillRect' && c.fillStyle === color).map((c) => c.args as number[]);
     expect(dots.length).toBeGreaterThan(0);
-    for (const [x, y] of dots) {
-      const dx = x + 1 - tip.x;
-      const dy = y + 1 - tip.y;
+    for (const [x, y, w] of dots) {
+      const dx = x + w / 2 - tip.x;
+      const dy = y + w / 2 - tip.y;
       expect(Math.abs(Math.atan2(dx, -dy) - a), `(${x}, ${y})`).toBeLessThan(0.3); // ao longo do raio da mira
     }
+  });
+
+  it('a seta é comprida: vai da cabeça do Adilson até o alcance máximo da vara', () => {
+    const { renderer, calls } = mounted();
+    renderer.draw(VIEWS.mira, 0);
+    const p = castPlacement(l, DEFAULT_MAX_M);
+    const dots = calls.filter((c) => c.name === 'fillRect' && c.fillStyle === CAST_COLORS.arrow).map((c) => c.args as number[]);
+    const reach = DEFAULT_MAX_M * p.pxPerM;
+    const far = Math.max(...dots.map(([x, y]) => Math.hypot(x - p.tip.x, y - p.tip.y)));
+    expect(far).toBeGreaterThan(reach * 0.9); // a cabeça da seta fica no alcance máximo
+    expect(far).toBeGreaterThan(80); // comprida de verdade na tela
+  });
+
+  it('ARREM-02: na força, o X marca onde a isca cairia com a força de agora', () => {
+    const { renderer, calls } = mounted();
+    renderer.draw(VIEWS.força, 0);
+    const p = castPlacement(l, DEFAULT_MAX_M);
+    const view = VIEWS.força;
+    const end = castLanding(p, view.aim!.angleDeg, view.aim!.previewM!);
+    // O X usa a cor da isca; sem voo na tela, só ele a usa.
+    const dots = calls.filter((c) => c.name === 'fillRect' && c.fillStyle === CAST_COLORS.lure).map((c) => c.args as number[]);
+    expect(dots.length).toBeGreaterThan(0);
+    for (const [x, y] of dots) expect(Math.hypot(x - end.x, y - end.y), `(${x}, ${y})`).toBeLessThan(10);
+  });
+
+  it('o ponto escolhido fica marcado na água do arremesso, na escala da vara (zona consistente com a queda)', () => {
+    const { renderer, calls } = mounted();
+    const zone = loc.zones[0]; // raso: y da cena de 250 a 360
+    renderer.draw({ ...base, zone }, 0);
+    const p = castPlacement(l, DEFAULT_MAX_M);
+    const k = p.pxPerM * M_PER_PX; // a cena do pesqueiro anda a 10 px por metro
+    const first = zone.polygon[0];
+    const corners = calls.filter((c) => c.name === 'moveTo').map((c) => c.args as number[]);
+    expect(corners).toContainEqual([p.tip.x + (first.x - CAST_ROD_TIP.x) * k, p.tip.y + (first.y - CAST_ROD_TIP.y) * k]);
   });
 
   it('ARREM-05: na água, o respingo aparece onde a isca caiu', () => {
     const { renderer, calls } = mounted();
     renderer.draw(VIEWS.respingo, 0);
-    const end = v(landingPoint(0, 6));
+    const end = castLanding(castPlacement(l, DEFAULT_MAX_M), 0, 6);
     const drops = calls.filter((c) => c.name === 'fillRect' && c.fillStyle === PALETTE.splash).map((c) => c.args as number[]);
     expect(drops.length).toBeGreaterThan(0);
     for (const [x, y] of drops) expect(Math.hypot(x - end.x, y - end.y)).toBeLessThan(40);
   });
 
-  it('ARREM-05: com a isca caindo fora da cena (vara longa a 45°), o respingo fica à vista, na direção da mira', () => {
+  it('ARREM-05: com a vara longa a 45°, o respingo fica à vista, na direção da mira', () => {
     const { renderer, calls } = mounted();
     renderer.draw(VIEWS['longe demais'], 0);
     const drops = calls.filter((c) => c.name === 'fillRect' && c.fillStyle === PALETTE.splash).map((c) => c.args as number[]);
     expect(drops.length).toBeGreaterThan(0);
-    for (const [x] of drops) expect(x).toBeLessThanOrEqual(l.offsetX + SCENE_W);
-    expect(Math.min(...drops.map(([x]) => x))).toBeGreaterThan(v(CAST_ROD_TIP).x); // à direita da vara
+    for (const [x] of drops) expect(x).toBeLessThanOrEqual(l.viewW);
+    expect(Math.min(...drops.map(([x]) => x))).toBeGreaterThan(castPlacement(l, 25.2).tip.x); // à direita da vara
   });
 
   describe('o Adilson com uma vara só', () => {
     const rodPixels = (calls: ReturnType<typeof fakeCtx>['calls']) =>
       calls.filter((c) => c.name === 'fillRect' && c.fillStyle === PALETTE.rod).map((c) => c.args as number[]);
+    const p = castPlacement(l, DEFAULT_MAX_M);
 
-    it('sem o sprite: a forma provisória ganha uma vara, da mão até a ponta, e a linha sai da ponta', () => {
+    it('sem o sprite: a forma provisória 2× ganha uma vara, da mão até a mira, e a linha sai dali', () => {
       const { renderer, calls } = mounted();
       renderer.draw(VIEWS.voo, 0);
       const rod = rodPixels(calls);
-      const near = (p: { x: number; y: number }) => rod.some(([x, y]) => Math.abs(x - p.x) <= 1.5 && Math.abs(y - p.y) <= 1.5);
-      expect(near(v(rodHand('arremessando'))), 'mão').toBe(true);
-      expect(near(v(CAST_ROD_TIP)), 'ponta').toBe(true);
+      const near = (q: { x: number; y: number }) => rod.some(([x, y]) => Math.abs(x - q.x) <= 1.5 && Math.abs(y - q.y) <= 1.5);
+      expect(near(rodHandIn(p.box, 'arremessando', CAST_ADILSON_SCALE)), 'mão').toBe(true);
+      expect(near(p.tip), 'ponta').toBe(true);
       expect(calls.filter((c) => c.name === 'fillRect' && c.fillStyle === ADILSON_PALETTE.H).length).toBeGreaterThan(0);
-      expect(calls.find((c) => c.name === 'moveTo')?.args).toEqual([v(CAST_ROD_TIP).x, v(CAST_ROD_TIP).y]);
+      expect(calls.find((c) => c.name === 'moveTo')?.args).toEqual([p.tip.x, p.tip.y]);
     });
 
     it.each(['parado', 'arremessando'])('com src/assets/adilson/%s.png: só a vara do sprite, sem vara em pixels', async (pose) => {
@@ -184,11 +262,23 @@ describe('desenho da vista de cima', () => {
 
       renderer.draw(view, 0);
 
+      const images = calls.filter((c) => c.name === 'drawImage');
+      expect(images.map((c) => c.args.slice(5))).toEqual([[p.box.x, p.box.y, p.box.w, p.box.h]]);
+      expect(rodPixels(calls)).toEqual([]);
+      expect(calls.find((c) => c.name === 'moveTo')?.args).toEqual([p.tip.x, p.tip.y]);
+    });
+
+    it('no pesqueiro (com pontos), o Adilson continua pequeno, na caixa da cena', async () => {
+      const { renderer, calls } = mounted(['src/assets/adilson/parado.png']);
+      renderer.draw(VIEWS.pesqueiro, 0);
+      await flush();
+      calls.length = 0;
+
+      renderer.draw(VIEWS.pesqueiro, 0);
+
       const box = v(ADILSON_BOX);
       const images = calls.filter((c) => c.name === 'drawImage');
       expect(images.map((c) => c.args.slice(5))).toEqual([[box.x, box.y, ADILSON_BOX.w, ADILSON_BOX.h]]);
-      expect(rodPixels(calls)).toEqual([]);
-      expect(calls.find((c) => c.name === 'moveTo')?.args).toEqual([v(CAST_ROD_TIP).x, v(CAST_ROD_TIP).y]);
     });
   });
 });

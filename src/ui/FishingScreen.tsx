@@ -11,7 +11,7 @@ import { createLoop } from '../app/loop';
 import { GameStoreContext, useGame, type GameStore } from '../app/store';
 import type { ComponentChildren } from 'preact';
 import type { EpisodeContent, Profile } from '../content/types';
-import { aimAngleDeg } from '../domain/castAim';
+import { aimAngleDeg, castDistanceM, powerAt } from '../domain/castAim';
 import { rulesFor } from '../domain/pesca';
 import { spotsFor } from '../domain/spots';
 import { currentObjective } from '../domain/story';
@@ -74,9 +74,21 @@ export function FishingScreen() {
         }
       }
       const sweepS = rulesFor(s.profile.settings.difficulty ?? 'tranquilo').sweepS;
-      const view: CastView = { background: location.background, place: location.id, spots: [], aim: null, flight: null };
+      // A escala do arremesso segue a vara equipada; o ponto escolhido fica marcado na água.
+      const allRods = episodes.flatMap((ep) => ep.rods);
+      const rod = allRods.find((r) => r.id === s.profile.rods.equipped) ?? allRods[0];
+      const view: CastView = {
+        background: location.background,
+        place: location.id,
+        spots: [],
+        aim: null,
+        flight: null,
+        maxM: castDistanceM(1, rod.reach),
+        zone: location.zones.find((z) => z.id === s.spot) ?? null,
+      };
       if (f.phase === 'Aim') view.aim = { angleDeg: aimAngleDeg(f.sinceS, sweepS), locked: false };
-      if (f.phase === 'Power') view.aim = { angleDeg: f.angleDeg, locked: true };
+      // Na força, o X mostra onde a isca cairia com a força de agora (a barra ↔ a distância).
+      if (f.phase === 'Power') view.aim = { angleDeg: f.angleDeg, locked: true, previewM: castDistanceM(powerAt(f.sinceS, sweepS), rod.reach) };
       if (f.phase === 'Flying') view.flight = { angleDeg: f.angleDeg, distanceM: f.distanceM, sinceS: f.sinceS };
       if (landed?.atT != null) view.flight = { angleDeg: landed.angleDeg, distanceM: landed.distanceM, sinceS: CAST_FLIGHT_S + t - landed.atT };
       cast.draw(view, t);

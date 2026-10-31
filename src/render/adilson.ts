@@ -69,14 +69,19 @@ const HAND: Record<Pose, Point> = {
 /** Na briga ele se inclina para trás: a caixa desce 1 px. */
 const LEAN: Record<Pose, number> = { parado: 0, posando: 0, arremessando: 0, recolhendo: 1 };
 
-/** Mão da vara na cena (centro da mão), de onde a vara sai. */
-export function rodHand(pose: Pose): Point {
-  return { x: ADILSON_BOX.x + HAND[pose].x + 1, y: ADILSON_BOX.y + LEAN[pose] + HAND[pose].y + 1 };
+/** Mão da vara (centro da mão) numa caixa qualquer, em `scale`× o tamanho do sprite. */
+export function rodHandIn(box: Point, pose: Pose, scale = 1): Point {
+  return { x: box.x + (HAND[pose].x + 1) * scale, y: box.y + (LEAN[pose] + HAND[pose].y + 1) * scale };
 }
 
-/** Desenha a forma provisória com o canto de cima à esquerda em (x, y) da vista. */
-export function drawAdilson(c: CanvasRenderingContext2D, x: number, y: number, pose: Pose) {
-  const top = y + LEAN[pose];
+/** Mão da vara na cena do pesqueiro (centro da mão), de onde a vara sai. */
+export function rodHand(pose: Pose): Point {
+  return rodHandIn(ADILSON_BOX, pose);
+}
+
+/** Desenha a forma provisória com o canto de cima à esquerda em (x, y) da vista, em `scale`× o tamanho. */
+export function drawAdilson(c: CanvasRenderingContext2D, x: number, y: number, pose: Pose, scale = 1) {
+  const top = y + LEAN[pose] * scale;
   for (let r = 0; r < BODY.length; r++) {
     const row = BODY[r];
     for (let col = 0; col < row.length; ) {
@@ -84,14 +89,14 @@ export function drawAdilson(c: CanvasRenderingContext2D, x: number, y: number, p
       while (row[end] === row[col]) end++;
       if (row[col] !== '.') {
         c.fillStyle = ADILSON_PALETTE[row[col]];
-        c.fillRect(x + col, top + r, end - col, 1);
+        c.fillRect(x + col * scale, top + r * scale, (end - col) * scale, scale);
       }
       col = end;
     }
   }
   const hand = HAND[pose];
   c.fillStyle = ADILSON_PALETTE.k;
-  c.fillRect(x + hand.x - 1, top + hand.y - 1, 4, 4);
+  c.fillRect(x + (hand.x - 1) * scale, top + (hand.y - 1) * scale, 4 * scale, 4 * scale);
   c.fillStyle = ADILSON_PALETTE.c;
-  c.fillRect(x + hand.x, top + hand.y, 2, 2);
+  c.fillRect(x + hand.x * scale, top + hand.y * scale, 2 * scale, 2 * scale);
 }
