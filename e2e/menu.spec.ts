@@ -44,7 +44,7 @@ const DESTINATIONS: { button: string; heading: string | null }[] = [
   { button: 'Mapa', heading: 'Mapa' },
   { button: 'Loja', heading: 'Loja do Edvaldo' },
   { button: 'Álbum', heading: 'Álbum' },
-  { button: 'Troféus', heading: null }, // sala de troféus: T63
+  { button: 'Troféus', heading: 'Troféus' },
   { button: 'Mensagens', heading: 'Mensagens' },
   { button: 'Campeonato', heading: 'GuanambiCup' },
   { button: 'Ajustes', heading: 'Ajustes' },

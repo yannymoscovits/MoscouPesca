@@ -13,6 +13,7 @@ import { Shop } from './Shop';
 import { DifficultyPrompt, Settings } from './Settings';
 import { TitleScreen } from './TitleScreen';
 import { TournamentLobby } from './Tournament';
+import { TrophyRoom } from './TrophyRoom';
 
 export function App({ store, services }: { store: GameStore; services: Services }) {
   const [screen, setScreen] = useState<ScreenId>('title');
@@ -42,6 +43,7 @@ export function App({ store, services }: { store: GameStore; services: Services 
             {screen === 'tournament' && <TournamentLobby />}
             {screen === 'messages' && <Messages />}
             {screen === 'map' && <MapScreen />}
+            {screen === 'trophies' && <TrophyRoom />}
             {screen === 'settings' && <Settings />}
             <UpdateNotice />
             <SaveWarning />

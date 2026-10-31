@@ -1572,8 +1572,8 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: com a GuanambiCup vencida, 1 troféu em destaque e 4 silhuetas com o nome de cada campeonato (TROF-01)
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: com a GuanambiCup vencida, 1 troféu em destaque e 4 silhuetas com o nome de cada campeonato (TROF-01)
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

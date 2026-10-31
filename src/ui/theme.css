@@ -1806,3 +1806,86 @@ ul {
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
+
+/* ---------- Sala de troféus ---------- */
+
+/* A estante usa a tela toda; só o "Voltar" fica embaixo (ACES-08). */
+.trophies__top {
+  justify-content: flex-start;
+  gap: 10px;
+  padding-bottom: 0;
+}
+
+.trophies__actions {
+  flex: 0 0 auto;
+}
+
+.trophies__count {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.trophies__shelf {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.trophy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+}
+
+.trophy__icon {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.trophy__name {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.trophy__status {
+  font-size: var(--text-min);
+}
+
+/* Conquistado: taça dourada com contorno, num cartão creme (tinta escura: 16,8:1). */
+.trophy--won {
+  background: var(--paper);
+  color: var(--paper-ink);
+  box-shadow: 0 4px 0 var(--outline);
+}
+
+.trophy--won .trophy__icon {
+  color: var(--accent);
+  filter: drop-shadow(2px 0 0 var(--outline)) drop-shadow(-2px 0 0 var(--outline)) drop-shadow(0 2px 0 var(--outline))
+    drop-shadow(0 -2px 0 var(--outline));
+}
+
+/* Falta vencer: silhueta escura e borda tracejada, como o episódio bloqueado do Mapa
+   (creme sobre o azul: 10,3:1; texto secundário: 6,3:1). */
+.trophy--missing {
+  border-style: dashed;
+  border-color: var(--ink-soft);
+  background: var(--bg-raised);
+  color: var(--ink);
+}
+
+.trophy--missing .trophy__icon {
+  color: var(--outline);
+}
+
+.trophy--missing .trophy__status {
+  color: var(--ink-soft);
+}

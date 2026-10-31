@@ -10,7 +10,7 @@ const ITEMS: { label: string; to?: ScreenId }[] = [
   { label: 'Mapa', to: 'map' },
   { label: 'Loja', to: 'shop' },
   { label: 'Álbum', to: 'album' },
-  { label: 'Troféus' },
+  { label: 'Troféus', to: 'trophies' },
   { label: 'Mensagens', to: 'messages' },
   { label: 'Campeonato', to: 'tournament' },
   { label: 'Ajustes', to: 'settings' },
