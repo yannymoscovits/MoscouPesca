@@ -7,8 +7,10 @@ import type { Difficulty, FightStyle, Rod, Species } from '../content/types';
 import type { Rng } from './rng';
 import {
   BAR_BOUNCE,
+  BAR_BRAKE_SCALE,
   BAR_GRAVITY,
   BAR_HOLD_ACCEL,
+  BAR_PRESS_KICK,
   BAR_MAX_SPEED,
   BAR_MAX_STEP_S,
   BAR_ZONE_BASE,
@@ -107,6 +109,11 @@ export function startBar(sp: Species, rod: Rod, rules: BarRules, rng: Rng): Catc
   };
 }
 
+/** BRIGA-02: o tranco no momento em que o dedo encosta; sem ele a faixa caindo demora a virar. */
+export function pressBar(b: CatchBar): CatchBar {
+  return { ...b, zoneV: Math.min(b.zoneV + BAR_PRESS_KICK, BAR_MAX_SPEED) };
+}
+
 /** O centro do peixe entre a base e o topo da faixa, bordas incluídas. */
 export function fishInside(b: CatchBar): boolean {
   return b.fishY >= b.zoneY && b.fishY <= b.zoneY + b.zoneH;
@@ -122,7 +129,8 @@ export function barOutcome(b: CatchBar, rules: BarRules): 'pegou' | 'fugiu' | nu
 /** Um passo de no máximo BAR_MAX_STEP_S. */
 function substep(b: CatchBar, h: number, holding: boolean, rules: BarRules, rng: Rng): CatchBar {
   // Faixa: aceleração constante no passo, então a posição usa a média das velocidades (BRIGA-02, 03).
-  const accel = (holding ? BAR_HOLD_ACCEL : 0) - BAR_GRAVITY;
+  const up = holding ? BAR_HOLD_ACCEL * (b.zoneV < 0 ? BAR_BRAKE_SCALE : 1) : 0; // freio no apertar
+  const accel = up - BAR_GRAVITY;
   let zoneV = Math.min(Math.max(b.zoneV + accel * h, -BAR_MAX_SPEED), BAR_MAX_SPEED);
   let zoneY = b.zoneY + ((b.zoneV + zoneV) / 2) * h;
   const top = 1 - b.zoneH;

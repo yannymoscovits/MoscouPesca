@@ -33,6 +33,10 @@ export const BAR_MAX_SPEED = 1.2;
 /** Parte da velocidade que a faixa devolve ao quicar no fundo. */
 export const BAR_BOUNCE = 0.6;
 /** Altura da faixa: base + por ponto de Força da vara. */
+/** Tranco imediato para cima quando o dedo encosta em SEGURAR (barra/s): a briga responde na hora. */
+export const BAR_PRESS_KICK = 0.5;
+/** Multiplica a aceleração de segurar enquanto a faixa ainda cai: freia rápido no apertar. */
+export const BAR_BRAKE_SCALE = 2.5;
 export const BAR_ZONE_BASE = 0.18;
 export const BAR_ZONE_PER_FORCE = 0.015;
 /** Tempo entre dois destinos do peixe. */

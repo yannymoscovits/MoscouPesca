@@ -14,6 +14,7 @@ import type {
 } from '../content/types';
 import { goals } from '../content/goals';
 import { record } from '../domain/album';
+import { pressBar } from '../domain/catchBar';
 import { goalId, onCatch } from '../domain/medals';
 import {
   press as pescaPress,
@@ -39,6 +40,8 @@ import { createStore, initialState, type GameState, type GameStore } from './sto
 
 /** ISCA-09: vibração no ataque do peixe. */
 export const STRIKE_VIBRATION_MS = 300;
+/** Vibração curtinha quando o peixe entra na rede. */
+export const CAUGHT_VIBRATION_MS = 80;
 
 export interface GameController {
   /** Abre a pesca no local atual: envia GameStarted (abertura do episódio) e começa o tutorial se faltar. */
@@ -196,6 +199,9 @@ export function createController({ store, save, platform, episodes, rng }: Contr
     if (fishing.phase === 'Strike' && prev.phase !== 'Strike' && s.profile.settings.vibration) {
       platform.vibrate(STRIKE_VIBRATION_MS); // ISCA-09
     }
+    if (fishing.phase === 'Result_Caught' && prev.phase !== 'Result_Caught' && s.profile.settings.vibration) {
+      platform.vibrate(CAUGHT_VIBRATION_MS); // pegou: um toque curto de comemoração
+    }
     const ended = isResult(fishing) && !isResult(prev);
     if (ended) next = onResult(next, fishing);
     commit(next, ended);
@@ -267,7 +273,10 @@ export function createController({ store, save, platform, episodes, rng }: Contr
     holdStart() {
       touched = true;
       const s = get();
-      if (!blocked(s) && !s.holding) store.update(() => ({ ...s, holding: true }));
+      if (blocked(s) || s.holding) return;
+      // BRIGA-02: o tranco da faixa no momento em que o dedo encosta em SEGURAR.
+      const fishing = s.fishing.phase === 'Fight' ? { ...s.fishing, bar: pressBar(s.fishing.bar) } : s.fishing;
+      store.update(() => ({ ...s, fishing, holding: true }));
     },
 
     holdEnd() {

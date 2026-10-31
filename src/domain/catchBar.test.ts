@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FightStyle, Rod, Species } from '../content/types';
-import { barOutcome, barRulesFor, fightStyleOf, fishInside, startBar, stepBar, type BarRules, type CatchBar } from './catchBar';
+import { barOutcome, barRulesFor, fightStyleOf, fishInside, pressBar, startBar, stepBar, type BarRules, type CatchBar } from './catchBar';
 import { createRng, type Rng } from './rng';
 
 function fish(power: number, stamina = 5, fightStyle?: FightStyle): Species {
@@ -79,6 +79,18 @@ describe('stepBar: a faixa verde', () => {
     const b = run(start(), 0.5, true, DESAFIO, createRng(2));
     expect(b.zoneV).toBeCloseTo(0.7, 6); // 1,4 × 0,5
     expect(b.zoneY).toBeCloseTo(0.175, 6); // ½ × 1,4 × 0,5²
+  });
+
+  it('BRIGA-02: encostar o dedo dá um tranco de 0,5 barra/s para cima, sem passar do máximo', () => {
+    const b = startBar(fish(3), rod(1), DESAFIO, createRng(1));
+    expect(pressBar(b).zoneV).toBeCloseTo(0.5, 6);
+    expect(pressBar({ ...b, zoneV: 1.0 }).zoneV).toBeCloseTo(1.2, 6);
+  });
+
+  it('BRIGA-02: segurando com a faixa caindo, o freio é 2,5 vezes a aceleração', () => {
+    const b = { ...startBar(fish(3), rod(1), DESAFIO, createRng(1)), zoneY: 0.5, zoneV: -1.2 };
+    const after = stepBar(b, 1 / 30, true, DESAFIO, createRng(2));
+    expect(after.zoneV).toBeCloseTo(-1.2 + (2.8 * 2.5 - 1.4) / 30, 6);
   });
 
   it('BRIGA-02: segurando, a velocidade para em 1,2 barra/s', () => {

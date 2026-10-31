@@ -135,7 +135,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 
 **Acceptance Criteria**:
 1. WHEN um peixe é fisgado THEN o jogo SHALL mostrar a barra de captura vertical com o peixe dentro, a faixa verde no fundo da barra e, ao lado, o medidor de captura em 30%. `BRIGA-01`
-2. WHILE o jogador segura SEGURAR the jogo SHALL acelerar a faixa verde para cima a 2,8 barra/s² contra a gravidade de 1,4 barra/s², até a velocidade máxima de 1,2 barra/s. `BRIGA-02`
+2. WHILE o jogador segura SEGURAR the jogo SHALL acelerar a faixa verde para cima a 2,8 barra/s² (7,0 barra/s² enquanto ela ainda cai, para frear rápido) contra a gravidade de 1,4 barra/s², até a velocidade máxima de 1,2 barra/s, com um tranco imediato de 0,5 barra/s para cima no momento em que o dedo encosta. `BRIGA-02`
 3. WHILE o jogador não segura SEGURAR the jogo SHALL fazer a faixa verde cair com a gravidade de 1,4 barra/s². `BRIGA-03`
 4. WHEN a faixa verde bate no fundo da barra THEN o jogo SHALL fazê-la quicar com 60% da velocidade, para cima. `BRIGA-04`
 5. WHEN a faixa verde bate no topo da barra THEN o jogo SHALL pará-la no topo, com velocidade zero. `BRIGA-05`
