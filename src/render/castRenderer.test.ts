@@ -7,6 +7,8 @@ import { CAST_FLIGHT_S } from '../domain/tuning';
 import { ADILSON_BOX, ADILSON_PALETTE, rodHand } from './adilson';
 import { CAST_COLORS, CAST_ROD_TIP, createCastRenderer, landingPoint, spotAnchor, type CastView } from './castRenderer';
 import { computeLayout, PALETTE, SCENE_H, SCENE_W } from './fishingRenderer';
+import { DEFAULT_SCENERY, sceneryOf, type StandKind } from './scenery';
+import { STAND_PALETTE } from './stands';
 
 /** Contexto 2D de mentira: aceita qualquer chamada e guarda cada uma com os argumentos. */
 function fakeCtx() {
@@ -188,5 +190,117 @@ describe('desenho da vista de cima', () => {
       expect(rodPixels(calls)).toEqual([]);
       expect(calls.find((c) => c.name === 'moveTo')?.args).toEqual([v(CAST_ROD_TIP).x, v(CAST_ROD_TIP).y]);
     });
+  });
+});
+
+// A cena de cada local, que a v1 desenhava no fishingRenderer (T79), agora é a vista de cima do pesqueiro
+// e do arremesso: véu e água na paleta do local, o lugar de pesca dele e a arte do PixelLab por cima.
+
+/** Local → de onde o Adilson pesca. Parque dos Ventos e alto-mar ainda vêm de outra branch: aqui são fixtures. */
+const STANDS: Record<string, StandKind> = {
+  'poco-do-magro': 'pier',
+  'rio-jacuipe': 'barranco',
+  'ponte-da-cetrel': 'ponte',
+  'vera-cruz': 'pedras',
+  'parque-dos-ventos': 'barragem',
+  'alto-mar-da-bahia': 'barco',
+};
+
+const fillsOf = (calls: { name: string; args: unknown[]; fillStyle: unknown }[], color: string) =>
+  calls.filter((c) => c.name === 'fillRect' && c.fillStyle === color).map((c) => c.args as number[]);
+
+/** Contexto falso que guarda também as propriedades (imageSmoothingEnabled). */
+function mountedWithProps() {
+  const calls: { name: string; args: unknown[]; fillStyle: unknown }[] = [];
+  const props: Record<string | symbol, unknown> = {};
+  const ctx = new Proxy(props, {
+    get: (t, k) => (k in t ? t[k] : (...args: unknown[]) => void calls.push({ name: String(k), args, fillStyle: t.fillStyle })),
+    set: (t, k, val) => {
+      t[k] = val;
+      return true;
+    },
+  });
+  const canvas = document.createElement('canvas');
+  canvas.getContext = (() => ctx) as unknown as typeof canvas.getContext;
+  const renderer = createCastRenderer({ resolve: () => null, load: () => new Promise(() => {}) });
+  renderer.mount(canvas, { width: 412, height: 839 });
+  return { renderer, calls, canvas, props };
+}
+
+/** A vista de cima, sem mira nem isca, num lugar. */
+function drawnAt(place: string | undefined) {
+  const { renderer, calls } = mountedWithProps();
+  renderer.draw({ ...base, place }, 0);
+  return calls;
+}
+const fills = fillsOf;
+
+describe('vista lógica na tela', () => {
+  it('as laterais da cena são preenchidas pelo cenário', () => {
+    const calls = drawnAt('poco-do-magro');
+    expect(fills(calls, sceneryOf('poco-do-magro').tint).some(([x, y, w, h]) => x <= 0 && y <= 0 && x + w >= l.viewW && y + h >= l.viewH)).toBe(true);
+  });
+
+  it('o canvas usa a vista lógica e é ampliado sem borrar', () => {
+    const { canvas, props } = mountedWithProps();
+    expect([canvas.width, canvas.height]).toEqual([l.viewW, l.viewH]);
+    expect(canvas.style.width).toBe(`${l.viewW * 2}px`);
+    expect(props.imageSmoothingEnabled).toBe(false);
+  });
+});
+
+describe('cenário de cada local, na vista de cima (T79)', () => {
+  it('todo local registrado no conteúdo tem cenário próprio e o lugar de pesca certo', () => {
+    const places = episodes.flatMap((ep) => ep.locations.map((loc) => loc.id));
+    expect(places.length).toBeGreaterThan(0);
+    for (const id of places) {
+      expect(STANDS[id], `${id} sem lugar de pesca na spec`).toBeDefined();
+      expect(sceneryOf(id), id).not.toBe(DEFAULT_SCENERY);
+      expect(sceneryOf(id).stand, id).toBe(STANDS[id]);
+    }
+  });
+
+  it.each(Object.entries(STANDS))('%s: o véu e a textura da água na paleta do local e o lugar "%s"', (place, stand) => {
+    const calls = drawnAt(place);
+    const { tint, water } = sceneryOf(place);
+
+    expect(fills(calls, tint).some(([x, y, w, h]) => x <= 0 && y <= 0 && x + w >= l.viewW && y + h >= l.viewH)).toBe(true);
+    expect(fills(calls, water.wave).length, 'ondinhas').toBeGreaterThan(0);
+    expect(fills(calls, water.light).length, 'brilhos').toBeGreaterThan(0);
+    expect(fills(calls, STAND_PALETTE[stand].main).length, stand).toBeGreaterThan(0);
+    for (const other of Object.keys(STAND_PALETTE) as StandKind[]) {
+      if (other !== stand) expect(fills(calls, STAND_PALETTE[other].main), `não desenha ${other}`).toEqual([]);
+    }
+  });
+
+  it('cada local tem a sua cor de água e o seu lugar de pesca', () => {
+    const all = Object.keys(STANDS).map(sceneryOf);
+    expect(new Set(all.map((s) => s.tint)).size).toBe(all.length);
+    expect(new Set(all.map((s) => s.water.light)).size).toBe(all.length);
+    expect(new Set(all.map((s) => s.stand)).size).toBe(all.length);
+  });
+
+  it('local desconhecido: o cenário padrão, com o píer, sem erro', () => {
+    expect(sceneryOf('nao-existe')).toBe(DEFAULT_SCENERY);
+    expect(sceneryOf(undefined)).toBe(DEFAULT_SCENERY);
+    const calls = drawnAt('nao-existe');
+    expect(fills(calls, STAND_PALETTE.pier.main).length).toBeGreaterThan(0);
+  });
+});
+
+describe('arte do PixelLab no lugar de pesca', () => {
+  it('com src/assets/stands/pier.png no build, a arte do píer é desenhada por cima da cena', async () => {
+    const { renderer, calls } = mounted(['src/assets/stands/pier.png']);
+    renderer.draw(base, 0);
+    await flush();
+    calls.length = 0;
+
+    renderer.draw(base, 0);
+
+    const images = calls.filter((c) => c.name === 'drawImage');
+    expect(images).toHaveLength(1);
+    const [, , , , , x, y, w, h] = images[0].args as number[];
+    expect([x, w]).toEqual([l.offsetX, SCENE_W]);
+    expect(y + h).toBe(l.viewH); // até o pé da tela
   });
 });

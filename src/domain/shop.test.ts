@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { Bait, Point, Profile, Rod, Species, Zone } from '../content/types';
-import { cast, press, rulesFor, tick, type FishingState, type TickContext } from './fishing';
+import type { Bait, Profile, Rod, Species, Zone } from '../content/types';
+import { press, rulesFor, startPesca, tick, type PescaContext, type PescaState } from './pesca';
 import { createRng } from './rng';
+import { typicalPlayer } from './sim/typicalPlayer';
 import { buy, canBuy, equip, type Item } from './shop';
 
 const BAMBU: Rod = { id: 'bambu', name: 'Vara de Bambu', price: 0, force: 1, reach: 2, episode: 1 };
@@ -103,18 +104,46 @@ describe('equipar', () => {
   });
 
   it('EQUIP-05: a vara equipada vale a partir do próximo arremesso; o arremesso em curso segue com a anterior', () => {
-    const origin: Point = { x: 0, y: 0 };
+    const lambari: Species = {
+      id: 'lambari',
+      name: 'Lambari',
+      sprite: '',
+      kg: { min: 0.1, max: 0.3 },
+      pricePerKg: 10,
+      power: 1,
+      stamina: 1,
+      baits: ['minhoca'],
+      rarity: 1,
+      description: '',
+      rare: false,
+      medals: { bronze: 0.2, prata: 0.25, ouro: 0.28 },
+    };
+    const spot: Zone = { id: 'z', polygon: [], species: ['lambari'], depthM: 1, name: 'Z', minReach: 0 };
+    const ctxOf = (prof: Profile): PescaContext => ({
+      rod: rodOf(prof),
+      bait: prof.baits.equipped,
+      rng: createRng(1),
+      rules: rulesFor('tranquilo'),
+      spot,
+      species: [lambari],
+    });
+    /** ARREMESSAR duas vezes: trava a seta e solta a isca. */
+    const castWith = (prof: Profile) => press(press(startPesca(), 'arremessar', ctxOf(prof)), 'arremessar', ctxOf(prof));
     let p = buy(profile(500), FIBRA);
-    const inFlight = cast({ phase: 'Idle' }, { x: 0, y: -10 }, { origin, rod: rodOf(p), bait: p.baits.equipped });
+    const inFlight = castWith(p);
 
     p = equip(p, 'fibra');
     if (inFlight.phase !== 'Flying') throw new Error('esperava Flying');
     expect(inFlight.gear.rod.id).toBe('bambu');
+    const landed = tick(inFlight, 1, { holding: false }, ctxOf(p)); // o arremesso em curso cai na água
+    if (landed.phase !== 'Lure') throw new Error('esperava Lure');
+    expect(landed.gear.rod.id).toBe('bambu');
 
-    const next = cast({ phase: 'Idle' }, { x: 0, y: -10 }, { origin, rod: rodOf(p), bait: p.baits.equipped });
+    const next = castWith(p);
     if (next.phase !== 'Flying') throw new Error('esperava Flying');
     expect(next.gear.rod.id).toBe('fibra');
   });
+
 });
 
 describe('isca de uso ilimitado', () => {
@@ -135,18 +164,27 @@ describe('isca de uso ilimitado', () => {
     };
     const zone: Zone = { id: 'z', polygon: [{ x: -50, y: -50 }, { x: 50, y: -50 }, { x: 50, y: 50 }, { x: -50, y: 50 }], species: ['tilapia'], depthM: 1, name: 'Z', minReach: 0 };
     let p = equip(buy(profile(100), CARNE), 'carne');
-    const ctx: TickContext = { rng: createRng(7), rules: rulesFor('tranquilo'), zones: [zone], species: [tilapia] };
+    const rules = rulesFor('tranquilo');
+    const ctx: PescaContext = { rod: rodOf(p), bait: p.baits.equipped, rng: createRng(7), rules, spot: zone, species: [tilapia] };
 
+    // 100 arremessos inteiros pela pescaria nova, com o jogador típico da simulação.
+    let results = 0;
     let caught = 0;
     for (let i = 0; i < 100; i++) {
-      let s: FishingState = cast({ phase: 'Idle' }, { x: 0, y: -10 }, { origin: { x: 0, y: 0 }, rod: rodOf(p), bait: p.baits.equipped });
-      for (let t = 0; t < 2000 && !s.phase.startsWith('Result_'); t++) {
-        s = s.phase === 'Bite' ? press(s, ctx) : tick(s, 0.1, { holding: true }, ctx);
+      const player = typicalPlayer(createRng(i + 1), rules);
+      let s: PescaState = startPesca();
+      for (let t = 0; t < 3000 && !s.phase.startsWith('Result_'); t++) {
+        const input = player(s, 0.1);
+        if (input.button) s = press(s, input.button, ctx);
+        s = tick(s, 0.1, { holding: input.holding }, ctx);
       }
+      if (s.phase.startsWith('Result_')) results++;
       if (s.phase === 'Result_Caught') caught++;
     }
 
-    expect(caught).toBe(100);
+    expect(results).toBe(100); // os 100 arremessos foram até o fim, com a isca na água
+    expect(caught).toBeGreaterThan(0);
+
     expect(p.baits.owned).toContain('carne');
     expect(p.baits.equipped).toBe('carne');
     p = buy(p, FIBRA);

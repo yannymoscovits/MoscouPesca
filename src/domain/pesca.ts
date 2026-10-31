@@ -52,7 +52,6 @@ export function rulesFor(d: Difficulty): PescaRules {
   return { sweepS: AIM_SWEEP_S[d], hookWindowS: HOOK_WINDOW_S[d], followWithinS: null, bar: barRulesFor(d) };
 }
 
-// Copiado de fishing.ts, que sai na limpeza (T17).
 /** Peixe na mão: peso sorteado na faixa da espécie, com 2 casas, e valor em R$ inteiros. */
 export function caught(sp: Species, rng: Rng): Extract<PescaState, { phase: 'Result_Caught' }> {
   const drawn = Math.round(rng.range(sp.kg.min, sp.kg.max) * 100) / 100; // PESCA-16

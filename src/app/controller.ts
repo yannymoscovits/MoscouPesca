@@ -10,7 +10,6 @@ import type {
   GameEvent,
   ItemId,
   LocationId,
-  Point,
   Profile,
 } from '../content/types';
 import { goals } from '../content/goals';
@@ -38,8 +37,6 @@ import type { BrowserApi } from '../platform/browser';
 import { requestPersistence, type SaveService } from '../platform/save';
 import { createStore, initialState, type GameState, type GameStore } from './store';
 
-/** Ponta da vara na cena lógica de 180 × 400 px da v1 (spec, "Tamanho da cena"). */
-export const ROD_TIP: Point = { x: 90, y: 370 };
 /** ISCA-09: vibração no ataque do peixe. */
 export const STRIKE_VIBRATION_MS = 300;
 
@@ -104,6 +101,7 @@ export function createController({ store, save, platform, episodes, rng }: Contr
   const allScenes = episodes.flatMap((ep) => ep.scenes);
   let warnedSave = false; // "Não consegui salvar" aparece uma vez por sessão
   let touched = false; // toque desde o último tick (TUTO-07)
+  let fightRules: PescaRules | null = null; // ACES-03: as regras do começo da briga em andamento
 
   const get = store.getState;
   const episodeOf = (p: Profile) => episodeAt(p.currentLocation, episodes) ?? episodes[0];
@@ -141,12 +139,15 @@ export function createController({ store, save, platform, episodes, rng }: Contr
     return s.tutorial ? tutorials.rules(s.tutorial, difficulty) : rulesFor(difficulty);
   }
 
+  /** ACES-03: trocar a dificuldade no meio da briga só vale a partir da briga seguinte. */
+  const rulesNow = (s: GameState) => (s.fishing.phase === 'Fight' && fightRules ? fightRules : rulesOf(s));
+
   /** O arremesso no ponto escolhido; sem ponto (no pesqueiro), não há arremesso. */
   function pescaContext(s: GameState): PescaContext | null {
     const { ep, location } = place(s);
     const spot = location.zones.find((z) => z.id === s.spot);
     if (!spot) return null;
-    return { rod: rodOf(s.profile), bait: s.profile.baits.equipped, rng, rules: rulesOf(s), spot, species: ep.species };
+    return { rod: rodOf(s.profile), bait: s.profile.baits.equipped, rng, rules: rulesNow(s), spot, species: ep.species };
   }
 
   /** Fim do 8º arremesso: classificação e, na vitória, troféu, carta, cena e próximo episódio. */
@@ -189,6 +190,8 @@ export function createController({ store, save, platform, episodes, rng }: Contr
   /** Troca o estado da pesca, avançando o tutorial e tratando ataque e resultado. */
   function setFishing(s: GameState, fishing: PescaState, tutorial = s.tutorial): void {
     const prev = s.fishing;
+    if (fishing.phase !== 'Fight') fightRules = null;
+    else if (prev.phase !== 'Fight') fightRules = rulesOf(s);
     let next: GameState = { ...s, fishing, tutorial: tutorial && tutorials.onPesca(tutorial, fishing, s.spot !== null) };
     if (fishing.phase === 'Strike' && prev.phase !== 'Strike' && s.profile.settings.vibration) {
       platform.vibrate(STRIKE_VIBRATION_MS); // ISCA-09
@@ -271,7 +274,7 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       if (get().holding) store.update((s) => ({ ...s, holding: false }));
     },
 
-    rules: () => rulesOf(get()),
+    rules: () => rulesNow(get()),
 
     tick(dt) {
       const s = get();

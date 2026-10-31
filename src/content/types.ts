@@ -73,7 +73,7 @@ export interface Bait {
 
 export interface Zone {
   id: string;
-  polygon: Point[]; // px lógicos da cena, os mesmos do arremesso (fishing.cast); (0, 0) no canto de cima à esquerda
+  polygon: Point[]; // px lógicos da cena de cima (pesqueiro e arremesso); (0, 0) no canto de cima à esquerda
   species: SpeciesId[];
   // SPEC_DEVIATION: `depthM` não existe no design.
   // Reason: o medidor de Profundidade da pescaria (T80) mostra a profundidade da zona onde a isca está.

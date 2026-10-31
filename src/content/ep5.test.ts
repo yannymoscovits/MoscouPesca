@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { record } from '../domain/album';
-import { cast, maxCastDistance, rulesFor, tick, type FishingState } from '../domain/fishing';
+import { spawnWater, stepWater } from '../domain/lure';
 import { newProfile } from '../domain/profile';
 import { createRng } from '../domain/rng';
-import { ROD_TIP } from '../domain/sim/typicalPlayer';
+import { spotsFor } from '../domain/spots';
 import { buy } from '../domain/shop';
 import { currentObjective, isTournamentUnlocked, onEvent } from '../domain/story';
 import { characters, speakersOf } from './characters';
 import { ep5 } from './episodes/ep5';
 import { episodes } from './index';
-import type { GameEvent, Point, Profile, SceneId, Zone } from './types';
+import type { GameEvent, Profile, SceneId, Zone } from './types';
 
 const lines = (id: SceneId) => ep5.scenes.find((s) => s.id === id)!.lines;
 const allLines = () => [...ep5.scenes.flatMap((s) => s.lines), ...ep5.tournament.rivals.map((r) => r.taunt)];
@@ -43,28 +43,26 @@ describe('Episódio 5: o chefão depende da isca nova e da força, não do alcan
   const location = ep5.locations[0];
   const rareZones = location.zones.filter((z) => z.species.includes(rare.id));
 
-  /** Ponto da zona mais perto do barco: para as faixas da cena, o meio da borda de baixo, 5 px para dentro. */
-  const nearestPoint = (zone: Zone): Point => ({
-    x: zone.polygon.reduce((s, p) => s + p.x, 0) / zone.polygon.length,
-    y: Math.max(...zone.polygon.map((p) => p.y)) - 5,
-  });
-
-  /** Espécie que morde quando a isca cai no ponto, ou null se nenhuma aceita a isca. */
-  function biter(at: Point, bait: string, seed: number): string | null {
-    const ctx = { rng: createRng(seed), rules: rulesFor('tranquilo'), zones: location.zones, species: ep5.species };
-    let s: FishingState = cast({ phase: 'Idle' }, at, { origin: ROD_TIP, rod: ep5.rods[0], bait });
-    while (s.phase === 'Flying') s = tick(s, 0.1, { holding: false }, ctx);
-    if (s.phase !== 'Waiting') throw new Error(`esperava Waiting, veio ${s.phase}`);
-    return s.bite?.species.id ?? null;
+  /**
+   * Espécie que ataca a isca num arremesso de 8 m no ponto, recolhendo direto (pesca-bass ISCA-05 a
+   * ISCA-07), ou null se a isca chega ao barco sem ataque.
+   */
+  function striker(zone: Zone, bait: string, seed: number): string | null {
+    const rng = createRng(seed);
+    let water = spawnWater(zone, ep5.species, 8, rng, null, bait);
+    for (let t = 0; t < 30 && water.lure.xM > 0; t += 0.1) {
+      const step = stepWater(water, 0.1, true, bait, rng);
+      if (step.strike) return step.strike.species.id;
+      water = step.water;
+    }
+    return null;
   }
 
-  it('o alcance não limita: a melhor vara dos episódios 1 a 4 já chega à zona do Marlim-azul', () => {
-    const bestReach = Math.max(...earlier.flatMap((ep) => ep.rods.map((r) => r.reach)));
+  it('o alcance não limita: a melhor vara dos episódios 1 a 4 já abre o ponto do Marlim-azul', () => {
+    const best = earlier.flatMap((ep) => ep.rods).reduce((a, b) => (b.reach > a.reach ? b : a));
     expect(rareZones.length).toBeGreaterThan(0);
-    for (const zone of rareZones) {
-      const at = nearestPoint(zone);
-      expect(Math.hypot(at.x - ROD_TIP.x, at.y - ROD_TIP.y), zone.id).toBeLessThanOrEqual(maxCastDistance(bestReach));
-    }
+    const open = spotsFor(location, best, ep5.species, {}).filter((s) => !s.locked).map((s) => s.id);
+    for (const zone of rareZones) expect(open, zone.id).toContain(zone.id);
   });
 
   it('EQUIP-02: o Marlim-azul só aceita a isca nova do Episódio 5', () => {
@@ -72,17 +70,17 @@ describe('Episódio 5: o chefão depende da isca nova e da força, não do alcan
     expect(earlier.flatMap((ep) => ep.baits.map((b) => b.id))).not.toContain(newBait);
   });
 
-  it('sem a isca nova o Marlim-azul não morde em 200 arremessos na zona dele; com ela, morde', () => {
+  it('sem a isca nova o Marlim-azul não ataca em 200 arremessos na zona dele; com ela, ataca', () => {
     const oldBaits = earlier.flatMap((ep) => ep.baits.map((b) => b.id));
     for (const zone of rareZones) {
-      const at = nearestPoint(zone);
       for (const bait of oldBaits) {
-        for (let seed = 1; seed <= 200; seed++) expect(biter(at, bait, seed), `${zone.id} ${bait}`).not.toBe(rare.id);
+        for (let seed = 1; seed <= 200; seed++) expect(striker(zone, bait, seed), `${zone.id} ${bait}`).not.toBe(rare.id);
       }
-      const bites = Array.from({ length: 200 }, (_, i) => biter(at, newBait, i + 1));
-      expect(bites, zone.id).toContain(rare.id);
+      const strikes = Array.from({ length: 200 }, (_, i) => striker(zone, newBait, i + 1));
+      expect(strikes, zone.id).toContain(rare.id);
     }
   });
+
 
   it('a Vara Lendária, a mais forte do jogo, é comprada antes do objetivo do Marlim-azul', () => {
     const lendaria = ep5.rods.find((r) => r.id === 'lendaria')!;

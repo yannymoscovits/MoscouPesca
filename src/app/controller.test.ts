@@ -251,6 +251,48 @@ describe('pesqueiro e botões', () => {
   });
 });
 
+describe('ACES-03: dificuldade trocada no meio da briga', () => {
+  /** Arremessa, recolhe até o ataque e fisga; a briga começa com a dificuldade de agora. */
+  function hook(g: ReturnType<typeof setup>) {
+    g.at('raso');
+    g.castNow();
+    g.controller.holdStart();
+    g.tickUntil('Strike');
+    g.controller.holdEnd();
+    g.controller.pressButton('puxar');
+    expect(g.state().fishing.phase).toBe('Fight');
+  }
+
+  // Segurando SEGURAR o tempo todo, a faixa sobe e deixa no fundo o peixe calmo do sorteio previsível.
+  it('trocar para o Tranquilo não salva a briga do Desafio; a briga seguinte já é do Tranquilo', () => {
+    const g = setup(played({ settings: { difficulty: 'desafio', vibration: true } }), { species: 'tilapia' });
+    hook(g);
+    g.controller.setDifficulty('tranquilo');
+    g.controller.holdStart();
+    g.tickUntil('Result_Escaped', 30); // o medidor zera, como no Desafio
+    g.controller.holdEnd();
+    g.controller.dismissResult();
+
+    hook(g);
+    g.controller.holdStart();
+    for (let i = 0; i < 300; i++) g.controller.tick(DT);
+    const fishing = g.state().fishing as Extract<PescaState, { phase: 'Fight' }>;
+    expect(fishing.phase).toBe('Fight'); // no Tranquilo o medidor para em 10%
+    expect(fishing.bar.meter).toBeCloseTo(0.1, 9);
+  });
+
+  it('trocar para o Desafio não tira o piso de 10% da briga do Tranquilo', () => {
+    const g = setup(played(), { species: 'tilapia' });
+    hook(g);
+    g.controller.setDifficulty('desafio');
+    g.controller.holdStart();
+    for (let i = 0; i < 300; i++) g.controller.tick(DT);
+    const fishing = g.state().fishing as Extract<PescaState, { phase: 'Fight' }>;
+    expect(fishing.phase).toBe('Fight');
+    expect(fishing.bar.meter).toBeCloseTo(0.1, 9);
+  });
+});
+
 describe('medalhas e metas', () => {
   const tilapia = ep1.species.find((sp) => sp.id === 'tilapia')!;
   /** Fração da faixa de peso da tilápia que cai entre dois limites de medalha. */

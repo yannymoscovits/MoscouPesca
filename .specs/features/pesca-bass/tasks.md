@@ -443,9 +443,9 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Nenhum import da pescaria antiga sobra (`tsc` limpo)
-- [ ] Rastreabilidade da v1: PESCA-01 a 14 e TUTO-03 a 06 com status "Superseded by pesca-bass"
-- [ ] Gate check passes: `npm run typecheck && npm run build && npm run check:size && npm test && npm run test:e2e`
+- [x] Nenhum import da pescaria antiga sobra (`tsc` limpo)
+- [x] Rastreabilidade da v1: PESCA-01 a 14 e TUTO-03 a 06 com status "Superseded by pesca-bass"
+- [x] Gate check passes: `npm run typecheck && npm run build && npm run check:size && npm test && npm run test:e2e`
 
 **Tests**: unit
 **Gate**: build

@@ -1,8 +1,15 @@
 // Seta da mira, barra de força e distância do arremesso (design.md da pesca-bass, "castAim").
 // As duas ondas dependem só do tempo desde o começo da fase; o período (sweepS) vem das regras.
 
-import { maxCastDistance } from './fishing';
 import { AIM_HALF_ARC_DEG, CAST_MIN_SHARE, M_PER_PX } from './tuning';
+
+/** Alcance máximo da vara em px lógicos da cena da v1: base + por ponto de Alcance (EQUIP-07). */
+export const CAST_BASE = 60;
+export const CAST_PER_REACH = 24;
+
+export function maxCastDistance(reach: number): number {
+  return CAST_BASE + CAST_PER_REACH * reach;
+}
 
 /** Onda triangular 0 → 1 → 0, uma ida e volta a cada `periodS`. */
 function triangle(sinceS: number, periodS: number): number {

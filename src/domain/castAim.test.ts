@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { aimAngleDeg, castDistanceM, powerAt } from './castAim';
-import { maxCastDistance } from './fishing';
+import { aimAngleDeg, castDistanceM, maxCastDistance, powerAt } from './castAim';
 
 describe('aimAngleDeg: a seta da mira', () => {
   it.each([2, 4])('ARREM-01, ARREM-06: vai de -45° a 45° e volta em %i s', (sweepS) => {
@@ -50,5 +49,14 @@ describe('castDistanceM: a distância do arremesso', () => {
   it('ARREM-03: no meio, (30% + 70% × força) do alcance máximo', () => {
     expect(castDistanceM(0.5, 2)).toBeCloseTo(0.65 * 10.8);
     expect(castDistanceM(0.25, 10)).toBeCloseTo(0.475 * (maxCastDistance(10) / 10));
+  });
+});
+
+describe('maxCastDistance: o alcance da vara', () => {
+  it('EQUIP-07: cada ponto de Alcance aumenta a distância máxima do arremesso', () => {
+    for (let reach = 1; reach < 10; reach++) {
+      expect(maxCastDistance(reach + 1)).toBeGreaterThan(maxCastDistance(reach));
+      expect(castDistanceM(1, reach + 1)).toBeGreaterThan(castDistanceM(1, reach));
+    }
   });
 });

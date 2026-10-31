@@ -2,7 +2,7 @@
 // As mesmas regras valem para os 5 campeonatos; só os dados mudam.
 
 import type { CharacterId, Profile, TournamentDef, TournamentRun } from '../content/types';
-import type { FishingState } from './fishing';
+import type { PescaState } from './pesca';
 
 /** Quantos peixes contam na pontuação (TournamentDef.countBest). */
 const COUNT_BEST = 3;
@@ -17,7 +17,7 @@ export function start(def: TournamentDef): TournamentRun {
  * Registra o fim de um arremesso. Recebe qualquer estado da pesca: só os resultados gastam
  * arremesso, então uma briga interrompida (app fechado) não gasta nada (SAVE-06).
  */
-export function recordCast(run: TournamentRun, result: FishingState): TournamentRun {
+export function recordCast(run: TournamentRun, result: PescaState): TournamentRun {
   if (run.castsLeft <= 0 || !result.phase.startsWith('Result_')) return run;
   const catches =
     result.phase === 'Result_Caught' ? [...run.catches, { species: result.species.id, kg: result.kg }] : run.catches;

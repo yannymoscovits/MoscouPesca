@@ -645,7 +645,7 @@ ul {
   background: var(--bg); /* atrás do fundo do mar */
 }
 
-/* Área dos toques na cena (InputController); os botões do HUD ficam fora dela. */
+/* A cena desenhada; os toques vão para os botões por cima dela. */
 .stage {
   position: absolute;
   inset: 0;
@@ -788,43 +788,6 @@ ul {
   animation-play-state: paused;
 }
 
-:root {
-  --tension-verde: #43a047;
-  --tension-amarelo: #fdd835;
-  --tension-vermelho: #e53935;
-}
-
-.tension {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.tension__bar {
-  flex: 1;
-  height: 24px;
-  border: 3px solid var(--ink);
-  border-radius: 6px;
-  background: #2b2b3d;
-  overflow: hidden;
-}
-
-.tension__fill {
-  height: 100%;
-}
-
-.tension__bar[data-band='verde'] .tension__fill {
-  background: var(--tension-verde);
-}
-
-.tension__bar[data-band='amarelo'] .tension__fill {
-  background: var(--tension-amarelo);
-}
-
-.tension__bar[data-band='vermelho'] .tension__fill {
-  background: var(--tension-vermelho);
-}
-
 /* ---------- Medidores da pescaria (T80) ---------- */
 
 /* Do painel até o meio da tela, nas laterais: a metade de baixo fica para o "FISGAR!" e os botões. */
@@ -846,15 +809,8 @@ ul {
   min-height: 0;
 }
 
-/* As caixinhas da direita com a mesma largura, a da mais larga; isca de nome longo quebra a linha. */
-.gauges__side--right {
-  align-items: stretch;
-  max-width: 156px;
-}
-
 /* Caixinhas no marinho do painel: rótulo azul-claro (8,7:1) e valor creme (14,4:1). */
-.gauge,
-.gauge-tension {
+.gauge {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -894,85 +850,11 @@ ul {
   height: 24px;
 }
 
-/* A barra vertical cresce até onde a faixa deixa, entre 80 e 220 px. */
-.gauge-tension {
-  flex: 0 1 260px;
-  min-height: 0;
-  gap: 4px;
-}
-
-.gauge-tension__bar {
-  position: relative;
-  flex: 1 1 auto;
-  width: 28px;
-  min-height: 80px;
-  max-height: 220px;
-  border: 3px solid var(--ink);
-  border-radius: 6px;
-  background: #2b2b3d;
-  overflow: hidden;
-}
-
-.gauge-tension__fill {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.gauge-tension__bar[data-band='verde'] .gauge-tension__fill {
-  background: var(--tension-verde);
-}
-
-.gauge-tension__bar[data-band='amarelo'] .gauge-tension__fill {
-  background: var(--tension-amarelo);
-}
-
-.gauge-tension__bar[data-band='vermelho'] .gauge-tension__fill {
-  background: var(--tension-vermelho);
-}
-
-/* ---------- Mordida, ficha do peixe e avisos do arremesso ---------- */
+/* ---------- Ficha do peixe e avisos do arremesso ---------- */
 
 /* Altura da fileira de botões do HUD: os avisos da pesca param acima dela. */
 :root {
   --hud-row: calc(var(--touch) + 16px + var(--safe-bottom));
-}
-
-.bite {
-  position: absolute;
-  inset: 0;
-}
-
-.bite__alert {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 22%;
-  text-align: center;
-  font: 700 120px / 1 var(--font-title);
-  color: var(--accent);
-  text-shadow:
-    6px 6px 0 var(--outline),
-    -3px -3px 0 var(--outline);
-  animation: tremer 0.3s steps(2) infinite;
-  pointer-events: none;
-}
-
-@keyframes tremer {
-  50% {
-    transform: translateX(4px) rotate(4deg);
-  }
-}
-
-/* PESCA-06: o botão ocupa a metade de baixo, acima da fileira do HUD. */
-.bite__hook {
-  position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  top: 50%;
-  bottom: var(--hud-row);
-  font: 700 56px / 1 var(--font-title);
 }
 
 @keyframes pulsar {

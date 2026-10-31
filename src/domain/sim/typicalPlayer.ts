@@ -15,7 +15,6 @@ import type {
   GameEvent,
   GoalDef,
   Location,
-  Point,
   Profile,
   Rod,
   Species,
@@ -43,8 +42,6 @@ import { currentObjective, isTournamentUnlocked, onEvent } from '../story';
 import { applyVictory, recordCast, standings, start as startTournament } from '../tournament';
 import { isUnlocked, onChampionshipWon, shopItems, travel } from '../world';
 
-/** Ponta da vara na cena lógica de 180 × 400 px (spec, "Tamanho da cena"). */
-export const ROD_TIP: Point = { x: 90, y: 370 };
 /** Segundos para ler a ficha do peixe. */
 export const CARD_S = 3;
 /** Atraso do jogador para reagir ao que vê: o peixe na barra (SIMB-02), o peixe seguindo e o ataque. */

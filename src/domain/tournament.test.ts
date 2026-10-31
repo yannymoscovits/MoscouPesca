@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Profile, Species, TournamentDef } from '../content/types';
-import type { FishingState } from './fishing';
+import type { PescaState } from './pesca';
 import { applyVictory, recordCast, score, standings, start } from './tournament';
 
 const DEF: TournamentDef = {
@@ -34,7 +34,7 @@ function species(id: string): Species {
   };
 }
 
-const caught = (id: string, kg: number): FishingState => ({
+const caught = (id: string, kg: number): PescaState => ({
   phase: 'Result_Caught',
   species: species(id),
   kg,
@@ -98,18 +98,9 @@ describe('arremessos', () => {
 
   it('SAVE-06: só um resultado gasta arremesso; estados antes do resultado (briga interrompida) não gastam', () => {
     const run = start(DEF);
-    const fight: FishingState = {
-      phase: 'Fight',
-      gear: { rod: { id: 'bambu', name: 'Bambu', price: 0, force: 1, reach: 2, episode: 1 }, bait: 'minhoca' },
-      at: { x: 0, y: 0 },
-      species: species('tilapia'),
-      maxTension: 99,
-      tension: 40,
-      distance: 30,
-      atMaxS: 0,
-      fightS: 5,
-    };
-    for (const s of [fight, { phase: 'Idle' } as FishingState]) {
+    // Só a fase importa para o torneio: os outros campos da briga e da isca ficam de fora.
+    const before = ['Aim', 'Power', 'Flying', 'Lure', 'Strike', 'Fight'].map((phase) => ({ phase }) as PescaState);
+    for (const s of before) {
       expect(recordCast(run, s)).toEqual({ id: 'guanambicup', castsLeft: 8, catches: [] });
     }
 
@@ -118,12 +109,13 @@ describe('arremessos', () => {
     expect(afterCatch.catches).toEqual([{ species: 'tilapia', kg: 1.2 }]);
   });
 
-  it('Formato do torneio: arremesso sem peixe (escapou, arrebentou, nada) gasta o arremesso e não soma peso', () => {
+  it('Formato do torneio: arremesso sem peixe (peixe fugido ou nada) gasta o arremesso e não soma peso', () => {
     let run = start(DEF);
-    for (const phase of ['Result_Escaped', 'Result_Broken', 'Result_Nothing'] as const) {
+    for (const phase of ['Result_Escaped', 'Result_Nothing'] as const) {
       run = recordCast(run, { phase });
     }
-    expect(run.castsLeft).toBe(5);
+    expect(run.castsLeft).toBe(6);
+
     expect(run.catches).toEqual([]);
   });
 

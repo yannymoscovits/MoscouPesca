@@ -452,29 +452,29 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | INST-07 | P1: Instalar e abrir | T45 | Implementing |
 | INST-08 | P1: Instalar e abrir | T5 | Implementing |
 | INST-09 | P1: Instalar e abrir | T3 | Implementing |
-| PESCA-01 | P1: Pescar com um dedo | T8 | Implementing |
-| PESCA-02 | P1: Pescar com um dedo | T8 | Implementing |
-| PESCA-03 | P1: Pescar com um dedo | T8 | Implementing |
-| PESCA-04 | P1: Pescar com um dedo | T9 | Implementing |
-| PESCA-05 | P1: Pescar com um dedo | T9 | Implementing |
-| PESCA-06 | P1: Pescar com um dedo | T37 | Implementing |
-| PESCA-07 | P1: Pescar com um dedo | T26, T29, T37 | Implementing |
-| PESCA-08 | P1: Pescar com um dedo | T9 | Implementing |
-| PESCA-09 | P1: Pescar com um dedo | T9 | Implementing |
-| PESCA-10 | P1: Pescar com um dedo | T10 | Implementing |
-| PESCA-11 | P1: Pescar com um dedo | T10 | Implementing |
-| PESCA-12 | P1: Pescar com um dedo | T10, T36 | Implementing |
-| PESCA-13 | P1: Pescar com um dedo | T10 | Implementing |
-| PESCA-14 | P1: Pescar com um dedo | T10 | Implementing |
+| PESCA-01 | P1: Pescar com um dedo | T8 | Superseded by pesca-bass |
+| PESCA-02 | P1: Pescar com um dedo | T8 | Superseded by pesca-bass |
+| PESCA-03 | P1: Pescar com um dedo | T8 | Superseded by pesca-bass |
+| PESCA-04 | P1: Pescar com um dedo | T9 | Superseded by pesca-bass |
+| PESCA-05 | P1: Pescar com um dedo | T9 | Superseded by pesca-bass |
+| PESCA-06 | P1: Pescar com um dedo | T37 | Superseded by pesca-bass |
+| PESCA-07 | P1: Pescar com um dedo | T26, T29, T37 | Superseded by pesca-bass |
+| PESCA-08 | P1: Pescar com um dedo | T9 | Superseded by pesca-bass |
+| PESCA-09 | P1: Pescar com um dedo | T9 | Superseded by pesca-bass |
+| PESCA-10 | P1: Pescar com um dedo | T10 | Superseded by pesca-bass |
+| PESCA-11 | P1: Pescar com um dedo | T10 | Superseded by pesca-bass |
+| PESCA-12 | P1: Pescar com um dedo | T10, T36 | Superseded by pesca-bass |
+| PESCA-13 | P1: Pescar com um dedo | T10 | Superseded by pesca-bass |
+| PESCA-14 | P1: Pescar com um dedo | T10 | Superseded by pesca-bass |
 | PESCA-15 | P1: Pescar com um dedo | T11, T37 | Implementing |
 | PESCA-16 | P1: Pescar com um dedo | T11 | Implementing |
 | PESCA-17 | P1: Pescar com um dedo | T11, T29 | Implementing |
 | TUTO-01 | P1: Tutorial da primeira pescaria | T17 | Implementing |
 | TUTO-02 | P1: Tutorial da primeira pescaria | T40 | Implementing |
-| TUTO-03 | P1: Tutorial da primeira pescaria | T17 | Implementing |
-| TUTO-04 | P1: Tutorial da primeira pescaria | T17 | Implementing |
-| TUTO-05 | P1: Tutorial da primeira pescaria | T17 | Implementing |
-| TUTO-06 | P1: Tutorial da primeira pescaria | T17 | Implementing |
+| TUTO-03 | P1: Tutorial da primeira pescaria | T17 | Superseded by pesca-bass |
+| TUTO-04 | P1: Tutorial da primeira pescaria | T17 | Superseded by pesca-bass |
+| TUTO-05 | P1: Tutorial da primeira pescaria | T17 | Superseded by pesca-bass |
+| TUTO-06 | P1: Tutorial da primeira pescaria | T17 | Superseded by pesca-bass |
 | TUTO-07 | P1: Tutorial da primeira pescaria | T17, T40 | Implementing |
 | TUTO-08 | P1: Tutorial da primeira pescaria | T17, T29 | Implementing |
 | TUTO-09 | P1: Tutorial da primeira pescaria | T18, T35 | Implementing |
@@ -484,7 +484,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | EQUIP-04 | P1: Varas, iscas e loja | T13, T41 | Implementing |
 | EQUIP-05 | P1: Varas, iscas e loja | T13, T41 | Implementing |
 | EQUIP-06 | P1: Varas, iscas e loja | T13 | Implementing |
-| EQUIP-07 | P1: Varas, iscas e loja | T8, T10 | Implementing |
+| EQUIP-07 | P1: Varas, iscas e loja | T8, T10 | Implementing (Força sobre a tensão: superseded by pesca-bass; Alcance segue) |
 | EQUIP-08 | P1: Varas, iscas e loja | T13 | Implementing |
 | EQUIP-09 | P1: Varas, iscas e loja | T55, T41 | Implementing |
 | HIST-01 | P1: História dos 5 episódios | T16, T39 | Implementing |
@@ -565,9 +565,9 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 **ID format:** `[CATEGORIA]-[NÚMERO]`
 
-**Status values:** Pending → In Design → In Tasks → Implementing → Verified
+**Status values:** Pending → In Design → In Tasks → Implementing → Verified; "Superseded by <feature>" quando outra spec substitui o requisito
 
-**Coverage:** 120 total, todos mapeados no tasks.md; 108 em implementação
+**Coverage:** 120 total, todos mapeados no tasks.md; 90 em implementação; 18 substituídos pela pesca-bass (PESCA-01 a 14, TUTO-03 a 06)
 
 ---
 
