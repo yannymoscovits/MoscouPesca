@@ -82,6 +82,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Visual do quadro de diálogo | Segue o mockup do usuário (`docs/arte/mockups/dialogo.png`): caixa azul-marinho com borda amarela grossa e cantos chanfrados em pixel, pontinhos amarelos nos cantos, aba amarela no canto de cima com o peixinho e o nome de quem fala, e um triângulo amarelo piscando no canto de baixo para indicar "toque para continuar". O retrato com a expressão (HIST-02, HUMOR-02) continua aparecendo junto | Desenho do usuário | y |
 | Layout da tela de pesca | Segue o mockup do usuário (`docs/arte/mockups/tela-de-pesca.png`): painel no topo com três linhas e ícones (moeda + saldo e nome do local; vara · isca; alvo + objetivo com progresso "0 de 3"); a cena no meio; píer de madeira embaixo, de onde o Adilson pesca; botões "Pausar" e "Menu" com ícone sobre o píer; diálogo com o retrato em cima à esquerda, nome, texto e "Toque para continuar". O cenário muda conforme o episódio e o local (um cenário por local: Poço do Magro, Rio Jacuípe, Ponte da Cetrel, Vera Cruz, Parque dos Ventos e alto-mar) | Desenho do usuário | y |
 | Visual da pescaria | Cena no estilo dos jogos de pesca de 16 bits, com arte própria (nada copiado de jogo existente): o Adilson visto de costas embaixo da tela, de chapéu de pescador, segurando a vara; água com textura de pixel animada e a paleta de cada local; o lugar de onde ele pesca muda por local (píer, barranco, ponte, pedras, barragem, barco); vara, linha com curva, isca, respingo, ondinhas, sombra do peixe e "!" na mordida; medidores de Tensão (barra vertical), Linha (metros soltos), Profundidade e a isca atual. O antes está em `docs/arte/mockups/pesca-antes.png` | Pedido do usuário: a cena atual ficou feia | y |
+| Medalhas e metas | Limites de bronze, prata e ouro por espécie em proporção à faixa de peso dela; metas de 10, 25 e 50 capturas por espécie, com recompensa crescendo por episódio; medalhas e metas contam como conquistas na simulação | Escolha do usuário entre três caminhos para chegar a 2 a 3 horas por episódio sem repetição | y |
 | Inscrição no campeonato | Não é objetivo: o campeonato libera sozinho depois do último objetivo (CAMP-01) | Não existe evento de inscrição; o Episódio 1 ficou com 6 objetivos, dentro de PROG-02 | y |
 | Ficha da Piranha Lavínia | Mostra "Valor: inestimável" no lugar do valor em R$ (o saldo recebe o valor normal) | Piada do roteiro; exceção visual a PESCA-15 | y |
 | Tamanho da cena | Cena lógica de 180 × 400 px com a ponta da vara em (90, 370); telas mais largas centralizam a cena e completam as laterais com o cenário; a cena fica ancorada embaixo, e em telas mais baixas que 400 × escala a parte de cima (água mais distante) é cortada, ficando visível todo ponto de arremesso em telas a partir de 660 px de altura | As zonas e o alcance das varas são medidos nessa cena (T20) | y |
@@ -286,10 +287,29 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 1. The jogo SHALL exigir de 2 a 3 horas de jogo para cumprir os objetivos e vencer o campeonato de cada episódio, segundo a simulação de um jogador típico. `PROG-01`
 2. The jogo SHALL ter entre 6 e 8 objetivos por episódio antes do campeonato. `PROG-02`
 3. The jogo SHALL incluir em cada episódio um objetivo de pegar a espécie rara do local e um de registrar no álbum todas as espécies do local. `PROG-03`
-4. The jogo SHALL dar ao jogador típico simulado uma conquista (objetivo cumprido, item ao alcance do saldo, espécie nova ou recorde) pelo menos a cada 10 minutos de jogo. `PROG-04`
+4. The jogo SHALL dar ao jogador típico simulado uma conquista (objetivo cumprido, item ao alcance do saldo, espécie nova, recorde, medalha ou meta) pelo menos a cada 10 minutos de jogo. `PROG-04`
 5. The jogo SHALL calibrar o campeonato de cada episódio para que o jogador típico simulado vença com a melhor vara daquele episódio em pelo menos 60% das tentativas e com a melhor vara do episódio anterior em no máximo 20%. `PROG-05`
 
 **Independent Test**: Rodar a simulação de progressão: para cada episódio, o tempo até a vitória fica entre 2 e 3 horas, sem intervalo maior que 10 minutos entre conquistas.
+
+---
+
+### P1: Medalhas e metas ⭐ MVP
+
+**User Story**: Como Adilson, quero ganhar medalhas pelos peixes mais pesados e cumprir metas de quantidade, para ter sempre uma recompensa pequena por perto durante as horas de pescaria.
+
+**Why P1**: Escolha do usuário para chegar a 2 a 3 horas por episódio sem trechos longos sem novidade (conflito entre PROG-01 e PROG-04 achado na calibragem).
+
+**Acceptance Criteria**:
+1. The jogo SHALL dar a cada espécie três medalhas por peso, bronze, prata e ouro, com os limites de peso definidos no conteúdo. `MEDAL-01`
+2. WHEN o jogador pega um peixe que alcança o peso de uma medalha que ele ainda não tem THEN o jogo SHALL conceder essa medalha e mostrar na ficha "Medalha de <bronze/prata/ouro>!". `MEDAL-02`
+3. IF o jogador pega um peixe que alcança uma medalha que ele já tem THEN o jogo SHALL não conceder a medalha de novo. `MEDAL-03`
+4. The jogo SHALL ter metas de quantidade para cada espécie: pegar 10, 25 e 50 peixes dela. `MEDAL-04`
+5. WHEN o jogador cumpre uma meta pela primeira vez THEN o jogo SHALL somar ao saldo a recompensa em R$ definida no conteúdo e mostrar "Meta cumprida!". `MEDAL-05`
+6. The jogo SHALL mostrar no álbum, para cada espécie pega, as medalhas conquistadas e a contagem rumo à próxima meta. `MEDAL-06`
+7. The jogo SHALL salvar medalhas, contagens e metas cumpridas no perfil, junto com o resto do progresso. `MEDAL-07`
+
+**Independent Test**: Pegar tilápias de pesos crescentes até ver bronze, prata e ouro na ficha; pegar a 10ª tilápia e ver "Meta cumprida!" com o saldo aumentando; abrir o álbum e ver as medalhas e "10 de 25".
 
 ---
 
@@ -507,6 +527,13 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | PROG-03 | P1: Progressão longa | T23, T56 a T59 | Implementing |
 | PROG-04 | P1: Progressão longa | - | Pending |
 | PROG-05 | P1: Progressão longa | - | Pending |
+| MEDAL-01 | P1: Medalhas e metas | - | Pending |
+| MEDAL-02 | P1: Medalhas e metas | - | Pending |
+| MEDAL-03 | P1: Medalhas e metas | - | Pending |
+| MEDAL-04 | P1: Medalhas e metas | - | Pending |
+| MEDAL-05 | P1: Medalhas e metas | - | Pending |
+| MEDAL-06 | P1: Medalhas e metas | - | Pending |
+| MEDAL-07 | P1: Medalhas e metas | - | Pending |
 | SAVE-01 | P1: Pausa e progresso salvo | T26, T38 | Implementing |
 | SAVE-02 | P1: Pausa e progresso salvo | T38 | Implementing |
 | SAVE-03 | P1: Pausa e progresso salvo | T36 | Implementing |
@@ -540,7 +567,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 113 total, todos mapeados no tasks.md; 108 em implementação
+**Coverage:** 120 total, todos mapeados no tasks.md; 108 em implementação
 
 ---
 

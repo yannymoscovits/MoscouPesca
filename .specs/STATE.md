@@ -37,10 +37,10 @@
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute; Fases 1 a 8, T75 e T76 concluídas; próximo: T77 e T78 (diálogo e tela de pesca dos mockups), Fases 9 e 10 e prévias de arte com o usuário
-- **Completed**: até `e10e9cc`; 303 testes unitários e 88 e2e passando
-- **In-progress** (file:line): none
-- **Next step**: Depois que o usuário reabrir o VS Code (para carregar o PixelLab): subir o servidor de desenvolvimento na porta 5173 com `--host`; disparar T77 e T78 num sub-agente e T58, T59, T61 e T63 em outro (worktree isolado para um deles); depois T47 e T48; ao mesmo tempo, prévias do Adilson (chapéu de pescador; 3 versões variando cores do chapéu e do colete).
-- **Blockers**: estilo do quadro de diálogo aguardando o usuário (padrão: moldura azul com amarelo e retrato em cima).
+- **Phase / Task**: Execute, Fase 10 (T80, T81, T82 a T86, T61 e T87 por último) com sub-agente
+- **Completed**: Fases 1 a 9 (até `b838c50`: visual novo, episódios 4 e 5, sala de troféus); gate verde com 394 unitários e 104 e2e; arte aprovada em `arte-previa/`: Adilson (4 expressões e corpo), Jane (4 expressões), Lavínia (capuz azul, cabelo liso; expressões em andamento), peixinho fofo
+- **In-progress** (file:line): lote da Fase 10
+- **Next step**: Terminar as expressões da Lavínia antes de o sub-agente chegar na T87; depois seguir a arte do elenco do Episódio 1 (Ricardo, Bem, Kris, Edvaldo) com prévia e aprovação.
+- **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`

@@ -48,9 +48,10 @@ O gate de build **não** roda `check:content`: o marcador `{{PENDENTE}}` é espe
 ---
 
 ## Execution Plan
+
 Phases are ordered and run sequentially - each phase completes before the next begins, and tasks within a phase execute in order. Dependências entre fases aparecem só no campo `Depends on` de cada tarefa.
 
-**Marco jogável:** ao fim da Fase 8, os episódios 1 a 3 rodam no celular com formas provisórias no lugar da arte. Os episódios 4 e 5 entram na Fase 9, quando os roteiros estiverem prontos com o usuário.
+**Marco jogável:** já atingido (episódios 1 a 5 jogáveis sem a arte final). A Fase 10 fecha medalhas, metas e calibragem; as Fases 12 a 14 trazem a arte.
 
 ### Phase 1: Fundação
 
@@ -116,23 +117,31 @@ T74, T41, T42, T45, T46, T62 (independentes)
 T43 → T44
 ```
 
-### Phase 9: Episódios 4 e 5 e progressão
+### Phase 9: Visual novo e episódios 4 e 5
 
 ```
 T75 → T76
-T75 → T77 → T78 → T79 → T80
-T58 → T61
-T59 → T61
+T75 → T77 → T78 → T79
+T58 (independente)
 T59 → T63
 ```
 
-### Phase 10: Fechamento técnico
+### Phase 10: Medalhas, metas, medidores e arte aprovada
+
+```
+T80, T81, T87 (independentes)
+T82 → T83 → T84 → T85
+T82 → T86 → T61
+T83 → T61
+```
+
+### Phase 11: Fechamento técnico
 
 ```
 T47 → T48
 ```
 
-### Phase 11: Arte dos cenários
+### Phase 12: Arte dos cenários
 
 ```
 T49 → T64
@@ -142,7 +151,7 @@ T49 → T66
 T49 → T67
 ```
 
-### Phase 12: Arte dos peixes
+### Phase 13: Arte dos peixes
 
 ```
 T50 → T68
@@ -151,7 +160,7 @@ T50 → T70
 T50 → T71
 ```
 
-### Phase 13: Personagens, ícone e publicação
+### Phase 14: Personagens, ícone e publicação
 
 ```
 T51 → T54
@@ -1470,28 +1479,6 @@ T53 → T54
 
 ---
 
-#### T80: Criar os medidores da pescaria
-
-**What**: Medidores nas laterais da cena: Tensão numa barra vertical (verde, amarela e vermelha, como PESCA-12), Linha (metros soltos, da distância da isca), Profundidade (da zona onde a isca está) e um quadradinho com a isca atual. Textos com no mínimo 18 px.
-**Where**: `src/ui/FishingGauges.tsx`
-**Depends on**: T79
-**Reuses**: `tensionBand()`, estado da pesca, zonas do conteúdo (cada zona ganha `depthM`, a profundidade em metros)
-**Requirement**: PESCA-12; ACES-05, ACES-07
-**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
-
-**Done when**:
-
-- [ ] e2e: na briga, a barra vertical de tensão muda de cor em 69/70 e 89/90 (PESCA-12); Linha diminui ao segurar e aumenta ao soltar; Profundidade mostra a da zona da isca
-- [ ] Teste de conteúdo: toda zona tem `depthM` maior que zero
-- [ ] e2e: textos dos medidores com no mínimo 18 px e contraste de no mínimo 4,5:1; os medidores não cobrem os botões nem o "FISGAR!"
-- [ ] Gate check passes: `npm test && npm run test:e2e`
-
-**Tests**: e2e
-**Gate**: full
-**Commit**: `feat(ui): cria os medidores da pescaria`
-
----
-
 #### T58: Cadastrar o Episódio 4: Parque dos Ventos
 
 **What**: Pacote `ep4` completo a partir de `docs/historia/episodio-4.md`: local e zonas (Parque dos Ventos, açude no pé das torres eólicas); espécies fantasiosas Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (raro), com descrição engraçada; 2 varas (Vara Hélice e Vara Torre) e 1 isca novas; roteiro com 7 objetivos, a Lavínia como piranha-pipa e encerramento; Copa dos Ventos com os rivais Márcio, Sr. Higashi e Edvaldo e suas provocações; carta do Márcio transcrita de `docs/historia/cartas.md`. Os personagens novos (Márcio e Sr. Higashi) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
@@ -1537,30 +1524,6 @@ T53 → T54
 
 ---
 
-#### T61: Calibrar a progressão dos 5 episódios
-
-**What**: Ajustar preços, objetivos, raridades e pontuação dos rivais nos 5 pacotes até a simulação cumprir a medição de progressão da spec.
-**Where**: `src/content/progression.test.ts`
-**Depends on**: T56, T57, T58, T59, T60
-**Reuses**: `sim/typicalPlayer.ts`
-**Requirement**: PROG-01, PROG-04, PROG-05
-**Tools**: MCP: NONE · Skill: `commit-bee`
-
-**Done when**:
-
-- [ ] Para cada episódio, em 50 sementes, mediana do tempo até a vitória entre 120 e 180 min (PROG-01)
-- [ ] Em pelo menos 90% das sementes, nenhum intervalo sem conquista passa de 10 min (PROG-04)
-- [ ] Em 50 tentativas, vitória ≥ 60% com a melhor vara do episódio e ≤ 20% com a melhor do episódio anterior (PROG-05)
-- [ ] Ajustes só em números de `src/content/episodes/*`, sem mudar o domínio
-- [ ] Ponto de partida medido em T60: mediana de 15 a 20 min por episódio, e o dinheiro passa de um episódio para o outro; preços, contagens dos objetivos e raridades precisam subir em cada episódio
-- [ ] Gate check passes: `npm test`
-
-**Tests**: unit
-**Gate**: quick
-**Commit**: `test(balance): calibra a progressão dos episódios`
-
----
-
 #### T63: Criar a sala de troféus
 
 **What**: `TrophyRoom` com os 5 troféus: conquistados em destaque e os que faltam em silhueta com o nome do campeonato.
@@ -1582,6 +1545,209 @@ T53 → T54
 ---
 
 ### Phase 10 tasks
+
+#### T80: Criar os medidores da pescaria
+
+**What**: Medidores nas laterais da cena: Tensão numa barra vertical (verde, amarela e vermelha, como PESCA-12), Linha (metros soltos, da distância da isca), Profundidade (da zona onde a isca está) e um quadradinho com a isca atual. Textos com no mínimo 18 px.
+**Where**: `src/ui/FishingGauges.tsx`
+**Depends on**: T79
+**Reuses**: `tensionBand()`, estado da pesca, zonas do conteúdo (cada zona ganha `depthM`, a profundidade em metros)
+**Requirement**: PESCA-12; ACES-05, ACES-07
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: na briga, a barra vertical de tensão muda de cor em 69/70 e 89/90 (PESCA-12); Linha diminui ao segurar e aumenta ao soltar; Profundidade mostra a da zona da isca
+- [ ] Teste de conteúdo: toda zona tem `depthM` maior que zero
+- [ ] e2e: textos dos medidores com no mínimo 18 px e contraste de no mínimo 4,5:1; os medidores não cobrem os botões nem o "FISGAR!"
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): cria os medidores da pescaria`
+
+---
+
+#### T81: Trocar o peixe da tela inicial pelo peixinho fofo
+
+**What**: Substituir o peixe desenhado em SVG da tela inicial pela arte aprovada pelo usuário (`arte-previa/peixe/fofo.png`, copiada para `src/assets/ui/peixe-fofo.png`), em escala inteira e `image-rendering: pixelated`, com as bolhas e a animação de nadar.
+**Where**: `src/ui/TitleArt.tsx`
+**Depends on**: T76
+**Reuses**: `resolveAsset` de `sprites.ts`
+**Requirement**: visual da tela inicial (Assumptions); INST-01
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] Os e2e da tela inicial continuam passando sem mudança nas asserções
+- [ ] Print do Pixel 7 atualizado em `docs/arte/mockups/tela-inicial-implementada.png`
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): troca o peixe da tela inicial`
+
+---
+
+#### T87: Colocar no jogo a arte aprovada até agora
+
+**What**: Copiar para `src/assets/` a arte aprovada pelo usuário que está em `arte-previa/` (fora do git): retratos do Adilson e da Jane nas 4 expressões (`portraits/<id>-<expressão>.png`) e o Adilson de corpo inteiro (de costas para `adilson/parado|arremessando|recolhendo.png`, de frente para `adilson/posando.png`). Enquanto não houver animação, cada folha repete o mesmo quadro nos 4 quadros que o renderizador espera.
+**Where**: `src/assets/portraits/`
+**Depends on**: T79, T39
+**Reuses**: caminhos de `characters.ts` e de `fishingRenderer.ts`
+**Requirement**: HUMOR-01, HUMOR-02 (arte); visual da pescaria
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] Retratos do Adilson e da Jane aparecem nos diálogos e cartões no lugar das iniciais, com a expressão certa (`data-expression` mantido)
+- [ ] O Adilson de costas aparece na cena da pescaria e o de frente no "PEGOU!"
+- [ ] Os e2e existentes continuam passando sem mudança nas asserções
+- [ ] Prints do Pixel 7 do diálogo e da pescaria atualizados em `docs/arte/mockups/`
+- [ ] Gate check passes: build
+
+**Tests**: none
+**Gate**: build
+**Commit**: `feat(art): coloca no jogo a arte aprovada`
+
+---
+
+#### T82: Implementar medalhas e metas no domínio
+
+**What**: `onCatch` e `progress` como no design: medalhas de bronze, prata e ouro por peso, contagem de capturas por espécie e metas de 10, 25 e 50 cumpridas uma vez só, com recompensa.
+**Where**: `src/domain/medals.ts`
+**Depends on**: T14
+**Reuses**: `album.ts`
+**Requirement**: MEDAL-01 (regra), MEDAL-02, MEDAL-03, MEDAL-04, MEDAL-05 (regra), MEDAL-07 (forma do perfil)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Peixe que alcança o peso de bronze concede bronze; um mais pesado que alcança prata e ouro concede os dois de uma vez (MEDAL-02)
+- [ ] Medalha que já existe não é concedida de novo (MEDAL-03)
+- [ ] A 10ª, a 25ª e a 50ª captura de uma espécie cumprem as metas, cada uma uma vez só, e devolvem a recompensa (MEDAL-04, MEDAL-05)
+- [ ] `progress` devolve medalhas, contagem e a próxima meta (MEDAL-06, dado)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(domain): implementa medalhas e metas`
+
+---
+
+#### T83: Cadastrar os limites das medalhas e as metas
+
+**What**: Em cada espécie dos 5 episódios, `medals: {bronze, prata, ouro}` em kg, crescendo dentro da faixa de peso da espécie; em `src/content/goals.ts`, as metas de 10, 25 e 50 capturas com recompensa crescendo por episódio.
+**Where**: `src/content/goals.ts`
+**Depends on**: T82
+**Reuses**: conteúdo dos episódios
+**Requirement**: MEDAL-01, MEDAL-04, MEDAL-05 (valores)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Teste de conteúdo: toda espécie tem bronze < prata < ouro, todos dentro da faixa de peso dela
+- [ ] Teste de conteúdo: metas 10, 25 e 50 com recompensa maior que zero e crescente por episódio
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(content): cadastra medalhas e metas`
+
+---
+
+#### T84: Ligar medalhas e metas ao controlador
+
+**What**: Cada captura passa por `onCatch`: guarda medalhas, contagens e metas no perfil, soma a recompensa ao saldo e salva. O `parseProfile` aceita perfis antigos sem esses campos (preenche vazio).
+**Where**: `src/app/controller.ts`
+**Depends on**: T83
+**Reuses**: `medals.ts`, `saveSchema.ts`, `SaveService`
+**Requirement**: MEDAL-02, MEDAL-05, MEDAL-07
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Captura que concede medalha deixa a medalha no perfil e no estado da ficha (MEDAL-02)
+- [ ] Meta cumprida soma a recompensa ao saldo uma vez só e gera o aviso "Meta cumprida!" (MEDAL-05)
+- [ ] Medalhas, contagens e metas sobrevivem a salvar e recarregar; perfil salvo sem esses campos carrega sem erro (MEDAL-07)
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(app): liga medalhas e metas ao jogo`
+
+---
+
+#### T85: Mostrar medalhas e metas nas telas
+
+**What**: Ficha do peixe mostra "Medalha de bronze/prata/ouro!" com o ícone da medalha; aviso "Meta cumprida!" com a recompensa; álbum mostra, por espécie pega, as medalhas e "N de M" rumo à próxima meta.
+**Where**: `src/ui/Album.tsx`
+**Depends on**: T84
+**Reuses**: `FishCard.tsx`, padrões de `.screen`, `.overlay`
+**Requirement**: MEDAL-02, MEDAL-05, MEDAL-06; ACES-05 a ACES-08
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] e2e: pegar peixes de pesos crescentes mostra bronze, prata e ouro na ficha (MEDAL-02)
+- [ ] e2e: a 10ª captura de uma espécie mostra "Meta cumprida!" e o saldo sobe pela recompensa (MEDAL-05)
+- [ ] e2e: o álbum mostra as medalhas e "10 de 25" para a espécie (MEDAL-06)
+- [ ] e2e: textos com no mínimo 18 px, botões com no mínimo 56 × 56 px na metade de baixo e contraste de no mínimo 4,5:1
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): mostra medalhas e metas`
+
+---
+
+#### T86: Contar medalhas e metas na simulação
+
+**What**: O jogador típico simulado registra medalhas e metas como conquistas na linha do tempo, usando o mesmo `onCatch` do jogo.
+**Where**: `src/domain/sim/typicalPlayer.ts`
+**Depends on**: T82
+**Reuses**: `medals.ts`
+**Requirement**: PROG-04 (instrumento de medição)
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Episódio de teste com limites de medalha conhecidos: a linha do tempo traz as medalhas e as metas no minuto certo
+- [ ] Mesma semente, mesmo resultado
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `feat(sim): conta medalhas e metas`
+
+---
+
+#### T61: Calibrar a progressão dos 5 episódios
+
+**What**: Ajustar preços, objetivos, raridades e pontuação dos rivais nos 5 pacotes até a simulação cumprir a medição de progressão da spec.
+**Where**: `src/content/progression.test.ts`
+**Depends on**: T83, T86, T56, T57, T58, T59, T60
+**Reuses**: `sim/typicalPlayer.ts`
+**Requirement**: PROG-01, PROG-04, PROG-05
+**Tools**: MCP: NONE · Skill: `commit-bee`
+
+**Done when**:
+
+- [ ] Para cada episódio, em 50 sementes, mediana do tempo até a vitória entre 120 e 180 min (PROG-01)
+- [ ] Em pelo menos 90% das sementes, nenhum intervalo sem conquista passa de 10 min (PROG-04)
+- [ ] Em 50 tentativas, vitória ≥ 60% com a melhor vara do episódio e ≤ 20% com a melhor do episódio anterior (PROG-05)
+- [ ] Medalhas e metas (T82 a T86) contam como conquistas na simulação
+- [ ] Ajustes só em números do conteúdo (`src/content/episodes/*` e `src/content/goals.ts`), sem mudar o domínio
+- [ ] Ponto de partida medido em T60: mediana de 15 a 20 min por episódio, e o dinheiro passa de um episódio para o outro; preços, contagens dos objetivos e raridades precisam subir em cada episódio
+- [ ] Gate check passes: `npm test`
+
+**Tests**: unit
+**Gate**: quick
+**Commit**: `test(balance): calibra a progressão dos episódios`
+
+---
+
+### Phase 11 tasks
 
 #### T47: Testar a jornada completa
 
@@ -1630,7 +1796,7 @@ T53 → T54
 
 ---
 
-### Phase 11 tasks
+### Phase 12 tasks
 
 #### T49: Gerar o cenário do Poço do Magro
 
@@ -1758,7 +1924,7 @@ T53 → T54
 
 ---
 
-### Phase 12 tasks
+### Phase 13 tasks
 
 #### T50: Gerar os peixes do Episódio 1
 
@@ -1865,7 +2031,7 @@ T53 → T54
 
 ---
 
-### Phase 13 tasks
+### Phase 14 tasks
 
 #### T51: Gerar o Adilson na cena
 
@@ -2018,28 +2184,33 @@ T43 → T44
 
 Fase 9
 T75 → T76
-T75 → T77 → T78 → T79 → T80
-T58 → T61
-T59 → T61
+T75 → T77 → T78 → T79
+T58 (independente)
 T59 → T63
 
 Fase 10
-T47 → T48
+T80, T81, T87 (independentes)
+T82 → T83 → T84 → T85
+T82 → T86 → T61
+T83 → T61
 
 Fase 11
+T47 → T48
+
+Fase 12
 T49 → T64
 T49 → T73
 T49 → T65
 T49 → T66
 T49 → T67
 
-Fase 12
+Fase 13
 T50 → T68
 T50 → T69
 T50 → T70
 T50 → T71
 
-Fase 13
+Fase 14
 T51 → T54
 T52 → T72 → T54
 T52 → T54
@@ -2048,7 +2219,7 @@ T53 → T54
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
 
-**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (12) · Fase 11 (6) · Fases 12 e 13 (10).
+**Lotes para sub-agentes:** Fases 1 a 9 (feitas) · Fase 10 (9) · Fase 11 (2) · Fases 12 a 14 (arte, com o usuário aprovando cada prévia).
 
 ---
 
@@ -2113,18 +2284,25 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T77 | `src/ui/DialogBox.tsx` | ✅ Granular |
 | T78 | `src/ui/FishingScreen.tsx` | ✅ Granular |
 | T79 | `src/render/fishingRenderer.ts` | ✅ Granular |
-| T80 | `src/ui/FishingGauges.tsx` | ✅ Granular |
 | T58 | `src/content/episodes/ep4.ts` | ✅ Granular |
 | T59 | `src/content/episodes/ep5.ts` | ✅ Granular |
-| T61 | `src/content/progression.test.ts` | ✅ Granular |
 | T63 | `src/ui/TrophyRoom.tsx` | ✅ Granular |
+| T80 | `src/ui/FishingGauges.tsx` | ✅ Granular |
+| T81 | `src/ui/TitleArt.tsx` | ✅ Granular |
+| T87 | `src/assets/portraits/` | ⚠️ OK (coeso) |
+| T82 | `src/domain/medals.ts` | ✅ Granular |
+| T83 | `src/content/goals.ts` | ✅ Granular |
+| T84 | `src/app/controller.ts` | ✅ Granular |
+| T85 | `src/ui/Album.tsx` | ⚠️ OK (coeso) |
+| T86 | `src/domain/sim/typicalPlayer.ts` | ✅ Granular |
+| T61 | `src/content/progression.test.ts` | ✅ Granular |
 | T47 | `e2e/journey.spec.ts` | ✅ Granular |
 | T48 | `e2e/accessibility.spec.ts` | ✅ Granular |
 | T49 | `src/assets/scene/poco-do-magro.png` | ✅ Granular |
 | T64 | `src/assets/scene/rio-jacuipe.png` | ✅ Granular |
 | T73 | `src/assets/scene/ponte-cetrel.png` | ✅ Granular |
 | T65 | `src/assets/scene/vera-cruz.png` | ✅ Granular |
-| T66 | `src/assets/scene/amazonia.png` | ✅ Granular |
+| T66 | `src/assets/scene/parque-dos-ventos.png` | ✅ Granular |
 | T67 | `src/assets/scene/alto-mar.png` | ✅ Granular |
 | T50 | `src/assets/fish/ep1/` | ✅ Granular |
 | T68 | `src/assets/fish/ep2/` | ✅ Granular |
@@ -2200,11 +2378,18 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T77 | T75 | T75 → T77 | ✅ Match |
 | T78 | T77 | T77 → T78 | ✅ Match |
 | T79 | T78 | T78 → T79 | ✅ Match |
-| T80 | T79 | T79 → T80 | ✅ Match |
 | T58 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T59 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
-| T61 | T56 (fase 5), T57 (fase 5), T58, T59, T60 (fase 5) | T58 → T61, T59 → T61 | ✅ Match |
 | T63 | T34 (fase 7), T59 | T59 → T63 | ✅ Match |
+| T80 | T79 (fase 9) | - | ✅ Match |
+| T81 | T76 (fase 9) | - | ✅ Match |
+| T87 | T79 (fase 9), T39 (fase 7) | - | ✅ Match |
+| T82 | T14 (fase 3) | - | ✅ Match |
+| T83 | T82 | T82 → T83 | ✅ Match |
+| T84 | T83 | T83 → T84 | ✅ Match |
+| T85 | T84 | T84 → T85 | ✅ Match |
+| T86 | T82 | T82 → T86 | ✅ Match |
+| T61 | T83, T86, T56 (fase 5), T57 (fase 5), T58 (fase 9), T59 (fase 9), T60 (fase 5) | T83 → T61, T86 → T61 | ✅ Match |
 | T47 | T44 (fase 8), T46 (fase 8), T62 (fase 8), T63 (fase 9) | - | ✅ Match |
 | T48 | T47 | T47 → T48 | ✅ Match |
 | T49 | T33 (fase 6) | - | ✅ Match |
@@ -2222,7 +2407,7 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T52 | T39 (fase 7) | - | ✅ Match |
 | T72 | T52 | T52 → T72 | ✅ Match |
 | T53 | T3 (fase 1) | - | ✅ Match |
-| T54 | T51, T52, T53, T72, T49 (fase 11), T50 (fase 12), T64 (fase 11), T65 (fase 11), T66 (fase 11), T67 (fase 11), T68 (fase 12), T69 (fase 12), T70 (fase 12), T71 (fase 12), T73 (fase 11) | T51 → T54, T52 → T54, T53 → T54, T72 → T54 | ✅ Match |
+| T54 | T51, T52, T53, T72, T49 (fase 12), T50 (fase 13), T64 (fase 12), T65 (fase 12), T66 (fase 12), T67 (fase 12), T68 (fase 13), T69 (fase 13), T70 (fase 13), T71 (fase 13), T73 (fase 12) | T51 → T54, T52 → T54, T53 → T54, T72 → T54 | ✅ Match |
 
 ## Test Co-location Validation
 
@@ -2285,11 +2470,18 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T77 | Telas | e2e | e2e | ✅ OK |
 | T78 | Telas | e2e | e2e | ✅ OK |
 | T79 | Telas (cena) | e2e | e2e | ✅ OK |
-| T80 | Telas | e2e | e2e | ✅ OK |
 | T58 | Conteúdo | unit | unit | ✅ OK |
 | T59 | Conteúdo | unit | unit | ✅ OK |
-| T61 | Conteúdo | unit | unit | ✅ OK |
 | T63 | Telas | e2e | e2e | ✅ OK |
+| T80 | Telas | e2e | e2e | ✅ OK |
+| T81 | Telas | e2e | e2e | ✅ OK |
+| T87 | Arte | none | none | ✅ OK |
+| T82 | Domínio | unit | unit | ✅ OK |
+| T83 | Conteúdo | unit | unit | ✅ OK |
+| T84 | App | unit | unit | ✅ OK |
+| T85 | Telas | e2e | e2e | ✅ OK |
+| T86 | Domínio | unit | unit | ✅ OK |
+| T61 | Conteúdo | unit | unit | ✅ OK |
 | T47 | Telas (integração) | e2e | e2e | ✅ OK |
 | T48 | Telas (integração) | e2e | e2e | ✅ OK |
 | T49 | Arte | none | none | ✅ OK |

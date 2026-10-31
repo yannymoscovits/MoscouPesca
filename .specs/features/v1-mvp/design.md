@@ -182,6 +182,15 @@ Física da briga, por segundo (valores iniciais em `tuning.ts`, ajustados pelo t
 - **Dependencies**: `fishing` (só lê o estado)
 - O `fishing` recebe as regras por `TickContext.rules`, então o tutorial não tem um caminho de código próprio para a pesca: as mesmas funções rodam com limites diferentes.
 
+### Domain: medals
+
+- **Purpose**: Medalhas por peso e metas de quantidade por espécie.
+- **Location**: `src/domain/medals.ts`
+- **Interfaces**:
+  - `onCatch(p: Profile, species: Species, kg: number, goals: GoalDef): { profile: Profile; medals: MedalTier[]; goalsDone: GoalId[]; reward: number }`: concede medalhas novas (MEDAL-02, MEDAL-03), conta a captura e cumpre metas uma vez só (MEDAL-04, MEDAL-05)
+  - `progress(p: Profile, species: SpeciesId, goals: GoalDef): { medals: MedalTier[]; count: number; next: number | null }` (MEDAL-06)
+- **Dependencies**: conteúdo (limites das medalhas e metas)
+
 ### Domain: album
 
 - **Purpose**: Registrar espécies pegas e recordes.
@@ -318,6 +327,9 @@ interface Profile {
   unlockedEpisodes: EpisodeId[]      // começa em [1] (EPI-02)
   currentLocation: LocationId        // último local de pesca (EPI-07)
   tutorialDone: boolean
+  medals: Partial<Record<SpeciesId, MedalTier[]>>     // MEDAL-02
+  catchCounts: Partial<Record<SpeciesId, number>>     // MEDAL-04
+  goalsDone: GoalId[]                                 // MEDAL-05
   charactersIntroduced: CharacterId[]  // cartões de apresentação já mostrados
   tournament: TournamentRun | null   // torneio em andamento
   trophies: TrophyId[]
@@ -347,7 +359,10 @@ interface Species {
   description: string                // texto engraçado da ficha (HUMOR-03)
   rare: boolean                      // espécie rara do local (PROG-03)
   valueLabel?: string                // texto da ficha no lugar do R$ (ex.: "inestimável" na Piranha Lavínia)
+  medals: { bronze: number; prata: number; ouro: number }  // kg mínimos (MEDAL-01)
 }
+type MedalTier = 'bronze' | 'prata' | 'ouro'
+interface GoalDef { counts: number[]; reward: (episode: EpisodeId, count: number) => number }  // metas 10, 25, 50 (MEDAL-04)
 interface Rod { id: RodId; name: string; price: number; force: number; reach: number; episode: EpisodeId }  // força e alcance de 1 a 10
 interface Bait { id: BaitId; name: string; price: number; episode: EpisodeId }
 interface Zone { id: string; polygon: Point[]; species: SpeciesId[] }
