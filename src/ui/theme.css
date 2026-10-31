@@ -1028,6 +1028,43 @@ ul {
   font-style: italic;
 }
 
+/* MEDAL-02: uma linha por medalha nova, com o ícone. */
+.fish-card__medals {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fish-card__medals li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 22px / 1.2 var(--font-title);
+}
+
+.medal-icon {
+  flex: none;
+  width: 30px;
+  height: 30px;
+}
+
+/* MEDAL-05: faixa amarela com "Meta cumprida!" e a recompensa; marinho sobre o amarelo, 11:1. */
+.fish-card__goal {
+  width: 100%;
+  padding: 6px 12px;
+  border: 3px solid var(--outline);
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.fish-card__goal-title {
+  font: 700 24px / 1.2 var(--font-title);
+}
+
 /* Peixe provisório de CSS, na cor da espécie (--fish). */
 .fish-picture {
   position: relative;
@@ -1562,9 +1599,31 @@ ul {
   color: var(--paper-ink);
 }
 
-/* Desenho menor que o da ficha, para 8 espécies caberem sem rolagem. */
+/* Desenho menor que o da ficha, com as medalhas ao lado (MEDAL-06), para 8 espécies caberem sem rolagem. */
+.album-cell__art {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .album-cell .fish-picture {
-  zoom: 0.6;
+  zoom: 0.45;
+}
+
+.album-cell__medals {
+  display: flex;
+  gap: 2px;
+}
+
+.album-cell__medals .medal-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* "10 de 25" rumo à próxima meta. */
+.album-cell__goal {
+  font-size: var(--text-min);
+  font-weight: 700;
 }
 
 .album-cell--missing {

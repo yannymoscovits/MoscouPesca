@@ -3,14 +3,15 @@
 // (PESCA-05, PESCA-09, PESCA-13).
 
 import { useState } from 'preact/hooks';
-import { useGame } from '../app/store';
-import type { Species } from '../content/types';
+import { useGame, type GameState } from '../app/store';
+import type { MedalTier, Species } from '../content/types';
 import type { FishingState } from '../domain/fishing';
 import { colorOf } from '../render/fishingRenderer';
 import { resolveAsset } from '../render/sprites';
 import { CatchCelebration } from './Celebration';
 import { useServices } from './context';
 import { formatKg, formatMoney } from './format';
+import { Pixels } from './TitleArt';
 
 /**
  * PESCA-06: "!" grande e o botão "FISGAR!" na metade de baixo. Fica dentro da área dos toques da
@@ -43,6 +44,7 @@ export function ResultOverlay() {
   const { controller } = useServices();
   const fishing = useGame((s) => s.fishing);
   const newRecord = useGame((s) => s.newRecord);
+  const awards = useGame((s) => s.awards);
   // HUMOR-05: cada peixe pego é comemorado antes da ficha.
   const [celebrated, setCelebrated] = useState<FishingState | null>(null);
   const next = (
@@ -58,7 +60,7 @@ export function ResultOverlay() {
     if (celebrated !== fishing) return <CatchCelebration species={species} onDone={() => setCelebrated(fishing)} />;
     return (
       <div class="overlay overlay--fishing" role="dialog" aria-modal="true" aria-label="Ficha do peixe">
-        <FishCard species={species} kg={kg} value={value} newRecord={newRecord} />
+        <FishCard species={species} kg={kg} value={value} newRecord={newRecord} awards={awards} />
         {next}
       </div>
     );
@@ -75,7 +77,19 @@ export function ResultOverlay() {
   return null;
 }
 
-export function FishCard({ species, kg, value, newRecord }: { species: Species; kg: number; value: number; newRecord: boolean }) {
+export function FishCard({
+  species,
+  kg,
+  value,
+  newRecord,
+  awards = null,
+}: {
+  species: Species;
+  kg: number;
+  value: number;
+  newRecord: boolean;
+  awards?: GameState['awards'];
+}) {
   return (
     <article class="panel fish-card">
       {newRecord && <p class="fish-card__record">Novo recorde!</p>}
@@ -86,8 +100,67 @@ export function FishCard({ species, kg, value, newRecord }: { species: Species; 
         {/* spec, "Ficha da Piranha Lavínia": o rótulo substitui o R$ na ficha */}
         <span>Valor: {species.valueLabel ?? formatMoney(value)}</span>
       </p>
+      {/* MEDAL-02: cada medalha nova, com o ícone dela */}
+      {awards && awards.medals.length > 0 && (
+        <ul class="fish-card__medals" aria-label="Medalhas novas">
+          {awards.medals.map((tier) => (
+            <li key={tier}>
+              <MedalIcon tier={tier} />
+              <span>Medalha de {tier}!</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {/* MEDAL-05: a meta cumprida e a recompensa que entrou no saldo */}
+      {awards && awards.goals.length > 0 && (
+        <div class="fish-card__goal" role="status">
+          <p class="fish-card__goal-title">Meta cumprida!</p>
+          <p>
+            {awards.goals.join(' e ')} peixes: + {formatMoney(awards.reward)}
+          </p>
+        </div>
+      )}
       <p class="fish-card__description">{species.description}</p>
     </article>
+  );
+}
+
+// Medalha em pixels (10 × 10): fita vermelha e azul e o disco na cor da medalha.
+const MEDAL = [
+  '.rr....bb.',
+  '..rr..bb..',
+  '...rrbb...',
+  '...kkkk...',
+  '..kllmmk..',
+  '.klmmmmdk.',
+  '.kmmmmmdk.',
+  '.kmmmmddk.',
+  '..kmmddk..',
+  '...kkkk...',
+];
+const TIER_COLORS: Record<MedalTier, { l: string; m: string; d: string }> = {
+  bronze: { l: '#efb27a', m: '#cd7f32', d: '#8a4f1d' },
+  prata: { l: '#ffffff', m: '#c3cad3', d: '#7d8794' },
+  ouro: { l: '#fff1a8', m: '#ffd23f', d: '#c98f0a' },
+};
+const RIBBON = { k: '#0a1830', r: '#e8453c', b: '#1266ba' };
+/** Lugar da medalha que falta: só o contorno, apagado. */
+const EMPTY_MEDAL = { k: '#7d8794', l: '#e6e1d3', m: '#e6e1d3', d: '#e6e1d3', r: '#c9c3b3', b: '#c9c3b3' };
+
+/** Ícone da medalha; `earned` falso desenha o lugar vazio, sem nome para o leitor de tela. */
+export function MedalIcon({ tier, earned = true }: { tier: MedalTier; earned?: boolean }) {
+  const colors = earned ? { ...TIER_COLORS[tier], ...RIBBON } : EMPTY_MEDAL;
+  return (
+    <svg
+      class="medal-icon"
+      viewBox="0 0 10 10"
+      shape-rendering="crispEdges"
+      role={earned ? 'img' : undefined}
+      aria-label={earned ? `Medalha de ${tier}` : undefined}
+      aria-hidden={earned ? undefined : 'true'}
+    >
+      <Pixels rows={MEDAL} colors={colors} />
+    </svg>
   );
 }
 

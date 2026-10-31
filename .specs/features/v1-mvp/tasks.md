@@ -1689,11 +1689,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: pegar peixes de pesos crescentes mostra bronze, prata e ouro na ficha (MEDAL-02)
-- [ ] e2e: a 10ª captura de uma espécie mostra "Meta cumprida!" e o saldo sobe pela recompensa (MEDAL-05)
-- [ ] e2e: o álbum mostra as medalhas e "10 de 25" para a espécie (MEDAL-06)
-- [ ] e2e: textos com no mínimo 18 px, botões com no mínimo 56 × 56 px na metade de baixo e contraste de no mínimo 4,5:1
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: pegar peixes de pesos crescentes mostra bronze, prata e ouro na ficha (MEDAL-02)
+- [x] e2e: a 10ª captura de uma espécie mostra "Meta cumprida!" e o saldo sobe pela recompensa (MEDAL-05)
+- [x] e2e: o álbum mostra as medalhas e "10 de 25" para a espécie (MEDAL-06)
+- [x] e2e: textos com no mínimo 18 px, botões com no mínimo 56 × 56 px na metade de baixo e contraste de no mínimo 4,5:1
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full
