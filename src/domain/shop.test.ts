@@ -27,6 +27,9 @@ function profile(money: number): Profile {
     trophies: [],
     messagesUnlocked: [],
     album: {},
+    medals: {},
+    catchCounts: {},
+    goalsDone: [],
     seenVersion: '',
   };
 }

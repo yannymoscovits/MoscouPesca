@@ -35,6 +35,20 @@ export interface Species {
   description: string; // texto engraçado da ficha (HUMOR-03)
   rare: boolean; // espécie rara do local (PROG-03)
   valueLabel?: string; // texto da ficha no lugar do R$ (ex.: "inestimável" na Piranha Lavínia); o saldo recebe o valor normal
+  // Opcional só até o conteúdo dos 5 episódios receber os limites (T83).
+  medals?: MedalLimits; // kg mínimos de cada medalha (MEDAL-01)
+}
+
+export type MedalTier = 'bronze' | 'prata' | 'ouro';
+export type MedalLimits = Record<MedalTier, number>;
+
+/** Meta de quantidade cumprida: espécie e contagem, ex.: "tilapia:10" (medals.goalId). */
+export type GoalId = string;
+
+/** Metas de quantidade por espécie (MEDAL-04) e a recompensa em R$ de cada uma (MEDAL-05). */
+export interface GoalDef {
+  counts: number[]; // 10, 25 e 50
+  reward: (episode: EpisodeId, count: number) => number;
 }
 
 // Força e alcance de 1 a 10.
@@ -177,5 +191,8 @@ export interface Profile {
   trophies: TrophyId[];
   messagesUnlocked: MessageId[];
   album: Partial<Record<SpeciesId, { recordKg: number }>>;
+  medals: Partial<Record<SpeciesId, MedalTier[]>>; // MEDAL-02
+  catchCounts: Partial<Record<SpeciesId, number>>; // MEDAL-04
+  goalsDone: GoalId[]; // MEDAL-05
   seenVersion: string;
 }

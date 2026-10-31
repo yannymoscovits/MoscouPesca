@@ -147,3 +147,33 @@ describe('migração', () => {
     expect(migrate(V0, { 0: (o) => o })).toBeNull();
   });
 });
+
+describe('medalhas, contagens e metas no perfil (MEDAL-07)', () => {
+  const withMedals = (): Profile => ({
+    ...playedProfile(),
+    medals: { tilapia: ['bronze', 'prata'], traira: ['bronze'] },
+    catchCounts: { tilapia: 12, traira: 3 },
+    goalsDone: ['tilapia:10'],
+  });
+
+  it('MEDAL-07: medalhas, contagens e metas cumpridas saem iguais do salvamento', () => {
+    expect(roundTrip(withMedals())).toEqual(withMedals());
+  });
+
+  it('MEDAL-07: medalha inventada, contagem quebrada ou metas fora de lista → null', () => {
+    const wrong: [string, (p: any) => void][] = [
+      ['medalha inventada', (p) => (p.medals.tilapia = ['diamante'])],
+      ['medalhas não lista', (p) => (p.medals.tilapia = 'bronze')],
+      ['contagem em texto', (p) => (p.catchCounts.tilapia = '12')],
+      ['contagem negativa', (p) => (p.catchCounts.tilapia = -1)],
+      ['contagem quebrada', (p) => (p.catchCounts.tilapia = 1.5)],
+      ['metas não lista', (p) => (p.goalsDone = 'tilapia:10')],
+      ['meta número', (p) => (p.goalsDone = [10])],
+    ];
+    for (const [name, spoil] of wrong) {
+      const p = structuredClone(withMedals());
+      spoil(p);
+      expect(roundTrip(p), name).toBeNull();
+    }
+  });
+});

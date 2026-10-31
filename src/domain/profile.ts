@@ -24,6 +24,9 @@ export function newProfile(): Profile {
     trophies: [],
     messagesUnlocked: [],
     album: {},
+    medals: {}, // MEDAL-07
+    catchCounts: {},
+    goalsDone: [],
     seenVersion: '',
   };
 }

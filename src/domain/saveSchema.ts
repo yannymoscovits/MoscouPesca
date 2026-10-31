@@ -37,6 +37,9 @@ const isStory = (x: unknown) =>
 
 const isCatch = (x: unknown) => isObj(x) && isStr(x.species) && isNum(x.kg);
 
+const isTier = (x: unknown) => x === 'bronze' || x === 'prata' || x === 'ouro';
+const isCount = (x: unknown) => Number.isInteger(x) && (x as number) >= 0;
+
 const isTournament = (x: unknown) =>
   x === null || (isObj(x) && isStr(x.id) && isNum(x.castsLeft) && Array.isArray(x.catches) && x.catches.every(isCatch));
 
@@ -59,6 +62,9 @@ function isProfile(x: unknown): x is Profile {
     isStrList(x.trophies) &&
     isStrList(x.messagesUnlocked) &&
     isRecordOf(x.album, () => true, (v) => isObj(v) && isNum(v.recordKg)) &&
+    isRecordOf(x.medals, () => true, (v) => Array.isArray(v) && v.every(isTier)) && // MEDAL-07
+    isRecordOf(x.catchCounts, () => true, isCount) &&
+    isStrList(x.goalsDone) &&
     isStr(x.seenVersion)
   );
 }

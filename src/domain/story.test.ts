@@ -59,6 +59,9 @@ function newProfile(): Profile {
     trophies: [],
     messagesUnlocked: [],
     album: {},
+    medals: {},
+    catchCounts: {},
+    goalsDone: [],
     seenVersion: '',
   };
 }

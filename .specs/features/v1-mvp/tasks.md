@@ -1623,11 +1623,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Peixe que alcança o peso de bronze concede bronze; um mais pesado que alcança prata e ouro concede os dois de uma vez (MEDAL-02)
-- [ ] Medalha que já existe não é concedida de novo (MEDAL-03)
-- [ ] A 10ª, a 25ª e a 50ª captura de uma espécie cumprem as metas, cada uma uma vez só, e devolvem a recompensa (MEDAL-04, MEDAL-05)
-- [ ] `progress` devolve medalhas, contagem e a próxima meta (MEDAL-06, dado)
-- [ ] Gate check passes: `npm test`
+- [x] Peixe que alcança o peso de bronze concede bronze; um mais pesado que alcança prata e ouro concede os dois de uma vez (MEDAL-02)
+- [x] Medalha que já existe não é concedida de novo (MEDAL-03)
+- [x] A 10ª, a 25ª e a 50ª captura de uma espécie cumprem as metas, cada uma uma vez só, e devolvem a recompensa (MEDAL-04, MEDAL-05)
+- [x] `progress` devolve medalhas, contagem e a próxima meta (MEDAL-06, dado)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
