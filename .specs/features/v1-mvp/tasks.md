@@ -1557,10 +1557,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: na briga, a barra vertical de tensão muda de cor em 69/70 e 89/90 (PESCA-12); Linha diminui ao segurar e aumenta ao soltar; Profundidade mostra a da zona da isca
-- [ ] Teste de conteúdo: toda zona tem `depthM` maior que zero
-- [ ] e2e: textos dos medidores com no mínimo 18 px e contraste de no mínimo 4,5:1; os medidores não cobrem os botões nem o "FISGAR!"
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: na briga, a barra vertical de tensão muda de cor em 69/70 e 89/90 (PESCA-12); Linha diminui ao segurar e aumenta ao soltar; Profundidade mostra a da zona da isca
+- [x] Teste de conteúdo: toda zona tem `depthM` maior que zero
+- [x] e2e: textos dos medidores com no mínimo 18 px e contraste de no mínimo 4,5:1; os medidores não cobrem os botões nem o "FISGAR!"
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

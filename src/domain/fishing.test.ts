@@ -6,6 +6,7 @@ import {
   rulesFor,
   tensionBand,
   tick,
+  zoneAt,
   type CastContext,
   type FishingState,
   type TickContext,
@@ -349,5 +350,17 @@ describe('resultado', () => {
       weights.add(s.kg);
     }
     expect(weights.size).toBeGreaterThan(100); // sorteado, não fixo
+  });
+});
+
+describe('zona da isca', () => {
+  // T80: o medidor de Profundidade mostra a profundidade (depthM) da zona onde a isca está.
+  const RASO: Zone = { ...POND, id: 'raso', polygon: [{ x: 0, y: 250 }, { x: 180, y: 250 }, { x: 180, y: 360 }, { x: 0, y: 360 }], depthM: 1.5 };
+  const FUNDO: Zone = { ...POND, id: 'fundo', polygon: [{ x: 0, y: 0 }, { x: 180, y: 0 }, { x: 180, y: 250 }, { x: 0, y: 250 }], depthM: 9 };
+
+  it('T80: devolve a zona que contém o ponto, e nenhuma fora de todas', () => {
+    expect(zoneAt({ x: 90, y: 300 }, [RASO, FUNDO])?.depthM).toBe(1.5);
+    expect(zoneAt({ x: 90, y: 100 }, [RASO, FUNDO])?.depthM).toBe(9);
+    expect(zoneAt({ x: 90, y: 365 }, [RASO, FUNDO])).toBeUndefined();
   });
 });

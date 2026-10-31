@@ -121,6 +121,11 @@ function insidePolygon(p: Point, polygon: Point[]): boolean {
   return inside;
 }
 
+/** Zona do local onde está o ponto (T80: a profundidade da isca); undefined fora de todas. */
+export function zoneAt(at: Point, zones: Zone[]): Zone | undefined {
+  return zones.find((z) => insidePolygon(at, z.polygon));
+}
+
 /** Espécies das zonas onde a isca caiu que aceitam a isca equipada. */
 function takers(at: Point, bait: BaitId, ctx: TickContext): Species[] {
   const ids = new Set(ctx.zones.filter((z) => insidePolygon(at, z.polygon)).flatMap((z) => z.species));

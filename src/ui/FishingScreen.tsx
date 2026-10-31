@@ -1,7 +1,7 @@
 // Tela de pesca (design.md, "UI (Preact)"; mockup docs/arte/mockups/tela-de-pesca-v2.png): o fundo do
 // mar da tela inicial, o canvas da cena por cima e o HUD em HTML. Saldo e objetivo (HIST-04), barra de
-// tensão (PESCA-12), pausa sempre à mão (SAVE-03), arremessos e pontos do torneio (CAMP-03) e a tela
-// acesa enquanto ela está aberta (TELA-01).
+// tensão (PESCA-12), medidores da pescaria (T80), pausa sempre à mão (SAVE-03), arremessos e pontos do
+// torneio (CAMP-03) e a tela acesa enquanto ela está aberta (TELA-01).
 
 import { useContext, useLayoutEffect, useRef } from 'preact/hooks';
 import { attachInput } from '../app/input';
@@ -17,6 +17,7 @@ import { useNav, useServices } from './context';
 import { ImpactFx } from './Celebration';
 import { DialogLayer } from './DialogBox';
 import { BitePrompt, ResultOverlay } from './FishCard';
+import { FishingGauges } from './FishingGauges';
 import { EpisodeBanner } from './Letter';
 import { currentPlace, formatKg, formatMoney } from './format';
 import { PauseOverlay } from './Overlays';
@@ -128,6 +129,7 @@ function Hud() {
         </div>
         <TutorialCoach />
       </div>
+      <FishingGauges />
       <div class="hud__actions">
         <button type="button" class="btn btn--secondary hud__btn" onClick={() => controller.pause()}>
           <ButtonIcon>
