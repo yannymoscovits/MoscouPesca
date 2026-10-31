@@ -98,6 +98,9 @@ export interface CastView {
   background: string; // Location.background
   place?: LocationId; // Location.id: escolhe o cenário (scenery.ts)
   spots: SpotMark[]; // pesqueiro (PONTO-01); vazio na tela de arremesso
+  // Disposição: o pesqueiro (cena ancorada embaixo, Adilson pequeno) ou o arremesso. Sem o campo,
+  // vale o pesqueiro quando há pontos marcados.
+  mode?: 'pesqueiro' | 'arremesso';
   // Seta da mira (ARREM-01) e travada (ARREM-02); `previewM` marca onde a isca cairia com a força atual.
   aim: { angleDeg: number; locked: boolean; previewM?: number } | null;
   // Isca no ar; de CAST_FLIGHT_S em diante, na água com o respingo (ARREM-05).
@@ -225,7 +228,7 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
     const v = (p: Point): Point => ({ x: ox + p.x, y: oy + p.y }); // cena do pesqueiro → vista
     const scenery = sceneryOf(view.place);
     // Tela de arremesso (sem pontos): a beira sobe e a escala segue a vara (ver o alto do arquivo).
-    const casting = view.spots.length === 0;
+    const casting = view.mode ? view.mode === 'arremesso' : view.spots.length === 0;
     const place = castPlacement(layout, view.maxM ?? DEFAULT_MAX_M);
     const px = (color: string, x: number, y: number, w = 1, h = 1) => {
       c.fillStyle = color;

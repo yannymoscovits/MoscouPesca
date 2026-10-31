@@ -2088,66 +2088,151 @@ ul {
   }
 }
 
-/* ---------- Pesqueiro (pesca-bass PONTO-01 a PONTO-04) ----------
-   A cena de cima atrás (a .stage ancora o canvas embaixo) e um botão por ponto no centro dele.
-   Ponto: azul com texto branco (5,8:1); tocado, amarelo com tinta escura (11,8:1); com cadeado,
-   marinho com creme e borda tracejada (10,3:1). O nome quebra em duas linhas, até 40% da tela. */
+/* ---------- Pesqueiro (pesca-bass PONTO-01 a PONTO-04), em cartões ----------
+   Mockup do usuário: atrás, o píer com o Adilson e os lampiões (a .stage ancora o canvas embaixo); na
+   frente, um cartão por ponto da largura da tela, o mais longe em cima, entre o painel de cima
+   (--spots-top, medido pela tela de pesca) e a fileira do HUD. Tocado, o cartão acende e o papel com
+   as espécies e "Pescar aqui" aparece embaixo dos cartões, que encolhem para caber. */
 .spots {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: var(--bg);
-}
-
-.spots__spot {
-  position: absolute;
-  z-index: 10;
-  max-width: 40%;
-  padding: 8px 14px;
-  line-height: 1.15;
-  background: var(--secondary);
-  color: var(--secondary-ink);
-  transform: translate(-50%, 50%);
-}
-
-.spots__spot:active {
-  transform: translate(-50%, calc(50% + 3px));
-}
-
-.spots__spot--locked {
-  background: var(--bg-raised);
-  color: var(--ink);
-  border-style: dashed;
-  border-color: var(--ink-soft);
-}
-
-.spots__spot[aria-pressed='true'] {
-  background: var(--accent);
-  color: var(--accent-ink);
-  border: 3px solid var(--outline);
-  outline: 3px solid var(--ink);
-}
-
-.spots__lock-icon {
-  margin-right: 6px;
-}
-
-/* O ponto tocado: nome, peixes e cadeado num papel, logo acima da fileira do HUD. */
-.spots__sheet {
-  position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  bottom: var(--hud-row);
-  z-index: 20;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 14px 16px;
-  background: var(--paper);
-  color: var(--paper-ink);
+  padding: calc(var(--spots-top, 0px) + 8px) var(--gutter) calc(var(--hud-row) + 10px);
+  background: var(--bg);
+}
+
+.spots__cards {
+  position: relative;
+  z-index: 10;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column-reverse; /* o mais raso embaixo, perto do píer */
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Cartão: a cena do ponto inteira, contorno marinho grosso e a placa com o nome no meio. Creme sobre
+   a placa marinho: 14,4:1. */
+.spot-card {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 78px;
+  max-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px;
+  border: 3px solid var(--outline);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0a2350;
+  color: var(--ink);
+  font: inherit;
+  box-shadow:
+    inset 0 0 0 2px rgba(181, 198, 225, 0.55),
+    0 5px 0 var(--outline);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.spot-card:active {
+  transform: translateY(3px);
+}
+
+.spot-card__scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.spot-card__sign {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 18px 8px;
   border: 3px solid var(--outline);
   border-radius: 12px;
-  box-shadow: 0 4px 0 var(--outline);
+  background: #0a2350;
+  font: 700 24px / 1.1 var(--font-title);
+  box-shadow:
+    inset 0 0 0 2px var(--ink-soft),
+    0 4px 0 var(--outline);
+}
+
+.spot-card__lock-icon {
+  flex: none;
+  width: 20px;
+  height: 24px;
+}
+
+/* "Precisa de vara com alcance N", numa faixa escura embaixo da placa. Creme sobre o marinho. */
+.spot-card__lock {
+  position: relative;
+  padding: 1px 10px 2px;
+  border-radius: 8px;
+  background: #000c22;
+  font-size: var(--text-min);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+/* Bloqueado: a placa com borda tracejada; a cena já vem escurecida do desenho. */
+.spots__spot--locked .spot-card__sign {
+  box-shadow:
+    inset 0 0 0 2px rgba(181, 198, 225, 0.35),
+    0 4px 0 var(--outline);
+}
+
+/* O cartão tocado acende: borda clara e o brilho azul em volta (PONTO-02). */
+.spot-card[aria-pressed='true'] {
+  border-color: #e6f6ff;
+  box-shadow:
+    inset 0 0 0 2px #7cc4ff,
+    0 0 0 3px #4fc3ff,
+    0 0 18px 6px rgba(79, 195, 255, 0.75),
+    0 5px 0 var(--outline);
+}
+
+.spot-card[aria-pressed='true'] .spot-card__sign {
+  box-shadow:
+    inset 0 0 0 2px #7cc4ff,
+    0 4px 0 var(--outline);
+}
+
+/* Com o papel aberto, os cartões encolhem e o alcance pedido fica só no papel. */
+.spots:has(.spots__sheet) .spot-card {
+  min-height: 52px;
+}
+
+.spots:has(.spots__sheet) .spot-card__lock {
+  display: none;
+}
+
+/* O ponto tocado: nome, peixes e cadeado num papel com a borda amarela, embaixo dos cartões. */
+.spots__sheet {
+  position: relative;
+  z-index: 20;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px 14px;
+  border: 3px solid var(--outline);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    0 5px 0 var(--outline);
 }
 
 .spots__species {
@@ -2159,6 +2244,9 @@ ul {
 }
 
 .spots__lock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
 }
 

@@ -1,12 +1,12 @@
-// Pesqueiro (pesca-bass T12; PONTO-01 a PONTO-04): os pontos com nome, o ponto tocado com as espécies,
-// o cadeado com o alcance pedido e "Pescar aqui". O desenho da cena tem os testes do castRenderer.
+// Pesqueiro (pesca-bass T12; PONTO-01 a PONTO-04), em cartões: os pontos com nome, o ponto tocado com
+// as espécies, o cadeado com o alcance pedido e "Pescar aqui". O desenho da cena tem os testes do
+// castRenderer; aqui, a cena de cada cartão (cardScene).
 import { render } from 'preact';
 import { act } from 'preact/test-utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ep1 } from '../content/episodes/ep1';
 import { spotsFor } from '../domain/spots';
-import { computeLayout } from '../render/fishingRenderer';
-import { SpotScreen, spotButtonPos, SPOT_BUTTON_SHARE } from './SpotScreen';
+import { cardScene, SpotScreen } from './SpotScreen';
 
 const loc = ep1.locations[0]; // Poço do Magro: Beira do píer (0), Pedral (3), Fundão (5)
 const bambu = ep1.rods.find((r) => r.id === 'bambu')!;
@@ -34,11 +34,13 @@ function setup() {
 const locked = (b: HTMLElement) => b.querySelector('[role="img"][aria-label="bloqueado"]') !== null;
 
 describe('SpotScreen', () => {
-  it('PONTO-01: mostra os 3 pontos do local, cada um com o nome', () => {
+  it('PONTO-01: mostra os 3 pontos do local, um cartão por ponto, cada um com o nome na placa', () => {
     const { root } = setup();
     const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-spot]')];
     expect(buttons.map((b) => b.dataset.spot)).toEqual(['raso', 'meio', 'fundo']);
-    expect(buttons.map((b) => b.textContent?.replace('🔒', '').trim())).toEqual(['Beira do píer', 'Pedral', 'Fundão']);
+    expect(buttons.map((b) => b.querySelector('.spot-card__name')?.textContent)).toEqual(['Beira do píer', 'Pedral', 'Fundão']);
+    // Cada cartão tem a cena do ponto desenhada dentro.
+    for (const b of buttons) expect(b.querySelector('canvas.spot-card__scene'), b.dataset.spot).not.toBeNull();
   });
 
   it('sem ponto tocado, nada destacado e nenhum "Pescar aqui"', () => {
@@ -66,6 +68,9 @@ describe('SpotScreen', () => {
     expect(locked(spot('raso'))).toBe(false);
     expect(locked(spot('meio'))).toBe(true);
     expect(locked(spot('fundo'))).toBe(true);
+    // O cartão bloqueado já diz o alcance pedido, antes do toque.
+    expect(spot('raso').querySelector('.spot-card__lock')).toBeNull();
+    expect(spot('meio').querySelector('.spot-card__lock')?.textContent).toBe('Precisa de vara com alcance 3');
 
     tap(spot('meio'));
     expect(root.querySelector('.spots__lock')?.textContent).toContain('Precisa de vara com alcance 3');
@@ -96,16 +101,24 @@ describe('SpotScreen', () => {
   });
 });
 
-describe('spotButtonPos', () => {
-  it('PONTO-01: o botão fica no centro do ponto, na cena ancorada no pé da tela', () => {
-    const l = computeLayout(412, 839); // Pixel 7: escala 2, cena 13 px lógicos para dentro
-    expect(spotButtonPos({ x: 90, y: 305 }, l, 412)).toEqual({ left: (l.offsetX + 90) * 2, bottom: (400 - 305) * 2 });
+describe('cardScene: a cena dentro do cartão', () => {
+  const depths = loc.zones.map((z) => z.depthM); // 1,5 m, 4 m e 9 m
+
+  it('o ponto mais raso mostra a beira (o píer); os outros, só água', () => {
+    expect(cardScene(1.5, depths).shore).toBe(true);
+    expect(cardScene(4, depths).shore).toBe(false);
+    expect(cardScene(9, depths).shore).toBe(false);
   });
 
-  it('perto da borda, o botão de até 40% da tela não sai dela', () => {
-    const l = computeLayout(360, 780);
-    const half = (360 * SPOT_BUTTON_SHARE) / 2;
-    expect(spotButtonPos({ x: 22.5, y: 245 }, l, 360).left).toBe(16 + half); // Beirada do mangue, Rio Jacuípe
-    expect(spotButtonPos({ x: 178, y: 245 }, l, 360).left).toBe(360 - 16 - half);
+  it('quanto mais fundo, mais escura a água: do raso sem véu ao fundo com o véu mais forte', () => {
+    const [raso, meio, fundo] = depths.map((d) => cardScene(d, depths).dark);
+    expect(raso).toBe(0);
+    expect(meio).toBeGreaterThan(raso);
+    expect(fundo).toBeGreaterThan(meio);
+    expect(fundo).toBeLessThanOrEqual(0.5); // a cena continua visível
+  });
+
+  it('local com um ponto só (ou todos iguais): a beira, sem véu', () => {
+    expect(cardScene(3, [3])).toEqual({ shore: true, dark: 0 });
   });
 });
