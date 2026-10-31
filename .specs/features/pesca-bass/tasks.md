@@ -464,8 +464,8 @@ T17 → T18
 
 **Done when**:
 
-- [ ] 4 capturas no Pixel 7, uma por tela
-- [ ] Gate check passes: `npm run typecheck && npm run build && npm run check:size && npm test && npm run test:e2e`
+- [x] 4 capturas no Pixel 7, uma por tela
+- [x] Gate check passes: `npm run typecheck && npm run build && npm run check:size && npm test && npm run test:e2e`
 
 **Tests**: none
 **Gate**: build
