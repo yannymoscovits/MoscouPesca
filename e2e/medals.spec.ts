@@ -3,6 +3,7 @@ import { ep1 } from '../src/content/episodes/ep1';
 import { goals } from '../src/content/goals';
 import type { MedalTier, Profile } from '../src/content/types';
 import { AUTOPLAY_SEED, STEP_S } from '../src/app/testHooks';
+import { pressBar } from '../src/domain/catchBar';
 import { press, rulesFor, startPesca, tick, type PescaContext, type PescaState } from '../src/domain/pesca';
 import { createRng } from '../src/domain/rng';
 import { typicalPlayer } from '../src/domain/sim/typicalPlayer';
@@ -27,9 +28,13 @@ function catchWith(seed: number): { species: string; kg: number } | null {
   const ctx: PescaContext = { rod: ep1.rods[0], bait: 'minhoca', rng: createRng(seed), rules, spot: SPOT, species: ep1.species };
   const player = typicalPlayer(createRng(AUTOPLAY_SEED), rules);
   let s: PescaState = startPesca();
+  let holding = false;
   for (let t = 0; t < 300 && !s.phase.startsWith('Result_'); t += STEP_S) {
     const input = player(s, STEP_S);
     if (input.button) s = press(s, input.button, ctx);
+    // Espelho do controller: encostar o dedo em SEGURAR dá o tranco na faixa (BRIGA-02).
+    if (s.phase === 'Fight' && input.holding && !holding) s = { ...s, bar: pressBar(s.bar) };
+    holding = input.holding;
     s = tick(s, STEP_S, { holding: input.holding }, ctx);
   }
   return s.phase === 'Result_Caught' ? { species: s.species.id, kg: s.kg } : null;

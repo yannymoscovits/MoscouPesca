@@ -23,7 +23,7 @@ import type {
 } from '../../content/types';
 import { record } from '../album';
 import { aimAngleDeg } from '../castAim';
-import type { CatchBar } from '../catchBar';
+import { pressBar, type CatchBar } from '../catchBar';
 import { onCatch } from '../medals';
 import {
   press,
@@ -327,10 +327,14 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
     const player = typicalPlayer(rng, rules);
     let s = startPesca();
     let t = 0;
+    let holding = false;
     while (!isResult(s)) {
       if (t > MAX_CAST_S) throw new Error(`Arremesso sem fim no ponto ${plan.zone.id}`);
       const input = player(s, DT);
       if (input.button) s = press(s, input.button, ctx);
+      // Espelho do controller: encostar o dedo em SEGURAR dá o tranco na faixa (BRIGA-02).
+      if (s.phase === 'Fight' && input.holding && !holding) s = { ...s, bar: pressBar(s.bar) };
+      holding = input.holding;
       s = tick(s, DT, { holding: input.holding }, ctx);
       t += DT;
     }
