@@ -151,7 +151,7 @@ export function createController({ store, save, platform, episodes, rng }: Contr
     const { ep, location } = place(s);
     const spot = location.zones.find((z) => z.id === s.spot);
     if (!spot) return null;
-    const { school } = s;
+    const school = s.tutorial ? null : s.school; // no tutorial os peixes nascem em volta da isca
     return { rod: rodOf(s.profile), bait: s.profile.baits.equipped, rng, rules: rulesNow(s), spot, species: ep.species, school };
   }
 
@@ -253,7 +253,8 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       const view = spotsFor(location, rodOf(s.profile), ep.species, s.profile.album).find((v) => v.id === spotId);
       if (!view || view.locked) return; // PONTO-03
       const fishing = startPesca();
-      const school = startSchool(view.zone, ep.species, reachMOf(rodOf(s.profile).reach), rng);
+      // No tutorial não há cardume: os peixes nascem em volta da isca, para um seguir a tempo.
+      const school = s.tutorial ? null : startSchool(view.zone, ep.species, reachMOf(rodOf(s.profile).reach), rng);
       commit({ ...s, spot: spotId, school, fishing, holding: false, tutorial: s.tutorial && tutorials.onPesca(s.tutorial, fishing, true) });
     },
 
@@ -298,7 +299,7 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       // O cardume nada o tempo todo no ponto; o arremesso vê o cardume já andado.
       const school = before && s.school ? stepSchool(s.school, dt, before.spot, before.species) : s.school;
       const now = school === s.school ? s : { ...s, school };
-      const ctx = before && { ...before, school };
+      const ctx = before && { ...before, school: before.school && school }; // no tutorial, segue sem cardume
       const fishing = ctx ? pescaTick(s.fishing, dt, { holding: s.holding }, ctx) : s.fishing;
       const tutorial = s.tutorial && tutorials.tick(tutorials.onPesca(s.tutorial, fishing, s.spot !== null), dt, wasTouched);
       if (fishing === s.fishing && tutorial === s.tutorial) {

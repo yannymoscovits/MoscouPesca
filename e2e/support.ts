@@ -82,6 +82,7 @@ export const castNow = (page: Page, power = 1) =>
     const mf = (window as any).__mf;
     mf.button('arremessar');
     mf.advance((p * mf.controller.rules().sweepS) / 2);
+    mf.plantFish(); // um peixe do cardume onde a isca vai cair
     mf.button('arremessar');
     for (let t = 0; t < 2 && mf.state().fishing.phase !== 'Lure'; t += 0.1) mf.advance(0.1);
     return mf.state().fishing.phase as string;
@@ -104,6 +105,7 @@ export const hookNow = (page: Page) =>
     if (mf.state().fishing.phase === 'Aim') {
       mf.button('arremessar');
       mf.advance(mf.controller.rules().sweepS / 2);
+      mf.plantFish(); // um peixe do cardume onde a isca vai cair
       mf.button('arremessar');
     }
     mf.hold(true);
@@ -147,6 +149,7 @@ export const castNothing = (page: Page, n = 1, spot = 'raso') =>
       for (let i = 0; i < count; i++) {
         if (mf.state().fishing.phase.startsWith('Result_')) mf.controller.dismissResult();
         if (mf.state().spot === null) mf.controller.chooseSpot(where);
+        mf.emptyWater(); // nenhum peixe no cardume: a isca não acha nada
         mf.button('arremessar');
         mf.button('arremessar');
         mf.hold(true);

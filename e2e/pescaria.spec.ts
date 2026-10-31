@@ -47,16 +47,17 @@ test('caminho feliz: pesqueiro → Pescar aqui → ARREMESSAR × 2 → isca na �
   expect((await gameState(page)).fishing.phase).toBe('Power');
   await expect(page.getByRole('meter', { name: 'Força do arremesso' })).toBeVisible();
   await advance(page, 2); // meio ciclo de 4 s no Tranquilo: força cheia
+  await page.evaluate(() => (window as any).__mf.plantFish()); // um peixe do cardume onde a isca cai
   await fishingButton(page, 'arremessar').click();
   const flying = (await gameState(page)).fishing;
   expect(flying.phase).toBe('Flying');
   expect(flying.distanceM).toBeCloseTo(10.8, 1); // Vara de Bambu com força cheia
   await expect(fishingButton(page, 'arremessar')).toBeDisabled(); // ARREM-04
 
-  // ISCA-01: a isca cai na água, com 3 a 6 peixes do ponto.
+  // A isca cai na água com os peixes do cardume perto dela: pelo menos o plantado, no máximo os 6.
   expect(await advanceUntil(page, 'Lure', 2)).toBe('Lure');
   const water = (await gameState(page)).fishing.water;
-  expect(water.fish.length).toBeGreaterThanOrEqual(3);
+  expect(water.fish.length).toBeGreaterThanOrEqual(1);
   expect(water.fish.length).toBeLessThanOrEqual(6);
   await expect(fishingButton(page, 'recolher')).toBeEnabled();
   await expect(fishingButton(page, 'puxar')).toBeEnabled();

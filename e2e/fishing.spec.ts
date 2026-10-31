@@ -5,6 +5,7 @@ import { ep2 } from '../src/content/episodes/ep2';
 import {
   advance,
   advanceUntil,
+  autoplay,
   castNothing,
   castNow,
   catchFish,
@@ -75,6 +76,7 @@ test('SAVE-03: o botão de pausa fica visível em todos os estados da pesca', as
   await expectPauseOnTop(page, 'Aim');
   await page.evaluate(() => (window as any).__mf.button('arremessar'));
   await expectPauseOnTop(page, 'Power');
+  await page.evaluate(() => (window as any).__mf.plantFish()); // um peixe do cardume onde a isca cai
   await page.evaluate(() => (window as any).__mf.button('arremessar'));
   await expectPauseOnTop(page, 'Flying');
   await advance(page, 1);
@@ -83,7 +85,7 @@ test('SAVE-03: o botão de pausa fica visível em todos os estados da pesca', as
   await expectPauseOnTop(page, 'Strike');
   await page.evaluate(() => (window as any).__mf.button('puxar'));
   await expectPauseOnTop(page, 'Fight');
-  expect(await advanceUntil(page, 'Result_Caught', 60)).toBe('Result_Caught'); // a semente 7 traz um piau calmo
+  expect(await autoplay(page, 60)).toBe('Result_Caught'); // o jogador típico termina a briga
   await expectPauseOnTop(page, 'Result_Caught');
   await mf('dismissResult');
 

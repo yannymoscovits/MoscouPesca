@@ -4,6 +4,7 @@ import { goals } from '../src/content/goals';
 import type { MedalTier, Profile } from '../src/content/types';
 import { AUTOPLAY_SEED, STEP_S } from '../src/app/testHooks';
 import { pressBar } from '../src/domain/catchBar';
+import { reachMOf, startSchool, stepSchool } from '../src/domain/school';
 import { press, rulesFor, startPesca, tick, type PescaContext, type PescaState } from '../src/domain/pesca';
 import { createRng } from '../src/domain/rng';
 import { typicalPlayer } from '../src/domain/sim/typicalPlayer';
@@ -25,17 +26,22 @@ const SPOT = ep1.locations[0].zones.find((z) => z.id === 'raso')!; // a Beira do
  */
 function catchWith(seed: number): { species: string; kg: number } | null {
   const rules = rulesFor('tranquilo');
-  const ctx: PescaContext = { rod: ep1.rods[0], bait: 'minhoca', rng: createRng(seed), rules, spot: SPOT, species: ep1.species };
+  const rng = createRng(seed);
+  // Espelho do `catchSeeded`: com a semente trocada, ele volta ao pesqueiro e escolhe o raso, e o
+  // cardume nasce desse sorteio.
+  let school = startSchool(SPOT, ep1.species, reachMOf(ep1.rods[0].reach), rng);
+  const ctx: PescaContext = { rod: ep1.rods[0], bait: 'minhoca', rng, rules, spot: SPOT, species: ep1.species };
   const player = typicalPlayer(createRng(AUTOPLAY_SEED), rules);
   let s: PescaState = startPesca();
   let holding = false;
   for (let t = 0; t < 300 && !s.phase.startsWith('Result_'); t += STEP_S) {
-    const input = player(s, STEP_S);
+    const input = player(s, STEP_S, { school, reachM: school.reachM, bait: 'minhoca' });
     if (input.button) s = press(s, input.button, ctx);
     // Espelho do controller: encostar o dedo em SEGURAR dá o tranco na faixa (BRIGA-02).
     if (s.phase === 'Fight' && input.holding && !holding) s = { ...s, bar: pressBar(s.bar) };
     holding = input.holding;
-    s = tick(s, STEP_S, { holding: input.holding }, ctx);
+    school = stepSchool(school, STEP_S, SPOT, ep1.species); // o cardume nada antes do arremesso andar
+    s = tick(s, STEP_S, { holding: input.holding }, { ...ctx, school });
   }
   return s.phase === 'Result_Caught' ? { species: s.species.id, kg: s.kg } : null;
 }
@@ -62,6 +68,8 @@ async function catchSeeded(page: Page, seed: number) {
   const phase = await page.evaluate((n) => {
     const mf = (window as any).__mf;
     mf.seed(n);
+    mf.controller.leaveSpot(); // volta ao pesqueiro e escolhe de novo: cardume novo, desse sorteio
+    mf.controller.chooseSpot('raso');
     return mf.autoplay(300);
   }, seed);
   expect(phase).toBe('Result_Caught');
