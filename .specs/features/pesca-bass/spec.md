@@ -242,7 +242,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | ARREM-05 | P1: Mirar e arremessar com força | T6, T9 | Implementing |
 | ARREM-06 | P1: Mirar e arremessar com força | T2 | Implementing |
 | ARREM-07 | Edge Cases | T2 | Implementing |
-| ISCA-01 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
+| ISCA-01 | P1: Trabalhar a isca debaixo d'água | T4, T10 | Implementing |
 | ISCA-02 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
 | ISCA-03 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
 | ISCA-04 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
@@ -269,7 +269,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | BRIGA-10 | P1: Brigar com o peixe na barra de captura | T3, T6 | Implementing |
 | BRIGA-11 | P1: Brigar com o peixe na barra de captura | T3, T6 | Implementing |
 | BRIGA-12 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
-| BRIGA-13 | P1: Brigar com o peixe na barra de captura | - | Pending |
+| BRIGA-13 | P1: Brigar com o peixe na barra de captura | T10 | Implementing |
 | BRIGA-14 | Edge Cases | T3 | Implementing |
 | BOTAO-01 | P1: Botões grandes na tela | - | Pending |
 | BOTAO-02 | P1: Botões grandes na tela | - | Pending |
@@ -284,7 +284,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | SIMB-02 | P1: Simulação com as regras novas | - | Pending |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 41 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 42 em implementação
 
 ---
 

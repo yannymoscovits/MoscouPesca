@@ -290,10 +290,10 @@ T17 → T18
 
 **Done when**:
 
-- [ ] A câmera segue a isca e mostra superfície e fundo acima do quarto de baixo da tela
-- [ ] `toScene` leva metros a px lógicos e volta (ida e volta igual)
-- [ ] Desenhar sem sprites não lança erro
-- [ ] Gate check passes: `npm test`
+- [x] A câmera segue a isca e mostra superfície e fundo acima do quarto de baixo da tela
+- [x] `toScene` leva metros a px lógicos e volta (ida e volta igual)
+- [x] Desenhar sem sprites não lança erro
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
