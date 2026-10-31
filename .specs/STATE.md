@@ -37,10 +37,10 @@
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute; Fase 8 concluída; T75 (tela inicial do mockup e da logo) rodando em worktree isolado (`.claude/worktrees/`, branch `worktree-agent-a063074ba24fd924b`)
-- **Completed**: Fases 1 a 8 (até `6a6232f`); 303 testes unitários e 81 e2e passando; T44 tem a caixa de HIST-10 aberta até o Episódio 5 existir
-- **In-progress** (file:line): T75 no worktree
-- **Next step**: Quando a T75 terminar, juntar a branch dela na `feat/v1-mvp`, rodar o gate de build e disparar as Fases 9 e 10 (T58, T59, T61, T63, T47, T48; T63 liga "Troféus" no menu).
-- **Blockers**: PixelLab MCP só aparece depois de reabrir o VS Code (só reiniciar quando nenhum sub-agente estiver rodando).
+- **Phase / Task**: Execute; Fases 1 a 8 e T75 concluídas; próximo: Fases 9 e 10 (T58, T59, T61, T63, T47, T48) e prévias de arte com o usuário
+- **Completed**: até `fa0bf9d` (T75 trazida do worktree por cherry-pick); gate de build completo verde: typecheck, build, check:size 0,18 MB, unitários e 84 e2e
+- **In-progress** (file:line): none
+- **Next step**: Depois que o usuário reabrir o VS Code (para carregar o PixelLab): subir de novo o servidor de desenvolvimento na porta 5173 com `--host`, disparar o lote das Fases 9 e 10 e começar as prévias do retrato do Adilson (3 versões, aprovação do usuário antes de gerar as expressões).
+- **Blockers**: none
 - **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`
