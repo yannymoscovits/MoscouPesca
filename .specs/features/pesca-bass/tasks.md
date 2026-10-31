@@ -225,9 +225,9 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Os 9 passos avançam na ordem com os estados de `pesca.ts` e a escolha do ponto
-- [ ] `rules()` do tutorial: `followWithinS` 3, `hookWindowS` null, barra com regras do Tranquilo e estilo `calmo`
-- [ ] Gate check passes: `npm test`
+- [x] Os 9 passos avançam na ordem com os estados de `pesca.ts` e a escolha do ponto
+- [x] `rules()` do tutorial: `followWithinS` 3, `hookWindowS` null, barra com regras do Tranquilo e estilo `calmo`
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

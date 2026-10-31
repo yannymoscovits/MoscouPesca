@@ -276,15 +276,15 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | BOTAO-03 | P1: Botões grandes na tela | - | Pending |
 | BOTAO-04 | P1: Botões grandes na tela | - | Pending |
 | BOTAO-05 | P1: Botões grandes na tela | - | Pending |
-| TUTOB-01 | P1: Tutorial da pescaria nova | - | Pending |
-| TUTOB-02 | P1: Tutorial da pescaria nova | T4 | Implementing |
-| TUTOB-03 | P1: Tutorial da pescaria nova | - | Pending |
-| TUTOB-04 | P1: Tutorial da pescaria nova | - | Pending |
+| TUTOB-01 | P1: Tutorial da pescaria nova | T7 | Implementing |
+| TUTOB-02 | P1: Tutorial da pescaria nova | T4, T7 | Implementing |
+| TUTOB-03 | P1: Tutorial da pescaria nova | T7 | Implementing |
+| TUTOB-04 | P1: Tutorial da pescaria nova | T7 | Implementing |
 | SIMB-01 | P1: Simulação com as regras novas | - | Pending |
 | SIMB-02 | P1: Simulação com as regras novas | - | Pending |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 38 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 41 em implementação
 
 ---
 
