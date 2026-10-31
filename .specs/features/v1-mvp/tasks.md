@@ -1600,11 +1600,11 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Retratos do Adilson e da Jane aparecem nos diálogos e cartões no lugar das iniciais, com a expressão certa (`data-expression` mantido)
-- [ ] O Adilson de costas aparece na cena da pescaria e o de frente no "PEGOU!"
-- [ ] Os e2e existentes continuam passando sem mudança nas asserções
-- [ ] Prints do Pixel 7 do diálogo e da pescaria atualizados em `docs/arte/mockups/`
-- [ ] Gate check passes: build
+- [x] Retratos do Adilson e da Jane aparecem nos diálogos e cartões no lugar das iniciais, com a expressão certa (`data-expression` mantido)
+- [x] O Adilson de costas aparece na cena da pescaria e o de frente no "PEGOU!"
+- [x] Os e2e existentes continuam passando sem mudança nas asserções
+- [x] Prints do Pixel 7 do diálogo e da pescaria atualizados em `docs/arte/mockups/`
+- [x] Gate check passes: build
 
 **Tests**: none
 **Gate**: build
