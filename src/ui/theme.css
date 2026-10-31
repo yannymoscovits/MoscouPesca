@@ -388,7 +388,7 @@ ul {
 }
 
 .title-screen .screen__top {
-  gap: 10px;
+  gap: 12px;
 }
 
 /* Peixinho fofo do logo (T81): 128 × 112 em escala 1, com as bolhas saindo da boca, à direita. */
@@ -414,127 +414,118 @@ ul {
   height: 52px;
 }
 
-/* "Moscou" creme e "Fishing" amarelo, com contorno grosso e sombra embaixo. */
+/* "Moscou" creme e "Fishing" amarelo, grossos, com contorno marinho de 4 px e a sombra embaixo. */
 .logo-title {
-  font: 700 54px / 1.1 var(--font-title);
-  font-size: min(54px, 12.5vw);
+  font: 700 54px / 1.05 var(--font-title);
+  font-size: min(54px, 12vw);
   color: var(--accent);
   letter-spacing: 1px;
   text-shadow:
-    3px 0 0 var(--outline),
-    -3px 0 0 var(--outline),
-    0 3px 0 var(--outline),
-    0 -3px 0 var(--outline),
-    3px 3px 0 var(--outline),
-    -3px 3px 0 var(--outline),
-    3px -3px 0 var(--outline),
-    -3px -3px 0 var(--outline),
-    0 7px 0 var(--outline);
+    4px 0 0 var(--outline),
+    -4px 0 0 var(--outline),
+    0 4px 0 var(--outline),
+    0 -4px 0 var(--outline),
+    4px 4px 0 var(--outline),
+    -4px 4px 0 var(--outline),
+    4px -4px 0 var(--outline),
+    -4px -4px 0 var(--outline),
+    0 9px 0 var(--outline),
+    4px 9px 0 var(--outline),
+    -4px 9px 0 var(--outline);
 }
 
 .logo-title__moscou {
   color: var(--ink);
 }
 
-/* Slogan: uma linha centrada, com um traço fino de cada lado. Azul bem claro sobre o marinho, 12,3:1. */
-.tagline {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: min(100%, 360px);
-  color: #d9e4f5;
+/* Slogan numa fita vermelha com as pontas dobradas atrás. Creme sobre o vermelho: 6,3:1. As pontas
+   ficam fora da caixa do texto, que só tem o vermelho liso atrás. */
+.ribbon {
+  position: relative;
+  margin-top: 4px;
+  padding: 4px 22px 6px;
+  border: 3px solid var(--outline);
+  background: #a8322d;
+  color: var(--ink);
+  font: 700 20px / 1.2 var(--font-title);
   letter-spacing: 1px;
   white-space: nowrap;
+  box-shadow: 0 4px 0 var(--outline);
 }
 
-.tagline::before,
-.tagline::after {
+.ribbon::before,
+.ribbon::after {
   content: '';
-  flex: 1 1 0;
-  height: 2px;
-  background: currentColor;
-  opacity: 0.6;
+  position: absolute;
+  top: 8px;
+  width: 22px;
+  height: 100%;
+  background: var(--outline);
+}
+
+.ribbon::before {
+  left: -25px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 40% 50%);
+}
+
+.ribbon::after {
+  right: -25px;
+  clip-path: polygon(0 0, 100% 0, 60% 50%, 100% 100%, 0 100%);
+}
+
+/* Dedicatória numa plaquinha marinho de borda dourada; a borda fica por fora (sombra), longe do
+   texto. Creme sobre o marinho: 14,4:1. */
+.dedication {
+  position: relative; /* em cima do fundo do mar, para o axe medir contra a placa */
+  margin-top: 6px;
+  padding: 4px 16px 6px;
+  border-radius: 8px;
+  background: #0a2350;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow:
+    0 0 0 3px #e0a92e,
+    0 0 0 5px #8a5f12,
+    0 0 0 7px var(--outline),
+    0 10px 0 var(--outline);
 }
 
 .title-screen .screen__actions {
-  gap: 14px;
+  gap: 16px;
   padding-inline: 34px;
-  padding-bottom: max(var(--safe-bottom), 13vh);
+  padding-bottom: max(var(--safe-bottom), 10vh);
 }
 
-/* Botões: ícone, texto e seta; borda clara, beirada escura embaixo e quadradinhos nos cantos. */
+/* Botões grossos com ícone em pixel e texto; "Jogar" maior e amarelo. */
 .title-btn {
-  --edge: #0b4f99;
-  position: relative;
-  display: grid;
-  grid-template-columns: 30px 1fr 12px;
+  position: relative; /* em cima do fundo do mar, para o axe medir contra o botão */
+  display: flex;
   align-items: center;
-  gap: 22px;
+  justify-content: center;
+  gap: 16px;
   min-height: 64px;
   padding: 8px 22px;
-  border: 2px solid rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
-  font-size: 22px;
-  text-align: left;
-  box-shadow:
-    0 5px 0 var(--edge),
-    0 10px 18px rgba(0, 0, 0, 0.35);
-}
-
-.title-btn:active {
-  box-shadow: 0 2px 0 var(--edge);
-}
-
-/* Creme sobre marinho, 10,3:1. */
-.title-btn--navy {
-  --edge: #0e2547;
-  background: var(--bg-raised);
-  color: var(--ink);
+  font: 700 24px / 1.1 var(--font-title);
+  letter-spacing: 1px;
 }
 
 .title-btn.btn--big {
-  --edge: #d99a1c;
-  min-height: 76px;
-  font-size: 30px;
-}
-
-.title-btn::before,
-.title-btn::after {
-  content: '';
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.title-btn::before {
-  top: 5px;
-  right: 5px;
-  box-shadow:
-    -4px 0 0 rgba(255, 255, 255, 0.35),
-    0 4px 0 rgba(255, 255, 255, 0.35);
-}
-
-.title-btn::after {
-  bottom: 5px;
-  left: 5px;
-  box-shadow:
-    4px 0 0 rgba(255, 255, 255, 0.35),
-    0 -4px 0 rgba(255, 255, 255, 0.35);
+  min-height: 86px;
+  border-width: 4px;
+  border-radius: 18px;
+  font-size: 38px;
 }
 
 .title-btn__icon {
-  width: 30px;
-  height: 30px;
+  flex: none;
+  width: 28px;
+  height: 28px;
 }
 
-.title-btn__chevron {
-  width: 12px;
-  height: 20px;
-}
-
-.title-btn:not(.btn--big) .title-btn__chevron {
-  color: #a9cdf5;
+.title-btn.btn--big .title-btn__icon {
+  width: 36px;
+  height: 36px;
 }
 
 @keyframes nadar {

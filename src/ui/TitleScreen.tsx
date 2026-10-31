@@ -3,7 +3,7 @@
 import { useState } from 'preact/hooks';
 import { useGame } from '../app/store';
 import { useNav, useServices } from './context';
-import { Chevron, GearIcon, LogoFish, MonitorIcon, PlayIcon, TitleScene } from './TitleArt';
+import { GearIcon, LogoFish, MonitorIcon, PlayIcon, TitleScene } from './TitleArt';
 
 export function TitleScreen() {
   const { install } = useServices();
@@ -16,8 +16,9 @@ export function TitleScreen() {
     else setHelp(true); // INST-03
   }
 
-  // Visual do mockup e do logo do usuário (docs/arte/mockups): peixe, título em duas cores, slogan,
-  // subtítulo e os três botões com ícone e seta.
+  // Mockup da tela inicial: o peixinho em cima do logo grosso de contorno escuro, o slogan numa fita,
+  // a dedicatória numa plaquinha de borda dourada e os três botões com ícone em pixel: dois azuis e o
+  // "Jogar" grande e amarelo.
   return (
     <section class="screen title-screen" aria-labelledby="titulo">
       <TitleScene />
@@ -26,8 +27,12 @@ export function TitleScreen() {
         <h1 id="titulo" class="logo-title">
           <span class="logo-title__moscou">Moscou</span>Fishing
         </h1>
-        <p class="tagline">Um peixinho de cada vez</p>
-        <p class="subtitle">Para Adilson Moscovits</p>
+        <p class="ribbon">
+          <span>Um peixinho de cada vez</span>
+        </p>
+        <p class="dedication">
+          <span>Para Adilson Moscovits</span>
+        </p>
       </div>
       <div class="screen__actions">
         {/* INST-04: instalado, o jogo já está na tela */}
@@ -35,19 +40,16 @@ export function TitleScreen() {
           <button type="button" class="btn btn--secondary title-btn" onClick={installTap}>
             <MonitorIcon />
             <span>Colocar na tela</span>
-            <Chevron />
           </button>
         )}
-        <button type="button" class="btn title-btn title-btn--navy" onClick={() => go('settings')}>
+        <button type="button" class="btn btn--secondary title-btn" onClick={() => go('settings')}>
           <GearIcon />
           <span>Ajustes</span>
-          <Chevron />
         </button>
         {/* ACES-01: na primeira abertura, pergunta a dificuldade antes de pescar */}
         <button type="button" class="btn btn--big title-btn" onClick={() => go(chosen ? 'fishing' : 'difficulty')}>
           <PlayIcon />
           <span>Jogar</span>
-          <Chevron />
         </button>
       </div>
       {help && <InstallHelp onClose={() => setHelp(false)} />}

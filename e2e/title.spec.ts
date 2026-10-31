@@ -69,7 +69,7 @@ const BUTTONS = ['Colocar na tela', 'Ajustes', 'Jogar'];
 const background = (l: Locator) =>
   l.evaluate((el) => getComputedStyle(el).backgroundColor.match(/\d+/g)!.slice(0, 3).map(Number));
 
-test('Tela inicial do mockup: título, slogan e subtítulo em cima; botões azul, marinho e amarelo maior, nessa ordem', async ({
+test('Tela inicial do mockup: título, slogan e subtítulo em cima; dois botões azuis e o amarelo maior, nessa ordem', async ({
   page,
 }) => {
   await page.goto('/');
@@ -99,13 +99,12 @@ test('Tela inicial do mockup: título, slogan e subtítulo em cima; botões azul
   expect(boxes[2].height).toBeGreaterThan(boxes[0].height);
   expect(boxes[2].height).toBeGreaterThan(boxes[1].height);
 
-  // "Colocar na tela" azul, "Ajustes" azul-marinho (escuro), "Jogar" amarelo.
-  const [ir, ig, ib] = await background(install);
-  expect(ib, 'Colocar na tela: azul').toBeGreaterThan(150);
-  expect(ib - Math.max(ir, ig), 'Colocar na tela: azul').toBeGreaterThan(60);
-  const [sr, sg, sb] = await background(settings);
-  expect(Math.max(sr, sg, sb), 'Ajustes: escuro').toBeLessThan(130);
-  expect(sb, 'Ajustes: puxado para o azul').toBeGreaterThan(Math.max(sr, sg));
+  // "Colocar na tela" e "Ajustes" azuis (mockup novo da tela inicial), "Jogar" amarelo.
+  for (const [name, btn] of [['Colocar na tela', install], ['Ajustes', settings]] as const) {
+    const [r, g, b] = await background(btn);
+    expect(b, `${name}: azul`).toBeGreaterThan(150);
+    expect(b - Math.max(r, g), `${name}: azul`).toBeGreaterThan(60);
+  }
   const [pr, pg, pb] = await background(play);
   expect(Math.min(pr, pg), 'Jogar: amarelo').toBeGreaterThan(180);
   expect(pb, 'Jogar: amarelo').toBeLessThan(120);

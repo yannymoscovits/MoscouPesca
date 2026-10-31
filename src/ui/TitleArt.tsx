@@ -224,6 +224,21 @@ const NEAR_WEED = NEAR_WEED_AT.flatMap(([x, top, phase]) => seaweed(x, NEAR_BOTT
 const NEAR_WEED_LIGHT = NEAR_WEED_AT.flatMap(([x, top, phase]) => seaweed(x, NEAR_BOTTOM, top, phase, 1));
 const NEAR_SCHOOL: [number, number][] = [[14, 86], [27, 82], [22, 95]];
 
+// Corais coloridos no fundo de perto (mockup da tela inicial): galhos rosa, leque laranja e cérebro
+// roxo, de contorno escuro, assentados nas pedras; ficam embaixo dos botões, longe do texto.
+const CORAL_BRANCH = ['.k...k.', 'kpk.kpk', 'kpkkkpk', '.kpppk.', '..kpk..', '..kpk..'];
+const CORAL_FAN = ['..kkkk..', '.kooook.', 'kohoohok', 'kooooook', '.kkookk.', '...kk...'];
+const CORAL_BRAIN = ['.kkkk.', 'kvwvvk', 'kvvwvk', 'kkkkkk'];
+const CORAL_COLORS = { k: '#000a1c', p: '#e0607e', o: '#e88a3a', h: '#ffc27a', v: '#8a5bd0', w: '#b48af0' };
+const CORALS: [number, string[], Record<string, string>][] = [
+  [3, CORAL_BRANCH, CORAL_COLORS],
+  [13, CORAL_BRAIN, CORAL_COLORS],
+  [24, CORAL_FAN, CORAL_COLORS],
+  [52, CORAL_BRAIN, CORAL_COLORS],
+  [61, CORAL_FAN, CORAL_COLORS],
+  [72, CORAL_BRANCH, CORAL_COLORS],
+];
+
 // Neve marinha: ladrilho mais alto que a cena (cobre celulares compridos), repetido logo acima para cair sem emenda.
 const TILE = 250;
 
@@ -280,6 +295,13 @@ export function TitleScene() {
           </linearGradient>
         </defs>
         <rect width={W} height={H} fill="url(#mar)" />
+        {/* O sol entrando pela superfície, no alto e no meio: o claro some antes do título. */}
+        <radialGradient id="sol" cx="0.5" cy="0" r="0.42" gradientTransform="scale(1 0.55)">
+          <stop offset="0" stop-color="#bfe8ff" stop-opacity="0.75" />
+          <stop offset="0.45" stop-color="#6cc0ff" stop-opacity="0.25" />
+          <stop offset="1" stop-color="#6cc0ff" stop-opacity="0" />
+        </radialGradient>
+        <rect width={W} height={H} fill="url(#sol)" />
         <Rects rects={SURFACE} fill="#3d8fe0" opacity={0.45} />
         <Rects rects={SURFACE_LIGHT} fill="#8fd0ff" opacity={0.5} />
       </Layer>
@@ -321,6 +343,11 @@ export function TitleScene() {
         <Rects rects={NEAR_WEED_LIGHT} fill="#0b3363" />
         <Rects rects={NEAR_ROCKS} fill="#000a1c" />
         <Rects rects={rims(NEAR_ROCKS)} fill="#082a52" />
+        {CORALS.map(([x, rows, colors]) => (
+          <g key={x} transform={`translate(${x} ${Math.round(nearTop(x + rows[0].length / 2)) - rows.length + 1})`}>
+            <Pixels rows={rows} colors={colors} />
+          </g>
+        ))}
         <School fish={NEAR_SCHOOL} sprite={NEAR_FISH} colors={{ k: '#000a1c', h: '#0e3466', e: '#8cbbe8' }} />
       </Layer>
 
@@ -333,7 +360,7 @@ export function TitleScene() {
           </radialGradient>
           <linearGradient id="fundo-escuro" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0.72" stop-color="#000510" stop-opacity="0" />
-            <stop offset="1" stop-color="#000510" stop-opacity="0.45" />
+            <stop offset="1" stop-color="#000510" stop-opacity="0.2" />
           </linearGradient>
         </defs>
         <rect width={W} height={H} fill="url(#vinheta)" />
@@ -351,37 +378,59 @@ export function TitleScene() {
   );
 }
 
-// ---------- Ícones dos botões (24 × 24) ----------
+// ---------- Ícones dos botões (12 × 12, em pixel, na cor do texto) ----------
 
-const Icon = ({ children }: { children: ComponentChildren }) => (
-  <svg class="title-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
-    {children}
+const PixelIcon = ({ rows }: { rows: string[] }) => (
+  <svg class="title-btn__icon" viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true">
+    <Pixels rows={rows} colors={{ x: 'currentColor', s: 'rgba(0, 12, 34, 0.35)' }} />
   </svg>
 );
 
-export const MonitorIcon = () => (
-  <Icon>
-    <rect x="2" y="3" width="20" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2.5" />
-    <path d="M12 16v4M7 21h10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
-  </Icon>
-);
+const MONITOR = [
+  'xxxxxxxxxxxx',
+  'x..........x',
+  'x.s........x',
+  'x..........x',
+  'x..........x',
+  'x..........x',
+  'x..........x',
+  'xxxxxxxxxxxx',
+  '.....xx.....',
+  '.....xx.....',
+  '...xxxxxx...',
+  '............',
+];
 
-/** Engrenagem: um anel grosso e oito dentes feitos com traço tracejado. */
-export const GearIcon = () => (
-  <Icon>
-    <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="4" />
-    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="3.5" stroke-dasharray="3.53 3.53" />
-  </Icon>
-);
+const GEAR = [
+  '.....xx.....',
+  '..x.xxxx.x..',
+  '.xxxxxxxxxx.',
+  '..xxx..xxx..',
+  '.xxx....xxx.',
+  'xxx......xxx',
+  'xxx......xxx',
+  '.xxx....xxx.',
+  '..xxx..xxx..',
+  '.xxxxxxxxxx.',
+  '..x.xxxx.x..',
+  '.....xx.....',
+];
 
-export const PlayIcon = () => (
-  <Icon>
-    <path d="M6 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 6 3.5z" fill="currentColor" />
-  </Icon>
-);
+const PLAY = [
+  '.xx.........',
+  '.xxxx.......',
+  '.xxxxxx.....',
+  '.xxxxxxxx...',
+  '.xxxxxxxxxx.',
+  '.xxxxxxxxxxx',
+  '.xxxxxxxxxxx',
+  '.xxxxxxxxxx.',
+  '.xxxxxxxx...',
+  '.xxxxxx.....',
+  '.xxxx.......',
+  '.xx.........',
+];
 
-export const Chevron = () => (
-  <svg class="title-btn__chevron" viewBox="0 0 12 20" aria-hidden="true">
-    <path d="M3 3l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-  </svg>
-);
+export const MonitorIcon = () => <PixelIcon rows={MONITOR} />;
+export const GearIcon = () => <PixelIcon rows={GEAR} />;
+export const PlayIcon = () => <PixelIcon rows={PLAY} />;
