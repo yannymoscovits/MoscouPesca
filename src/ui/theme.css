@@ -2073,3 +2073,41 @@ ul {
 .trophy--missing .trophy__status {
   color: var(--ink-soft);
 }
+
+/* ---------- Botões da pescaria nova (pesca-bass BOTAO-01 a BOTAO-05) ----------
+   Logo acima da fileira do HUD, no quarto de baixo da tela: RECOLHER à esquerda e PUXAR à direita,
+   cada um com mais de 40% da largura (360 px: 158 px, 44%) e 80 px de altura; ARREMESSAR e SEGURAR
+   ocupam os dois. Apagado, o botão usa o .btn:disabled (6,3:1). */
+.pesca-buttons {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--hud-row);
+  z-index: 25; /* acima da cena, abaixo da fileira do HUD (30) e dos avisos por cima da tela */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 var(--gutter) 8px;
+}
+
+.pesca-btn {
+  min-height: 80px;
+  padding: 8px 4px;
+  font: 700 28px / 1.1 var(--font-title);
+  touch-action: none; /* o dedo encostado não vira rolagem nem zoom */
+}
+
+.pesca-btn--wide {
+  grid-column: 1 / -1;
+}
+
+/* ISCA-08: PUXAR vira "FISGAR!" e pisca; tinta escura sobre o amarelo (11,8:1) e sobre o branco. */
+.pesca-btn--alert {
+  animation: pesca-piscar 0.5s steps(1) infinite;
+}
+
+@keyframes pesca-piscar {
+  50% {
+    background: #ffffff;
+  }
+}

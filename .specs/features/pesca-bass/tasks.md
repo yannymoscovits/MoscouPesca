@@ -312,10 +312,10 @@ T17 → T18
 
 **Done when**:
 
-- [ ] Por fase: `Aim`/`Power` mostram ARREMESSAR; `Lure`/`Strike` mostram RECOLHER e PUXAR; `Fight` mostra SEGURAR; `Flying` apaga tudo
-- [ ] `pointerdown` chama o comando na hora; soltar e cancelar encerram o segurar; segundo dedo ignorado
-- [ ] Em `Strike`, PUXAR mostra "FISGAR!" e a classe que pisca
-- [ ] Gate check passes: `npm test`
+- [x] Por fase: `Aim`/`Power` mostram ARREMESSAR; `Lure`/`Strike` mostram RECOLHER e PUXAR; `Fight` mostra SEGURAR; `Flying` apaga tudo
+- [x] `pointerdown` chama o comando na hora; soltar e cancelar encerram o segurar; segundo dedo ignorado
+- [x] Em `Strike`, PUXAR mostra "FISGAR!" e a classe que pisca
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

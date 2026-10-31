@@ -249,7 +249,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | ISCA-05 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
 | ISCA-06 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
 | ISCA-07 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |
-| ISCA-08 | P1: Trabalhar a isca debaixo d'água | T6 | Implementing |
+| ISCA-08 | P1: Trabalhar a isca debaixo d'água | T6, T11 | Implementing |
 | ISCA-09 | P1: Trabalhar a isca debaixo d'água | - | Pending |
 | ISCA-10 | P1: Trabalhar a isca debaixo d'água | T6 | Implementing |
 | ISCA-11 | P1: Trabalhar a isca debaixo d'água | T4, T6 | Implementing |
@@ -271,11 +271,11 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | BRIGA-12 | P1: Brigar com o peixe na barra de captura | T3 | Implementing |
 | BRIGA-13 | P1: Brigar com o peixe na barra de captura | T10 | Implementing |
 | BRIGA-14 | Edge Cases | T3 | Implementing |
-| BOTAO-01 | P1: Botões grandes na tela | - | Pending |
-| BOTAO-02 | P1: Botões grandes na tela | - | Pending |
-| BOTAO-03 | P1: Botões grandes na tela | - | Pending |
-| BOTAO-04 | P1: Botões grandes na tela | - | Pending |
-| BOTAO-05 | P1: Botões grandes na tela | - | Pending |
+| BOTAO-01 | P1: Botões grandes na tela | T11 | Implementing |
+| BOTAO-02 | P1: Botões grandes na tela | T11 | Implementing |
+| BOTAO-03 | P1: Botões grandes na tela | T11 | Implementing |
+| BOTAO-04 | P1: Botões grandes na tela | T11 | Implementing |
+| BOTAO-05 | P1: Botões grandes na tela | T11 | Implementing |
 | TUTOB-01 | P1: Tutorial da pescaria nova | T7 | Implementing |
 | TUTOB-02 | P1: Tutorial da pescaria nova | T4, T7 | Implementing |
 | TUTOB-03 | P1: Tutorial da pescaria nova | T7 | Implementing |
@@ -284,7 +284,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 | SIMB-02 | P1: Simulação com as regras novas | - | Pending |
 | PAUSA-01 | Edge Cases | - | Pending |
 
-**Coverage:** 54 total, todos mapeados no tasks.md; 42 em implementação
+**Coverage:** 54 total, todos mapeados no tasks.md; 47 em implementação
 
 ---
 
