@@ -7,7 +7,6 @@ import { characters, speakersOf } from '../content/characters';
 import type { Character, CharacterId, DialogLine, Expression } from '../content/types';
 import { resolveAsset } from '../render/sprites';
 import { useServices } from './context';
-import { FishIcon } from './TitleArt';
 
 /** Cores dos retratos provisórios; todas com contraste >= 6:1 com o texto branco. */
 const PORTRAIT_COLORS = [
@@ -89,9 +88,10 @@ function NextArrow() {
 }
 
 /**
- * Uma fala, no quadro dos mockups do usuário (docs/arte/mockups): caixa azul-marinho com borda amarela
- * em pixel, retrato em cima à esquerda, aba amarela com o peixinho e o nome, e o triângulo piscando.
- * O toque em qualquer ponto da caixa (ou da tela em volta) chama `onNext`; nada avança sozinho.
+ * Uma fala, no quadro do mockup do usuário (docs/arte/mockups/tela-de-pesca-v2.png): caixa creme com
+ * borda amarela em pixel, retrato de moldura amarela em cima à esquerda, o nome acima do texto e o
+ * triângulo piscando. O toque em qualquer ponto da caixa (ou da tela em volta) chama `onNext`; nada
+ * avança sozinho.
  */
 export function DialogBox({ line, onNext }: { line: DialogLine; onNext: () => void }) {
   const cast = speakersOf(line).map(characterById);
@@ -101,21 +101,16 @@ export function DialogBox({ line, onNext }: { line: DialogLine; onNext: () => vo
     <div class="dialog-layer" role="dialog" aria-label="Conversa" onClick={onNext}>
       <div class={`dialog-box${narration ? ' dialog-box--narration' : ''}`}>
         {!narration && (
-          <div class="dialog-box__head">
-            <div class="dialog-box__portraits">
-              {cast.map((c) => (
-                <Portrait key={c.id} character={c} expression={expression} />
-              ))}
-            </div>
-            <p class="dialog-box__tab">
-              <FishIcon class="dialog-box__fish" />
-              <span class="dialog-box__name">{joinNames(cast.map((c) => c.name))}</span>
-            </p>
+          <div class="dialog-box__portraits">
+            {cast.map((c) => (
+              <Portrait key={c.id} character={c} expression={expression} />
+            ))}
           </div>
         )}
+        {!narration && <p class="dialog-box__name">{joinNames(cast.map((c) => c.name))}</p>}
         <p class="dialog-box__text">{line.text}</p>
         <p class="dialog-box__hint" aria-hidden="true">
-          Toque para continuar
+          Toque para continuar ▸
         </p>
         <NextArrow />
       </div>
@@ -136,7 +131,7 @@ export function CharacterIntroCard({ character, onClose }: { character: Characte
         <Portrait character={character} expression="normal" big />
         <p class="intro-card__name">{character.name.toUpperCase()}</p>
         <p class="intro-card__epithet">{character.epithet}</p>
-        <p class="dialog-box__hint">Toque para continuar</p>
+        <p class="dialog-box__hint">Toque para continuar ▸</p>
         <NextArrow />
       </div>
     </div>

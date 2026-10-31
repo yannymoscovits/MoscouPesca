@@ -961,74 +961,63 @@ ul {
   cursor: pointer;
 }
 
-/* Quadro dos mockups (docs/arte/mockups/dialogo.png e tela-de-pesca.png): caixa azul-marinho com borda
-   amarela em pixels de 3 px, cantos chanfrados e pontinhos amarelos. Creme sobre o marinho: 13,2:1. */
+/* Quadro do mockup (docs/arte/mockups/tela-de-pesca-v2.png): caixa creme com borda amarela em pixels
+   de 3 px, cantos chanfrados e pontinhos amarelos. Tinta escura sobre o creme: 16,2:1. */
 .dialog-box {
   position: relative;
   display: grid;
-  gap: 6px;
-  padding: 2px 6px 10px;
+  gap: 4px;
+  padding: 2px 8px 10px;
   border: 24px solid transparent;
-  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 17 17' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M3 0h11v1H3zM2 1h1v1H2zM14 1h1v1H14zM1 2h1v1H1zM15 2h1v1H15zM0 3h1v11H0zM16 3h1v11H16zM5 4h7v1H5zM4 5h1v7H4zM12 5h1v7H12zM5 12h7v1H5zM1 14h1v1H1zM15 14h1v1H15zM2 15h1v1H2zM14 15h1v1H14zM3 16h11v1H3z'/%3E%3Cpath fill='%23ffe27a' d='M3 1h11v1H3zM2 2h1v1H2zM1 3h1v11H1z'/%3E%3Cpath fill='%23fecd42' d='M3 2h12v1H3zM2 3h13v1H2zM2 4h3v1H2zM12 4h3v1H12zM2 5h2v7H2zM13 5h2v7H13zM2 12h3v1H2zM12 12h3v1H12zM2 13h13v1H2zM2 14h12v1H2zM7 6h1v1H7zM9 6h1v1H9zM6 7h1v1H6zM10 7h1v1H10zM6 9h1v1H6zM10 9h1v1H10zM7 10h1v1H7zM9 10h1v1H9z'/%3E%3Cpath fill='%23d9921f' d='M15 3h1v11H15zM14 14h1v1H14zM3 15h11v1H3z'/%3E%3Cpath fill='%230a2a5e' d='M5 5h7v1H5zM5 6h2v1H5zM8 6h1v1H8zM10 6h2v1H10zM5 7h1v1H5zM7 7h3v1H7zM11 7h1v1H11zM5 8h7v1H5zM5 9h1v1H5zM7 9h3v1H7zM11 9h1v1H11zM5 10h2v1H5zM8 10h1v1H8zM10 10h2v1H10zM5 11h7v1H5z'/%3E%3C/svg%3E")
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 17 17' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M3 0h11v1H3zM2 1h1v1H2zM14 1h1v1H14zM1 2h1v1H1zM15 2h1v1H15zM0 3h1v1H0zM16 3h1v1H16zM0 4h1v1H0zM5 4h7v1H5zM16 4h1v1H16zM0 5h1v1H0zM4 5h1v1H4zM12 5h1v1H12zM16 5h1v1H16zM0 6h1v1H0zM4 6h1v1H4zM12 6h1v1H12zM16 6h1v1H16zM0 7h1v1H0zM4 7h1v1H4zM12 7h1v1H12zM16 7h1v1H16zM0 8h1v1H0zM4 8h1v1H4zM12 8h1v1H12zM16 8h1v1H16zM0 9h1v1H0zM4 9h1v1H4zM12 9h1v1H12zM16 9h1v1H16zM0 10h1v1H0zM4 10h1v1H4zM12 10h1v1H12zM16 10h1v1H16zM0 11h1v1H0zM4 11h1v1H4zM12 11h1v1H12zM16 11h1v1H16zM0 12h1v1H0zM5 12h7v1H5zM16 12h1v1H16zM0 13h1v1H0zM16 13h1v1H16zM1 14h1v1H1zM15 14h1v1H15zM2 15h1v1H2zM14 15h1v1H14zM3 16h11v1H3z'/%3E%3Cpath fill='%23ffe27a' d='M3 1h11v1H3zM2 2h1v1H2zM1 3h1v1H1zM1 4h1v1H1zM1 5h1v1H1zM1 6h1v1H1zM1 7h1v1H1zM1 8h1v1H1zM1 9h1v1H1zM1 10h1v1H1zM1 11h1v1H1zM1 12h1v1H1zM1 13h1v1H1z'/%3E%3Cpath fill='%23fecd42' d='M3 2h12v1H3zM2 3h13v1H2zM2 4h3v1H2zM12 4h3v1H12zM2 5h2v1H2zM13 5h2v1H13zM2 6h2v1H2zM13 6h2v1H13zM2 7h2v1H2zM13 7h2v1H13zM2 8h2v1H2zM13 8h2v1H13zM2 9h2v1H2zM13 9h2v1H13zM2 10h2v1H2zM13 10h2v1H13zM2 11h2v1H2zM13 11h2v1H13zM2 12h3v1H2zM12 12h3v1H12zM2 13h13v1H2zM2 14h12v1H2z'/%3E%3Cpath fill='%23d9921f' d='M15 3h1v1H15zM15 4h1v1H15zM15 5h1v1H15zM15 6h1v1H15zM15 7h1v1H15zM15 8h1v1H15zM15 9h1v1H15zM15 10h1v1H15zM15 11h1v1H15zM15 12h1v1H15zM15 13h1v1H15zM14 14h1v1H14zM3 15h11v1H3z'/%3E%3Cpath fill='%23fcf6e6' d='M5 5h7v1H5zM5 6h2v1H5zM8 6h1v1H8zM10 6h2v1H10zM5 7h1v1H5zM7 7h3v1H7zM11 7h1v1H11zM5 8h3v1H5zM9 8h3v1H9zM5 9h1v1H5zM7 9h3v1H7zM11 9h1v1H11zM5 10h2v1H5zM8 10h1v1H8zM10 10h2v1H10zM5 11h7v1H5z'/%3E%3Cpath fill='%23fecd42' d='M7 6h1v1H7zM9 6h1v1H9zM6 7h1v1H6zM10 7h1v1H10zM6 9h1v1H6zM10 9h1v1H10zM7 10h1v1H7zM9 10h1v1H9z'/%3E%3C/svg%3E")
     8 / 24px stretch;
-  background: padding-box #0a2a5e;
-  color: var(--ink);
+  background: padding-box #fcf6e6;
+  color: var(--paper-ink);
 }
 
-/* Retrato em cima, à esquerda, saltando para fora da caixa; a aba com o nome fica sobre a borda. */
-.dialog-box__head {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  margin: -68px 0 0 -16px;
-}
-
+/* Retrato em cima, à esquerda, saltando para fora da caixa. */
 .dialog-box__portraits {
   display: flex;
   gap: 8px;
+  margin: -64px 0 0 -14px;
 }
 
-.dialog-box__head .portrait {
-  width: 84px;
-  height: 84px;
+.dialog-box__portraits .portrait {
+  width: 92px;
+  height: 92px;
 }
 
-.dialog-box__head .portrait__initials {
-  font-size: 32px;
+.dialog-box__portraits .portrait__initials {
+  font-size: 28px;
 }
 
-.dialog-box__head .portrait__face {
+.dialog-box__portraits .portrait__face {
   font-size: var(--text-min);
 }
 
-/* Aba amarela com o peixinho do logo e o nome: tinta escura sobre amarelo, 11,8:1. */
-.dialog-box__tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-  padding: 0 2px;
+/* Moldura amarela grossa em pixel, quadrada e chanfrada, no lugar do contorno arredondado. */
+.dialog-box .portrait {
   border: 12px solid transparent;
-  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 9 9' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M2 0h5v1H2zM1 1h1v1H1zM7 1h1v1H7zM0 2h1v6H0zM8 2h1v6H8zM0 8h9v1H0z'/%3E%3Cpath fill='%23ffe27a' d='M2 1h5v1H2zM1 2h1v5H1z'/%3E%3Cpath fill='%23fecd42' d='M2 2h5v5H2zM1 7h1v1H1z'/%3E%3Cpath fill='%23d9921f' d='M7 2h1v5H7zM2 7h6v1H2z'/%3E%3C/svg%3E")
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 9 9' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M2 0h5v1H2zM1 1h1v1H1zM7 1h1v1H7zM0 2h1v1H0zM8 2h1v1H8zM0 3h1v1H0zM3 3h3v1H3zM8 3h1v1H8zM0 4h1v1H0zM3 4h1v1H3zM5 4h1v1H5zM8 4h1v1H8zM0 5h1v1H0zM3 5h3v1H3zM8 5h1v1H8zM0 6h1v1H0zM8 6h1v1H8zM1 7h1v1H1zM7 7h1v1H7zM2 8h5v1H2z'/%3E%3Cpath fill='%23ffe27a' d='M2 1h5v1H2zM1 2h1v1H1zM1 3h1v1H1zM1 4h1v1H1zM1 5h1v1H1zM1 6h1v1H1z'/%3E%3Cpath fill='%23fecd42' d='M2 2h5v1H2zM2 3h1v1H2zM6 3h1v1H6zM2 4h1v1H2zM6 4h1v1H6zM2 5h1v1H2zM6 5h1v1H6zM2 6h5v1H2z'/%3E%3Cpath fill='%23d9921f' d='M7 2h1v1H7zM7 3h1v1H7zM7 4h1v1H7zM7 5h1v1H7zM7 6h1v1H7zM2 7h5v1H2z'/%3E%3C/svg%3E")
     4 / 12px stretch;
-  background: padding-box var(--accent);
-  color: var(--accent-ink);
-  font: 700 22px / 1 var(--font-title);
+  border-radius: 0;
+  background-clip: padding-box;
+  box-shadow: none;
 }
 
-.dialog-box__fish {
-  flex: none;
-  width: 35px;
-  height: 24px;
+/* Nome de quem fala: marrom-alaranjado sobre o creme, 5,8:1. */
+.dialog-box__name {
+  font: 700 24px / 1.1 var(--font-title);
+  color: #9a4a06;
 }
 
-/* "Toque para continuar": texto secundário sobre o marinho, 8,1:1. O triângulo fica na borda de baixo. */
+/* "Toque para continuar": azul sobre o creme, 6,4:1. O triângulo fica embaixo da borda. */
 .dialog-box__hint {
   justify-self: end;
-  margin-right: 36px;
+  margin-right: 30px;
   font-size: var(--text-min);
   font-weight: 700;
-  color: var(--ink-soft);
+  color: #1659a8;
 }
 
 .dialog-next {
@@ -1052,7 +1041,7 @@ ul {
   }
 }
 
-/* Narração: sem retrato nem aba, em itálico, num quadro que "ondula". */
+/* Narração: sem retrato nem nome, em itálico, num quadro que "ondula". */
 .dialog-box--narration {
   text-align: center;
   animation: ondular 2.4s ease-in-out infinite;
@@ -1114,7 +1103,7 @@ ul {
 }
 
 /* Cartão de apresentação: o mesmo quadro das falas, com um clarão atrás, o retrato grande saltando
-   para fora, o nome em caixa alta e o apelido. Amarelo sobre o marinho: 9,3:1. */
+   para fora, o nome em caixa alta e o apelido. */
 .intro-card {
   z-index: 26;
   justify-content: center;
@@ -1139,7 +1128,7 @@ ul {
 
 .intro-card__name {
   font: 700 44px / 1.05 var(--font-title);
-  color: var(--accent);
+  color: #9a4a06;
 }
 
 .intro-card__epithet {

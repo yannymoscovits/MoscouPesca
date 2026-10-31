@@ -159,11 +159,12 @@ test('fala conjunta: retratos do Didi e da Denise lado a lado em "Amamos você m
   expect(b.left).toBeGreaterThanOrEqual(a.right); // lado a lado, sem sobrepor
 });
 
-// Quadro de diálogo dos mockups (T77): caixa azul-marinho com borda amarela, aba com o nome, retrato em
-// cima à esquerda e triângulo piscando (spec, "Visual do quadro de diálogo"; ACES-05 a ACES-08).
+// Quadro de diálogo do mockup (T77, docs/arte/mockups/tela-de-pesca-v2.png): caixa creme com borda amarela,
+// retrato de moldura amarela em cima à esquerda, o nome acima do texto e o triângulo piscando
+// (spec, "Visual do quadro de diálogo"; ACES-05 a ACES-08).
 
 const box = (page: Page) => dialog(page).locator('.dialog-box');
-const tab = (page: Page) => dialog(page).locator('.dialog-box__tab');
+const speaker = (page: Page) => dialog(page).locator('.dialog-box__name');
 const nextArrow = (page: Page) => dialog(page).locator('[data-continue]');
 
 /** Abertura do Episódio 1 com a Jane e o Adilson já apresentados: só falas, sem cartões. */
@@ -180,10 +181,31 @@ async function openingDialog(page: Page) {
 /** Cor computada em [r, g, b]. */
 const rgb = (css: string) => css.match(/\d+/g)!.slice(0, 3).map(Number);
 
+/** Cor média dos pixels da tela num retângulo, em [r, g, b]. */
+async function pixels(page: Page, clip: { x: number; y: number; width: number; height: number }) {
+  const shot = await page.screenshot({ clip, animations: 'disabled' });
+  return page.evaluate(async (png) => {
+    const img = new Image();
+    img.src = `data:image/png;base64,${png}`;
+    await img.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d')!;
+    ctx.drawImage(img, 0, 0);
+    const px = ctx.getImageData(0, 0, img.width, img.height).data;
+    const sum = [0, 0, 0];
+    for (let i = 0; i < px.length; i += 4) for (let c = 0; c < 3; c++) sum[c] += px[i + c];
+    return sum.map((v) => Math.round(v / (px.length / 4)));
+  }, shot.toString('base64'));
+}
+
+const isYellow = ([r, g, b]: number[]) => r > 200 && g > 160 && b < 120;
+
 /** Print do Pixel 7 para comparar com o mockup: em docs/arte/mockups com SAVE_SHOTS=1, senão na saída do teste. */
 const shotPath = (name: string) => (process.env.SAVE_SHOTS ? `docs/arte/mockups/${name}` : test.info().outputPath(name));
 
-test('T77: a aba mostra o nome de quem fala, o retrato fica em cima à esquerda com a expressão e o triângulo pisca', async ({
+test('T77: o nome de quem fala fica acima do texto, o retrato em cima à esquerda com a expressão e o triângulo pisca', async ({
   page,
 }) => {
   await openingDialog(page);
@@ -191,60 +213,68 @@ test('T77: a aba mostra o nome de quem fala, o retrato fica em cima à esquerda 
 
   for (const line of opening.slice(0, 3)) {
     await expect(dialog(page)).toContainText(line.text);
-    await expect(tab(page)).toHaveText(names[line.speaker as string]);
+    await expect(speaker(page)).toHaveText(names[line.speaker as string]);
     await expect(dialog(page).getByRole('img')).toHaveAttribute('data-expression', line.expression ?? 'normal');
     if (line === opening[0]) await page.screenshot({ path: shotPath('dialogo-implementado.png') });
     await dialog(page).click();
   }
 
-  // Caixa azul-marinho (escura, puxada para o azul) com texto claro.
+  // Caixa creme com texto escuro; nome marrom-alaranjado; "Toque para continuar ▸" azul.
+  const text = dialog(page).getByText(opening[3].text);
   const [r, g, b] = rgb(await box(page).evaluate((el) => getComputedStyle(el).backgroundColor));
-  expect(Math.max(r, g, b), 'caixa escura').toBeLessThan(110);
-  expect(b, 'caixa azul').toBeGreaterThan(Math.max(r, g));
-  const ink = rgb(await dialog(page).getByText(opening[3].text).evaluate((el) => getComputedStyle(el).color));
-  expect(Math.min(...ink), 'texto claro').toBeGreaterThan(200);
+  expect(Math.min(r, g, b), 'caixa clara').toBeGreaterThan(220);
+  expect(r, 'caixa creme, puxada para o amarelo').toBeGreaterThan(b);
+  const ink = rgb(await text.evaluate((el) => getComputedStyle(el).color));
+  expect(Math.max(...ink), 'texto escuro').toBeLessThan(80);
+  const [nr, ng, nb] = rgb(await speaker(page).evaluate((el) => getComputedStyle(el).color));
+  expect(nr, 'nome marrom-alaranjado').toBeGreaterThan(ng);
+  expect(ng, 'nome marrom-alaranjado').toBeGreaterThan(nb);
+  const hint = dialog(page).getByText('Toque para continuar ▸');
+  const [hr, hg, hb] = rgb(await hint.evaluate((el) => getComputedStyle(el).color));
+  expect(hb, 'dica azul').toBeGreaterThan(Math.max(hr, hg) + 40);
 
-  // Retrato em cima, à esquerda, saltando para fora da caixa; a aba à direita dele, sobre a borda de cima.
+  // Retrato em cima, à esquerda, saltando para fora da caixa; o nome embaixo dele e acima do texto.
   const frame = (await box(page).boundingBox())!;
   const portrait = (await dialog(page).getByRole('img').boundingBox())!;
-  const name = (await tab(page).boundingBox())!;
+  const name = (await speaker(page).boundingBox())!;
+  const body = (await text.boundingBox())!;
   expect(portrait.y, 'retrato sai por cima da caixa').toBeLessThan(frame.y);
+  expect(portrait.y + portrait.height, 'retrato entra na caixa').toBeGreaterThan(frame.y);
   expect(portrait.x - frame.x, 'retrato à esquerda').toBeLessThan(frame.width / 4);
-  expect(name.x, 'aba à direita do retrato').toBeGreaterThanOrEqual(portrait.x + portrait.width);
-  expect(name.y, 'aba sobre a borda de cima').toBeLessThan(frame.y);
-  expect(name.y + name.height, 'aba sobre a borda de cima').toBeGreaterThan(frame.y);
-  // A aba é amarela e traz o peixinho.
-  const [tr, tg, tb] = rgb(await tab(page).evaluate((el) => getComputedStyle(el).backgroundColor));
-  expect(Math.min(tr, tg), 'aba amarela').toBeGreaterThan(180);
-  expect(tb, 'aba amarela').toBeLessThan(120);
-  await expect(tab(page).locator('svg')).toBeVisible();
+  expect(name.y, 'nome embaixo do retrato').toBeGreaterThanOrEqual(portrait.y + portrait.height - 1);
+  expect(body.y, 'texto embaixo do nome').toBeGreaterThanOrEqual(name.y + name.height - 1);
 
-  // Triângulo no canto de baixo, sobre a borda, piscando (a opacidade apaga e volta).
+  // Borda amarela grossa na caixa e na moldura do retrato (pixels da tela, no meio de cada borda).
+  const mid = frame.y + frame.height / 2;
+  expect(isYellow(await pixels(page, { x: frame.x + 4, y: mid, width: 6, height: 8 })), 'borda da caixa').toBe(true);
+  const px = portrait.x + portrait.width / 2;
+  expect(isYellow(await pixels(page, { x: px, y: portrait.y + 4, width: 8, height: 4 })), 'moldura do retrato').toBe(true);
+
+  // Triângulo no canto de baixo, embaixo da borda, piscando (a opacidade apaga e volta).
   await expect(nextArrow(page)).toBeVisible();
   const arrow = (await nextArrow(page).boundingBox())!;
   expect(arrow.x + arrow.width, 'no canto da direita').toBeGreaterThan(frame.x + frame.width * 0.8);
   expect(arrow.y, 'sobre a borda de baixo').toBeLessThan(frame.y + frame.height);
-  expect(arrow.y + arrow.height, 'sobre a borda de baixo').toBeGreaterThan(frame.y + frame.height);
+  expect(arrow.y + arrow.height, 'sai por baixo da borda').toBeGreaterThan(frame.y + frame.height);
   const opacities = await nextArrow(page).evaluate((el) =>
     el.getAnimations().flatMap((a) => (a.effect as KeyframeEffect).getKeyframes().map((k) => Number(k.opacity ?? 1))),
   );
   expect(Math.min(...opacities), 'triângulo apaga').toBe(0);
   expect(Math.max(...opacities), 'triângulo acende').toBe(1);
-  await expect(dialog(page)).toContainText('Toque para continuar');
 });
 
-test('T77: fala conjunta mostra os dois nomes na aba; narração fica sem aba', async ({ page }) => {
+test('T77: fala conjunta mostra os dois nomes; narração fica sem nome', async ({ page }) => {
   await openWithProfile(page, inJacuipe('ep2-vitoria', ['ep2-abertura', 'ep2-vitoria']));
   await page.getByRole('button', { name: 'Jogar' }).click();
   for (let i = 0; i < 3; i++) await dialog(page).click();
   await expect(dialog(page)).toContainText('Amamos você meu filho, segura firme!');
-  await expect(tab(page)).toHaveText('Didi e Denise');
+  await expect(speaker(page)).toHaveText('Didi e Denise');
 
   await openWithProfile(page, inJacuipe(null));
   await page.getByRole('button', { name: 'Jogar' }).click();
   for (let i = 0; i < 4; i++) await dialog(page).click();
   await expect(dialog(page)).toContainText('Jacuípe, muitos anos atrás.');
-  await expect(tab(page)).toHaveCount(0);
+  await expect(speaker(page)).toHaveCount(0);
   await expect(nextArrow(page)).toBeVisible();
 });
 
@@ -278,7 +308,7 @@ test('T77, ACES-05, ACES-07: no quadro e no cartão, textos >= 18 px e contraste
   // Cartão de apresentação da Jane.
   await expect(introCard(page)).toBeVisible();
   const card = await textSizes(page, '[role="dialog"]');
-  expect(card.map((t) => t.text)).toEqual(expect.arrayContaining(['JANE', 'A Que Sempre Teve Razão', 'Toque para continuar']));
+  expect(card.map((t) => t.text)).toEqual(expect.arrayContaining(['JANE', 'A Que Sempre Teve Razão', 'Toque para continuar ▸']));
   expect(card.filter((t) => t.size < 18)).toEqual([]);
   await expectContrast(page);
 
@@ -286,12 +316,12 @@ test('T77, ACES-05, ACES-07: no quadro e no cartão, textos >= 18 px e contraste
   await introCard(page).click();
   await expect(dialog(page)).toContainText(opening[0].text);
   const line = await textSizes(page, '[role="dialog"]');
-  expect(line.map((t) => t.text)).toEqual(expect.arrayContaining(['Jane', opening[0].text, 'Toque para continuar']));
+  expect(line.map((t) => t.text)).toEqual(expect.arrayContaining(['Jane', opening[0].text, 'Toque para continuar ▸']));
   expect(line.filter((t) => t.size < 18)).toEqual([]);
   await expectContrast(page);
 });
 
-test('T77, HIST-03: o quadro inteiro é tocável: cantos, aba, retrato e triângulo avançam a fala', async ({ page }) => {
+test('T77, HIST-03: o quadro inteiro é tocável: cantos, nome, retrato e triângulo avançam a fala', async ({ page }) => {
   await openingDialog(page);
 
   const frame = (await box(page).boundingBox())!;
@@ -301,7 +331,7 @@ test('T77, HIST-03: o quadro inteiro é tocável: cantos, aba, retrato e triâng
     async () => ({ x: frame.x + 8, y: frame.y + 8 }), // canto de cima à esquerda
     async () => ({ x: frame.x + frame.width - 8, y: frame.y + 8 }), // canto de cima à direita
     async () => ({ x: frame.x + 8, y: frame.y + frame.height - 8 }), // canto de baixo à esquerda
-    async () => center((await tab(page).boundingBox())!),
+    async () => center((await speaker(page).boundingBox())!),
     async () => center((await dialog(page).getByRole('img').boundingBox())!),
   ];
   for (let i = 0; i < spots.length; i++) {
