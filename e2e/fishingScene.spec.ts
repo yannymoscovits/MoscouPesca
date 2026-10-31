@@ -47,13 +47,19 @@ async function lureAt(page: Page, p: { x: number; y: number }) {
   }, shot.toString('base64'));
 }
 
-test('T79, ISCA-01: prints do Pixel 7 da mira, da isca na água e da briga, com a isca vermelha onde ela está', async ({ page }) => {
+test('T79, ISCA-01: prints do Pixel 7 do pesqueiro, da mira, da isca na água e da briga, com a isca vermelha onde ela está', async ({
+  page,
+}) => {
   await openWithProfile(page, veteran());
   await manualClock(page);
   await play(page);
-  await chooseSpot(page);
+  await page.locator('[data-spot="raso"]').click(); // o cartão tocado acende e o papel das espécies abre
   await nextFrames(page);
-  await page.screenshot({ path: shotPath('pesca-depois-mira.png'), animations: 'disabled' });
+  await page.screenshot({ path: shotPath('pesqueiro-implementado.png'), animations: 'disabled' });
+  await page.locator('[data-action="pescar-aqui"]').click();
+  await expect(page.locator('[data-button="arremessar"]')).toBeVisible();
+  await nextFrames(page);
+  await page.screenshot({ path: shotPath('arremesso-implementado.png'), animations: 'disabled' });
 
   expect(await castNow(page)).toBe('Lure'); // relógio parado: a isca fica na superfície, onde caiu
   await page.waitForTimeout(700); // o respingo na vista de cima acaba (ARREM-05)
@@ -61,12 +67,12 @@ test('T79, ISCA-01: prints do Pixel 7 da mira, da isca na água e da briga, com 
   expect((await gameState(page)).fishing.water.lure.depthM).toBe(0);
   expect(await lureAt(page, landedLure(page)), 'isca vermelha na água').toBeGreaterThan(0);
 
-  await page.screenshot({ path: shotPath('pesca-depois-isca.png'), animations: 'disabled' });
+  await page.screenshot({ path: shotPath('isca-implementada.png'), animations: 'disabled' });
 
   expect(await hookNow(page)).toBe('Fight');
   await nextFrames(page);
   await expect(page.getByRole('group', { name: 'Barra de captura' })).toBeVisible();
-  await page.screenshot({ path: shotPath('pesca-depois-briga.png'), animations: 'disabled' });
+  await page.screenshot({ path: shotPath('briga-implementada.png'), animations: 'disabled' });
 });
 
 test('T79, SAVE-01: a cena desenha a no máximo 30 quadros por segundo e, pausada, não desenha nem anima o fundo', async ({
