@@ -27,6 +27,12 @@ export const AIM_HALF_ARC_DEG = 45;
 export const CAST_MIN_SHARE = 0.3;
 /** Metros por px lógico do alcance da v1: a Vara de Bambu (108 px) chega a 10,8 m. */
 export const M_PER_PX = 0.1;
+/** Ida e volta da seta e ciclo da barra de força (ARREM-06). */
+export const AIM_SWEEP_S = { desafio: 2, tranquilo: 4 };
+/** Janela para fisgar depois do ataque (ISCA-10). */
+export const HOOK_WINDOW_S = { desafio: 2, tranquilo: 4 };
+/** Voo da isca até a água; mesmo tempo do arremesso da v1. */
+export const CAST_FLIGHT_S = 0.8;
 
 // ---------- Pescaria nova: barra de captura (spec pesca-bass, "Física da briga") ----------
 // Alturas em barras (0 = fundo, 1 = topo), tempos em segundos.

@@ -203,10 +203,10 @@ T17 → T18
 
 **Done when**:
 
-- [ ] ARREMESSAR em `Aim` trava o ângulo; em `Power` arremessa com a distância de `castDistanceM`; em `Flying` nada muda
-- [ ] Depois do voo, `Lure` com a água do ponto; ataque leva a `Strike`; PUXAR na janela (2 s / 4 s / sem prazo no tutorial) leva a `Fight`; janela vencida volta a `Lure` com aviso "Escapou!" e o peixe fugindo
-- [ ] Isca no Adilson sem peixe: `Result_Nothing`; medidor cheio: `Result_Caught` com peso e valor da v1; medidor vazio no Desafio: `Result_Escaped`
-- [ ] Gate check passes: `npm test`
+- [x] ARREMESSAR em `Aim` trava o ângulo; em `Power` arremessa com a distância de `castDistanceM`; em `Flying` nada muda
+- [x] Depois do voo, `Lure` com a água do ponto; ataque leva a `Strike`; PUXAR na janela (2 s / 4 s / sem prazo no tutorial) leva a `Fight`; janela vencida volta a `Lure` com aviso "Escapou!" e o peixe fugindo
+- [x] Isca no Adilson sem peixe: `Result_Nothing`; medidor cheio: `Result_Caught` com peso e valor da v1; medidor vazio no Desafio: `Result_Escaped`
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
