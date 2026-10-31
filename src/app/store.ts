@@ -3,7 +3,7 @@
 
 import { createContext } from 'preact';
 import { useContext, useEffect, useReducer, useRef } from 'preact/hooks';
-import type { Profile } from '../content/types';
+import type { MedalTier, Profile } from '../content/types';
 import type { FishingState } from '../domain/fishing';
 import type { Standing } from '../domain/tournament';
 import type { TutorialState } from '../domain/tutorial';
@@ -23,6 +23,8 @@ export interface GameState {
   dialogLine: number;
   /** A ficha em exibição é recorde da espécie (ALBUM-02). */
   newRecord: boolean;
+  /** Medalhas novas, metas cumpridas (contagens) e a recompensa delas na ficha em exibição (MEDAL-02, MEDAL-05). */
+  awards: { medals: MedalTier[]; goals: number[]; reward: number } | null;
   /** "Episódio N liberado!" ou o aviso final, depois da cena (HIST-08, HIST-10). */
   notice: string | null;
   /** Classificação do torneio que acabou de terminar (CAMP-05, CAMP-09). */
@@ -40,6 +42,7 @@ export function initialState(profile: Profile): GameState {
     paused: false,
     dialogLine: 0,
     newRecord: false,
+    awards: null,
     notice: null,
     tournamentResult: null,
     saveWarning: false,

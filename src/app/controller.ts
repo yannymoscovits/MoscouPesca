@@ -12,8 +12,10 @@ import type {
   Point,
   Profile,
 } from '../content/types';
+import { goals } from '../content/goals';
 import { record } from '../domain/album';
 import { cast, press, rulesFor, tick as fishingTick, type FishingState, type TickContext } from '../domain/fishing';
+import { goalId, onCatch } from '../domain/medals';
 import * as profiles from '../domain/profile';
 import type { Rng } from '../domain/rng';
 import { buy as shopBuy, equip as shopEquip } from '../domain/shop';
@@ -77,6 +79,8 @@ const isResult = (f: FishingState) => f.phase.startsWith('Result_');
 
 export function createController({ store, save, platform, episodes, rng }: ControllerDeps): GameController {
   const allRods = episodes.flatMap((ep) => ep.rods);
+  /** Episódio dono da espécie: a recompensa das metas cresce por episódio (MEDAL-05). */
+  const episodeOfSpecies = (id: string) => episodes.find((ep) => ep.species.some((sp) => sp.id === id)) ?? episodes[0];
   const allScenes = episodes.flatMap((ep) => ep.scenes);
   let warnedSave = false; // "Não consegui salvar" aparece uma vez por sessão
   let touched = false; // toque desde o último tick (TUTO-07)
@@ -137,9 +141,14 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       next = { ...next, profile: { ...next.profile, tournament: recordCast(next.profile.tournament, result) } };
     }
     if (result.phase === 'Result_Caught') {
-      const { album, isNewRecord } = record(next.profile.album, result.species.id, result.kg);
-      next = { ...next, newRecord: isNewRecord, profile: { ...next.profile, money: next.profile.money + result.value, album } };
-      next = story(next, { type: 'Caught', species: result.species.id, kg: result.kg });
+      const { species, kg } = result;
+      const { album, isNewRecord } = record(next.profile.album, species.id, kg);
+      const paid = { ...next.profile, money: next.profile.money + result.value, album };
+      // MEDAL-02 a MEDAL-05: medalhas, contagem e metas, com a recompensa já no saldo.
+      const won = onCatch(paid, species, kg, goals, episodeOfSpecies(species.id).id);
+      const counts = goals.counts.filter((c) => won.goalsDone.includes(goalId(species.id, c)));
+      next = { ...next, newRecord: isNewRecord, awards: { medals: won.medals, goals: counts, reward: won.reward }, profile: won.profile };
+      next = story(next, { type: 'Caught', species: species.id, kg });
     }
     if (next.profile.tournament?.castsLeft === 0) next = finishTournament(next);
     return next;
@@ -229,7 +238,7 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       const s = get();
       if (!isResult(s.fishing)) return;
       const tutorial = s.tutorial?.step === 'done' ? null : s.tutorial;
-      store.update(() => ({ ...s, fishing: { phase: 'Idle' }, newRecord: false, tutorial }));
+      store.update(() => ({ ...s, fishing: { phase: 'Idle' }, newRecord: false, awards: null, tutorial }));
     },
 
     pause() {

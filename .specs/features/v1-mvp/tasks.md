@@ -1667,10 +1667,10 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Captura que concede medalha deixa a medalha no perfil e no estado da ficha (MEDAL-02)
-- [ ] Meta cumprida soma a recompensa ao saldo uma vez só e gera o aviso "Meta cumprida!" (MEDAL-05)
-- [ ] Medalhas, contagens e metas sobrevivem a salvar e recarregar; perfil salvo sem esses campos carrega sem erro (MEDAL-07)
-- [ ] Gate check passes: `npm test`
+- [x] Captura que concede medalha deixa a medalha no perfil e no estado da ficha (MEDAL-02)
+- [x] Meta cumprida soma a recompensa ao saldo uma vez só e gera o aviso "Meta cumprida!" (MEDAL-05)
+- [x] Medalhas, contagens e metas sobrevivem a salvar e recarregar; perfil salvo sem esses campos carrega sem erro (MEDAL-07)
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick

@@ -6,18 +6,21 @@ import type { Profile } from '../content/types';
 import type { FishingState } from '../domain/fishing';
 import { newProfile } from '../domain/profile';
 import type { Rng } from '../domain/rng';
-import { createSaveService, type SaveOutcome, type SaveService } from '../platform/save';
+import { goals } from '../content/goals';
+import { goalId } from '../domain/medals';
+import { createSaveService, CURRENT_KEY, type SaveOutcome, type SaveService } from '../platform/save';
 import { bootGame, createController } from './controller';
 import { createStore, initialState } from './store';
 
 /**
  * Sorteio previsível: mordida no início da janela, peso no mínimo da faixa e,
  * entre as espécies que podem morder, a pedida (ou a primeira).
+ * `share` (0 a 1) leva os sorteios para dentro da faixa: 1 dá o peso máximo.
  */
-function scriptedRng(speciesId?: string): Rng {
+function scriptedRng(speciesId?: string, share = 0): Rng {
   return {
     next: () => 0,
-    range: (min) => min,
+    range: (min, max) => min + (max - min) * share,
     pick: (weighted) => (weighted.find((w) => (w.item as { id?: string }).id === speciesId) ?? weighted[0]).item,
   };
 }
@@ -43,7 +46,7 @@ function tournamentReady(over: Partial<Profile> = {}): Profile {
   };
 }
 
-function setup(profile: Profile, opts: { species?: string; saveOk?: boolean } = {}) {
+function setup(profile: Profile, opts: { species?: string; saveOk?: boolean; share?: number } = {}) {
   const store = createStore(initialState(profile));
   const saved: Profile[] = [];
   const save = {
@@ -53,7 +56,7 @@ function setup(profile: Profile, opts: { species?: string; saveOk?: boolean } = 
     }),
   };
   const platform = { vibrate: vi.fn() };
-  const controller = createController({ store, save, platform, episodes, rng: scriptedRng(opts.species) });
+  const controller = createController({ store, save, platform, episodes, rng: scriptedRng(opts.species, opts.share) });
   const state = () => store.getState();
   const lastSaved = () => saved[saved.length - 1];
 
@@ -136,6 +139,107 @@ describe('pesca', () => {
     g.tickUntil('Bite');
 
     expect(g.platform.vibrate).not.toHaveBeenCalled();
+  });
+});
+
+describe('medalhas e metas', () => {
+  const tilapia = ep1.species.find((sp) => sp.id === 'tilapia')!;
+  /** Fração da faixa de peso da tilápia que cai entre dois limites de medalha. */
+  const shareOf = (kg: number) => (kg - tilapia.kg.min) / (tilapia.kg.max - tilapia.kg.min);
+
+  it('MEDAL-02: captura que alcança o bronze deixa a medalha no perfil salvo e na ficha', () => {
+    const bronzeOnly = shareOf((tilapia.medals.bronze + tilapia.medals.prata) / 2);
+    const g = setup(played(), { species: 'tilapia', share: bronzeOnly });
+
+    const card = g.catchFish();
+    expect(card.kg).toBeGreaterThanOrEqual(tilapia.medals.bronze);
+    expect(card.kg).toBeLessThan(tilapia.medals.prata);
+    expect(g.state().profile.medals.tilapia).toEqual(['bronze']);
+    expect(g.state().awards?.medals).toEqual(['bronze']);
+    expect(g.lastSaved().medals.tilapia).toEqual(['bronze']);
+  });
+
+  it('MEDAL-02, MEDAL-03: peixe no peso máximo dá as três; o seguinte, igual, não dá nenhuma de novo', () => {
+    const g = setup(played(), { species: 'tilapia', share: 1 });
+
+    g.catchFish();
+    expect(g.state().awards?.medals).toEqual(['bronze', 'prata', 'ouro']);
+    g.controller.dismissResult();
+    expect(g.state().awards).toBeNull(); // a ficha fechou
+
+    g.catchFish();
+    expect(g.state().awards?.medals).toEqual([]);
+    expect(g.state().profile.medals.tilapia).toEqual(['bronze', 'prata', 'ouro']);
+  });
+
+  it('MEDAL-04, MEDAL-05: a 10ª tilápia cumpre a meta de 10, soma a recompensa ao saldo uma vez só e gera o aviso', () => {
+    const g = setup(played({ money: 100, catchCounts: { tilapia: 9 } }), { species: 'tilapia' });
+    const reward = goals.reward(1, 10);
+
+    const card = g.catchFish();
+    expect(g.state().profile.catchCounts.tilapia).toBe(10);
+    expect(g.state().profile.goalsDone).toEqual([goalId('tilapia', 10)]);
+    expect(g.state().awards).toMatchObject({ goals: [10], reward });
+    expect(g.state().profile.money).toBe(100 + card.value + reward);
+    expect(g.lastSaved().money).toBe(100 + card.value + reward);
+
+    g.controller.dismissResult();
+    const second = g.catchFish(); // 11ª: nenhuma meta nova
+    expect(g.state().awards).toMatchObject({ goals: [], reward: 0 });
+    expect(g.state().profile.money).toBe(100 + card.value + reward + second.value);
+    expect(g.state().profile.goalsDone).toEqual([goalId('tilapia', 10)]);
+  });
+
+  it('MEDAL-05: a meta de uma espécie do Episódio 2 paga a recompensa do Episódio 2', () => {
+    const p = played({
+      unlockedEpisodes: [1, 2],
+      currentLocation: 'rio-jacuipe',
+      catchCounts: { 'tilapia-jacuipe': 9 },
+      story: { episodes: {}, scenesSeen: [ep1.chapter.openingScene, 'ep2-abertura'], pendingScene: null },
+    });
+    const g = setup(p, { species: 'tilapia-jacuipe' });
+    g.catchFish({ x: 120, y: 300 }); // a beira do rio
+    expect(g.state().awards).toMatchObject({ goals: [10], reward: goals.reward(2, 10) });
+  });
+
+  it('MEDAL-07: medalhas, contagens e metas sobrevivem a salvar e recarregar', () => {
+    const storage = memoryStorage();
+    const boot = () =>
+      bootGame({
+        save: createSaveService(storage),
+        platform: { vibrate: vi.fn(), onVisibilityChange: () => () => {} },
+        episodes,
+        rng: scriptedRng('tilapia', 1),
+        persist: async () => true,
+      });
+    createSaveService(storage).save(played({ catchCounts: { tilapia: 9 } }));
+
+    const first = boot();
+    first.controller.tapWater(90, 300);
+    for (let t = 0; t < 60 && first.store.getState().fishing.phase !== 'Bite'; t += 0.1) first.controller.tick(0.1);
+    first.controller.pressStart();
+    for (let t = 0; t < 60 && first.store.getState().fishing.phase !== 'Result_Caught'; t += 0.1) first.controller.tick(0.1);
+    const before = first.store.getState().profile;
+    expect(before.goalsDone).toEqual([goalId('tilapia', 10)]);
+
+    const again = boot().store.getState().profile;
+    expect(again.medals).toEqual({ tilapia: ['bronze', 'prata', 'ouro'] });
+    expect(again.catchCounts).toEqual({ tilapia: 10 });
+    expect(again.goalsDone).toEqual([goalId('tilapia', 10)]);
+    expect(again.money).toBe(before.money);
+  });
+
+  it('MEDAL-07: perfil salvo antes das medalhas (sem os três campos) abre do salvamento, com eles vazios', () => {
+    const storage = memoryStorage();
+    const { medals: _m, catchCounts: _c, goalsDone: _g, ...old } = played({ money: 777 });
+    storage.setItem(CURRENT_KEY, JSON.stringify(old));
+
+    const { profile, source } = createSaveService(storage).load();
+    expect(source).toBe('current');
+    expect(profile.money).toBe(777);
+    expect(profile.medals).toEqual({});
+    expect(profile.catchCounts).toEqual({});
+    expect(profile.goalsDone).toEqual([]);
   });
 });
 

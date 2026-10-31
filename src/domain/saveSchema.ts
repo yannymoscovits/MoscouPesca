@@ -69,6 +69,17 @@ function isProfile(x: unknown): x is Profile {
   );
 }
 
+const MEDAL_FIELDS = ['medals', 'catchCounts', 'goalsDone'] as const;
+
+/**
+ * MEDAL-07: perfil salvo antes das medalhas não tem nenhum dos três campos; eles começam vazios.
+ * Faltando só parte deles, o salvamento está estragado e continua ilegível (SAVE-08).
+ */
+function withMedalFields(x: unknown): unknown {
+  if (!isObj(x) || MEDAL_FIELDS.some((k) => k in x)) return x;
+  return { ...x, medals: {}, catchCounts: {}, goalsDone: [] };
+}
+
 /** SAVE-09: leva um salvamento antigo até a versão atual, passo a passo; null se não der para ler (SAVE-08). */
 export function migrate(raw: unknown, steps: Readonly<Record<number, Migration>> = MIGRATIONS): Profile | null {
   let data = raw;
@@ -79,6 +90,7 @@ export function migrate(raw: unknown, steps: Readonly<Record<number, Migration>>
     data = step(data);
     if (!isObj(data) || !isNum(data.version) || data.version <= from) return null; // cada passo avança a versão
   }
+  data = withMedalFields(data);
   return isProfile(data) ? data : null;
 }
 
