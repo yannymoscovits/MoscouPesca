@@ -6,7 +6,7 @@ import type { ComponentChildren, VNode } from 'preact';
 type Rect = [x: number, y: number, w: number, h: number];
 
 /** Grade de pixels: cada letra é uma cor da paleta e '.' é vazio. Pixels vizinhos da mesma cor viram um só retângulo. */
-function Pixels({ rows, colors }: { rows: string[]; colors: Record<string, string> }) {
+export function Pixels({ rows, colors }: { rows: string[]; colors: Record<string, string> }) {
   const rects: VNode[] = [];
   for (let y = 0; y < rows.length; y++) {
     const row = rows[y];

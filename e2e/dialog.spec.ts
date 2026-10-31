@@ -1,7 +1,7 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { characters } from '../src/content/characters';
 import { ep1 } from '../src/content/episodes/ep1';
+import { expectContrast } from './contrast';
 import { gameState, openGame, openWithProfile, veteran } from './support';
 
 // Diálogos e cartões de apresentação (HIST-01, HIST-02, HIST-03, HUMOR-01, HUMOR-02),
@@ -291,15 +291,6 @@ const textSizes = (page: Page, scope: string) =>
     return found;
   }, scope);
 
-/** Contraste medido pelo axe dentro do diálogo: nada abaixo de 4,5:1 e nada sem medida. */
-async function expectContrast(page: Page) {
-  const axe = await new AxeBuilder({ page }).include('[role="dialog"]').withRules(['color-contrast']).analyze();
-  const nodes = (results: typeof axe.violations) => results.flatMap((r) => r.nodes.map((n) => n.html));
-  expect(nodes(axe.violations)).toEqual([]);
-  expect(nodes(axe.incomplete)).toEqual([]);
-  expect(nodes(axe.passes).length).toBeGreaterThan(0);
-}
-
 test('T77, ACES-05, ACES-07: no quadro e no cartão, textos >= 18 px e contraste >= 4,5:1', async ({ page }) => {
   await openGame(page);
   await page.getByRole('button', { name: 'Jogar' }).click();
@@ -310,7 +301,7 @@ test('T77, ACES-05, ACES-07: no quadro e no cartão, textos >= 18 px e contraste
   const card = await textSizes(page, '[role="dialog"]');
   expect(card.map((t) => t.text)).toEqual(expect.arrayContaining(['JANE', 'A Que Sempre Teve Razão', 'Toque para continuar ▸']));
   expect(card.filter((t) => t.size < 18)).toEqual([]);
-  await expectContrast(page);
+  await expectContrast(page, '[role="dialog"]');
 
   // Primeira fala.
   await introCard(page).click();
@@ -318,7 +309,7 @@ test('T77, ACES-05, ACES-07: no quadro e no cartão, textos >= 18 px e contraste
   const line = await textSizes(page, '[role="dialog"]');
   expect(line.map((t) => t.text)).toEqual(expect.arrayContaining(['Jane', opening[0].text, 'Toque para continuar ▸']));
   expect(line.filter((t) => t.size < 18)).toEqual([]);
-  await expectContrast(page);
+  await expectContrast(page, '[role="dialog"]');
 });
 
 test('T77, HIST-03: o quadro inteiro é tocável: cantos, nome, retrato e triângulo avançam a fala', async ({ page }) => {

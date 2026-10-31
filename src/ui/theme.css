@@ -626,7 +626,7 @@ ul {
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: #1b5e8c; /* a água continua atrás do canvas */
+  background: var(--bg); /* atrás do fundo do mar */
 }
 
 /* Área dos toques na cena (InputController); os botões do HUD ficam fora dela. */
@@ -656,34 +656,71 @@ ul {
   pointer-events: none;
 }
 
+/* Painel do mockup (tela-de-pesca-v2.png): marinho com borda azul-clara em pixels de 2 px e cantos
+   chanfrados; três linhas com ícone. Creme sobre o marinho: 14,4:1; texto secundário: 8,7:1. */
 .hud__panel {
   display: grid;
-  gap: 4px;
+  gap: 2px;
   margin: 8px;
-  padding: 8px 12px;
-  border: 3px solid var(--outline);
-  border-radius: 10px;
-  background: var(--bg);
-  color: var(--ink);
+  padding: 0 4px;
+  border: 12px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 13 13' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M2 0h9v1H2zM1 1h1v1H1zM11 1h1v1H11zM0 2h1v1H0zM12 2h1v1H12zM0 3h1v1H0zM12 3h1v1H12zM0 4h1v1H0zM12 4h1v1H12zM0 5h1v1H0zM12 5h1v1H12zM0 6h1v1H0zM12 6h1v1H12zM0 7h1v1H0zM12 7h1v1H12zM0 8h1v1H0zM12 8h1v1H12zM0 9h1v1H0zM12 9h1v1H12zM0 10h1v1H0zM12 10h1v1H12zM1 11h1v1H1zM11 11h1v1H11zM2 12h9v1H2z'/%3E%3Cpath fill='%237cc4ff' d='M2 1h9v1H2zM1 2h1v1H1zM11 2h1v1H11zM1 3h1v1H1zM11 3h1v1H11zM1 4h1v1H1zM11 4h1v1H11zM1 5h1v1H1zM11 5h1v1H11zM1 6h1v1H1zM11 6h1v1H11zM1 7h1v1H1zM11 7h1v1H11zM1 8h1v1H1zM11 8h1v1H11zM1 9h1v1H1zM11 9h1v1H11zM1 10h1v1H1zM11 10h1v1H11zM2 11h9v1H2z'/%3E%3Cpath fill='%232f7fc8' d='M2 2h9v1H2zM2 3h1v1H2zM10 3h1v1H10zM2 4h1v1H2zM10 4h1v1H10zM2 5h1v1H2zM10 5h1v1H10zM2 6h1v1H2zM10 6h1v1H10zM2 7h1v1H2zM10 7h1v1H10zM2 8h1v1H2zM10 8h1v1H10zM2 9h1v1H2zM10 9h1v1H10zM2 10h9v1H2z'/%3E%3Cpath fill='%230a2350' d='M3 3h7v1H3zM3 4h1v1H3zM5 4h3v1H5zM9 4h1v1H9zM3 5h7v1H3zM3 6h3v1H3zM7 6h3v1H7zM3 7h7v1H3zM3 8h1v1H3zM5 8h3v1H5zM9 8h1v1H9zM3 9h7v1H3z'/%3E%3Cpath fill='%237cc4ff' d='M4 4h1v1H4zM8 4h1v1H8zM4 8h1v1H4zM8 8h1v1H8z'/%3E%3C/svg%3E")
+    6 / 12px stretch;
+  background: padding-box #0a2350;
+  color: var(--ink-soft);
+  font-size: var(--text-min);
 }
 
+/* Ícone à esquerda e o texto ao lado; texto longo quebra embaixo dele mesmo, não do ícone. */
 .hud__line {
   display: flex;
+  align-items: flex-start;
+  gap: 0 10px;
+}
+
+.hud__line > span:last-child {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Saldo e local: o local desce para a linha de baixo se não couber. */
+.hud__line:first-child {
   flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0 12px;
+  align-items: center;
+}
+
+.hud__line:first-child > span:last-child {
+  flex: 0 1 auto;
+}
+
+.hud__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud__icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+}
+
+.hud__item .hud__icon {
+  margin-top: 0;
 }
 
 .hud__money {
-  font: 700 24px / 1.2 var(--font-title);
+  font: 700 22px / 1.2 var(--font-title);
   color: var(--accent);
 }
 
-/* Local da pesca (EPI-07): texto secundário sobre o azul-noite, 11,6:1. */
+/* Local da pesca (EPI-07), depois de um traço: creme em negrito. */
 .hud__place {
+  padding-left: 10px;
+  border-left: 2px solid #2f5f99;
   font-weight: 700;
-  color: var(--ink-soft);
+  color: var(--ink);
 }
 
 /* Fileira de baixo: pausa à esquerda, menu à direita, o Adilson livre no meio. */
@@ -697,6 +734,40 @@ ul {
 
 .hud__actions .btn {
   pointer-events: auto;
+}
+
+/* Botões azuis sobre o píer, com ícone: branco sobre o azul, 5,8:1. */
+.hud__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 136px;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.3),
+    0 4px 0 var(--outline);
+}
+
+.hud__btn-icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Na pesca, o fundo do mar vem primeiro e fica embaixo da cena e do HUD pela ordem, sem z-index negativo,
+   e sem a vinheta escura da tela inicial: a água fica clara como no mockup. */
+.fishing .title-scene {
+  z-index: 0;
+}
+
+.fishing .title-scene__vignette {
+  display: none;
+}
+
+/* Pausado, o fundo do mar para junto com o desenho da cena. */
+.fishing[data-paused] .title-scene *,
+.fishing[data-paused] .title-scene {
+  animation-play-state: paused;
 }
 
 :root {
@@ -957,7 +1028,7 @@ ul {
   flex-direction: column;
   justify-content: flex-end;
   padding: 24px var(--gutter) calc(var(--hud-row) + 8px);
-  background: rgba(8, 20, 36, 0.55);
+  background: rgba(8, 20, 36, 0.3);
   cursor: pointer;
 }
 

@@ -1434,12 +1434,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] Os e2e existentes da tela de pesca, do torneio e do tutorial continuam passando sem mudança nas asserções
-- [ ] e2e: o painel mostra saldo, nome do local, vara · isca e o objetivo com "N de M"; "Pausar" e "Menu" ficam na metade de baixo, com no mínimo 56 × 56 px
-- [ ] e2e: viajar para outro local pelo Mapa troca o fundo da cena (`data-background` e cor provisória diferentes)
-- [ ] A barra de tensão e os arremessos do torneio continuam visíveis (PESCA-12, CAMP-03)
-- [ ] Print do Pixel 7 comparado com o mockup, salvo em `docs/arte/mockups/tela-de-pesca-implementada.png`
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] Os e2e existentes da tela de pesca, do torneio e do tutorial continuam passando sem mudança nas asserções
+- [x] e2e: o painel mostra saldo, nome do local, vara · isca e o objetivo com "N de M"; "Pausar" e "Menu" ficam na metade de baixo, com no mínimo 56 × 56 px
+- [x] e2e: viajar para outro local pelo Mapa troca o fundo da cena (`data-background` e cor provisória diferentes)
+- [x] A barra de tensão e os arremessos do torneio continuam visíveis (PESCA-12, CAMP-03)
+- [x] Print do Pixel 7 comparado com o mockup, salvo em `docs/arte/mockups/tela-de-pesca-implementada.png`
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full

@@ -1,11 +1,13 @@
-// Tela de pesca (design.md, "UI (Preact)"): o canvas da cena com o HUD em HTML por cima.
-// Saldo e objetivo (HIST-04), barra de tensão (PESCA-12), pausa sempre à mão (SAVE-03),
-// arremessos e pontos do torneio (CAMP-03) e a tela acesa enquanto ela está aberta (TELA-01).
+// Tela de pesca (design.md, "UI (Preact)"; mockup docs/arte/mockups/tela-de-pesca-v2.png): o fundo do
+// mar da tela inicial, o canvas da cena por cima e o HUD em HTML. Saldo e objetivo (HIST-04), barra de
+// tensão (PESCA-12), pausa sempre à mão (SAVE-03), arremessos e pontos do torneio (CAMP-03) e a tela
+// acesa enquanto ela está aberta (TELA-01).
 
 import { useContext, useLayoutEffect, useRef } from 'preact/hooks';
 import { attachInput } from '../app/input';
 import { createLoop } from '../app/loop';
 import { GameStoreContext, useGame, type GameStore } from '../app/store';
+import type { ComponentChildren } from 'preact';
 import type { EpisodeContent, Profile } from '../content/types';
 import { tensionBand } from '../domain/fishing';
 import { currentObjective } from '../domain/story';
@@ -18,6 +20,7 @@ import { BitePrompt, ResultOverlay } from './FishCard';
 import { EpisodeBanner } from './Letter';
 import { currentPlace, formatKg, formatMoney } from './format';
 import { PauseOverlay } from './Overlays';
+import { Pixels, TitleScene } from './TitleArt';
 import { RivalTaunts, Standings } from './Tournament';
 import { TutorialCoach } from './TutorialCoach';
 
@@ -28,6 +31,7 @@ export function FishingScreen() {
   const stage = useRef<HTMLDivElement>(null);
   // O cenário do local atual (EPI-04, EPI-08), o mesmo que o renderizador desenha.
   const background = useGame((s) => currentPlace(s.profile, episodes).location.background);
+  const paused = useGame((s) => s.paused);
   const canvas = useRef<HTMLCanvasElement>(null);
 
   // Layout effect: a cena já aceita toques no mesmo quadro em que aparece.
@@ -36,7 +40,8 @@ export function FishingScreen() {
     const size = () => ({ width: window.innerWidth, height: window.innerHeight });
     const view = () => {
       const s = store.getState();
-      return { fishing: s.fishing, background: currentPlace(s.profile, episodes).location.background };
+      const { location } = currentPlace(s.profile, episodes);
+      return { fishing: s.fishing, background: location.background, place: location.id };
     };
     const draw = (t: number) => renderer.draw(view(), t);
     renderer.mount(canvas.current!, size());
@@ -67,7 +72,9 @@ export function FishingScreen() {
   }, [store, controller, browser, episodes]);
 
   return (
-    <section class="fishing" aria-label="Pescaria" ref={screen}>
+    <section class="fishing" aria-label="Pescaria" ref={screen} data-paused={paused ? 'true' : undefined}>
+      {/* O fundo do mar da tela inicial; pausado, as animações dele param junto com o desenho. */}
+      <TitleScene />
       <div class="stage" ref={stage} data-background={background}>
         <canvas ref={canvas} aria-hidden="true" />
         <BitePrompt />
@@ -97,30 +104,78 @@ function Hud() {
       <div class="hud__top">
         <div class="hud__panel" role="group" aria-label="Painel da pescaria">
           <p class="hud__line">
-            <span class="hud__money">{formatMoney(profile.money)}</span>
+            <span class="hud__item">
+              <HudIcon rows={COIN} />
+              <span class="hud__money">{formatMoney(profile.money)}</span>
+            </span>
             <span class="hud__place">{location.name}</span>
           </p>
-          <p class="hud__gear">{gear(profile, episodes)}</p>
-          {run ? (
-            <p>
-              {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
-            </p>
-          ) : (
-            <p>{objectiveText(profile, episode)}</p>
-          )}
+          <p class="hud__line hud__gear">
+            <HudIcon rows={PIN} />
+            <span>{gear(profile, episodes)}</span>
+          </p>
+          <p class="hud__line">
+            <HudIcon rows={TARGET} />
+            {run ? (
+              <span>
+                {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
+              </span>
+            ) : (
+              <span>{objectiveText(profile, episode)}</span>
+            )}
+          </p>
           <TensionBar />
         </div>
         <TutorialCoach />
       </div>
       <div class="hud__actions">
-        <button type="button" class="btn btn--secondary" onClick={() => controller.pause()}>
-          Pausar
+        <button type="button" class="btn btn--secondary hud__btn" onClick={() => controller.pause()}>
+          <ButtonIcon>
+            <rect x="2" y="1" width="3" height="10" />
+            <rect x="7" y="1" width="3" height="10" />
+          </ButtonIcon>
+          <span>Pausar</span>
         </button>
-        <button type="button" class="btn btn--secondary" onClick={() => go('menu')}>
-          Menu
+        <button type="button" class="btn btn--secondary hud__btn" onClick={() => go('menu')}>
+          <ButtonIcon>
+            <rect x="1" y="1" width="10" height="2" />
+            <rect x="1" y="5" width="10" height="2" />
+            <rect x="1" y="9" width="10" height="2" />
+          </ButtonIcon>
+          <span>Menu</span>
         </button>
       </div>
     </div>
+  );
+}
+
+// Ícones do painel, em pixel (10 × 10): moeda, alfinete do local e alvo do objetivo.
+const ICON_COLORS = {
+  k: '#000c22',
+  y: '#ffd23f',
+  h: '#fff1a8',
+  o: '#e09a1f',
+  R: '#e8453c',
+  w: '#ffffff',
+};
+const COIN = ['..kkkkkk..', '.kyyyyyyk.', 'kyhhyyyyok', 'kyhyyyyyok', 'kyhyyyyyok', 'kyyyyyyyok', 'kyyyyyyyok', 'kyyyyyyook', '.kyoooook.', '..kkkkkk..'];
+const PIN = ['..kkkkkk..', '.kRRRRRRk.', 'kRRRwwRRRk', 'kRRwwwwRRk', 'kRRwwwwRRk', 'kRRRwwRRRk', '.kRRRRRRk.', '..kRRRRk..', '...kRRk...', '....kk....'];
+const TARGET = ['..kkkkkk..', '.kRRRRRRk.', 'kRRwwwwRRk', 'kRwwRRwwRk', 'kRwRRRRwRk', 'kRwRRRRwRk', 'kRwwRRwwRk', 'kRRwwwwRRk', '.kRRRRRRk.', '..kkkkkk..'];
+
+function HudIcon({ rows }: { rows: string[] }) {
+  return (
+    <svg class="hud__icon" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-hidden="true">
+      <Pixels rows={rows} colors={ICON_COLORS} />
+    </svg>
+  );
+}
+
+/** Ícone dos botões do píer (12 × 12, na cor do texto): barras da pausa e o menu de três traços. */
+function ButtonIcon({ children }: { children: ComponentChildren }) {
+  return (
+    <svg class="hud__btn-icon" viewBox="0 0 12 12" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+      {children}
+    </svg>
   );
 }
 

@@ -1,10 +1,12 @@
-// Desenho da cena da água (design.md, "FishingRenderer"): represa, Adilson, isca, linha, peixe,
-// "!" e ondinhas. Lê o estado e desenha; não decide nada. Sem arte, usa formas coloridas.
+// Desenho da cena da água (design.md, "FishingRenderer"): véu do local, píer, Adilson, isca, linha,
+// peixe, "!" e ondinhas. Lê o estado e desenha; não decide nada. Sem arte, usa formas coloridas.
+// O fundo do mar fica atrás do canvas (FishingScreen); o canvas é transparente onde não desenha.
 
 import { ROD_TIP } from '../app/controller';
-import type { Point } from '../content/types';
+import type { LocationId, Point } from '../content/types';
 import { FLIGHT_S, tensionBand, type FishingState } from '../domain/fishing';
 import { FIGHT_START_DISTANCE } from '../domain/tuning';
+import { sceneryOf } from './scenery';
 import { createSprite, loadImage, resolveAsset, type ImageLoader, type SheetSpec, type Sprite } from './sprites';
 
 /** Cena lógica (spec, "Tamanho da cena"); zonas e alcance usam estas coordenadas. */
@@ -14,8 +16,6 @@ export const SCENE_H = 400;
 export const WIDE_SCREEN_PX = 540;
 
 const COLORS = {
-  water: '#1b5e8c',
-  shore: '#8a6a3b',
   ripple: '#cfe8f5',
   line: '#f4f4f4',
   bait: '#e04a3a',
@@ -25,6 +25,17 @@ const COLORS = {
 };
 /** Faixa de margem embaixo da cena, onde o Adilson fica. */
 const SHORE_TOP = 372;
+/** Píer de madeira (mockup tela-de-pesca-v2.png), desenhado em código até a arte chegar. */
+const WOOD = {
+  deck: '#a06c3a',
+  plank: '#bd8650',
+  seam: '#55361a',
+  beam: '#7a4f28',
+  beamLight: '#d6a464',
+  dark: '#3b2410',
+  post: '#7a4c26',
+  postTop: '#c79457',
+};
 const FISH = { w: 16, h: 8 };
 const ADILSON = { w: 14, h: 24 };
 
@@ -53,6 +64,7 @@ export function computeLayout(cssWidth: number, cssHeight: number): Layout {
 export interface FishingViewState {
   fishing: FishingState;
   background: string; // Location.background
+  place?: LocationId; // Location.id: escolhe o cenário provisório (scenery.ts); sem ele, o padrão
 }
 
 export interface FishingRenderer {
@@ -110,17 +122,56 @@ export function createFishingRenderer(opts: { load?: ImageLoader } = {}): Fishin
     if (ctx) ctx.imageSmoothingEnabled = false; // redimensionar o canvas zera o contexto
   }
 
+  /** Píer de tábuas na faixa de baixo, com a viga da frente e dois postes nos cantos. */
+  function drawPier(c: CanvasRenderingContext2D) {
+    const { viewW, viewH, offsetX: ox, offsetY: oy } = layout;
+    const top = oy + SHORE_TOP;
+    c.fillStyle = 'rgba(0, 0, 0, 0.25)'; // sombra do píer na água
+    c.fillRect(0, top - 2, viewW, 2);
+    c.fillStyle = WOOD.deck;
+    c.fillRect(0, top, viewW, viewH - top);
+    for (let x = (ox % 10) - 10; x < viewW; x += 10) {
+      c.fillStyle = WOOD.plank; // luz no lado esquerdo da tábua
+      c.fillRect(x + 1, top, 2, viewH - top);
+      c.fillStyle = WOOD.seam; // fresta entre as tábuas
+      c.fillRect(x, top, 1, viewH - top);
+      c.fillRect(x + 5, top + 10 + (Math.abs(x) % 7), 1, 3); // veio da madeira
+    }
+    c.fillStyle = WOOD.beam; // viga da frente
+    c.fillRect(0, top, viewW, 4);
+    c.fillStyle = WOOD.beamLight;
+    c.fillRect(0, top, viewW, 1);
+    c.fillStyle = WOOD.dark;
+    c.fillRect(0, top + 4, viewW, 1);
+    // Postes nas pontas da vista, acima dos botões do píer.
+    for (const px of [0, viewW - 12]) {
+      c.fillStyle = WOOD.dark;
+      c.fillRect(px, top - 26, 12, 34);
+      c.fillStyle = WOOD.post;
+      c.fillRect(px + 1, top - 24, 10, 31);
+      c.fillStyle = WOOD.postTop;
+      c.fillRect(px + 1, top - 26, 10, 3);
+      c.fillStyle = WOOD.plank;
+      c.fillRect(px + 3, top - 22, 2, 26);
+      c.fillStyle = WOOD.seam;
+      c.fillRect(px + 7, top - 18, 1, 4);
+      c.fillRect(px + 4, top - 8, 1, 3);
+    }
+  }
+
   function drawScene(c: CanvasRenderingContext2D, s: FishingViewState, t: number) {
     const { viewW, viewH, offsetX: ox, offsetY: oy } = layout;
     const v = (p: Point): Point => ({ x: ox + p.x, y: oy + p.y }); // cena → vista
     const f = s.fishing;
 
-    // Água e margem na vista inteira: as laterais continuam o cenário.
-    c.fillStyle = COLORS.water;
+    // Véu do local na vista inteira (as laterais continuam o cenário) e o píer. Com a arte do local,
+    // ela cobre o fundo do mar; sem ela, o véu dá a cor e o tom provisórios do local (scenery.ts).
+    c.clearRect(0, 0, viewW, viewH);
+    const { tint } = sceneryOf(s.place);
+    if (resolveAsset(s.background)) sprite(s.background, { color: tint }).draw(c, ox, oy, SCENE_W, SCENE_H, t);
+    c.fillStyle = tint;
     c.fillRect(0, 0, viewW, viewH);
-    sprite(s.background, { color: COLORS.water }).draw(c, ox, oy, SCENE_W, SCENE_H, t);
-    c.fillStyle = COLORS.shore;
-    c.fillRect(0, oy + SHORE_TOP, viewW, viewH - (oy + SHORE_TOP));
+    drawPier(c);
 
     const tip = v(ROD_TIP);
     const pose = adilsonPose(f);
