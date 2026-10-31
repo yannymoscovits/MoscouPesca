@@ -25,7 +25,7 @@ function landedLure(page: Page) {
   const { width, height } = page.viewportSize()!;
   const viewW = Math.ceil(width / 2);
   const viewH = Math.ceil(height / 2);
-  return { x: Math.round(viewW * 0.4) * 2, y: height - viewH * 2 + viewH * 0.75 * 0.3 * 2 };
+  return { x: Math.round(viewW * 0.4) * 2, y: height - viewH * 2 + viewH * 0.75 * 0.38 * 2 };
 }
 
 /** Pixels vermelhos da isca na tela, em volta de um ponto da tela. */
