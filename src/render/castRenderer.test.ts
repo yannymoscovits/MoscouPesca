@@ -378,6 +378,63 @@ describe('cenário de cada local, na vista de cima (T79)', () => {
   });
 });
 
+describe('ambiente de cada local (céu, horizonte e fundo próprios)', () => {
+  const places = Object.keys(STANDS);
+
+  it('cada local pinta o próprio céu, de lado a lado', () => {
+    for (const place of places) {
+      const calls = drawnAt(place);
+      const sky = fills(calls, sceneryOf(place).sky.top);
+      expect(sky.some(([x, , w]) => x <= 0 && x + w >= l.viewW), place).toBe(true);
+    }
+  });
+
+  it('céus e águas não se repetem entre os locais', () => {
+    const all = places.map(sceneryOf);
+    expect(new Set(all.map((s) => s.sky.top + s.sky.horizon)).size).toBe(all.length);
+    expect(new Set(all.map((s) => s.surface.far + s.surface.near)).size).toBe(all.length);
+    expect(new Set(all.map((s) => s.bottom)).size).toBeGreaterThanOrEqual(5); // corais repetem no mar
+  });
+
+  it('parque-dos-ventos: as pás das eólicas giram com o tempo', () => {
+    const blades = (t: number) => {
+      const { renderer, calls } = mountedWithProps();
+      renderer.draw({ ...base, place: 'parque-dos-ventos' }, t);
+      return JSON.stringify(fills(calls, '#f4f7fb'));
+    };
+    expect(blades(0)).not.toBe(blades(0.7));
+  });
+});
+
+describe('sombras dos peixes do ponto (a água reflete quem vive ali)', () => {
+  const zone = loc.zones[0];
+  const shadowFills = (view: CastView) => {
+    const { renderer, calls } = mountedWithProps();
+    renderer.draw(view, 0.3);
+    return fills(calls, CAST_COLORS.shadow);
+  };
+
+  it('com o ponto escolhido e a fauna dele, cada espécie vira uma sombra na água', () => {
+    const dots = shadowFills({ ...base, zone, fauna: [{ id: 'tilapia', kgMax: 4 }, { id: 'piau', kgMax: 1.6 }] });
+    expect(dots.length).toBeGreaterThan(0);
+    const p = castPlacement(l, DEFAULT_MAX_M);
+    for (const [, y] of dots) {
+      expect(y).toBeLessThan(p.ground); // na água, nunca na beira
+      expect(y).toBeGreaterThan(p.topY - 20);
+    }
+  });
+
+  it('sem fauna, nenhuma sombra', () => {
+    expect(shadowFills({ ...base, zone })).toEqual([]);
+  });
+
+  it('a espécie grande (>= 20 kg) tem sombra bem maior que a pequena (<= 1 kg)', () => {
+    const widest = (kgMax: number) =>
+      Math.max(...shadowFills({ ...base, zone, fauna: [{ id: 'peixe', kgMax }] }).map(([, , w]) => w));
+    expect(widest(25)).toBeGreaterThan(widest(0.8) * 2);
+  });
+});
+
 describe('arte do PixelLab no lugar de pesca', () => {
   it('com src/assets/stands/pier.png no build, a arte do píer é desenhada por cima da cena', async () => {
     const { renderer, calls } = mounted(['src/assets/stands/pier.png']);

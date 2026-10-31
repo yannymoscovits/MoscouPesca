@@ -13,8 +13,8 @@
 import type { LocationId, Point, Zone } from '../content/types';
 import { CAST_FLIGHT_S, M_PER_PX } from '../domain/tuning';
 import { ADILSON_BOX, drawAdilson, rodHandIn, type Pose } from './adilson';
-import { computeLayout, PALETTE, SCENE_H, SCENE_W, type Layout } from './fishingRenderer';
-import { sceneryOf } from './scenery';
+import { computeLayout, fishBox, PALETTE, SCENE_H, SCENE_W, type Layout } from './fishingRenderer';
+import { drawBackdrop, drawMarginDetails, sceneryOf } from './scenery';
 import { createSprite, loadImage, resolveAsset, type ImageLoader, type SheetSpec, type Sprite } from './sprites';
 import { drawStand, SHORE_TOP } from './stands';
 
@@ -33,8 +33,8 @@ const WATER_TEXTURE = { top: 40, bottom: SHORE_TOP - 6 };
 
 /** CSS px cobertos embaixo pelos controles (fileira do HUD + botões + barra de força). */
 export const CAST_CONTROLS_CSS = 268;
-/** CSS px cobertos em cima pelo painel do HUD. */
-export const CAST_TOP_CSS = 172;
+/** CSS px cobertos em cima pelo painel do HUD, com folga para o marco do horizonte aparecer. */
+export const CAST_TOP_CSS = 196;
 /** O arremesso de força cheia cai nesta fração do caminho da ponta da vara ao alto jogável. */
 export const CAST_FULL_SHARE = 0.85;
 /** O Adilson na tela de arremesso: 2× o sprite ("o boneco tá muito pequeno"). */
@@ -84,6 +84,7 @@ export const CAST_COLORS = {
   zoneEdge: 'rgba(255, 255, 255, 0.3)',
   lure: '#e04a3a',
   marker: '#ffffff', // onde a isca cairia com a força atual
+  shadow: '#081a30', // sombras dos peixes do ponto, na água do arremesso
 };
 
 /** Ponto do pesqueiro marcado na água. */
@@ -103,6 +104,9 @@ export interface CastView {
   flight: { angleDeg: number; distanceM: number; sinceS: number } | null;
   maxM?: number; // alcance máximo da vara equipada, em metros: calibra a escala do arremesso
   zone?: Zone | null; // o ponto escolhido, marcado na água da tela de arremesso
+  // As espécies que vivem no ponto escolhido: cada uma vira uma sombra patrulhando a água do
+  // arremesso (maior o kg, maior a sombra; as maiores ficam mais longe da beira). Só visual.
+  fauna?: { id: string; kgMax: number }[];
 }
 
 export interface CastRenderer {
@@ -185,22 +189,27 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
       c.fillRect(Math.round(x), Math.round(y), w, h);
     };
 
-    // Véu do local na vista inteira; com a arte do local, ela fica por baixo do véu.
+    // O pano de fundo do local (céu, horizonte e água), a arte do local se houver e o véu por cima.
+    const horizon = casting ? Math.max(10, place.topY - 2) : Math.max(0, oy);
+    const ground = casting ? place.ground : oy + SHORE_TOP;
     c.clearRect(0, 0, viewW, viewH);
+    drawBackdrop(c, view.place, { w: viewW, h: viewH, horizon, ground }, t);
     if (resolve(view.background)) sprite(view.background, { color: scenery.tint }).draw(c, ox, oy, SCENE_W, SCENE_H, t);
     c.fillStyle = scenery.tint;
     c.fillRect(0, 0, viewW, viewH);
-    if (casting) water(scenery.water.light, scenery.water.wave, Math.max(8, place.topY - 30), place.ground - 6);
+    if (casting) water(scenery.water.light, scenery.water.wave, horizon + 4, place.ground - 6);
     else water(scenery.water.light, scenery.water.wave, oy + WATER_TEXTURE.top, oy + WATER_TEXTURE.bottom);
 
     // O ponto escolhido, marcado na água do arremesso na escala nova: dá para mirar nele.
     if (casting && view.zone) zoneBand(view.zone);
+    // As sombras do que vive no ponto: o jogador vê o peixão de cima antes de arremessar.
+    if (casting && view.zone && view.fauna?.length) shadows(view.zone, view.fauna);
 
     for (const s of view.spots) spot(s);
 
     // O lugar de onde ele pesca e o Adilson de costas (2× na tela de arremesso).
     const pose: Pose = view.flight && view.flight.sinceS < CAST_FLIGHT_S ? 'arremessando' : 'parado';
-    const shoreOy = casting ? place.ground - SHORE_TOP : oy;
+    const shoreOy = ground - SHORE_TOP;
     drawStand(c, scenery.stand, { viewW, viewH, ox, oy: shoreOy });
     sprite(`src/assets/stands/${scenery.stand}.png`, { color: '', fallback: () => {} }).draw(
       c,
@@ -210,6 +219,7 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
       viewH - (shoreOy + SHORE_TOP) + 30,
       t,
     );
+    drawMarginDetails(c, view.place, { w: viewW, h: viewH, ground }, t);
     const scale = casting ? CAST_ADILSON_SCALE : 1;
     const box = casting ? place.box : { x: ox + ADILSON_BOX.x, y: oy + ADILSON_BOX.y, w: ADILSON_BOX.w, h: ADILSON_BOX.h };
     const tip = casting ? place.tip : v(CAST_ROD_TIP);
@@ -264,14 +274,9 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
 
     /** O ponto escolhido na água do arremesso: o polígono da cena, reescalado em volta da ponta da vara. */
     function zoneBand(zone: Zone) {
-      const k = place.pxPerM * M_PER_PX; // px da vista por px da cena (a cena anda a 10 px/m)
-      const map = (p: Point): Point => ({
-        x: place.tip.x + (p.x - CAST_ROD_TIP.x) * k,
-        y: place.tip.y + (p.y - CAST_ROD_TIP.y) * k,
-      });
       c.beginPath();
       zone.polygon.forEach((p, i) => {
-        const m = map(p);
+        const m = zonePoint(p);
         i === 0 ? c.moveTo(m.x, m.y) : c.lineTo(m.x, m.y);
       });
       c.closePath();
@@ -280,6 +285,52 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
       c.strokeStyle = CAST_COLORS.zoneEdge;
       c.lineWidth = 1;
       c.stroke();
+    }
+
+    /** Ponto da cena do pesqueiro na água do arremesso, sem passar do horizonte. */
+    function zonePoint(p: Point): Point {
+      const k = place.pxPerM * M_PER_PX; // px da vista por px da cena (a cena anda a 10 px/m)
+      return {
+        x: place.tip.x + (p.x - CAST_ROD_TIP.x) * k,
+        y: Math.max(horizon + 2, place.tip.y + (p.y - CAST_ROD_TIP.y) * k),
+      };
+    }
+
+    /**
+     * As sombras dos peixes do ponto, patrulhando devagar dentro da faixa dele: uma por espécie
+     * (até 5), maior quanto maior o kg máximo, e as maiores mais longe da beira. Só visual: os
+     * peixes de verdade são sorteados quando a isca cai (PONTO-06).
+     */
+    function shadows(zone: Zone, fauna: { id: string; kgMax: number }[]) {
+      const ys = zone.polygon.map((p) => zonePoint(p).y);
+      const top = Math.min(...ys) + 6;
+      const bottom = Math.min(Math.max(...ys), place.ground - 10) - 4;
+      const sorted = fauna.slice(0, 5).sort((a, b) => a.kgMax - b.kgMax);
+      sorted.forEach((f, i) => {
+        let seed = 0;
+        for (const ch of f.id) seed = (seed * 31 + ch.charCodeAt(0)) % 997;
+        const yBase = bottom + ((top - bottom) * (i + 0.5)) / sorted.length; // pequenos perto da beira
+        const range = 14 + hash(seed + 1) * 16;
+        const cx = viewW * (0.22 + 0.56 * hash(seed + 2));
+        const ph = t * (0.25 + hash(seed) * 0.2) * Math.PI * 2 + hash(seed + 3) * Math.PI * 2;
+        const box = fishBox({ kg: { max: f.kgMax } });
+        shadowFish(cx + Math.sin(ph) * range, yBase + Math.sin(t * 0.8 + seed) * 2, box.w, Math.cos(ph) >= 0 ? 1 : -1);
+      });
+    }
+
+    /** Silhueta escura de peixe visto de cima: corpo afinando nas pontas e o rabo atrás. */
+    function shadowFish(x: number, y: number, len: number, dir: 1 | -1) {
+      const h = Math.max(3, Math.round(len * 0.3));
+      const front = x + (dir * len) / 2;
+      c.globalAlpha = 0.45;
+      for (let r = 0; r < h; r++) {
+        const edge = Math.abs(r - (h - 1) / 2) / Math.max(0.5, (h - 1) / 2); // 0 no meio, 1 na borda
+        const bodyLen = Math.max(2, (len - 3) * (1 - 0.5 * edge * edge));
+        px(CAST_COLORS.shadow, Math.min(front, front - dir * bodyLen), y - h / 2 + r, Math.round(bodyLen), 1);
+      }
+      const back = x - (dir * len) / 2;
+      for (let i = 1; i <= 3; i++) px(CAST_COLORS.shadow, back - dir * i, y - Math.ceil(i / 2), 1, i + 1);
+      c.globalAlpha = 1;
     }
 
     /** O ponto na água do pesqueiro: cor clara, destacado quando tocado e escurecido quando tem cadeado. */

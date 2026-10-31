@@ -9,7 +9,7 @@ import type { LocationId, Point } from '../content/types';
 import type { FishAgent } from '../domain/lure';
 import type { PescaState } from '../domain/pesca';
 import { computeLayout, colorOf, PALETTE, SCENE_H, SCENE_W, type Layout } from './fishingRenderer';
-import { sceneryOf, type StandKind } from './scenery';
+import { drawBottomFeature, sceneryOf, type StandKind } from './scenery';
 import { createSprite, loadImage, resolveAsset, type ImageLoader, type SheetSpec, type Sprite } from './sprites';
 
 /** Escala horizontal da vista de lado, em px lógicos por metro. */
@@ -156,9 +156,10 @@ export function createUnderwaterRenderer(
       c.fillRect(Math.round(x), Math.round(y), w, h);
     };
 
-    // Céu, água com o véu do local, fundo e a margem do Adilson.
+    // Céu do local em duas faixas, água com o véu do local, fundo e a margem do Adilson.
     c.clearRect(0, 0, viewW, viewH);
-    px(UNDERWATER_COLORS.sky, 0, 0, viewW, Math.ceil(cam.surfaceY));
+    px(scenery.sky.top, 0, 0, viewW, Math.ceil(cam.surfaceY));
+    px(scenery.sky.horizon, 0, Math.floor(cam.surfaceY * 0.55), viewW, Math.ceil(cam.surfaceY * 0.45) + 1);
     px(UNDERWATER_COLORS.water, 0, cam.surfaceY, viewW, Math.ceil(floorY - cam.surfaceY));
     c.fillStyle = scenery.tint;
     c.fillRect(0, cam.surfaceY, viewW, floorY - cam.surfaceY);
@@ -175,16 +176,10 @@ export function createUnderwaterRenderer(
       px(UNDERWATER_COLORS.surface, x, cam.surfaceY + Math.round(Math.sin(x / 6 + t * 2)), 2, 1);
     }
 
-    // Plantas no fundo, uma a cada metro e pouco, balançando.
+    // O chão do local (plantas, troncos, entulho, corais ou pedras), um detalhe a cada metro e pouco.
     const first = Math.floor(cam.leftM);
     for (let m = Math.max(first, 0); m < first + viewW / cam.pxPerM + 1; m++) {
-      if (hash(m + 900) > 0.55) continue;
-      const x = at(m + hash(m + 901), 0).x;
-      const tall = 6 + hash(m + 902) * 14;
-      for (let k = 0; k < tall; k++) {
-        const sway = Math.sin(t * 1.5 + m + k / 4) * (k / tall) * 2;
-        px(k % 3 ? UNDERWATER_COLORS.plant : UNDERWATER_COLORS.plantDark, x + sway, floorY - k, 2, 1);
-      }
+      drawBottomFeature(c, view.place, m, at(m + hash(m + 901), 0).x, floorY, t);
     }
 
     // Peixes; na briga, o fisgado se debate na isca (BRIGA-13).
