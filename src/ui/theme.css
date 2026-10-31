@@ -198,14 +198,142 @@ ul {
 
 /* ---------- Tela inicial (mockup e logo do usuário) ---------- */
 
-/* O fundo do mar fica atrás de tudo e não pega toque. */
+/* O fundo do mar fica atrás de tudo e não pega toque. Cada camada é um SVG do tamanho da tela; o
+   desenho passa das bordas, para o balanço das camadas não mostrar o vazio. */
 .title-scene {
   position: absolute;
   inset: 0;
   z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.title-scene svg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
+  overflow: visible;
+}
+
+/* Profundidade: a opacidade das camadas cresce de longe para perto (a de perto fica inteira). */
+.title-scene__far {
+  opacity: 0.55;
+}
+
+.title-scene__mid {
+  opacity: 0.8;
+}
+
+/* Neve marinha e bolhas: faixas da largura da tela, na altura do próprio desenho. A neve some atrás
+   do título, do slogan e do subtítulo, para não tirar contraste do texto. */
+.title-scene__snow {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: linear-gradient(#000 13%, transparent 18%, transparent 44%, #000 50%);
+  mask-image: linear-gradient(#000 13%, transparent 18%, transparent 44%, #000 50%);
+}
+
+.title-scene .title-scene__snow svg,
+.title-scene .title-scene__bubbles {
+  height: auto;
+}
+
+.title-scene .title-scene__bubbles {
+  top: auto;
+  bottom: 0;
+}
+
+/* Seis camadas se mexem, só com transform e opacity: o navegador anima sem redesenhar a cena e não
+   anima com a página escondida. Longe deriva devagar e pulsa com a luz dos raios; meio deriva um
+   pouco mais; perto balança mais rápido, presa no fundo. Com "reduzir movimento", a cena fica parada. */
+@media (prefers-reduced-motion: no-preference) {
+  .title-scene__far {
+    animation:
+      deriva-longe 40s ease-in-out infinite alternate,
+      luz 9s ease-in-out infinite alternate;
+  }
+
+  .title-scene__mid {
+    animation: deriva-meio 20s ease-in-out infinite alternate;
+  }
+
+  .title-scene__near {
+    transform-origin: 50% 100%;
+    animation: balanco-perto 7s ease-in-out infinite alternate;
+  }
+
+  .title-scene .title-scene__snow svg {
+    animation: neve 140s linear infinite;
+  }
+
+  .title-scene .title-scene__snow--fast svg {
+    animation-duration: 60s;
+  }
+
+  .title-scene .title-scene__bubbles {
+    animation: bolhas 9s ease-in infinite;
+  }
+}
+
+@keyframes deriva-longe {
+  from {
+    transform: translateX(-3px);
+  }
+  to {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes luz {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 0.62;
+  }
+}
+
+@keyframes deriva-meio {
+  from {
+    transform: translateX(-8px);
+  }
+  to {
+    transform: translateX(8px);
+  }
+}
+
+@keyframes balanco-perto {
+  from {
+    transform: translateX(-4px) skewX(1.2deg);
+  }
+  to {
+    transform: translateX(4px) skewX(-1.2deg);
+  }
+}
+
+/* A neve desce um ladrilho inteiro e recomeça no mesmo desenho, sem emenda. */
+@keyframes neve {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* As bolhas sobem do pé da tela e somem antes de chegar ao texto. */
+@keyframes bolhas {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  12%,
+  75% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-38vh);
+    opacity: 0;
+  }
 }
 
 .title-screen .screen__top {

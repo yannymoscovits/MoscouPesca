@@ -1386,12 +1386,12 @@ T53 → T54
 
 **Done when**:
 
-- [ ] e2e: o fundo tem as camadas `data-depth="far"`, `"mid"` e `"near"`, com escala e opacidade crescendo de longe para perto, e cardumes e partículas animados
-- [ ] e2e: com `prefers-reduced-motion: reduce`, nenhuma animação do fundo roda
-- [ ] As animações usam só `transform` e `opacity` em CSS, no máximo 6 camadas animadas, sem código por quadro em JavaScript
-- [ ] Os e2e existentes da tela inicial (INST-01 a INST-04, ordem dos elementos, ACES-05 a ACES-08 com contraste medido) continuam passando sem mudança nas asserções
-- [ ] Print do Pixel 7 atualizado em `docs/arte/mockups/tela-inicial-implementada.png`
-- [ ] Gate check passes: `npm test && npm run test:e2e`
+- [x] e2e: o fundo tem as camadas `data-depth="far"`, `"mid"` e `"near"`, com escala e opacidade crescendo de longe para perto, e cardumes e partículas animados
+- [x] e2e: com `prefers-reduced-motion: reduce`, nenhuma animação do fundo roda
+- [x] As animações usam só `transform` e `opacity` em CSS, no máximo 6 camadas animadas, sem código por quadro em JavaScript
+- [x] Os e2e existentes da tela inicial (INST-01 a INST-04, ordem dos elementos, ACES-05 a ACES-08 com contraste medido) continuam passando sem mudança nas asserções
+- [x] Print do Pixel 7 atualizado em `docs/arte/mockups/tela-inicial-implementada.png`
+- [x] Gate check passes: `npm test && npm run test:e2e`
 
 **Tests**: e2e
 **Gate**: full
