@@ -37,10 +37,10 @@
 ## Handoff
 
 - **Feature**: `.specs/features/v1-mvp`
-- **Phase / Task**: Execute; Fases 1 a 8 e T75 concluídas; próximo: Fases 9 e 10 (T58, T59, T61, T63, T47, T48) e prévias de arte com o usuário
-- **Completed**: até `fa0bf9d` (T75 trazida do worktree por cherry-pick); gate de build completo verde: typecheck, build, check:size 0,18 MB, unitários e 84 e2e
+- **Phase / Task**: Execute; Fases 1 a 8, T75 e T76 concluídas; próximo: T77 e T78 (diálogo e tela de pesca dos mockups), Fases 9 e 10 e prévias de arte com o usuário
+- **Completed**: até `e10e9cc`; 303 testes unitários e 88 e2e passando
 - **In-progress** (file:line): none
-- **Next step**: Depois que o usuário reabrir o VS Code (para carregar o PixelLab): subir de novo o servidor de desenvolvimento na porta 5173 com `--host`, disparar o lote das Fases 9 e 10 e começar as prévias do retrato do Adilson (3 versões, aprovação do usuário antes de gerar as expressões).
-- **Blockers**: none
+- **Next step**: Depois que o usuário reabrir o VS Code (para carregar o PixelLab): subir o servidor de desenvolvimento na porta 5173 com `--host`; disparar T77 e T78 num sub-agente e T58, T59, T61 e T63 em outro (worktree isolado para um deles); depois T47 e T48; ao mesmo tempo, prévias do Adilson (chapéu de pescador; 3 versões variando cores do chapéu e do colete).
+- **Blockers**: estilo do quadro de diálogo aguardando o usuário (padrão: moldura azul com amarelo e retrato em cima).
 - **Uncommitted files**: none
 - **Branch**: `feat/v1-mvp`

@@ -120,6 +120,7 @@ T43 → T44
 
 ```
 T75 → T76
+T75 → T77 → T78
 T58 → T61
 T59 → T61
 T59 → T63
@@ -1399,6 +1400,53 @@ T53 → T54
 
 ---
 
+#### T77: Redesenhar o quadro de diálogo
+
+**What**: `DialogBox` e `CharacterIntroCard` no estilo dos mockups do usuário: moldura azul-marinho com borda amarela grossa, cantos chanfrados em pixel e pontinhos amarelos (`docs/arte/mockups/dialogo.png`); aba amarela com o peixinho e o nome de quem fala; retrato em cima, à esquerda (`docs/arte/mockups/tela-de-pesca.png`); triângulo amarelo piscando com "Toque para continuar". Fala conjunta mostra os dois retratos e os dois nomes na aba; narração fica sem aba, em itálico. Estilo padrão: a mistura recomendada ao usuário (moldura azul com amarelo e retrato em cima), ajustável se ele escolher outro.
+**Where**: `src/ui/DialogBox.tsx`
+**Depends on**: T75
+**Reuses**: tokens de `theme.css`, ícone do peixe de `TitleArt.tsx`
+**Requirement**: HIST-02, HIST-03, HUMOR-01, HUMOR-02 (visual); ACES-05 a ACES-08
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] Os e2e existentes de HIST-02, HIST-03, HUMOR-01, HUMOR-02, narração e fala conjunta continuam passando sem mudança nas asserções
+- [ ] e2e: a aba mostra o nome de quem fala, o triângulo de continuar aparece e o retrato traz `data-expression`
+- [ ] e2e: textos com no mínimo 18 px, contraste de no mínimo 4,5:1 e o quadro inteiro tocável para avançar
+- [ ] Print do Pixel 7 comparado com os mockups, salvo em `docs/arte/mockups/dialogo-implementado.png`
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): redesenha o quadro de diálogo`
+
+---
+
+#### T78: Reorganizar a tela de pesca
+
+**What**: Tela de pesca conforme `docs/arte/mockups/tela-de-pesca.png`: painel no topo com três linhas e ícones originais (moeda + saldo e nome do local; vara · isca; alvo + objetivo com progresso "N de M"); a cena no meio; píer de madeira em pixel embaixo, desenhado em código até a arte chegar; botões "Pausar" e "Menu" com ícone sobre o píer. O fundo da cena vem do local atual: enquanto a arte não chega, cada local tem um fundo provisório com cor e tom próprios.
+**Where**: `src/ui/FishingScreen.tsx`
+**Depends on**: T77
+**Reuses**: `fishingRenderer.ts`, `format.ts`, tokens de `theme.css`
+**Requirement**: HIST-04, SAVE-03, PESCA-12, CAMP-03 (visual); ACES-05 a ACES-08
+**Tools**: MCP: NONE · Skill: `playwright-cli`, `commit-bee`
+
+**Done when**:
+
+- [ ] Os e2e existentes da tela de pesca, do torneio e do tutorial continuam passando sem mudança nas asserções
+- [ ] e2e: o painel mostra saldo, nome do local, vara · isca e o objetivo com "N de M"; "Pausar" e "Menu" ficam na metade de baixo, com no mínimo 56 × 56 px
+- [ ] e2e: viajar para outro local pelo Mapa troca o fundo da cena (`data-background` e cor provisória diferentes)
+- [ ] A barra de tensão e os arremessos do torneio continuam visíveis (PESCA-12, CAMP-03)
+- [ ] Print do Pixel 7 comparado com o mockup, salvo em `docs/arte/mockups/tela-de-pesca-implementada.png`
+- [ ] Gate check passes: `npm test && npm run test:e2e`
+
+**Tests**: e2e
+**Gate**: full
+**Commit**: `feat(ui): reorganiza a tela de pesca`
+
+---
+
 #### T58: Cadastrar o Episódio 4: Parque dos Ventos
 
 **What**: Pacote `ep4` completo a partir de `docs/historia/episodio-4.md`: local e zonas (Parque dos Ventos, açude no pé das torres eólicas); espécies fantasiosas Peixe-voador, Lambari-rajada, Tilápia-hélice, Traíra-pipa, Pacu-planador e Dourado-dos-Ventos (raro), com descrição engraçada; 2 varas (Vara Hélice e Vara Torre) e 1 isca novas; roteiro com 7 objetivos, a Lavínia como piranha-pipa e encerramento; Copa dos Ventos com os rivais Márcio, Sr. Higashi e Edvaldo e suas provocações; carta do Márcio transcrita de `docs/historia/cartas.md`. Os personagens novos (Márcio e Sr. Higashi) entram em `src/content/characters.ts`. Registrado em `src/content/index.ts`.
@@ -1925,6 +1973,7 @@ T43 → T44
 
 Fase 9
 T75 → T76
+T75 → T77 → T78
 T58 → T61
 T59 → T61
 T59 → T63
@@ -1954,7 +2003,7 @@ T53 → T54
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
 
-**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (8) · Fase 11 (6) · Fases 12 e 13 (10).
+**Lotes para sub-agentes (~7 tarefas, fases inteiras):** Fases 1 a 4 (feitas) · Fase 5 (3) · Fase 6 (9) · Fase 7 (7) · Fase 8 (8) · Fases 9 e 10 (10) · Fase 11 (6) · Fases 12 e 13 (10).
 
 ---
 
@@ -2016,6 +2065,8 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T62 | `src/ui/MapScreen.tsx` | ✅ Granular |
 | T75 | `src/ui/TitleScreen.tsx` | ✅ Granular |
 | T76 | `src/ui/TitleArt.tsx` | ✅ Granular |
+| T77 | `src/ui/DialogBox.tsx` | ✅ Granular |
+| T78 | `src/ui/FishingScreen.tsx` | ✅ Granular |
 | T58 | `src/content/episodes/ep4.ts` | ✅ Granular |
 | T59 | `src/content/episodes/ep5.ts` | ✅ Granular |
 | T61 | `src/content/progression.test.ts` | ✅ Granular |
@@ -2099,6 +2150,8 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T62 | T36 (fase 7), T56 (fase 5) | - | ✅ Match |
 | T75 | T34 (fase 7), T35 (fase 7) | - | ✅ Match |
 | T76 | T75 | T75 → T76 | ✅ Match |
+| T77 | T75 | T75 → T77 | ✅ Match |
+| T78 | T77 | T77 → T78 | ✅ Match |
 | T58 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T59 | T23 (fase 4), T24 (fase 4) | - | ✅ Match |
 | T61 | T56 (fase 5), T57 (fase 5), T58, T59, T60 (fase 5) | T58 → T61, T59 → T61 | ✅ Match |
@@ -2180,6 +2233,8 @@ Só dependências dentro da mesma fase aparecem nos diagramas; as de fases anter
 | T62 | Telas | e2e | e2e | ✅ OK |
 | T75 | Telas | e2e | e2e | ✅ OK |
 | T76 | Telas | e2e | e2e | ✅ OK |
+| T77 | Telas | e2e | e2e | ✅ OK |
+| T78 | Telas | e2e | e2e | ✅ OK |
 | T58 | Conteúdo | unit | unit | ✅ OK |
 | T59 | Conteúdo | unit | unit | ✅ OK |
 | T61 | Conteúdo | unit | unit | ✅ OK |
