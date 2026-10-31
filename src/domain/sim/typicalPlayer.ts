@@ -24,6 +24,7 @@ import type {
 import { record } from '../album';
 import { aimAngleDeg } from '../castAim';
 import { pressBar, type CatchBar } from '../catchBar';
+import { afterCast, fishAt, reachMOf, startSchool, stepSchool, type School, type SchoolFish } from '../school';
 import { onCatch } from '../medals';
 import {
   press,
@@ -36,6 +37,7 @@ import {
   type PescaState,
 } from '../pesca';
 import { createRng, type Rng } from '../rng';
+import { AIM_HALF_ARC_DEG, CAST_MIN_SHARE } from '../tuning';
 import { buy, canBuy, equip, type Item } from '../shop';
 import { spotsFor } from '../spots';
 import { currentObjective, isTournamentUnlocked, onEvent } from '../story';
@@ -151,31 +153,87 @@ export function holdPolicy(b: CatchBar, delayedFishY: number): boolean {
   return delayedFishY > b.zoneY + b.zoneH / 2;
 }
 
+/** O que o jogador vê de cima: as sombras do cardume, o alcance da vara e a isca que ele usa. */
+export interface Sight {
+  school: School;
+  reachM: number;
+  bait: BaitId;
+}
+
+/** O que o jogador vê no estado do jogo: o cardume do ponto escolhido e a isca equipada; null no pesqueiro. */
+export function sightOf(g: { school: School | null; profile: { baits: { equipped: BaitId } } }): Sight | null {
+  return g.school && { school: g.school, reachM: g.school.reachM, bait: g.profile.baits.equipped };
+}
+
+/** A sombra em que ele mira: a mais perto do meio, entre as que aceitam a isca se houver; null se nenhuma dá. */
+function targetIn(sight: Sight): SchoolFish | null {
+  const reachable = sight.school.fish.filter((f) => {
+    const p = fishAt(f, sight.school.tS);
+    const d = Math.hypot(p.xM, p.yM);
+    const angle = (Math.atan2(p.xM, p.yM) * 180) / Math.PI;
+    return Math.abs(angle) < AIM_HALF_ARC_DEG && d >= CAST_MIN_SHARE * sight.reachM && d <= sight.reachM;
+  });
+  const takers = reachable.filter((f) => f.species.baits.includes(sight.bait));
+  const pool = takers.length > 0 ? takers : reachable;
+  const off = (f: SchoolFish) => Math.abs(fishAt(f, sight.school.tS).xM);
+  return pool.reduce<SchoolFish | null>((a, b) => (a && off(a) <= off(b) ? a : b), null);
+}
+
 /**
  * SIMB-02: o jogador típico de um arremesso. Chamado a cada passo, antes do `tick`, com o estado da
  * pesca e o `dt` que vai passar; guarda a força que quer, o peixe que viu e o sorteio da fisgada.
  * Joga com um dedo só (BOTAO-04): com um peixe seguindo, solta RECOLHER para tocar PUXAR.
+ * Com `sight` (o cardume do ponto), mira na sombra escolhida e dosa a força pela distância dela;
+ * sem ele, trava a seta no meio e quer a barra cheia.
  */
-export function typicalPlayer(rng: Rng, rules: PescaRules): (s: PescaState, dt: number) => PlayerInput {
-  const wanted = 1 - rng.range(0, POWER_ERROR);
+export function typicalPlayer(
+  rng: Rng,
+  rules: PescaRules,
+): (s: PescaState, dt: number, sight?: Sight | null) => PlayerInput {
+  const shortBy = rng.range(0, POWER_ERROR); // erra a força para menos, até 20%
   const idle: PlayerInput = { holding: false, button: null };
   let clock = 0;
   let followSeenS: number | null = null; // quando ele viu um peixe começar a seguir
   let twitchedS = -Infinity;
   let hooks: boolean | null = null; // sorteio da fisgada do ataque atual
   const seen: { atS: number; y: number }[] = []; // o peixe na barra a cada passo, para o atraso
+  let target: number | null = null; // id da sombra em que ele mira
+  let lastAim: number | null = null;
 
-  return (s, dt) => {
+  /** Onde a sombra-alvo está agora; null se ela saiu do cardume. */
+  const targetAt = (sight: Sight) => {
+    const f = sight.school.fish.find((g) => g.id === target);
+    return f ? fishAt(f, sight.school.tS) : null;
+  };
+
+  return (s, dt, sight = null) => {
     const now = clock;
     clock += dt;
     if (s.phase !== 'Lure') followSeenS = null;
     if (s.phase !== 'Strike') hooks = null;
     if (s.phase !== 'Fight') seen.length = 0;
+    if (s.phase !== 'Aim') lastAim = null;
+    if (s.phase !== 'Aim' && s.phase !== 'Power') target = null;
     switch (s.phase) {
-      case 'Aim': // trava a seta quando ela passa pelo meio
-        return { holding: false, button: aimAngleDeg(s.sinceS, rules.sweepS) >= 0 ? 'arremessar' : null };
-      case 'Power': // a barra sobe de 0 a 1 em meio ciclo
+      case 'Aim': {
+        const aim = aimAngleDeg(s.sinceS, rules.sweepS);
+        if (sight && (target === null || !targetAt(sight))) target = targetIn(sight)?.id ?? null;
+        const p = sight && target !== null ? targetAt(sight) : null;
+        if (!p) return { holding: false, button: aim >= 0 ? 'arremessar' : null }; // trava no meio
+        const want = (Math.atan2(p.xM, p.yM) * 180) / Math.PI;
+        const crossed = lastAim !== null && (lastAim - want) * (aim - want) <= 0;
+        lastAim = aim;
+        return { holding: false, button: crossed ? 'arremessar' : null }; // trava quando a seta passa pela sombra
+      }
+      case 'Power': {
+        let wanted = 1 - shortBy; // a barra sobe de 0 a 1 em meio ciclo
+        const p = sight && target !== null ? targetAt(sight) : null;
+        if (sight && p) {
+          const full = Math.hypot(p.xM, p.yM) / sight.reachM;
+          wanted = Math.min(Math.max((full - CAST_MIN_SHARE) / (1 - CAST_MIN_SHARE), 0), 1) * (1 - shortBy);
+        }
         return { holding: false, button: s.sinceS >= (wanted * rules.sweepS) / 2 - EPS ? 'arremessar' : null };
+      }
       case 'Lure': {
         if (!s.water.fish.some((f) => f.mode === 'seguindo')) {
           followSeenS = null;
@@ -212,6 +270,7 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
 
   let p = start;
   let seconds = 0;
+  const schools = new Map<string, School>(); // o cardume de cada ponto em que ele já pescou
   const achievements: Achievement[] = [];
   const casts: SimCast[] = [];
 
@@ -325,20 +384,29 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
       species: ep.species,
     };
     const player = typicalPlayer(rng, rules);
+    const key = `${plan.location.id}/${plan.zone.id}`;
+    const reachM = reachMOf(ctx.rod.reach);
+    let school = schools.get(key);
+    if (!school || school.reachM !== reachM) school = startSchool(plan.zone, ep.species, reachM, rng);
     let s = startPesca();
     let t = 0;
     let holding = false;
     while (!isResult(s)) {
       if (t > MAX_CAST_S) throw new Error(`Arremesso sem fim no ponto ${plan.zone.id}`);
-      const input = player(s, DT);
+      const input = player(s, DT, { school, reachM, bait: ctx.bait });
       if (input.button) s = press(s, input.button, ctx);
       // Espelho do controller: encostar o dedo em SEGURAR dá o tranco na faixa (BRIGA-02).
       if (s.phase === 'Fight' && input.holding && !holding) s = { ...s, bar: pressBar(s.bar) };
       holding = input.holding;
-      s = tick(s, DT, { holding: input.holding }, ctx);
+      // Espelho do controller: o cardume nada, o arremesso vê o cardume já andado e o pego sai dele.
+      school = stepSchool(school, DT, plan.zone, ep.species);
+      const prev = s;
+      s = tick(s, DT, { holding: input.holding }, { ...ctx, school });
+      school = afterCast(school, prev, s);
       t += DT;
     }
     if (s.phase === 'Result_Caught') t += CARD_S;
+    schools.set(key, stepSchool(school, s.phase === 'Result_Caught' ? CARD_S : 0, plan.zone, ep.species));
     return { result: s, seconds: t };
   }
 

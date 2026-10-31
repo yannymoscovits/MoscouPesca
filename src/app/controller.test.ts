@@ -6,7 +6,7 @@ import type { Profile } from '../content/types';
 import type { PescaState } from '../domain/pesca';
 import { newProfile } from '../domain/profile';
 import { createRng, type Rng } from '../domain/rng';
-import { typicalPlayer } from '../domain/sim/typicalPlayer';
+import { sightOf, typicalPlayer } from '../domain/sim/typicalPlayer';
 import { goals } from '../content/goals';
 import { goalId } from '../domain/medals';
 import { createSaveService, CURRENT_KEY, type SaveOutcome, type SaveService } from '../platform/save';
@@ -73,11 +73,15 @@ function setup(profile: Profile, opts: { species?: string; saveOk?: boolean; sha
     expect(state().spot).toBe(spot);
   }
 
-  /** ARREMESSAR duas vezes seguidas (a força mais fraca) e espera a isca na água. */
+  /** Mira numa sombra do cardume como o jogador típico e espera a isca na água, com peixe por perto. */
   function castNow() {
-    controller.pressButton('arremessar');
-    controller.pressButton('arremessar');
-    tickUntil('Lure');
+    const player = typicalPlayer(createRng(1), controller.rules());
+    for (let t = 0; t < 60 && state().fishing.phase !== 'Lure'; t += DT) {
+      const input = player(state().fishing, DT, sightOf(state()));
+      if (input.button) controller.pressButton(input.button);
+      controller.tick(DT);
+    }
+    expect(state().fishing.phase).toBe('Lure');
   }
 
   /** O jogador típico da simulação (SIMB-02) joga o arremesso inteiro até o resultado. */
@@ -85,7 +89,7 @@ function setup(profile: Profile, opts: { species?: string; saveOk?: boolean; sha
     const player = typicalPlayer(createRng(1), controller.rules());
     for (let t = 0; t < maxS && !state().fishing.phase.startsWith('Result_'); t += DT) {
       const s = state();
-      const input = player(s.fishing, DT);
+      const input = player(s.fishing, DT, sightOf(s));
       if (input.holding !== s.holding) (input.holding ? controller.holdStart : controller.holdEnd)();
       if (input.button) controller.pressButton(input.button);
       controller.tick(DT);
@@ -371,7 +375,7 @@ describe('medalhas e metas', () => {
     const player = typicalPlayer(createRng(1), first.controller.rules());
     for (let t = 0; t < 300 && first.store.getState().fishing.phase !== 'Result_Caught'; t += DT) {
       const s = first.store.getState();
-      const input = player(s.fishing, DT);
+      const input = player(s.fishing, DT, sightOf(s));
       if (input.holding !== s.holding) (input.holding ? first.controller.holdStart : first.controller.holdEnd)();
       if (input.button) first.controller.pressButton(input.button);
       first.controller.tick(DT);
@@ -575,6 +579,7 @@ describe('torneio', () => {
     g.controller.enterTournament();
 
     for (let i = 0; i < 8; i++) {
+      g.controller.leaveSpot(); // volta ao pesqueiro e escolhe de novo: cardume cheio a cada arremesso
       g.catchFish('fundo'); // fundo da represa
       g.controller.dismissResult();
     }

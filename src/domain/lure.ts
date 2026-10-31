@@ -31,6 +31,7 @@ export type FishMode = 'nadando' | 'seguindo' | 'recusou' | 'fugindo';
 
 export interface FishAgent {
   id: number;
+  schoolId?: number; // o peixe do cardume que ele é; sem cardume (tutorial), nenhum
   species: Species;
   xM: number; // distância até o Adilson
   depthM: number;

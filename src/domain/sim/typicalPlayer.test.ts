@@ -94,7 +94,9 @@ describe('jogador típico simulado', () => {
     const r = simulateEpisode(testEpisode(), newProfile(), 1);
 
     const free = r.casts.filter((c) => !c.tournament);
-    expect(free.map((c) => c.outcome)).toEqual(['Result_Caught', 'Result_Caught', 'Result_Caught']);
+    // Com o cardume, um arremesso pode cair longe das sombras: o que conta são as 3 capturas.
+    expect(free.filter((c) => c.outcome === 'Result_Caught')).toHaveLength(3);
+    expect(free[free.length - 1].outcome).toBe('Result_Caught');
     expect(r.casts.filter((c) => c.tournament)).toHaveLength(8);
     expect(r.tournamentAttempts).toBe(1);
     expect(r.won).toBe(true);

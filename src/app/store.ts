@@ -1,6 +1,7 @@
 // Estado do jogo e quem precisa saber quando ele muda (design.md, "GameStore").
 // Só o GameController chama `update`; as telas leem com `useGame` e o desenho com `getState`.
 
+import type { School } from '../domain/school';
 import { createContext } from 'preact';
 import { useContext, useEffect, useReducer, useRef } from 'preact/hooks';
 import type { MedalTier, Profile } from '../content/types';
@@ -15,6 +16,8 @@ export interface GameState {
   fishing: PescaState;
   /** Ponto escolhido no pesqueiro (Zone.id do local atual); null mostra o pesqueiro. Não é salvo. */
   spot: string | null;
+  /** Cardume do ponto escolhido: as sombras na mira e os peixes que a isca pode achar. Não é salvo. */
+  school: School | null;
   /** Dedo segurando RECOLHER (na água) ou SEGURAR (na briga). */
   holding: boolean;
   /** Tutorial em andamento; null fora dele. */
@@ -40,6 +43,7 @@ export function initialState(profile: Profile): GameState {
     profile,
     fishing: startPesca(),
     spot: null,
+    school: null,
     holding: false,
     tutorial: null,
     paused: false,

@@ -6,6 +6,7 @@ import { aimAngleDeg, castDistanceM, powerAt } from './castAim';
 import { barOutcome, barRulesFor, startBar, stepBar, type BarRules, type CatchBar } from './catchBar';
 import { scare, spawnWater, stepWater, twitch, type Water } from './lure';
 import type { Rng } from './rng';
+import { schoolWater, type School } from './school';
 import { AIM_SWEEP_S, CAST_FLIGHT_S, HOOK_WINDOW_S } from './tuning';
 
 /** Folga para comparar tempos somados em ponto flutuante. */
@@ -29,6 +30,7 @@ export interface PescaContext extends Gear {
   rules: PescaRules;
   spot: Zone; // ponto escolhido no pesqueiro
   species: Species[]; // espécies do local
+  school?: School | null; // cardume do ponto; sem ele (testes antigos), os peixes nascem em volta da isca
 }
 
 export type PescaButton = 'arremessar' | 'puxar';
@@ -88,7 +90,13 @@ export function tick(s: PescaState, dt: number, input: { holding: boolean }, ctx
     case 'Flying': {
       const sinceS = s.sinceS + dt;
       if (sinceS < CAST_FLIGHT_S - EPS) return { ...s, sinceS };
-      // ARREM-05: caiu na água; a vista debaixo d'água começa com os peixes do ponto
+      // ARREM-05: caiu na água; a vista debaixo d'água começa com os peixes do ponto. Com cardume
+      // (fora do tutorial), só os peixes perto da isca: longe das sombras, não há nada.
+      if (ctx.school && rules.followWithinS === null) {
+        const water = schoolWater(ctx.school, s.angleDeg, s.distanceM, ctx.spot, rng);
+        if (water.fish.length === 0) return { phase: 'Result_Nothing' };
+        return { phase: 'Lure', gear: s.gear, water, notice: null };
+      }
       const water = spawnWater(ctx.spot, ctx.species, s.distanceM, rng, rules.followWithinS, s.gear.bait);
       return { phase: 'Lure', gear: s.gear, water, notice: null };
     }

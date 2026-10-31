@@ -15,6 +15,7 @@ import type {
 import { goals } from '../content/goals';
 import { record } from '../domain/album';
 import { pressBar } from '../domain/catchBar';
+import { afterCast, reachMOf, startSchool, stepSchool } from '../domain/school';
 import { goalId, onCatch } from '../domain/medals';
 import {
   press as pescaPress,
@@ -150,7 +151,8 @@ export function createController({ store, save, platform, episodes, rng }: Contr
     const { ep, location } = place(s);
     const spot = location.zones.find((z) => z.id === s.spot);
     if (!spot) return null;
-    return { rod: rodOf(s.profile), bait: s.profile.baits.equipped, rng, rules: rulesNow(s), spot, species: ep.species };
+    const { school } = s;
+    return { rod: rodOf(s.profile), bait: s.profile.baits.equipped, rng, rules: rulesNow(s), spot, species: ep.species, school };
   }
 
   /** Fim do 8º arremesso: classificação e, na vitória, troféu, carta, cena e próximo episódio. */
@@ -203,6 +205,7 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       platform.vibrate(CAUGHT_VIBRATION_MS); // pegou: um toque curto de comemoração
     }
     const ended = isResult(fishing) && !isResult(prev);
+    if (ended && next.school) next = { ...next, school: afterCast(next.school, prev, fishing) }; // o pego sai do cardume
     if (ended) next = onResult(next, fishing);
     commit(next, ended);
   }
@@ -250,7 +253,8 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       const view = spotsFor(location, rodOf(s.profile), ep.species, s.profile.album).find((v) => v.id === spotId);
       if (!view || view.locked) return; // PONTO-03
       const fishing = startPesca();
-      commit({ ...s, spot: spotId, fishing, holding: false, tutorial: s.tutorial && tutorials.onPesca(s.tutorial, fishing, true) });
+      const school = startSchool(view.zone, ep.species, reachMOf(rodOf(s.profile).reach), rng);
+      commit({ ...s, spot: spotId, school, fishing, holding: false, tutorial: s.tutorial && tutorials.onPesca(s.tutorial, fishing, true) });
     },
 
     leaveSpot() {
@@ -258,7 +262,7 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       const s = get();
       if (blocked(s) || s.spot === null || (s.fishing.phase !== 'Aim' && s.fishing.phase !== 'Power')) return;
       const fishing = startPesca();
-      commit({ ...s, spot: null, fishing, holding: false, tutorial: s.tutorial && tutorials.onPesca(s.tutorial, fishing, false) });
+      commit({ ...s, spot: null, school: null, fishing, holding: false, tutorial: s.tutorial && tutorials.onPesca(s.tutorial, fishing, false) });
     },
 
     pressButton(b) {
@@ -290,11 +294,18 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       if (blocked(s)) return; // PAUSA-01: pausado, peixes, isca, faixa, medidor e janelas param
       const wasTouched = touched || s.holding;
       touched = false;
-      const ctx = pescaContext(s);
+      const before = pescaContext(s);
+      // O cardume nada o tempo todo no ponto; o arremesso vê o cardume já andado.
+      const school = before && s.school ? stepSchool(s.school, dt, before.spot, before.species) : s.school;
+      const now = school === s.school ? s : { ...s, school };
+      const ctx = before && { ...before, school };
       const fishing = ctx ? pescaTick(s.fishing, dt, { holding: s.holding }, ctx) : s.fishing;
       const tutorial = s.tutorial && tutorials.tick(tutorials.onPesca(s.tutorial, fishing, s.spot !== null), dt, wasTouched);
-      if (fishing === s.fishing && tutorial === s.tutorial) return;
-      setFishing(s, fishing, tutorial);
+      if (fishing === s.fishing && tutorial === s.tutorial) {
+        if (now !== s) store.update(() => now);
+        return;
+      }
+      setFishing(now, fishing, tutorial);
     },
 
     dismissResult() {
@@ -370,7 +381,7 @@ export function createController({ store, save, platform, episodes, rng }: Contr
       const s = get();
       const profile = worldTravel(s.profile, location, episodes); // EPI-04, EPI-07
       if (profile === s.profile) return;
-      commit({ ...s, profile, fishing: startPesca(), spot: null, holding: false }, true);
+      commit({ ...s, profile, fishing: startPesca(), spot: null, school: null, holding: false }, true);
     },
 
     markVersionSeen: (version) => changeProfile((p) => (p.seenVersion === version ? p : { ...p, seenVersion: version })),

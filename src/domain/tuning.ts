@@ -103,3 +103,26 @@ export const FISH_MIN_X_M = 0.5;
 /** Faixa de profundidade em que os peixes nadam, acima do fundo; o teto deixa os pontos fundos jogáveis. */
 export const FISH_SWIM_DEPTH_M = { min: 0.3, max: 6 };
 export const FISH_BOTTOM_GAP_M = 0.2;
+
+/** Cardume de cada ponto (pedido do usuário): poucos peixes, visíveis como sombras na mira. */
+export const SCHOOL_MAX = 6;
+/** Abaixo do máximo, chega um peixe novo a cada tanto (s): o ponto nunca esvazia de vez. */
+export const SCHOOL_REFILL_S = 20;
+/** Os peixes ficam no cone da mira, entre 35% e 95% do alcance da vara. */
+export const SCHOOL_HALF_ARC_DEG = 38;
+export const SCHOOL_NEAR_SHARE = 0.35;
+export const SCHOOL_FAR_SHARE = 0.95;
+/**
+ * Faixas de distância (fração do alcance) por onde o cardume se espalha, um peixe por vez em cada:
+ * sempre há peixe perto, no meio e longe, e de um lado e do outro (pedido do usuário).
+ */
+export const SCHOOL_BANDS = [
+  { min: 0.35, max: 0.55 },
+  { min: 0.55, max: 0.75 },
+  { min: 0.75, max: 0.95 },
+];
+/** Vaivém de cada peixe: meia distância (m) e velocidade (rad/s; uma volta em 12 a 25 s). */
+export const SCHOOL_SWAY_M = { min: 0.8, max: 2 };
+export const SCHOOL_SWAY_RAD_S = { min: 0.25, max: 0.5 };
+/** Raio (m) em volta de onde a isca cai: os peixes do cardume nele entram na água. */
+export const SCHOOL_NOTICE_RADIUS_M = 3;

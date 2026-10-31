@@ -3,7 +3,7 @@
 
 import type { PescaButton } from '../domain/pesca';
 import { createRng, type Rng } from '../domain/rng';
-import { typicalPlayer } from '../domain/sim/typicalPlayer';
+import { sightOf, typicalPlayer } from '../domain/sim/typicalPlayer';
 import type { GameController } from './controller';
 import type { GameState, GameStore } from './store';
 
@@ -61,7 +61,7 @@ export function installTestHooks(target: Window, game: { store: GameStore; contr
       const player = typicalPlayer(createRng(AUTOPLAY_SEED), controller.rules());
       for (let t = 0; t < maxS && !store.getState().fishing.phase.startsWith('Result_'); t += STEP_S) {
         const s = store.getState();
-        const input = player(s.fishing, STEP_S);
+        const input = player(s.fishing, STEP_S, sightOf(s));
         if (input.holding !== s.holding) (input.holding ? controller.holdStart : controller.holdEnd)();
         if (input.button) controller.pressButton(input.button);
         realTick(STEP_S);
