@@ -229,17 +229,17 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| PONTO-01 | P1: Escolher o ponto | T1, T5 | Implementing |
+| PONTO-01 | P1: Escolher o ponto | T1, T5, T9 | Implementing |
 | PONTO-02 | P1: Escolher o ponto | T5 | Implementing |
 | PONTO-03 | P1: Escolher o ponto | T1, T5 | Implementing |
 | PONTO-04 | P1: Escolher o ponto | - | Pending |
 | PONTO-05 | P1: Escolher o ponto | - | Pending |
 | PONTO-06 | P1: Escolher o ponto | T4 | Implementing |
-| ARREM-01 | P1: Mirar e arremessar com força | T2 | Implementing |
+| ARREM-01 | P1: Mirar e arremessar com força | T2, T9 | Implementing |
 | ARREM-02 | P1: Mirar e arremessar com força | T2, T6 | Implementing |
 | ARREM-03 | P1: Mirar e arremessar com força | T2, T6 | Implementing |
 | ARREM-04 | P1: Mirar e arremessar com força | T6 | Implementing |
-| ARREM-05 | P1: Mirar e arremessar com força | T6 | Implementing |
+| ARREM-05 | P1: Mirar e arremessar com força | T6, T9 | Implementing |
 | ARREM-06 | P1: Mirar e arremessar com força | T2 | Implementing |
 | ARREM-07 | Edge Cases | T2 | Implementing |
 | ISCA-01 | P1: Trabalhar a isca debaixo d'água | T4 | Implementing |

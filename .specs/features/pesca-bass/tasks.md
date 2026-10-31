@@ -268,10 +268,10 @@ T17 → T18
 
 **Done when**:
 
-- [ ] `landingPoint(0°, d)` fica reto à frente da ponta da vara; -45° à esquerda; distância a 10 px por metro
-- [ ] `spotAnchor` é o centro do polígono do ponto, dentro da cena
-- [ ] Desenhar sem sprites (fallback) não lança erro
-- [ ] Gate check passes: `npm test`
+- [x] `landingPoint(0°, d)` fica reto à frente da ponta da vara; -45° à esquerda; distância a 10 px por metro
+- [x] `spotAnchor` é o centro do polígono do ponto, dentro da cena
+- [x] Desenhar sem sprites (fallback) não lança erro
+- [x] Gate check passes: `npm test`
 
 **Tests**: unit
 **Gate**: quick
