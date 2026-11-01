@@ -49,11 +49,14 @@ export function colorOf(key: string): string {
 
 /**
  * Caixa do peixe na cena, pela espécie: o tamanho importa — o jogador precisa ver qual é o grande.
- * Três faixas pelo kg máximo; as folhas de sprite vêm nestes tamanhos (4 quadros lado a lado):
- * >= 20 kg → 36 × 16 (folha 144 × 16); <= 1 kg → 12 × 6 (48 × 6); o resto → 18 × 8 (72 × 8).
+ * Três faixas pelo kg máximo: gigante 72 × 32, pequeno 24 × 12 e médio 36 × 16.
+ * A arte aprovada cabe inteira nessa área, preservando a proporção.
  */
+/** BRIGA-19: o peixe pequeno da espécie aparece com 80% da caixa e o grande com 125%. */
+export const sizeScale = (size: number | undefined) => (size === undefined ? 1 : 0.8 + 0.45 * size);
+
 export function fishBox(species: { kg: { max: number } }): { w: number; h: number } {
-  if (species.kg.max >= 20) return { w: 36, h: 16 };
-  if (species.kg.max <= 1) return { w: 12, h: 6 };
-  return { w: 18, h: 8 };
+  if (species.kg.max >= 20) return { w: 72, h: 32 };
+  if (species.kg.max <= 1) return { w: 24, h: 12 };
+  return { w: 36, h: 16 };
 }

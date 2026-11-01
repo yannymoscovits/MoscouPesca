@@ -32,21 +32,21 @@ describe('escala da cena', () => {
 
 describe('fishBox: o tamanho do peixe na cena importa', () => {
   it('três faixas pelo kg máximo: gigante (>= 20), pequeno (<= 1) e o resto', () => {
-    expect(fishBox({ kg: { max: 25 } })).toEqual({ w: 36, h: 16 });
-    expect(fishBox({ kg: { max: 20 } })).toEqual({ w: 36, h: 16 });
-    expect(fishBox({ kg: { max: 0.8 } })).toEqual({ w: 12, h: 6 });
-    expect(fishBox({ kg: { max: 1 } })).toEqual({ w: 12, h: 6 });
-    expect(fishBox({ kg: { max: 4 } })).toEqual({ w: 18, h: 8 });
+    expect(fishBox({ kg: { max: 25 } })).toEqual({ w: 72, h: 32 });
+    expect(fishBox({ kg: { max: 20 } })).toEqual({ w: 72, h: 32 });
+    expect(fishBox({ kg: { max: 0.8 } })).toEqual({ w: 24, h: 12 });
+    expect(fishBox({ kg: { max: 1 } })).toEqual({ w: 24, h: 12 });
+    expect(fishBox({ kg: { max: 4 } })).toEqual({ w: 36, h: 16 });
   });
 
   it('toda espécie do conteúdo cai numa das três caixas (as folhas de sprite vêm nesses tamanhos)', () => {
     const species = episodes.flatMap((ep) => ep.species);
     expect(species.length).toBeGreaterThan(0);
     for (const sp of species) {
-      expect([12, 18, 36], sp.id).toContain(fishBox(sp).w);
+      expect([24, 36, 72], sp.id).toContain(fishBox(sp).w);
     }
     // O pirarucu lendário é dos gigantes: a sombra e o sprite dele precisam aparecer grandes.
     const pirarucu = species.find((sp) => sp.id === 'pirarucu-lendario')!;
-    expect(fishBox(pirarucu)).toEqual({ w: 36, h: 16 });
+    expect(fishBox(pirarucu)).toEqual({ w: 72, h: 32 });
   });
 });

@@ -2,15 +2,16 @@
 // água e fundo na paleta do local, plantas, os peixes do arremesso, a isca e a linha até a vara, o
 // "!" do ataque, o balão "não gostou" e, na briga, o peixe fisgado se debatendo com a linha esticada.
 // Lê o estado da pesca e desenha; não decide nada. A câmera segue a isca na horizontal e mostra
-// sempre da superfície ao fundo, acima do quarto de baixo da tela (lá ficam os botões).
+// sempre da superfície ao fundo, reservando embaixo apenas o espaço dos botões.
 // Peixes sem arte: silhueta na cor de cada espécie (colorOf), até os sprites chegarem.
 
+import { IGNORE_RETRY_S, METER_START, VIEW_DEEP_SHARE, VIEW_LINEAR_DEPTH_M } from '../domain/tuning';
 import type { LocationId, Point } from '../content/types';
 import type { FishAgent } from '../domain/lure';
 import type { PescaState } from '../domain/pesca';
-import { computeLayout, colorOf, fishBox, PALETTE, SCENE_H, SCENE_W, type Layout } from './fishingRenderer';
+import { computeLayout, colorOf, fishBox, sizeScale, PALETTE, SCENE_H, SCENE_W, type Layout } from './fishingRenderer';
 import { drawBottomFeature, sceneryOf, type StandKind } from './scenery';
-import { createSprite, loadImage, resolveAsset, type ImageLoader, type SheetSpec, type Sprite } from './sprites';
+import { createSprite, fishSheet, loadImage, resolveAsset, type ImageLoader, type SheetSpec, type Sprite } from './sprites';
 
 /** Escala horizontal da vista de lado, em px lógicos por metro. */
 export const UNDERWATER_PX_PER_M = 16;
@@ -18,15 +19,13 @@ export const UNDERWATER_PX_PER_M = 16;
 export const LURE_AT = 0.4;
 /** Quanto da margem, à esquerda do Adilson, aparece quando a isca chega perto dele. */
 export const BANK_M = 1.5;
-/** A vista vai até o começo do quarto de baixo da tela; a superfície fica abaixo do céu. */
-export const WATER_BOTTOM_SHARE = 0.75;
-// SPEC_DEVIATION: o T10 punha a superfície em 15% da área acima dos botões.
-// Reason: na tela ligada (T15), o painel de cima cobria a superfície e a isca que sobe até ela.
-const SKY_SHARE = 0.38; // do topo da vista até a superfície, em fração da área acima dos botões; abaixo do painel de cima (~170 px)
-const FLOOR_GAP_SHARE = 0.05; // do fundo até o quarto de baixo
+/** Superfície abaixo do painel, mantendo o enquadramento do alto da cena. */
+export const SURFACE_SHARE = 0.285;
+/** Reserva só a altura dos controles e uma folga, em vez de um quarto da tela inteiro. */
+export const UNDERWATER_CONTROLS_CSS = 128;
 /** Até esta profundidade a escala é linear; abaixo dela, o resto do ponto cabe em DEEP_SHARE da água. */
-export const LINEAR_DEPTH_M = 10;
-const DEEP_SHARE = 0.2;
+export const LINEAR_DEPTH_M = VIEW_LINEAR_DEPTH_M; // a mesma régua do PUXAR (domain/lure.ts)
+const DEEP_SHARE = VIEW_DEEP_SHARE;
 /** Ponta da vara acima da superfície, em px lógicos. */
 const ROD_ABOVE_PX = 18;
 /** A guinada quando o peixe vira de lado: o corpo encolhe e estica de novo neste tempo. */
@@ -61,6 +60,13 @@ export interface Camera {
   bottomM: number; // profundidade do ponto
 }
 
+/** Embaixo d'água o peixe aparece no dobro do tamanho da vista de cima: dá para ver a espécie e o porte. */
+export const UNDERWATER_FISH_SCALE = 2;
+
+/** BRIGA-22: aonde o peixe chega com o medidor cheio: perto da margem e da superfície. */
+const REEL_NEAR_M = 1.5;
+const REEL_UP_M = 0.4;
+
 export interface UnderwaterView {
   place?: LocationId; // Location.id: escolhe a paleta (scenery.ts)
   pesca: Extract<PescaState, { phase: 'Lure' | 'Strike' | 'Fight' }>;
@@ -75,13 +81,13 @@ export interface UnderwaterRenderer {
 
 /** Câmera que segue a isca: ela fica em LURE_AT da largura, sem passar da margem do Adilson. */
 export function camera(lureXM: number, bottomM: number, layout: Layout): Camera {
-  const above = layout.viewH * WATER_BOTTOM_SHARE;
-  const surfaceY = above * SKY_SHARE;
+  const surfaceY = layout.viewH * SURFACE_SHARE;
+  const floorY = Math.max(surfaceY + 24, layout.viewH - UNDERWATER_CONTROLS_CSS / layout.scale);
   return {
     leftM: Math.max(lureXM - (layout.viewW * LURE_AT) / UNDERWATER_PX_PER_M, -BANK_M),
     pxPerM: UNDERWATER_PX_PER_M,
     surfaceY,
-    waterH: above * (1 - FLOOR_GAP_SHARE) - surfaceY,
+    waterH: floorY - surfaceY,
     bottomM,
   };
 }
@@ -151,7 +157,14 @@ export function createUnderwaterRenderer(
     const s = view.pesca;
     const { water } = s;
     const scenery = sceneryOf(view.place);
-    const cam = camera(water.lure.xM, water.bottomM, layout);
+    // BRIGA-22: na briga, o peixe vem para a margem conforme o medidor enche (e volta se ele esvazia):
+    // do ponto da fisgada até 1,5 m do Adilson, subindo até perto da superfície.
+    const reel = s.phase === 'Fight' ? Math.min(1, Math.max(0, (s.bar.meter - METER_START) / (1 - METER_START))) : 0;
+    const lureAt = {
+      xM: water.lure.xM + (Math.min(water.lure.xM, REEL_NEAR_M) - water.lure.xM) * reel,
+      depthM: water.lure.depthM + (Math.min(water.lure.depthM, REEL_UP_M) - water.lure.depthM) * reel,
+    };
+    const cam = camera(lureAt.xM, water.bottomM, layout);
     const at = (xM: number, depthM: number) => toScene(cam, xM, depthM);
     const floorY = cam.surfaceY + cam.waterH;
     const px = (color: string, x: number, y: number, w = 1, h = 1) => {
@@ -201,12 +214,12 @@ export function createUnderwaterRenderer(
     // Isca e linha até a vara: solta enquanto a isca anda, esticada na briga.
     const tip = { x: bankX + 4, y: cam.surfaceY - ROD_ABOVE_PX };
     if (bankX > -8) rod(tip);
-    const lure = at(water.lure.xM, water.lure.depthM);
+    const lure = at(lureAt.xM, lureAt.depthM);
     if (s.phase === 'Fight') {
       const f = water.fish.find((g) => g.id === s.fishId);
       const thrash = { x: lure.x + Math.sin(t * 18) * 3, y: lure.y + Math.sin(t * 11) * 2 + (0.5 - s.bar.fishY) * 8 };
       line(tip, thrash, 0);
-      if (f) fish({ ...f, dir: Math.sin(t * 9) > 0 ? 1 : -1 }, thrash, true);
+      if (f) fish({ ...f, dir: 1 }, thrash, true); // puxando para longe da margem; o debater é o chacoalhão
       bubbles(thrash);
     } else {
       line(tip, lure, 10 + Math.sin(t * 1.5) * 2);
@@ -218,11 +231,13 @@ export function createUnderwaterRenderer(
      * Peixe vivo, no tamanho da espécie (fishBox): balança devagar para cima e para baixo (fase
      * própria por peixe), inclina o nariz para onde vai (atrás da isca quando segue) e, quando vira
      * de lado, dá uma guinada curta (o corpo encolhe e estica, com bolhinhas atrás do rabo).
-     * O fisgado (`hooked`) se debate como antes, sem balanço nem inclinação.
+     * O fisgado (`hooked`) se debate chacoalhando o corpo, virado para longe da margem.
      */
     function fish(f: FishAgent, p: Point, hooked = false) {
       const { species } = f;
-      const box = fishBox(species);
+      const base = fishBox(species);
+      const k = UNDERWATER_FISH_SCALE * sizeScale(f.size); // BRIGA-19: o tamanho dele dentro da espécie
+      const box = { w: base.w * k, h: base.h * k };
       const prev = turns.get(f.id);
       // Só conta como virada a troca de direção com o tempo andando para a frente; o primeiro
       // quadro de um peixe (ou o relógio voltando) não dá guinada.
@@ -231,7 +246,8 @@ export function createUnderwaterRenderer(
       const sinceTurn = t - turns.get(f.id)!.atT;
       const burst = hooked ? 1 : Math.min(1, Math.max(0.45, sinceTurn / TURN_S));
       const sway = hooked ? 0 : Math.sin(t * 2.2 + f.id * 1.7);
-      let tilt = sway * 0.06;
+      // O fisgado se debate chacoalhando o corpo (sem espelhar a arte, que no peixe grande parecia piscar).
+      let tilt = hooked ? Math.sin(t * 14) * 0.22 : sway * 0.06;
       if (!hooked && f.mode === 'seguindo') {
         const lp = at(water.lure.xM, water.lure.depthM);
         tilt = Math.max(-0.35, Math.min(0.35, Math.atan2(lp.y - p.y, Math.max(10, Math.abs(lp.x - p.x)))));
@@ -239,11 +255,10 @@ export function createUnderwaterRenderer(
       c.save();
       c.translate(Math.round(p.x), Math.round(p.y + sway * 1.5));
       if (f.dir < 0) c.scale(-1, 1); // espelha no próprio centro
-      if (!hooked) c.rotate(tilt);
+      c.rotate(tilt);
       if (burst < 1) c.scale(burst, 1); // a guinada
       sprite(species.sprite, {
-        frames: 4,
-        fps: 8,
+        ...fishSheet(species.sprite),
         color: colorOf(species.id),
         fallback: (cc, bx, by, bw, bh, tt) => silhouette(cc, bx, by, bw, bh, colorOf(species.id), tt),
       }).draw(c, -box.w / 2, -box.h / 2, box.w, box.h, t);
@@ -253,7 +268,12 @@ export function createUnderwaterRenderer(
           px(UNDERWATER_COLORS.surface, p.x - f.dir * (box.w / 2 + 2 + i * 3), p.y - 1 + ((f.id + i) % 3), 1, 1);
         }
       }
-      if (f.mode === 'recusou') balloon({ x: p.x, y: p.y - box.h / 2 - 8 }, 'não gostou'); // ISCA-06
+      // ISCA-06: o balão diz quem recusou: só recusa quem não come a isca do arremesso.
+      if (f.mode === 'recusou') balloon({ x: p.x, y: p.y - box.h / 2 - 8 }, `${f.species.name}: não come essa isca`);
+      // PONTO-07: ele viu a isca, chegou perto e não quis; sem a vara dele, diz isso.
+      if (f.mode === 'ignorou' && (f.retryS ?? 0) > IGNORE_RETRY_S - 2.5) {
+        balloon({ x: p.x, y: p.y - box.h / 2 - 8 }, f.ignored === 'vara' ? 'vara fraca pra mim' : 'só olhou...');
+      }
     }
 
     function rod(end: Point) {

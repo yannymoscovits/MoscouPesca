@@ -17,7 +17,7 @@ import {
   TURN_S,
   UNDERWATER_COLORS,
   UNDERWATER_PX_PER_M,
-  WATER_BOTTOM_SHARE,
+  UNDERWATER_CONTROLS_CSS,
   type UnderwaterView,
 } from './underwaterRenderer';
 
@@ -122,7 +122,7 @@ describe('camera e toScene', () => {
     [412, 839],
     [360, 740],
     [600, 960],
-  ])('%i × %i px: superfície e fundo aparecem acima do quarto de baixo da tela, em todo ponto', (w, h) => {
+  ])('%i × %i px: o fundo desce até a reserva dos botões, em todo ponto', (w, h) => {
     const l = computeLayout(w, h);
     for (const bottomM of [1, 1.5, 9, 20, 60, 200]) {
       const cam = camera(5, bottomM, l);
@@ -130,7 +130,7 @@ describe('camera e toScene', () => {
       const bottom = toScene(cam, 5, bottomM).y;
       expect(surface, `${bottomM} m`).toBeGreaterThan(0);
       expect(bottom, `${bottomM} m`).toBeGreaterThan(surface);
-      expect(bottom, `${bottomM} m`).toBeLessThanOrEqual(l.viewH * WATER_BOTTOM_SHARE);
+      expect(bottom, `${bottomM} m`).toBeCloseTo(l.viewH - UNDERWATER_CONTROLS_CSS / l.scale, 6);
     }
   });
 
@@ -190,7 +190,8 @@ describe('desenho debaixo d’água', () => {
     for (const f of water.fish) {
       const p = toScene(cam, f.xM, f.depthM);
       const body = fillsOf(calls, colorOf(f.species.id));
-      expect(body.some(([x, y]) => Math.abs(x - p.x) <= 12 && Math.abs(y - p.y) <= 6), `peixe ${f.id}`).toBe(true);
+      const box = fishBox(f.species);
+      expect(body.some(([x, y]) => Math.abs(x - p.x) <= box.w / 2 && Math.abs(y - p.y) <= box.h / 2 + 2), `peixe ${f.id}`).toBe(true);
     }
   });
 
@@ -273,8 +274,8 @@ describe('peixes vivos e do tamanho da espécie', () => {
     const [w36, w18, w12] = [width(big), width(mid), width(small)];
     expect(w36).toBeGreaterThan(w18 * 1.6);
     expect(w18).toBeGreaterThan(w12);
-    expect(fishBox(big).w).toBe(36);
-    expect(fishBox(small).w).toBe(12);
+    expect(fishBox(big).w).toBe(72);
+    expect(fishBox(small).w).toBe(24);
   });
 
   it('nadando, o peixe balança devagar para cima e para baixo', () => {

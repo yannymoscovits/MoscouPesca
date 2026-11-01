@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createSprite, frameAt, resolveAsset } from './sprites';
+import { createSprite, fishSheet, frameAt, resolveAsset } from './sprites';
 
 /** Contexto 2D de mentira: guarda as chamadas de desenho. */
 function fakeCtx() {
@@ -11,6 +11,16 @@ function fakeCtx() {
 }
 
 const flush = () => new Promise((r) => setTimeout(r, 0));
+
+it('a arte aprovada é desenhada inteira e proporcional, sem cortar como folha de quatro quadros', async () => {
+  const img = { naturalWidth: 96, naturalHeight: 64 } as HTMLImageElement;
+  const sprite = createSprite('/traira.png', { ...fishSheet('src/assets/fish-portraits/traira.png'), color: '#000' }, async () => img);
+  await flush();
+  const ctx = fakeCtx();
+  for (const t of [0, 0.5, 2]) sprite.draw(ctx as unknown as CanvasRenderingContext2D, 0, 0, 36, 16, t);
+  expect(ctx.drawImage).toHaveBeenCalledTimes(3);
+  for (const args of ctx.drawImage.mock.calls) expect(args).toEqual([img, 0, 0, 96, 64, 6, 0, 24, 16]);
+});
 
 describe('frameAt', () => {
   it('4 quadros a 8 qps, t = 0,3 s → quadro 2', () => {

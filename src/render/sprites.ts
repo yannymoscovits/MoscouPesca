@@ -23,6 +23,12 @@ export interface SheetSpec {
   fps?: number; // padrão 0 (parado)
   color: string; // cor do retângulo quando a imagem falta
   fallback?: Fallback; // forma provisória quando a imagem falta; no lugar do retângulo
+  fit?: 'contain';
+}
+
+/** Artes aprovadas são imagens inteiras; as folhas antigas têm quatro quadros. */
+export function fishSheet(path: string): Pick<SheetSpec, 'frames' | 'fps' | 'fit'> {
+  return path.includes('/fish-portraits/') ? { frames: 1, fps: 0, fit: 'contain' } : { frames: 4, fps: 8 };
 }
 
 export interface Sprite {
@@ -39,27 +45,52 @@ export const loadImage: ImageLoader = (url) =>
     img.src = url;
   });
 
+/** Imagens já carregadas, de qualquer cena: a pesca nova já começa com a arte, sem piscar a forma provisória. */
+const ready = new Map<string, HTMLImageElement>();
+/** Uma arte que falhou (rede fraca no celular) é pedida de novo depois disto, em vez de ficar provisória. */
+const RETRY_MS = 1500;
+
 /** `url` null: a arte não está no build e a forma provisória (ou o retângulo) fica no lugar. */
 export function createSprite(url: string | null, spec: SheetSpec, load: ImageLoader = loadImage): Sprite {
   const frames = spec.frames ?? 1;
   const fps = spec.fps ?? 0;
-  let image: HTMLImageElement | null = null;
-  if (url) {
+  let image: HTMLImageElement | null = (url && ready.get(url)) || null;
+  let loading = false;
+  let failedAt = -Infinity;
+  const fetch = () => {
+    if (!url || image || loading) return;
+    loading = true;
     load(url).then(
-      (img) => (image = img),
-      () => (image = null), // falhou: fica o retângulo
+      (img) => {
+        image = img;
+        ready.set(url, img);
+        loading = false;
+      },
+      () => {
+        loading = false; // falhou: fica a forma provisória e tenta de novo daqui a pouco
+        failedAt = Date.now();
+      },
     );
-  }
+  };
+  fetch();
 
   return {
     draw(ctx, x, y, w, h, t) {
       if (!image) {
+        if (!loading && Date.now() - failedAt >= RETRY_MS) fetch();
         if (spec.fallback) return spec.fallback(ctx, x, y, w, h, t);
         ctx.fillStyle = spec.color;
         ctx.fillRect(x, y, w, h);
         return;
       }
       const fw = image.naturalWidth / frames;
+      if (spec.fit === 'contain') {
+        const scale = Math.min(w / fw, h / image.naturalHeight);
+        const dw = fw * scale;
+        const dh = image.naturalHeight * scale;
+        ctx.drawImage(image, frameAt(t, frames, fps) * fw, 0, fw, image.naturalHeight, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+        return;
+      }
       ctx.drawImage(image, frameAt(t, frames, fps) * fw, 0, fw, image.naturalHeight, x, y, w, h);
     },
   };

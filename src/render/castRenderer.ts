@@ -13,9 +13,9 @@
 import type { LocationId, Point, Zone } from '../content/types';
 import { CAST_FLIGHT_S, M_PER_PX } from '../domain/tuning';
 import { ADILSON_BOX, drawAdilson, rodHandIn, type Pose } from './adilson';
-import { computeLayout, fishBox, PALETTE, SCENE_H, SCENE_W, type Layout } from './fishingRenderer';
+import { computeLayout, fishBox, PALETTE, SCENE_H, SCENE_W, sizeScale, type Layout } from './fishingRenderer';
 import { drawBackdrop, drawMarginDetails, sceneryOf } from './scenery';
-import { createSprite, loadImage, resolveAsset, type ImageLoader, type SheetSpec, type Sprite } from './sprites';
+import { createSprite, fishSheet, loadImage, resolveAsset, type ImageLoader, type SheetSpec, type Sprite } from './sprites';
 import { drawStand, SHORE_TOP } from './stands';
 
 /** Ponta da vara na cena do pesqueiro (pixel (0, 2) do quadro de 24 × 29 do sprite). */
@@ -31,8 +31,8 @@ const WATER_TEXTURE = { top: 40, bottom: SHORE_TOP - 6 };
 
 // ---------- Disposição da tela de arremesso ----------
 
-/** CSS px cobertos embaixo pelos controles (fileira do HUD + botões + barra de força). */
-export const CAST_CONTROLS_CSS = 268;
+/** CSS px para os botões e a barra de força; o menu agora fica no alto da tela. */
+export const CAST_CONTROLS_CSS = 184;
 /** CSS px cobertos em cima pelo painel do HUD, com folga para o marco do horizonte aparecer. */
 export const CAST_TOP_CSS = 196;
 /** O arremesso de força cheia cai nesta fração do caminho da ponta da vara ao alto jogável. */
@@ -122,6 +122,7 @@ export interface ShadowFish {
   faceRight: boolean;
   sprite: string; // folha da espécie (4 quadros), pintada de sombra
   kgMax: number;
+  size?: number; // BRIGA-19: tamanho dentro da espécie (0 a 1)
 }
 
 /** Onde fica, na vista do arremesso, um ponto do cardume em metros vistos de cima. */
@@ -246,8 +247,6 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
     if (casting) water(scenery.water.light, scenery.water.wave, horizon + 4, place.ground - 6);
     else water(scenery.water.light, scenery.water.wave, oy + WATER_TEXTURE.top, oy + WATER_TEXTURE.bottom);
 
-    // O ponto escolhido, marcado na água do arremesso na escala nova: dá para mirar nele.
-    if (casting && view.zone) zoneBand(view.zone);
     // O cardume de verdade, em sombras: onde a sombra está, o peixe está.
     if (casting && view.school?.length) for (const f of view.school) shadow(f);
 
@@ -323,30 +322,6 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
       }
     }
 
-    /** O ponto escolhido na água do arremesso: o polígono da cena, reescalado em volta da ponta da vara. */
-    function zoneBand(zone: Zone) {
-      c.beginPath();
-      zone.polygon.forEach((p, i) => {
-        const m = zonePoint(p);
-        i === 0 ? c.moveTo(m.x, m.y) : c.lineTo(m.x, m.y);
-      });
-      c.closePath();
-      c.fillStyle = CAST_COLORS.zone;
-      c.fill();
-      c.strokeStyle = CAST_COLORS.zoneEdge;
-      c.lineWidth = 1;
-      c.stroke();
-    }
-
-    /** Ponto da cena do pesqueiro na água do arremesso, sem passar do horizonte. */
-    function zonePoint(p: Point): Point {
-      const k = place.pxPerM * M_PER_PX; // px da vista por px da cena (a cena anda a 10 px/m)
-      return {
-        x: place.tip.x + (p.x - CAST_ROD_TIP.x) * k,
-        y: Math.max(horizon + 2, place.tip.y + (p.y - CAST_ROD_TIP.y) * k),
-      };
-    }
-
     /**
      * Um peixe do cardume em sombra, onde ele está (metros vistos de cima → vista do arremesso), no
      * tamanho da faixa de kg da espécie e virado para onde nada: a folha da espécie pintada de
@@ -355,16 +330,19 @@ export function createCastRenderer(opts: { load?: ImageLoader; resolve?: (path: 
     function shadow(f: ShadowFish) {
       const p = castSpot(place, f.xM, f.yM);
       if (p.y < horizon + 2 || p.y > place.ground - 4) return; // fora da água à vista
-      const box = fishBox({ kg: { max: f.kgMax } });
+      const base = fishBox({ kg: { max: f.kgMax } });
+      const box = { w: base.w * sizeScale(f.size), h: base.h * sizeScale(f.size) }; // BRIGA-19
       const sheet = tinted(f.sprite);
       if (!sheet) return shadowFish(p.x, p.y, box.w, f.faceRight ? 1 : -1);
-      const fw = sheet.width / 4;
-      const frame = Math.floor(t * 6 + f.id) % 4;
+      const frames = fishSheet(f.sprite).frames ?? 1;
+      const fw = sheet.width / frames;
+      const frame = Math.floor(t * 6 + f.id) % frames;
       c.save();
       c.globalAlpha = 0.6;
       c.translate(Math.round(p.x), Math.round(p.y));
       if (!f.faceRight) c.scale(-1, 1);
-      c.drawImage(sheet, frame * fw, 0, fw, sheet.height, -box.w / 2, -box.h / 2, box.w, box.h);
+      const scale = Math.min(box.w / fw, box.h / sheet.height);
+      c.drawImage(sheet, frame * fw, 0, fw, sheet.height, -fw * scale / 2, -sheet.height * scale / 2, fw * scale, sheet.height * scale);
       c.restore();
     }
 
