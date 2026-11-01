@@ -10,8 +10,8 @@ const run = (cmd: string, cwd?: string, env?: NodeJS.ProcessEnv) =>
   execSync(cmd, { stdio: 'inherit', cwd, env: { ...process.env, ...env } });
 
 const remote = execSync('git remote get-url origin').toString().trim();
-const repo = remote.replace(/\.git$/, '').split(/[/:]/).pop();
-if (!repo) throw new Error(`Não achei o nome do repositório em ${remote}`);
+const [owner, repo] = remote.replace(/\.git$/, '').split(/[/:]/).slice(-2);
+if (!owner || !repo) throw new Error(`Não achei o dono e o nome do repositório em ${remote}`);
 
 run('npm run build', undefined, { BASE_PATH: `/${repo}/` });
 run('npm run check:size');
@@ -28,4 +28,4 @@ try {
 } finally {
   rmSync(site, { recursive: true, force: true });
 }
-console.log(`Publicado. Endereço: https://<usuário>.github.io/${repo}/`);
+console.log(`Publicado. Endereço: https://${owner.toLowerCase()}.github.io/${repo}/`);
