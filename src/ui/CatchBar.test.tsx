@@ -37,9 +37,9 @@ describe('CatchBar', () => {
     const bar = startBar(tilapia, bambu, barRulesFor('desafio'), createRng(1));
     const { zone, fish, meter, fill } = setup(bar);
     expect(percent(zone.style.bottom)).toBe(0);
-    expect(percent(zone.style.height)).toBeCloseTo(19.5, 9);
+    expect(percent(zone.style.height)).toBeCloseTo(bar.zoneH * 100, 9); // a altura vem da regra da faixa (tuning)
     expect(percent(fish.style.bottom)).toBeGreaterThan(0);
-    expect(percent(fish.style.bottom)).toBeLessThan(19.5);
+    expect(percent(fish.style.bottom)).toBeLessThan(bar.zoneH * 100);
     expect(meter.getAttribute('aria-valuenow')).toBe('30');
     expect(percent(fill.style.height)).toBeCloseTo(30, 9);
   });

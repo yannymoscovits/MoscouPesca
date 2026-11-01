@@ -5,20 +5,27 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { GameStoreContext, useGame, type GameStore } from '../app/store';
 import { APP_VERSION, versionNotice } from '../pwa/update';
-import { useServices } from './context';
+import { useNav, useServices } from './context';
 
 /** SAVE-02: o jogo só volta depois de um toque, em qualquer ponto da tela. */
 export function PauseOverlay() {
+  const go = useNav();
   const { controller } = useServices();
   const paused = useGame((s) => s.paused);
   if (!paused) return null;
   return (
     <div class="overlay overlay--pause" role="dialog" aria-modal="true" aria-label="Pausado" onClick={() => controller.resume()}>
-      <p class="panel pause__text">Pausado - toque para continuar</p>
+      <p class="panel pause__text">Pescaria pausada</p>
       <div class="overlay__actions">
         {/* o toque chega ao aviso inteiro; o botão é o alvo óbvio, na metade de baixo */}
         <button type="button" class="btn btn--big">
           Continuar
+        </button>
+        <button type="button" class="btn btn--secondary" onClick={(event) => { event.stopPropagation(); controller.resume(); go('menu'); }}>
+          Menu do jogo
+        </button>
+        <button type="button" class="btn btn--secondary" onClick={(event) => { event.stopPropagation(); controller.resume(); go('title'); }}>
+          Tela inicial
         </button>
       </div>
     </div>

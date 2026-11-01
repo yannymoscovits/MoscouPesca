@@ -6,7 +6,7 @@ import type { Difficulty } from '../content/types';
 import { useBack, useNav, useServices } from './context';
 
 const DIFFICULTIES: { id: Difficulty; name: string; hint: string }[] = [
-  { id: 'tranquilo', name: 'Tranquilo', hint: 'Mais tempo para fisgar, e a linha nunca arrebenta.' },
+  { id: 'tranquilo', name: 'Tranquilo', hint: 'Mais tempo para fisgar, e a linha demora mais para arrebentar.' },
   { id: 'desafio', name: 'Desafio', hint: 'Fisgada ligeira, e a linha pode arrebentar.' },
 ];
 
@@ -41,7 +41,8 @@ export function DifficultyPrompt() {
 }
 
 export function Settings() {
-  const { controller } = useServices();
+  const { controller, music } = useServices();
+  const [musicOn, setMusicOn] = useState(() => music?.isEnabled() ?? false);
   const back = useBack();
   const difficulty = useGame((s) => s.profile.settings.difficulty);
   const vibration = useGame((s) => s.profile.settings.vibration);
@@ -83,6 +84,23 @@ export function Settings() {
         >
           Vibração: {vibration ? 'ligada' : 'desligada'}
         </button>
+        {/* MUS-03 */}
+        {music && (
+          <button
+            type="button"
+            role="switch"
+            class="btn btn--toggle btn--switch"
+            aria-checked={musicOn}
+            onClick={() => {
+              music.setEnabled(!musicOn);
+              setMusicOn(!musicOn);
+            }}
+          >
+            Música: {musicOn ? 'ligada' : 'desligada'}
+          </button>
+        )}
+        {/* TEMPORÁRIO: diagnóstico do som no celular; sai antes de entregar */}
+        {music && import.meta.env.DEV && <p class="setting__label">{music.status()}</p>}
         <button
           type="button"
           class="btn btn--secondary"

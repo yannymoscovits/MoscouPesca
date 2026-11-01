@@ -3,11 +3,13 @@
 // pesqueiro, ARREMESSAR, RECOLHER, PUXAR, SEGURAR e a barra de captura. Depois de 10 s sem toque, a
 // fala reaparece e a seta pisca (TUTO-07). Nada aqui pega toque: o dedo chega aos pontos e botões por baixo.
 
+import { useServices } from './context';
 import { useLayoutEffect, useState } from 'preact/hooks';
+import { createPortal } from 'preact/compat';
 import { useGame } from '../app/store';
-import { tutorial as lines } from '../content';
-import type { TutorialPescaStep } from '../domain/tutorialPesca';
-import { characterById, Portrait } from './DialogBox';
+import { tutorial as lines, tutorialTips as tips } from '../content';
+import { TUTORIAL_STEPS, type TutorialPescaStep } from '../domain/tutorialPesca';
+import { characterById, Highlight, Portrait } from './DialogBox';
 
 /**
  * Para onde a seta aponta em cada passo: o primeiro destes elementos que estiver na tela. No pesqueiro,
@@ -20,28 +22,113 @@ const TARGETS: Record<TutorialPescaStep, string[]> = {
   recolher: ['[data-button="recolher"]', '[data-button="arremessar"]'], // com a isca no ar, a fileira dos botões
   atrair: ['[data-button="puxar"]'],
   fisgar: ['[data-button="puxar"]'],
-  subir: ['[data-button="segurar"]'], // segurar
-  descer: ['[data-button="segurar"]'], // soltar
-  manter: ['.catch-bar__track'],
+  briga: ['[data-button="segurar"]'],
   done: [],
 };
 
+/** Título de cada lição (TUTOB-05). */
+const TITLES: Record<TutorialPescaStep, string> = {
+  ponto: 'Escolha o ponto',
+  direcao: 'Mire',
+  forca: 'Escolha a força',
+  recolher: 'Recolha a isca',
+  atrair: 'Atraia o peixe',
+  fisgar: 'Fisgue!',
+  briga: 'A briga',
+  done: 'Pegou!',
+};
+
 export function TutorialCoach() {
+  const { controller } = useServices();
   const step = useGame((s) => s.tutorial?.step ?? null);
   const nudge = useGame((s) => s.tutorial?.nudge ?? false);
-  const blocked = useGame((s) => s.paused || s.profile.story.pendingScene !== null);
+  const reading = useGame((s) => s.tutorial?.reading ?? false);
+  const praising = useGame((s) => (s.tutorial?.praiseS ?? 0) > 0);
+  // A cena da história espera a última lição da Jane; as outras lições esperam a cena.
+  const blocked = useGame((s) => s.paused || (s.profile.story.pendingScene !== null && s.tutorial?.step !== 'done'));
   const missed = useGame((s) => s.fishing.phase.startsWith('Result_') && s.fishing.phase !== 'Result_Caught');
-  const at = useTarget(step === null || blocked || missed ? [] : TARGETS[step]);
-  if (step === null || blocked || missed) return null;
+  const caught = useGame((s) => s.fishing.phase === 'Result_Caught');
+  const hidden = step === null || blocked || missed;
+  const at = useTarget(hidden || reading ? [] : TARGETS[step]);
+  if (hidden) return null;
 
+  // Peixe pego: nada por cima da comemoração e da ficha; a Jane fecha o tutorial depois do "Continuar".
+  if (step === 'done') {
+    if (!reading || caught) return null;
+    return createPortal(
+      <div class="overlay lesson" role="dialog" aria-modal="true" aria-labelledby="licao-titulo">
+        <div class="lesson__card">
+          <Portrait character={characterById('jane')} expression="rindo" />
+          <h2 id="licao-titulo" class="lesson__title">
+            Tutorial completo!
+          </h2>
+          <p class="lesson__text">
+            <Highlight text={lines.done.text} />
+          </p>
+          <button type="button" class="btn btn--big lesson__ok" onClick={() => controller.tutorialRead()}>
+            Bora pescar ▸
+          </button>
+        </div>
+      </div>,
+      document.body,
+    );
+  }
+
+  // TUTOB-06: o passo deu certo; um respiro antes da próxima lição.
+  // A lição e o "Isso!" vão para o fim do <body>: por cima de tudo, até dos cartões do pesqueiro.
+  if (reading && praising) {
+    return createPortal(
+      <div class="coach-praise" role="status">
+        <Portrait character={characterById('jane')} expression="rindo" />
+        <p>Isso!</p>
+      </div>,
+      document.body,
+    );
+  }
+
+  // TUTOB-05: a lição do passo, no meio da tela, com o jogo parado até "Entendi".
+  if (reading) {
+    const n = TUTORIAL_STEPS.indexOf(step) + 1;
+    return createPortal(
+      <div class="overlay lesson" role="dialog" aria-modal="true" aria-labelledby="licao-titulo">
+        <div class="lesson__card">
+          <Portrait character={characterById('jane')} expression="normal" />
+          <p class="lesson__count">
+            Passo {n} de {TUTORIAL_STEPS.length}
+          </p>
+          <h2 id="licao-titulo" class="lesson__title">
+            {TITLES[step]}
+          </h2>
+          <p class="lesson__text">
+            <Highlight text={lines[step].text} />
+          </p>
+          <ol class="lesson__tips">
+            {tips[step].map((t) => (
+              <li key={t}>
+                <Highlight text={t} />
+              </li>
+            ))}
+          </ol>
+          <button type="button" class="btn btn--big lesson__ok" onClick={() => controller.tutorialRead()}>
+            Entendi ▸
+          </button>
+        </div>
+      </div>,
+      document.body,
+    );
+  }
+
+
+  // Durante a ação a tela fica limpa: a seta no botão certo e um selo pequeno com o passo e o "?".
   return (
     <>
-      {/* A troca de chave remonta a dica: ela "reaparece" a cada passo e no aviso dos 10 s. */}
-      <div key={`${step}-${nudge}`} class="coach" data-step={step}>
-        <Portrait character={characterById('jane')} expression={step === 'done' ? 'rindo' : 'normal'} />
-        <p class="coach__text" role="status" aria-label="Dica da Jane" data-nudge={nudge ? 'true' : 'false'}>
-          {lines[step].text}
-        </p>
+      <div class="coach-chip" data-step={step}>
+        <span>
+          Passo {TUTORIAL_STEPS.indexOf(step) + 1} de {TUTORIAL_STEPS.length} · {TITLES[step]}
+        </span>
+        <button type="button" class="coach-chip__help" aria-label="Rever a explicação" onClick={() => controller.tutorialHelp()}>
+          ?
+        </button>
       </div>
       {at && <Arrow step={step} at={at} blink={nudge} />}
     </>

@@ -6,7 +6,10 @@ import { useGame } from '../app/store';
 import { characters, speakersOf } from '../content/characters';
 import type { Character, CharacterId, DialogLine, Expression } from '../content/types';
 import { resolveAsset } from '../render/sprites';
-import { useServices } from './context';
+import { SceneArt } from './SceneArt';
+import { episodes as allEpisodes } from '../content';
+import { useNav, useServices } from './context';
+import { isTournamentUnlocked } from '../domain/story';
 
 /** Cores dos retratos provisórios; todas com contraste >= 6:1 com o texto branco. */
 const PORTRAIT_COLORS = [
@@ -47,6 +50,34 @@ function initials(name: string): string {
   return letters.toUpperCase();
 }
 
+/** Botões da pescaria que as falas citam: também em negrito. */
+const BUTTONS = ['ARREMESSAR', 'RECOLHER', 'PUXAR', 'FISGAR', 'SEGURAR', 'Pescar aqui'];
+/** Nomes que também são palavra comum e ficariam em negrito fora de hora. */
+const NOT_TERMS = new Set(['Vermelho']);
+
+/**
+ * HIST-12: nomes do jogo que ficam em negrito nas falas (peixes, varas, iscas, pontos, locais e botões):
+ * o que a pessoa precisa fazer salta aos olhos. O nome mais comprido vem primeiro ("Isca de Carne"
+ * antes de "Carne"); só palavra inteira, sem diferenciar maiúsculas.
+ */
+const TERMS = (() => {
+  const names = allEpisodes.flatMap((ep) => [
+    ...ep.species.map((s) => s.name),
+    ...ep.rods.map((r) => r.name),
+    ...ep.baits.map((b) => b.name),
+    ...ep.locations.flatMap((l) => [l.name, ...l.zones.map((z) => z.name)]),
+  ]);
+  const list = [...new Set([...names, ...BUTTONS])].filter((n) => !NOT_TERMS.has(n)).sort((a, b) => b.length - a.length);
+  const escaped = list.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return new RegExp(`(?<![\\p{L}\\p{N}])(${escaped.join('|')})(?![\\p{L}\\p{N}])`, 'giu');
+})();
+
+/** Texto de uma fala com os nomes do jogo em negrito (HIST-12). */
+export function Highlight({ text }: { text: string }) {
+  const parts = text.split(TERMS);
+  return <>{parts.map((part, i) => (i % 2 === 1 ? <strong key={i}>{part}</strong> : part))}</>;
+}
+
 /** "Didi e Denise"; "A, B e C". */
 export function joinNames(names: string[]): string {
   return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} e ${names[names.length - 1]}`;
@@ -64,7 +95,7 @@ export function Portrait({ character, expression, big = false }: { character: Ch
     'data-character': character.id,
     'data-expression': expression,
   };
-  const url = resolveAsset(character.portraits[expression]);
+  const url = resolveAsset(character.portraits[expression]) ?? resolveAsset(character.portraits.normal);
   const size = big ? ' portrait--big' : '';
   if (url) return <div {...common} class={`portrait portrait--art${size}`} style={`background-image: url(${url})`} />;
   return (
@@ -89,26 +120,31 @@ function NextArrow() {
 
 /**
  * Uma fala, no quadro do mockup do usuário (docs/arte/mockups/tela-de-pesca-v2.png): caixa creme com
- * borda amarela em pixel, retrato de moldura amarela em cima à esquerda, o nome acima do texto e o
- * triângulo piscando. O toque em qualquer ponto da caixa (ou da tela em volta) chama `onNext`; nada
+ * borda amarela em pixel, retrato de moldura amarela dentro da caixa, à esquerda, o nome e o texto ao
+ * lado dele e o triângulo piscando. O toque em qualquer ponto da caixa (ou da tela em volta) chama `onNext`; nada
  * avança sozinho.
  */
-export function DialogBox({ line, onNext }: { line: DialogLine; onNext: () => void }) {
+export function DialogBox({ line, onNext, laviniaCameo = false }: { line: DialogLine; onNext: () => void; laviniaCameo?: boolean }) {
   const cast = speakersOf(line).map(characterById);
   const expression = line.expression ?? 'normal';
   const narration = cast.length === 0;
   return (
     <div class="dialog-layer" role="dialog" aria-label="Conversa" onClick={onNext}>
+      {line.art && <SceneArt key={line.art} art={line.art} />}
       <div class={`dialog-box${narration ? ' dialog-box--narration' : ''}`}>
         {!narration && (
-          <div class="dialog-box__portraits">
+          <div class={`dialog-box__portraits${cast.length > 1 ? ' dialog-box__portraits--group' : ''}`}>
             {cast.map((c) => (
-              <Portrait key={c.id} character={c} expression={expression} />
+              laviniaCameo && c.id === 'lavinia'
+                ? <img key={c.id} class="dialog-fish-cameo" src={resolveAsset('src/assets/fish-portraits/piranha-lavinia.png') ?? ''} alt="Piranha Lavínia" />
+                : <Portrait key={c.id} character={c} expression={expression} />
             ))}
           </div>
         )}
-        {!narration && <p class="dialog-box__name">{joinNames(cast.map((c) => c.name))}</p>}
-        <p class="dialog-box__text">{line.text}</p>
+        {!narration && <p class="dialog-box__name">{joinNames(cast.map((c) => laviniaCameo && c.id === 'lavinia' ? 'Piranha Lavínia' : c.name))}</p>}
+        <p class="dialog-box__text">
+          <Highlight text={line.text} />
+        </p>
         <p class="dialog-box__hint" aria-hidden="true">
           Toque para continuar ▸
         </p>
@@ -145,16 +181,26 @@ export function CharacterIntroCard({ character, onClose }: { character: Characte
  */
 export function DialogLayer() {
   const { controller, episodes } = useServices();
+  const go = useNav();
+  const profile = useGame(s => s.profile);
   const sceneId = useGame((s) => s.profile.story.pendingScene);
   const index = useGame((s) => s.dialogLine);
   const introduced = useGame((s) => s.profile.charactersIntroduced);
   const showingResult = useGame((s) => s.fishing.phase.startsWith('Result_') || s.tournamentResult !== null);
-  if (sceneId === null || showingResult) return null;
+  const tutorialClosing = useGame((s) => s.tutorial?.step === 'done' && s.tutorial.reading); // a Jane fecha o tutorial antes
+  if (sceneId === null || showingResult || tutorialClosing) return null;
 
-  const line = episodes.flatMap((ep) => ep.scenes).find((sc) => sc.id === sceneId)?.lines[index];
+  const scene = episodes.flatMap((ep) => ep.scenes).find((sc) => sc.id === sceneId);
+  const line = scene?.lines[index];
   if (!line) return null;
 
   const newcomer = speakersOf(line).find((id) => !introduced.includes(id));
   if (newcomer) return <CharacterIntroCard character={characterById(newcomer)} onClose={() => controller.introduce(newcomer)} />;
-  return <DialogBox line={line} onNext={() => controller.advanceDialog()} />;
+  const episode = episodes.find(ep => ep.scenes.some(sc => sc.id === sceneId));
+  const finalObjective = episode?.chapter.objectives[episode.chapter.objectives.length - 1];
+  const invite = episode && finalObjective?.sceneOnDone === sceneId && isTournamentUnlocked(profile.story, episode) && !profile.tournament;
+  return <DialogBox line={line} laviniaCameo={scene?.laviniaCameo} onNext={() => {
+    controller.advanceDialog();
+    if (invite && index === scene!.lines.length - 1) go('tournament');
+  }} />;
 }

@@ -1,6 +1,7 @@
 // O que as telas recebem do jogo: comandos, plataforma, conteúdo e a navegação entre telas.
 // O estado do jogo vem do GameStore (useGame, em app/store.ts).
 
+import type { MusicPlayer } from '../platform/music';
 import { createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 import type { GameController } from '../app/controller';
@@ -16,6 +17,8 @@ export interface Services {
   episodes: EpisodeContent[];
   /** INST-07: aplica a versão nova só em tela segura (ausente fora do navegador). */
   update?: UpdateManager;
+  /** MUS-01: a trilha com som de Game Boy (ausente nos testes). */
+  music?: MusicPlayer;
 }
 
 export const ServicesContext = createContext<Services | null>(null);

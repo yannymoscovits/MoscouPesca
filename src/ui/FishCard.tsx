@@ -1,7 +1,7 @@
 // O fim do arremesso: a ficha do peixe (FishCard, PESCA-15, HUMOR-03, ALBUM-02), depois da
 // comemoração (HUMOR-05), ou o aviso de quando não vem peixe (pesca-bass ISCA-12, BRIGA-11).
 
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { useGame, type GameState } from '../app/store';
 import type { MedalTier, Species } from '../content/types';
 import type { PescaState } from '../domain/pesca';
@@ -13,7 +13,7 @@ import { formatKg, formatMoney } from './format';
 import { Pixels } from './TitleArt';
 
 const MISSES = {
-  Result_Nothing: 'Nada dessa vez', // ISCA-12: a isca chegou ao Adilson sem peixe
+  Result_Nothing: 'Vamos tentar mais perto do cardume!', // ISCA-12: a isca chegou ao Adilson sem peixe
   Result_Escaped: 'O peixe fugiu!', // BRIGA-11: o medidor zerou no Desafio
 } as const;
 
@@ -21,8 +21,15 @@ const MISSES = {
 export function ResultOverlay() {
   const { controller } = useServices();
   const fishing = useGame((s) => s.fishing);
+  const paused = useGame((s) => s.paused);
+  useEffect(() => {
+    if (fishing.phase !== 'Result_Nothing' || paused) return;
+    const timer = window.setTimeout(() => controller.dismissResult(), 1000);
+    return () => window.clearTimeout(timer);
+  }, [fishing.phase, paused, controller]);
   const newRecord = useGame((s) => s.newRecord);
   const awards = useGame((s) => s.awards);
+  const competitive = useGame(s => s.catchIsTournament);
   // HUMOR-05: cada peixe pego é comemorado antes da ficha.
   const [celebrated, setCelebrated] = useState<PescaState | null>(null);
 
@@ -39,16 +46,24 @@ export function ResultOverlay() {
     if (celebrated !== fishing) return <CatchCelebration species={species} onDone={() => setCelebrated(fishing)} />;
     return (
       <div class="overlay overlay--fishing" role="dialog" aria-modal="true" aria-label="Ficha do peixe">
-        <FishCard species={species} kg={kg} value={value} newRecord={newRecord} awards={awards} />
+        <FishCard species={species} kg={kg} value={value} newRecord={newRecord} awards={awards} competitive={competitive} />
         {next}
       </div>
     );
   }
 
+  // A isca voltou sem peixe: sem recado na tela, o arremesso volta sozinho em 1 s.
+  if (fishing.phase === 'Result_Nothing') return null;
   if (fishing.phase in MISSES) {
     return (
       <div class="overlay overlay--fishing" role="dialog" aria-modal="true" aria-label="Resultado do arremesso">
-        <p class="panel miss">{MISSES[fishing.phase as keyof typeof MISSES]}</p>
+        <p class="panel miss">
+          {fishing.phase === 'Result_Escaped' && fishing.released
+            ? 'Você soltou o peixe. Bora pro próximo!'
+            : fishing.phase === 'Result_Escaped' && fishing.snapped
+              ? 'A linha arrebentou! Quando o peixe mergulhar, solta o SEGURAR.'
+              : MISSES[fishing.phase as keyof typeof MISSES]}
+        </p>
         {next}
       </div>
     );
@@ -62,12 +77,14 @@ export function FishCard({
   value,
   newRecord,
   awards = null,
+  competitive = false,
 }: {
   species: Species;
   kg: number;
   value: number;
   newRecord: boolean;
   awards?: GameState['awards'];
+  competitive?: boolean;
 }) {
   return (
     <article class="panel fish-card">
@@ -76,9 +93,18 @@ export function FishCard({
       <h2 class="title-2">{species.name}</h2>
       <p class="fish-card__facts">
         <span>Peso: {formatKg(kg)}</span>
+        <FishSize species={species} kg={kg} />
         {/* spec, "Ficha da Piranha Lavínia": o rótulo substitui o R$ na ficha */}
-        <span>Valor: {species.valueLabel ?? formatMoney(value)}</span>
+        <span>{competitive ? 'Campeonato: vale só o peso' : `Valor: ${species.valueLabel ?? formatMoney(value)}`}</span>
       </p>
+      {/* PESCA-17: a carteira já tem o que falta para o próximo item; o resto do valor não entra */}
+      {!competitive && awards && awards.credited < value && (
+        <p class="fish-card__wallet" role="status">
+          {awards.walletFull
+            ? `${awards.credited > 0 ? `Entraram ${formatMoney(awards.credited)}. ` : ''}Carteira cheia! Ela guarda até ${formatMoney(200)}.`
+            : `${awards.credited > 0 ? `Entraram ${formatMoney(awards.credited)}: a` : 'A'} carteira já tem o que você precisa. Passa na loja!`}
+        </p>
+      )}
       {/* MEDAL-02: cada medalha nova, com o ícone dela */}
       {awards && awards.medals.length > 0 && (
         <ul class="fish-card__medals" aria-label="Medalhas novas">
@@ -90,17 +116,33 @@ export function FishCard({
           ))}
         </ul>
       )}
-      {/* MEDAL-05: a meta cumprida e a recompensa que entrou no saldo */}
+      {/* MEDAL-05: a meta cumprida */}
       {awards && awards.goals.length > 0 && (
         <div class="fish-card__goal" role="status">
           <p class="fish-card__goal-title">Meta cumprida!</p>
-          <p>
-            {awards.goals.join(' e ')} peixes: + {formatMoney(awards.reward)}
-          </p>
+          <p>{awards.goals.join(' e ')} peixes desta espécie</p>
         </div>
       )}
       <p class="fish-card__description">{species.description}</p>
     </article>
+  );
+}
+
+/** BRIGA-19: o tamanho do peixe pego dentro da espécie, com o nome e 5 quadradinhos. */
+function FishSize({ species, kg }: { species: Species; kg: number }) {
+  if (species.kg.max <= species.kg.min) return null; // espécie de peso único (a Lavínia)
+  const share = (kg - species.kg.min) / (species.kg.max - species.kg.min);
+  const label = share < 0.25 ? 'Pequeno' : share < 0.6 ? 'Médio' : share < 0.85 ? 'Grande' : 'Gigante!';
+  const filled = Math.max(1, Math.ceil(share * 5));
+  return (
+    <span class="fish-size" aria-label={`Tamanho: ${label}`}>
+      Tamanho: {label}
+      <span class="fish-size__bar" aria-hidden="true">
+        {Array.from({ length: 5 }, (_, n) => (
+          <span key={n} class="fish-size__cell" data-filled={n < filled ? 'true' : 'false'} />
+        ))}
+      </span>
+    </span>
   );
 }
 
@@ -148,12 +190,13 @@ export function MedalIcon({ tier, earned = true }: { tier: MedalTier; earned?: b
  * `silhouette`: espécie ainda não pega no álbum (ALBUM-03), toda escura e sem o nome.
  */
 export function FishPicture({ species, silhouette = false }: { species: Species; silhouette?: boolean }) {
-  const url = resolveAsset(species.sprite);
+  const portrait = resolveAsset(`src/assets/fish-portraits/${species.id}.png`);
+  const url = portrait ?? resolveAsset(species.sprite);
   const label = silhouette ? 'Peixe desconhecido' : species.name;
   const dark = silhouette ? ' fish-picture--silhouette' : '';
   if (url) {
     // A folha tem 4 quadros lado a lado, como no FishingRenderer: a ficha mostra o primeiro.
-    return <div class={`fish-picture fish-picture--art${dark}`} role="img" aria-label={label} style={`background-image: url(${url})`} />;
+    return <div class={`fish-picture fish-picture--art${portrait ? ' fish-picture--portrait' : ''}${dark}`} role="img" aria-label={label} style={`background-image: url(${url})`} />;
   }
   return (
     <div class={`fish-picture${dark}`} role="img" aria-label={label} style={`--fish: ${silhouette ? 'var(--outline)' : colorOf(species.id)}`}>

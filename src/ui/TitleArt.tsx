@@ -4,6 +4,12 @@
 import type { ComponentChildren, VNode } from 'preact';
 import { resolveAsset } from '../render/sprites';
 
+/** O Adilson sorrindo na abertura, com a mesma arte em pixels dos diálogos. */
+export function LogoAdilson() {
+  const url = resolveAsset('src/assets/portraits/adilson-rindo.png');
+  return url ? <img class="logo-adilson" src={url} width={96} height={96} alt="Adilson Moscovits" /> : null;
+}
+
 type Rect = [x: number, y: number, w: number, h: number];
 
 /** Grade de pixels: cada letra é uma cor da paleta e '.' é vazio. Pixels vizinhos da mesma cor viram um só retângulo. */

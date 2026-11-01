@@ -18,7 +18,7 @@ export function CastHud({ pesca, sweepS, leaveSpot }: CastHudProps) {
 
   return (
     <div class="cast-hud">
-      <div class="cast-hud__power">
+      {pesca.phase === 'Power' && <div class="cast-hud__power">
         <span class="cast-hud__label">Força</span>
         <div
           class="cast-hud__bar"
@@ -30,7 +30,7 @@ export function CastHud({ pesca, sweepS, leaveSpot }: CastHudProps) {
         >
           <div class="cast-hud__fill" style={{ width: `${percent}%` }} />
         </div>
-      </div>
+      </div>}
       <button type="button" class="btn btn--secondary cast-hud__leave" onClick={leaveSpot}>
         Trocar de ponto
       </button>

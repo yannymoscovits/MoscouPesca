@@ -1,5 +1,5 @@
 // Menu do jogo (T74), aberto pelo botão "Menu" da pesca: dá acesso ao Mapa, à Loja, ao Álbum,
-// aos Troféus, às Mensagens, ao Campeonato e aos Ajustes. Todos os botões na metade de baixo (ACES-08).
+// aos Troféus, às Cartas, ao Campeonato e aos Ajustes. Todos os botões na metade de baixo (ACES-08).
 
 import { useGame } from '../app/store';
 import { useNav, useServices, type ScreenId } from './context';
@@ -11,7 +11,7 @@ const ITEMS: { label: string; to?: ScreenId }[] = [
   { label: 'Loja', to: 'shop' },
   { label: 'Álbum', to: 'album' },
   { label: 'Troféus', to: 'trophies' },
-  { label: 'Mensagens', to: 'messages' },
+  { label: 'Cartas', to: 'messages' },
   { label: 'Campeonato', to: 'tournament' },
   { label: 'Ajustes', to: 'settings' },
 ];
@@ -48,6 +48,10 @@ export function MenuScreen() {
         </div>
         <button type="button" class="btn btn--big" onClick={() => go('fishing')}>
           Voltar a pescar
+        </button>
+        {/* O jogo fica salvo: "Continuar" na tela inicial volta para cá */}
+        <button type="button" class="btn btn--secondary" onClick={() => go('title')}>
+          Tela inicial
         </button>
       </div>
     </section>

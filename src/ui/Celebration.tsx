@@ -34,6 +34,7 @@ export function CatchCelebration({ species, onDone }: { species: Species; onDone
             <FishPicture species={species} />
           </div>
         </div>
+        <p class="celebration__name">{species.name}</p>
       </div>
     </div>
   );

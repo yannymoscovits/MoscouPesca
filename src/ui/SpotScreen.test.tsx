@@ -27,7 +27,7 @@ function setup() {
   const spot = (id: string) => root.querySelector<HTMLButtonElement>(`[data-spot="${id}"]`)!;
   const tap = (el: HTMLElement) => act(() => el.click());
   const fishHere = () => root.querySelector<HTMLButtonElement>('[data-action="pescar-aqui"]');
-  const species = () => [...root.querySelectorAll('.spots__species li')].map((li) => li.textContent);
+  const species = () => [...root.querySelectorAll('.spot-species__name')].map((li) => li.textContent?.replace('✓ ', ''));
   return { root, chooseSpot, spot, tap, fishHere, species };
 }
 
@@ -55,7 +55,11 @@ describe('SpotScreen', () => {
     expect(spot('raso').getAttribute('aria-pressed')).toBe('true');
     expect(root.querySelectorAll('[aria-pressed="true"]')).toHaveLength(1);
     // Beira do píer: tilápia, piau, traíra, curimatã e Piranha Lavínia; só a tilápia está no álbum.
-    expect(species()).toEqual(['Tilápia', '???', '???', '???', '???']);
+    expect(species()).toEqual(['Tilápia', '???', '???', '???', 'Piranha Lavínia']);
+    expect(root.querySelector('.spots__progress')?.textContent).toBe('1 de 5 espécies pescadas');
+    expect(root.querySelectorAll('.spot-species--caught')).toHaveLength(1);
+    expect(root.querySelector('.spot-species--caught')?.textContent).toContain('Pescado');
+    expect(root.querySelector('.spots__species li:last-child')?.textContent).toContain('Ainda não pescado');
 
     tap(spot('fundo'));
     expect(spot('raso').getAttribute('aria-pressed')).toBe('false');

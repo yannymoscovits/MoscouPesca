@@ -10,7 +10,10 @@ import { progress, TIERS } from '../domain/medals';
 import { isUnlocked } from '../domain/world';
 import { useNav, useServices } from './context';
 import { FishPicture, MedalIcon } from './FishCard';
-import { formatKg } from './format';
+import { formatKg, formatMoney } from './format';
+import { fishGuide } from '../domain/manual';
+import { joinNames } from './DialogBox';
+import type { FightStyle } from '../content/types';
 
 /** Espécies que vivem nas zonas do local, na ordem do episódio. */
 function speciesAt(location: Location, episode: EpisodeContent): Species[] {
@@ -26,6 +29,7 @@ export function Album() {
     .filter((ep) => isUnlocked(profile, ep.id))
     .flatMap((episode) => episode.locations.map((location) => ({ episode, location })));
   const [index, setIndex] = useState(() => Math.max(0, pages.findIndex((p) => p.location.id === profile.currentLocation)));
+  const [open, setOpen] = useState<Species | null>(null); // ALBUM-05: o manual do peixe tocado
   const { episode, location } = pages[index];
   const species = speciesAt(location, episode);
   const caught = species.filter((s) => profile.album[s.id]).length;
@@ -42,13 +46,16 @@ export function Album() {
             const entry = profile.album[sp.id];
             return (
               <li key={sp.id} class={`album-cell${entry ? '' : ' album-cell--missing'}`}>
-                <div class="album-cell__art">
-                  <FishPicture species={sp} silhouette={!entry} />
-                  {entry && <Medals profile={profile} species={sp} />}
-                </div>
-                <p class="album-cell__name">{entry ? sp.name : '???'}</p>
-                {entry && <p class="album-cell__record">Recorde: {formatKg(entry.recordKg)}</p>}
-                {entry && <GoalCount profile={profile} species={sp} />}
+                <button type="button" class="album-cell__open" aria-label={`Manual: ${entry ? sp.name : 'peixe ainda não pego'}`} onClick={() => setOpen(sp)}>
+                  <div class="album-cell__art">
+                    <FishPicture species={sp} silhouette={!entry} />
+                    {entry && <Medals profile={profile} species={sp} />}
+                  </div>
+                  <p class="album-cell__name">{entry ? sp.name : '???'}</p>
+                  {entry && <p class="album-cell__record">Recorde: {formatKg(entry.recordKg)}</p>}
+                  {entry && <GoalCount profile={profile} species={sp} />}
+                  <span class="album-cell__hint">Como pegar ▸</span>
+                </button>
               </li>
             );
           })}
@@ -72,7 +79,73 @@ export function Album() {
           Voltar
         </button>
       </div>
+      {open && <FishManual species={open} caught={!!profile.album[open.id]} episodes={episodes} onClose={() => setOpen(null)} />}
     </section>
+  );
+}
+
+const STYLES: Record<FightStyle, string> = {
+  calmo: 'Calmo: se mexe pouco, perto da faixa',
+  saltador: 'Saltador: pula de um lado pro outro da barra',
+  afundador: 'Afundador: puxa sempre pra baixo',
+};
+
+/** ALBUM-05: o manual do peixe. O peixe que falta aparece em silhueta, mas o manual ensina a pegar. */
+function FishManual({ species, caught, episodes, onClose }: { species: Species; caught: boolean; episodes: EpisodeContent[]; onClose: () => void }) {
+  const guide = fishGuide(species, episodes);
+  return (
+    <div class="overlay manual" role="dialog" aria-modal="true" aria-labelledby="manual-nome">
+      <article class="panel manual__card">
+        <div class="manual__art">
+          <FishPicture species={species} silhouette={!caught} />
+        </div>
+        <h2 id="manual-nome" class="manual__name">
+          {species.name}
+        </h2>
+        {!caught && <p class="manual__missing">Ainda não pego</p>}
+        <dl class="manual__facts">
+          <dt>Onde achar</dt>
+          <dd>
+            {[...new Set(guide.spots.map((s) => s.place))].map((place) => (
+              <span key={place} class="manual__spot">
+                <small>{place}:</small>{' '}
+                {guide.spots
+                  .filter((s) => s.place === place)
+                  .map((s) => (s.minReach > 0 ? `${s.spot} (alcance ${s.minReach}+)` : s.spot))
+                  .join(', ')}
+              </span>
+            ))}
+          </dd>
+          <dt>Isca</dt>
+          <dd>{joinNames(guide.baits.map((b) => b.name)).replace(/ e ([^,]+)$/, ' ou $1')}</dd>
+          <dt>Vara</dt>
+          <dd>{guide.rod ? (guide.rodRequired ? `Só com a ${guide.rod.name}` : `${guide.rod.name} ou melhor`) : 'A mais forte que tiver'}</dd>
+          <dt>Briga</dt>
+          <dd>
+            <span class="manual__stars" aria-label={`Dificuldade ${guide.difficulty} de 5`}>
+              {'★'.repeat(guide.difficulty)}
+              <span class="manual__stars-off">{'★'.repeat(5 - guide.difficulty)}</span>
+            </span>
+            <br />
+            {STYLES[guide.style]}
+          </dd>
+          <dt>Peso</dt>
+          <dd>
+            {species.kg.min === species.kg.max ? formatKg(species.kg.min) : `de ${formatKg(species.kg.min)} a ${formatKg(species.kg.max)}`}
+            {!species.valueLabel && (
+              <small>
+                {' '}· vale {guide.value.min === guide.value.max ? formatMoney(guide.value.min) : `de ${formatMoney(guide.value.min)} a ${formatMoney(guide.value.max)}`}
+              </small>
+            )}
+          </dd>
+        </dl>
+      </article>
+      <div class="overlay__actions">
+        <button type="button" class="btn btn--big" onClick={onClose}>
+          Fechar
+        </button>
+      </div>
+    </div>
   );
 }
 

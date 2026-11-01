@@ -6,13 +6,14 @@
 // (FishingButtons), o aviso "Escapou!" (ISCA-11), a pausa sempre à mão (SAVE-03), os arremessos do
 // torneio (CAMP-03) e a tela acesa enquanto ela está aberta (TELA-01).
 
-import { useContext, useLayoutEffect, useRef } from 'preact/hooks';
+import { newInShop } from '../domain/world';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { createLoop } from '../app/loop';
-import { GameStoreContext, useGame, type GameStore } from '../app/store';
-import type { ComponentChildren } from 'preact';
+import { GameStoreContext, useGame, type GameState, type GameStore } from '../app/store';
 import type { EpisodeContent, Profile } from '../content/types';
 import { aimAngleDeg, castDistanceM, powerAt } from '../domain/castAim';
 import { rulesFor } from '../domain/pesca';
+import { rules as tutorialRules } from '../domain/tutorialPesca';
 import { spotsFor } from '../domain/spots';
 import { fishAt } from '../domain/school';
 import { currentObjective } from '../domain/story';
@@ -38,6 +39,12 @@ import { TutorialCoach } from './TutorialCoach';
 
 /** Quanto o aviso "Escapou!" fica na tela depois da fisgada perdida (ISCA-11). */
 export const NOTICE_S = 1.5;
+
+/** Ciclo da seta e da barra de força como a pesca usa: o do tutorial (mais lento) ou o da dificuldade. */
+function sweepOf(s: GameState): number {
+  const d = s.profile.settings.difficulty ?? 'tranquilo';
+  return (s.tutorial ? tutorialRules(s.tutorial, d) : rulesFor(d)).sweepS;
+}
 
 export function FishingScreen() {
   const store = useContext(GameStoreContext) as GameStore;
@@ -74,7 +81,7 @@ export function FishingScreen() {
           return;
         }
       }
-      const sweepS = rulesFor(s.profile.settings.difficulty ?? 'tranquilo').sweepS;
+      const sweepS = sweepOf(s); // a mesma velocidade da regra: no tutorial, mais devagar (TUTOB-07)
       // A escala do arremesso segue a vara equipada; o ponto escolhido fica marcado na água, com
       // o cardume dele em sombras, cada peixe onde ele está de verdade (domain/school.ts).
       const allRods = episodes.flatMap((ep) => ep.rods);
@@ -94,6 +101,7 @@ export function FishingScreen() {
           ...fishAt(sf, school.tS),
           sprite: sf.species.sprite,
           kgMax: sf.species.kg.max,
+          size: sf.species.kg.max > sf.species.kg.min ? sf.size : 1,
         })),
         noticeM: SCHOOL_NOTICE_RADIUS_M,
       };
@@ -121,14 +129,21 @@ export function FishingScreen() {
       cast.resize(size());
       under.resize(size());
       draw(performance.now() / 1000); // redimensionar apaga o canvas, mesmo pausado
+      markTop();
     };
     window.addEventListener('resize', onResize);
 
     // Os botões dos pontos ficam abaixo do painel e da dica da Jane (--spots-top).
     const top = screen.current!.querySelector<HTMLElement>('.hud__top');
-    const markTop = () => screen.current?.style.setProperty('--spots-top', `${top?.getBoundingClientRect().bottom ?? 0}px`);
+    const actions = screen.current!.querySelector<HTMLElement>('.hud__actions');
+    const markTop = () => {
+      const origin = screen.current?.getBoundingClientRect().top ?? 0;
+      const bottom = Math.max(top?.getBoundingClientRect().bottom ?? 0, actions?.getBoundingClientRect().bottom ?? 0);
+      screen.current?.style.setProperty('--spots-top', `${Math.max(0, bottom - origin)}px`);
+    };
     const watcher = typeof ResizeObserver === 'undefined' || !top ? null : new ResizeObserver(markTop);
     watcher?.observe(top!);
+    if (actions) watcher?.observe(actions);
     markTop();
 
     controller.openFishing();
@@ -177,7 +192,16 @@ function Spots({ paused }: { paused: boolean }) {
     <SpotScreen
       place={location.id}
       background={location.background}
-      spots={spotsFor(location, rod, episode.species, profile.album)}
+      spots={spotsFor(
+        location,
+        rod,
+        episode.species,
+        profile.album,
+        profile.baits.owned,
+        (id) => episodes.flatMap((ep) => ep.baits).find((b) => b.id === id)?.name ?? id,
+        profile.rods.owned,
+        (id) => episodes.flatMap((ep) => ep.rods).find((r) => r.id === id)?.name ?? id,
+      )}
       chooseSpot={(id) => controller.chooseSpot(id)}
       paused={paused}
     />
@@ -188,7 +212,8 @@ function Spots({ paused }: { paused: boolean }) {
 function PescaControls() {
   const { controller } = useServices();
   const fishing = useGame((s) => s.fishing);
-  const sweepS = useGame((s) => rulesFor(s.profile.settings.difficulty ?? 'tranquilo').sweepS);
+  const sweepS = useGame(sweepOf);
+  const tutorialOn = useGame((s) => s.tutorial !== null);
   // A classificação do torneio, a carta e o aviso do episódio ficam por cima: os botões esperam por eles.
   const covered = useGame((s) => s.tournamentResult !== null || s.notice !== null);
   const escaped = fishing.phase === 'Lure' && fishing.notice !== null && fishing.notice.sinceS < NOTICE_S;
@@ -208,70 +233,79 @@ function PescaControls() {
         onHoldStart={() => controller.holdStart()}
         onHoldEnd={() => controller.holdEnd()}
       />
+      {(fishing.phase === 'Fight' || fishing.phase === 'Strike') && !tutorialOn && <ReleaseButton onRelease={() => controller.releaseFish()} />}
     </>
   );
 }
 
+/** BRIGA-17: desistir do peixe. O primeiro toque pergunta; o segundo, em até 3 s, solta. */
+function ReleaseButton({ onRelease }: { onRelease: () => void }) {
+  const [asking, setAsking] = useState(false);
+  useEffect(() => {
+    if (!asking) return;
+    const t = setTimeout(() => setAsking(false), 3000);
+    return () => clearTimeout(t);
+  }, [asking]);
+  return (
+    <button
+      type="button"
+      class={`btn btn--secondary release-btn${asking ? ' release-btn--ask' : ''}`}
+      onClick={() => (asking ? onRelease() : setAsking(true))}
+    >
+      {asking ? 'Toque de novo pra soltar' : 'Soltar o peixe'}
+    </button>
+  );
+}
+
 function Hud({ atSpot }: { atSpot: boolean }) {
-  const { controller, episodes } = useServices();
+  const { episodes } = useServices();
   const go = useNav();
+  const [details, setDetails] = useState(false);
   const profile = useGame((s) => s.profile);
+  const phase = useGame((s) => s.fishing.phase);
   const { episode, location } = currentPlace(profile, episodes);
   const run = profile.tournament;
+  const hasNew = !run && newInShop(profile, episodes).length > 0; // EQUIP-10: "!" no botão Loja
+  // EQUIP-11: com a isca no ar ou na água (ou o peixe fisgado), a loja fecha: termine o arremesso antes.
+  const lineOut = ['Flying', 'Lure', 'Strike', 'Fight'].includes(phase);
   const tournament = run && episodes.find((ep) => ep.tournament.id === run.id)?.tournament;
+  const buying = currentObjective(profile.story, episode)?.id.startsWith('comprar-') && !run;
+  const objective = run
+    ? `${tournament?.name}: ${run.castsLeft} arremessos · ${formatKg(score(run))}`
+    : objectiveText(profile, episode).replace(/^Objetivo: /, '');
 
   return (
-    <div class="hud">
+    <div class="hud hud--simple">
       <div class="hud__top">
-        {/* Mockup do pesqueiro: a moeda numa pílula e o local numa placa de madeira, em cima; vara,
-            isca e objetivo num cartão embaixo, com um peixinho por peixe pedido. */}
-        <div class="hud__panel" role="group" aria-label="Painel da pescaria">
-          <p class="hud__line hud__line--top">
-            <span class="hud__item hud__coin">
-              <HudIcon rows={COIN} />
-              <span class="hud__money">{formatMoney(profile.money)}</span>
-            </span>
-            <span class="hud__place plaque">{location.name}</span>
-          </p>
-          <div class="hud__info">
-            <p class="hud__line hud__gear">
-              <HudIcon rows={PIN} />
-              <span>{gear(profile, episodes)}</span>
-            </p>
-            <p class="hud__line">
-              <HudIcon rows={TARGET} />
-              {run ? (
-                <span>
-                  {tournament?.name}: restam {run.castsLeft} de {tournament?.casts ?? 8} arremessos · {formatKg(score(run))}
-                </span>
-              ) : (
-                <span>{objectiveText(profile, episode)}</span>
-              )}
-              {!run && <ObjectivePips profile={profile} episode={episode} />}
-            </p>
+        <div class="hud__toolbar">
+          <span class="hud__item hud__coin" aria-label={`Saldo: ${formatMoney(profile.money)}`}>
+            <HudIcon rows={COIN} /><span class="hud__money">{formatMoney(profile.money)}</span>
+          </span>
+          <button type="button" class="btn hud__shop" disabled={lineOut} onClick={() => go('shop')} title={lineOut ? 'Recolha a linha para ir à loja' : undefined}>
+            Loja <small>Varas e iscas</small>
+            {hasNew && <span class="new-dot" aria-label="item novo na loja">!</span>}
+          </button>
+          <button type="button" class="btn btn--secondary hud__menu" aria-label="Menu da pescaria" onClick={() => go('menu')}>
+            <span aria-hidden="true">⚙</span> Menu
+          </button>
+        </div>
+        <div class="hud__summary" role="group" aria-label="Painel da pescaria">
+          <div class="hud__location-row">
+            <span class="hud__location">{location.name}</span>
+            <button type="button" class="hud__details" aria-expanded={details} onClick={() => setDetails(!details)}>
+              {details ? 'Fechar detalhes' : 'Equipamento'}
+            </button>
           </div>
+          {buying ? (
+            <button type="button" class="hud__objective hud__objective--shop" disabled={lineOut} onClick={() => go('shop')}>
+              <span>{objective}</span><strong>Ir à loja →</strong>
+            </button>
+          ) : <p class="hud__objective">{objective}</p>}
+          {details && <p class="hud__equipment">{gear(profile, episodes)}</p>}
         </div>
         <TutorialCoach />
       </div>
-      {/* No pesqueiro, os medidores cobririam os pontos; a vara e a isca já estão no painel. */}
-      {atSpot ? <FishingGauges /> : <div />}
-      <div class="hud__actions">
-        <button type="button" class="btn btn--secondary hud__btn" onClick={() => controller.pause()}>
-          <ButtonIcon>
-            <rect x="2" y="1" width="3" height="10" />
-            <rect x="7" y="1" width="3" height="10" />
-          </ButtonIcon>
-          <span>Pausar</span>
-        </button>
-        <button type="button" class="btn btn--secondary hud__btn" onClick={() => go('menu')}>
-          <ButtonIcon>
-            <rect x="1" y="1" width="10" height="2" />
-            <rect x="1" y="5" width="10" height="2" />
-            <rect x="1" y="9" width="10" height="2" />
-          </ButtonIcon>
-          <span>Menu</span>
-        </button>
-      </div>
+      {atSpot && details && ['Lure', 'Strike', 'Fight'].includes(phase) ? <FishingGauges /> : <div />}
     </div>
   );
 }
@@ -286,22 +320,11 @@ const ICON_COLORS = {
   w: '#ffffff',
 };
 const COIN = ['..kkkkkk..', '.kyyyyyyk.', 'kyhhyyyyok', 'kyhyyyyyok', 'kyhyyyyyok', 'kyyyyyyyok', 'kyyyyyyyok', 'kyyyyyyook', '.kyoooook.', '..kkkkkk..'];
-const PIN = ['..kkkkkk..', '.kRRRRRRk.', 'kRRRwwRRRk', 'kRRwwwwRRk', 'kRRwwwwRRk', 'kRRRwwRRRk', '.kRRRRRRk.', '..kRRRRk..', '...kRRk...', '....kk....'];
-const TARGET = ['..kkkkkk..', '.kRRRRRRk.', 'kRRwwwwRRk', 'kRwwRRwwRk', 'kRwRRRRwRk', 'kRwRRRRwRk', 'kRwwRRwwRk', 'kRRwwwwRRk', '.kRRRRRRk.', '..kkkkkk..'];
 
 function HudIcon({ rows }: { rows: string[] }) {
   return (
     <svg class="hud__icon" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-hidden="true">
       <Pixels rows={rows} colors={ICON_COLORS} />
-    </svg>
-  );
-}
-
-/** Ícone dos botões do píer (12 × 12, na cor do texto): barras da pausa e o menu de três traços. */
-function ButtonIcon({ children }: { children: ComponentChildren }) {
-  return (
-    <svg class="hud__btn-icon" viewBox="0 0 12 12" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
-      {children}
     </svg>
   );
 }
@@ -314,24 +337,6 @@ function gear(profile: Profile, episodes: EpisodeContent[]): string {
   return `${rod} · ${bait}`;
 }
 
-/**
- * Os peixinhos do objetivo (mockup do pesqueiro): um por peixe pedido, cheios até o progresso.
- * Só com contagem de 2 a 6; desenhados no CSS, sem texto (a contagem já está escrita ao lado).
- */
-function ObjectivePips({ profile, episode }: { profile: Profile; episode: EpisodeContent }) {
-  const objective = currentObjective(profile.story, episode);
-  const count = objective?.count ?? 1;
-  if (!objective || count < 2 || count > 6) return null;
-  const done = Math.min(count, profile.story.episodes[episode.id]?.progress ?? 0);
-  return (
-    <span class="hud__pips" aria-hidden="true">
-      {Array.from({ length: count }, (_, i) => (
-        <span key={i} class="hud__pip" data-filled={i < done ? 'true' : 'false'} />
-      ))}
-    </span>
-  );
-}
-
 /** HIST-04: o objetivo atual, com a contagem quando ele pede mais de um ("1 de 3"). */
 function objectiveText(profile: Profile, episode: EpisodeContent): string {
   const objective = currentObjective(profile.story, episode);
@@ -340,5 +345,9 @@ function objectiveText(profile: Profile, episode: EpisodeContent): string {
     return st?.won ? 'Pescaria livre: todos os lugares abertos' : `Objetivo: vencer a ${episode.tournament.name}`;
   }
   const count = objective.count ?? 1;
+  if (objective.id === 'album-completo') {
+    const registered = episode.species.filter(sp => profile.album[sp.id] !== undefined).length;
+    return `Objetivo: ${objective.text} · ${registered} de ${episode.species.length}`;
+  }
   return `Objetivo: ${objective.text}${count > 1 ? ` · ${st?.progress ?? 0} de ${count}` : ''}`;
 }

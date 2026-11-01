@@ -32,10 +32,10 @@ function setup(pesca: PescaState) {
 }
 
 describe('CastHud', () => {
-  it('ARREM-02: com a seta balançando, a barra de força fica vazia', () => {
+  it('com a seta balançando, a barra espera a etapa de escolher a força', () => {
     const { meter, fill } = setup({ phase: 'Aim', sinceS: 0.7 });
-    expect(meter?.getAttribute('aria-valuenow')).toBe('0');
-    expect(fill?.style.width).toBe('0%');
+    expect(meter).toBeNull();
+    expect(fill).toBeNull();
   });
 
   it.each([

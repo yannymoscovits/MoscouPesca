@@ -29,6 +29,15 @@ export function TournamentLobby() {
   const open = isTournamentUnlocked(profile.story, episode);
   const missing = currentObjective(profile.story, episode);
   const won = profile.story.episodes[episode.id]?.won ?? false;
+  // CAMP-12: o ponto de peixe mais pesado do capítulo (sem os lendários, que não aparecem na copa).
+  const heaviest = episode.locations
+    .flatMap((loc) => loc.zones)
+    .map((z) => {
+      const fish = episode.species.filter((sp) => z.species.includes(sp.id) && !sp.rare && sp.id !== 'piranha-lavinia');
+      const avg = fish.reduce((sum, sp) => sum + (sp.kg.min + sp.kg.max) / 2, 0) / Math.max(1, fish.length);
+      return { name: z.name, avg };
+    })
+    .reduce<{ name: string; avg: number } | null>((a, b) => (!a || b.avg > a.avg ? b : a), null)?.name;
 
   function enter() {
     controller.enterTournament();
@@ -56,6 +65,8 @@ export function TournamentLobby() {
             <ul class="lobby__rules" aria-label="Regras">
               <li>{def.casts} arremessos, sem pressa.</li>
               <li>Vale a soma dos {def.countBest} peixes mais pesados.</li>
+              <li>As capturas valem pelo peso.</li>
+              {heaviest && <li>Dica: os peixes mais pesados ficam no ponto {heaviest}.</li>}
             </ul>
             <ul class="lobby__rivals" aria-label="Rivais">
               {def.rivals.map((r) => {
@@ -158,7 +169,10 @@ export function Standings() {
           {result.standings.map((s, i) => (
             <li key={nameIn(s)} class={s.isPlayer ? 'standings__row standings__row--you' : 'standings__row'}>
               <span class="standings__place">{i + 1}º</span>
-              <span class="standings__who">{nameIn(s)}</span>
+              <span class="standings__who">
+                <Portrait character={characterById(s.isPlayer ? 'adilson' : s.character)} expression={s.isPlayer && result.won ? 'rindo' : 'normal'} />
+                <span>{nameIn(s)}</span>
+              </span>
               <span>{formatKg(s.kg)}</span>
             </li>
           ))}

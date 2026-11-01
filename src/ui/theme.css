@@ -27,7 +27,7 @@
   --outline: #000c22;
 
   --font-title: 'Pixelify Sans', system-ui, sans-serif;
-  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Pixelify Sans', system-ui, sans-serif; /* uma fonte só no jogo inteiro, a mesma dos títulos */
   --text: 20px;
   --text-min: 18px;
   --touch: 56px;
@@ -43,6 +43,12 @@
      religaria as ligaduras, por isso o !important. */
   font-variant-ligatures: none !important;
   font-feature-settings: 'liga' 0, 'clig' 0 !important;
+}
+
+/* No Safari do iPhone, a faixa embaixo da página (atrás da barra do navegador) mostra o fundo do html:
+   o azul-escuro do fundo do mar da cena, para não aparecer uma aba de outra cor. */
+html {
+  background: #04142a;
 }
 
 html,
@@ -76,9 +82,29 @@ ul {
   inset: 0;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background: transparent;
   color: var(--ink);
 }
+
+.app-scenery { position: fixed; inset: 0; pointer-events: none; }
+.app-scenery .title-scene { z-index: 0; }
+.app-scenery::after { content: ''; position: absolute; inset: 0; background: #001a3b66; }
+.hud__top[hidden] { display: none; }
+.hud__top { padding-top: 58px; }
+.hud.hud--collapsed { grid-template-rows: 0 auto minmax(0, 1fr); }
+.hud .hud__actions {
+  grid-row: auto;
+  align-self: start;
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top));
+  right: 8px;
+  bottom: auto;
+  padding: 0;
+  gap: 8px;
+}
+.hud .hud__btn { font-size: 14px; min-height: 44px; padding: 8px 12px; }
+.hud__settings { min-width: 44px; min-height: 44px; padding: 4px 10px; font-size: 26px; }
+.fish-picture--art.fish-picture--portrait { background-size: contain; background-position: center; background-repeat: no-repeat; }
 
 .screen__top {
   flex: 1 1 0;
@@ -390,8 +416,12 @@ ul {
 .title-screen .screen__top {
   gap: 12px;
 }
+.title-logo { width: min(100%, 560px); margin: 0; line-height: 0; }
+.title-logo img { display: block; width: 100%; height: auto; max-height: 32vh; object-fit: contain; image-rendering: pixelated; }
+.title-screen .screen__top { padding-inline: 12px; }
 
 /* Peixinho fofo do logo (T81): 128 × 112 em escala 1, com as bolhas saindo da boca, à direita. */
+.logo-adilson { display: block; width: 96px; height: 96px; flex: none; image-rendering: pixelated; filter: drop-shadow(0 4px 0 #000c2280); }
 .logo-fish {
   position: relative;
   width: 128px;
@@ -494,8 +524,24 @@ ul {
 .title-screen .screen__actions {
   gap: 16px;
   padding-inline: 34px;
-  padding-bottom: max(var(--safe-bottom), 10vh);
+  padding-bottom: var(--safe-bottom);
+  flex: 0 0 auto;
 }
+
+.title-screen { min-height: 100dvh; bottom: 0; overflow-y: auto; padding-top: env(safe-area-inset-top); } /* no iPhone, sem faixa embaixo */
+.title-screen .screen__top { flex: 1 0 auto; min-height: min-content; padding-block: 16px 24px; }
+.title-screen .title-logo img { max-height: min(28dvh, 260px); }
+.title-screen .ribbon { font-size: clamp(13px, 3.8vw, 20px); }
+.title-screen .dedication { font-size: clamp(14px, 4vw, 20px); }
+.overlay--install { height: 100dvh; bottom: auto; overflow-y: auto; justify-content: flex-start; padding-top: max(16px, env(safe-area-inset-top)); }
+.overlay--install > * { flex-shrink: 0; }
+.overlay--install .install-help { font-size: 16px; }
+.overlay--install .overlay__actions { margin-top: auto; }
+.mock-ios { display: grid; gap: 10px; margin-bottom: 16px; padding: 12px; border: 2px solid #9eaabe; border-radius: 12px; background: #e5edf8; color: #183455; }
+.mock-ios__share { display: flex; gap: 8px; align-items: center; color: #1659a8; }
+.install-help__platforms { margin-bottom: 16px; gap: 8px; }
+.install-help__platforms .btn { min-width: 0; padding-inline: 8px; font-size: 17px; }
+.install-help__native { width: 100%; margin-bottom: 12px; font-size: 20px; }
 
 /* Botões grossos com ícone em pixel e texto; "Jogar" maior e amarelo. */
 .title-btn {
@@ -509,6 +555,30 @@ ul {
   font: 700 24px / 1.1 var(--font-title);
   letter-spacing: 1px;
 }
+
+/* Ajustes e Novo jogo lado a lado; sozinho, Ajustes ocupa a linha. */
+.title-row { display: flex; gap: 12px; }
+.title-row > .title-btn { flex: 1 1 0; min-width: 0; padding-inline: 10px; font-size: clamp(18px, 5.4vw, 24px); }
+
+/* SAVE-11: onde o jogo salvo parou, numa plaquinha em cima do "Continuar". */
+.title-saved {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 8px 14px;
+  border: 3px solid var(--outline);
+  border-radius: 12px;
+  background: #fff7e2;
+  color: #183455;
+  font-size: 16px;
+  line-height: 1.25;
+  text-align: center;
+}
+.title-saved span:first-child { font-weight: 700; color: #8a4a12; }
+
+.new-game__saved { margin-top: 12px; font-weight: 700; }
+
 
 .title-btn.btn--big {
   min-height: 86px;
@@ -710,7 +780,7 @@ ul {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) minmax(0, 50%);
+  grid-template-rows: auto auto minmax(0, 1fr);
   pointer-events: none;
 }
 
@@ -882,7 +952,7 @@ ul {
   grid-row: 2;
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 8px;
   min-height: 0;
   padding: 4px 8px 8px;
@@ -1168,12 +1238,12 @@ ul {
 }
 
 /* Quadro do mockup (docs/arte/mockups/tela-de-pesca-v2.png): caixa creme com borda amarela em pixels
-   de 3 px, cantos chanfrados e pontinhos amarelos. Tinta escura sobre o creme: 16,2:1. */
+   de 3 px, cantos chanfrados e pontinhos amarelos. Tinta escura sobre o creme: 16,2:1. O retrato fica
+   dentro da caixa, à esquerda; o nome e o texto correm ao lado dele e, na fala longa, por baixo. */
 .dialog-box {
   position: relative;
-  display: grid;
-  gap: 4px;
-  padding: 2px 8px 10px;
+  display: flow-root;
+  padding: 2px 4px 8px;
   border: 24px solid transparent;
   border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='17' viewBox='0 0 17 17' shape-rendering='crispEdges'%3E%3Cpath fill='%23000c22' d='M3 0h11v1H3zM2 1h1v1H2zM14 1h1v1H14zM1 2h1v1H1zM15 2h1v1H15zM0 3h1v1H0zM16 3h1v1H16zM0 4h1v1H0zM5 4h7v1H5zM16 4h1v1H16zM0 5h1v1H0zM4 5h1v1H4zM12 5h1v1H12zM16 5h1v1H16zM0 6h1v1H0zM4 6h1v1H4zM12 6h1v1H12zM16 6h1v1H16zM0 7h1v1H0zM4 7h1v1H4zM12 7h1v1H12zM16 7h1v1H16zM0 8h1v1H0zM4 8h1v1H4zM12 8h1v1H12zM16 8h1v1H16zM0 9h1v1H0zM4 9h1v1H4zM12 9h1v1H12zM16 9h1v1H16zM0 10h1v1H0zM4 10h1v1H4zM12 10h1v1H12zM16 10h1v1H16zM0 11h1v1H0zM4 11h1v1H4zM12 11h1v1H12zM16 11h1v1H16zM0 12h1v1H0zM5 12h7v1H5zM16 12h1v1H16zM0 13h1v1H0zM16 13h1v1H16zM1 14h1v1H1zM15 14h1v1H15zM2 15h1v1H2zM14 15h1v1H14zM3 16h11v1H3z'/%3E%3Cpath fill='%23ffe27a' d='M3 1h11v1H3zM2 2h1v1H2zM1 3h1v1H1zM1 4h1v1H1zM1 5h1v1H1zM1 6h1v1H1zM1 7h1v1H1zM1 8h1v1H1zM1 9h1v1H1zM1 10h1v1H1zM1 11h1v1H1zM1 12h1v1H1zM1 13h1v1H1z'/%3E%3Cpath fill='%23fecd42' d='M3 2h12v1H3zM2 3h13v1H2zM2 4h3v1H2zM12 4h3v1H12zM2 5h2v1H2zM13 5h2v1H13zM2 6h2v1H2zM13 6h2v1H13zM2 7h2v1H2zM13 7h2v1H13zM2 8h2v1H2zM13 8h2v1H13zM2 9h2v1H2zM13 9h2v1H13zM2 10h2v1H2zM13 10h2v1H13zM2 11h2v1H2zM13 11h2v1H13zM2 12h3v1H2zM12 12h3v1H12zM2 13h13v1H2zM2 14h12v1H2z'/%3E%3Cpath fill='%23d9921f' d='M15 3h1v1H15zM15 4h1v1H15zM15 5h1v1H15zM15 6h1v1H15zM15 7h1v1H15zM15 8h1v1H15zM15 9h1v1H15zM15 10h1v1H15zM15 11h1v1H15zM15 12h1v1H15zM15 13h1v1H15zM14 14h1v1H14zM3 15h11v1H3z'/%3E%3Cpath fill='%23fcf6e6' d='M5 5h7v1H5zM5 6h2v1H5zM8 6h1v1H8zM10 6h2v1H10zM5 7h1v1H5zM7 7h3v1H7zM11 7h1v1H11zM5 8h3v1H5zM9 8h3v1H9zM5 9h1v1H5zM7 9h3v1H7zM11 9h1v1H11zM5 10h2v1H5zM8 10h1v1H8zM10 10h2v1H10zM5 11h7v1H5z'/%3E%3Cpath fill='%23fecd42' d='M7 6h1v1H7zM9 6h1v1H9zM6 7h1v1H6zM10 7h1v1H10zM6 9h1v1H6zM10 9h1v1H10zM7 10h1v1H7zM9 10h1v1H9z'/%3E%3C/svg%3E")
     8 / 24px stretch;
@@ -1181,17 +1251,28 @@ ul {
   color: var(--paper-ink);
 }
 
-/* Retrato em cima, à esquerda, saltando para fora da caixa. */
+/* Retrato à esquerda, dentro da caixa; o texto contorna. Fala conjunta: retratos menores lado a lado. */
 .dialog-box__portraits {
+  float: left;
   display: flex;
-  gap: 8px;
-  margin: -64px 0 0 -14px;
+  gap: 6px;
+  margin: -4px 12px 6px -4px;
+  align-items: flex-start;
 }
 
 .dialog-box__portraits .portrait {
-  width: 92px;
-  height: 92px;
+  width: 108px;
+  height: auto;
+  aspect-ratio: 1;
+  flex: 0 0 108px;
+  min-width: 0;
 }
+
+.dialog-box__portraits--group .portrait {
+  width: 78px;
+  flex-basis: 78px;
+}
+.dialog-fish-cameo { width: 108px; height: 84px; object-fit: contain; image-rendering: pixelated; background: var(--paper); border: 3px solid var(--outline); border-radius: 12px; box-shadow: 0 4px 0 var(--outline); }
 
 .dialog-box__portraits .portrait__initials {
   font-size: 28px;
@@ -1213,13 +1294,21 @@ ul {
 
 /* Nome de quem fala: marrom-alaranjado sobre o creme, 5,8:1. */
 .dialog-box__name {
+  display: flow-root; /* a caixa do nome começa depois do retrato, não embaixo dele */
+  margin-bottom: 4px;
   font: 700 24px / 1.1 var(--font-title);
   color: #9a4a06;
 }
 
-/* "Toque para continuar": azul sobre o creme, 6,4:1. O triângulo fica embaixo da borda. */
+.dialog-box__text {
+  line-height: 1.35;
+}
+
+/* "Toque para continuar": azul sobre o creme, 6,4:1, embaixo de tudo. O triângulo fica embaixo da borda. */
 .dialog-box__hint {
-  justify-self: end;
+  clear: both;
+  padding-top: 6px;
+  text-align: right;
   margin-right: 30px;
   font-size: var(--text-min);
   font-weight: 700;
@@ -1291,6 +1380,7 @@ ul {
 }
 
 .portrait--art {
+  background-color: #24496b;
   background-size: cover;
   image-rendering: pixelated;
 }
@@ -1310,11 +1400,46 @@ ul {
 
 /* Cartão de apresentação: o mesmo quadro das falas, com um clarão atrás, o retrato grande saltando
    para fora, o nome em caixa alta e o apelido. */
+/* Apresentação do personagem: raios de gibi amarelos e laranja girando devagar atrás do cartão. */
 .intro-card {
   z-index: 26;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle at 50% 42%, #164a8c 0, var(--bg) 62%);
+  overflow: hidden;
+  background: #f29a2e;
+}
+
+.intro-card::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background:
+    radial-gradient(circle at 50% 50%, #fff3c4 0 8%, transparent 30%),
+    repeating-conic-gradient(from 0deg at 50% 50%, #fecd42 0deg 9deg, #f29a2e 9deg 18deg);
+}
+
+.intro-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 45%, transparent 45%, rgba(1, 34, 75, 0.55) 100%); /* borda escura: o cartão salta */
+}
+
+.intro-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .intro-card::before {
+    animation: raios 24s linear infinite;
+  }
+}
+
+@keyframes raios {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .intro-card__burst {
@@ -1354,6 +1479,27 @@ ul {
   display: grid;
   gap: 8px;
 }
+
+/* Navegação sempre visível; equipamentos e medidores ficam sob demanda. */
+.hud--simple .hud__top { padding: max(8px, env(safe-area-inset-top)) 8px 0; gap: 6px; }
+.hud__toolbar { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: stretch; pointer-events: auto; }
+.hud__toolbar .hud__coin { padding: 6px 8px; gap: 5px; border-width: 2px; }
+.hud__toolbar .hud__money { font: 700 18px/1.2 var(--font-body); font-variant-numeric: tabular-nums; white-space: nowrap; letter-spacing: 0.2px; }
+.hud__toolbar .hud__icon { width: 18px; height: 18px; }
+.hud__toolbar .btn { min-height: 48px; padding: 5px 10px; font: 700 20px/1.1 var(--font-title); }
+.hud__shop small { display: block; font: 400 13px/1.25 var(--font-body); margin-top: 2px; white-space: nowrap; }
+.hud__menu { display: flex; align-items: center; justify-content: center; gap: 4px; }
+.hud__toolbar .hud__menu { font-size: 16px; padding-inline: 8px; }
+.hud__summary { padding: 6px 10px; background: #0a2350ed; border-radius: 10px; color: var(--ink-soft); pointer-events: auto; }
+.hud__location-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.hud__location { font: 700 15px/1.15 var(--font-title); }
+.hud__details { flex: none; min-height: 36px; border: 0; border-radius: 6px; padding: 4px 6px; background: #234570; color: white; font: 400 14px/1.1 var(--font-body); cursor: pointer; }
+.hud__objective { margin: 2px 0 0; padding: 4px 0; font: 400 16px/1.25 var(--font-body); color: var(--ink); }
+.hud__objective--shop { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 0; border-top: 1px solid #395b84; background: transparent; text-align: left; cursor: pointer; min-height: 40px; }
+.hud__objective--shop strong { flex: none; color: var(--accent); font-size: 13px; }
+.hud__equipment { font-size: 13px; margin: 6px 0 2px; padding-top: 6px; border-top: 1px solid #395b84; }
+.hud--simple .coach { position: relative; top: auto; margin: 0; }
+.hud--simple .coach-chip { position: relative; top: auto; left: auto; transform: none; width: fit-content; margin: 8px auto 0; } /* embaixo do painel, sem cobrir a Loja */
 
 /* A fala da Jane fica por cima do painel de cima, fora do fluxo: não empurra os medidores (a Isca
    não some cortada) e não cobre a água, onde a pesca acontece. Sobre a ficha do peixe (20), para o
@@ -1445,6 +1591,13 @@ ul {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+}
+
+/* O último botão sozinho na linha (Ajustes) fica no meio, com a largura dos outros. */
+.menu__grid > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 6px);
 }
 
 /* ---------- Loja do Edvaldo ---------- */
@@ -1692,12 +1845,17 @@ ul {
 
 .standings__row {
   display: grid;
-  grid-template-columns: 2.5em 1fr auto;
+  grid-template-columns: 1.6em minmax(0, 1fr) auto;
   gap: 8px;
   padding: 6px 10px;
   border-radius: 8px;
   font-weight: 700;
+  align-items: center;
+  font-size: 16px;
 }
+.standings__who { min-width: 0; display: flex; align-items: center; gap: 6px; }
+.standings__who > span { min-width: 0; overflow-wrap: anywhere; }
+.standings__who .portrait { flex: 0 0 36px; width: 36px; height: 36px; border-width: 2px; border-radius: 7px; box-shadow: none; }
 
 /* A linha do jogador em destaque: tinta escura sobre amarelo, 11,7:1. */
 .standings__row--you {
@@ -1712,18 +1870,47 @@ ul {
 /* ---------- Carta da família, mensagens e aviso do episódio ---------- */
 
 /* A carta ocupa a tela toda acima do "Continuar"; o texto nunca rola (ACES-09). */
+/* A carta no meio da tela, longe da barra de status do celular; o papel tem altura fixa para a
+   paginação medir quanto texto cabe. */
 .letter {
-  justify-content: stretch;
+  justify-content: center;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 28px);
 }
 
+/* Na pescaria (depois da copa), a carta fica por cima do painel e centralizada, sem a folga dos botões. */
+.letter.overlay--fishing {
+  z-index: 40;
+  padding-bottom: var(--safe-bottom);
+}
+
+/* CAMP-11: a carta num papel de caderno: pauta azul-clara, margem vermelha, sombra de papel e um
+   leve giro; ela sai do envelope crescendo. A linha do texto bate com a pauta (32 px). */
 .letter__paper {
   position: relative;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
+  height: min(66dvh, 640px);
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
   overflow: hidden;
+  padding: 20px 18px 16px 50px;
+  border-radius: 4px;
+  background-color: #fffaf0;
+  background-image:
+    linear-gradient(90deg, transparent 36px, #e59a9a 36px, #e59a9a 38px, transparent 38px),
+    repeating-linear-gradient(#fffaf0 0 31px, #c9d8ee 31px 32px);
+  color: #2a2014;
+  box-shadow: 0 2px 0 #d8cbb0, 0 10px 24px rgba(0, 0, 0, 0.45);
+  transform: rotate(-0.6deg);
+}
+.letter__paper .title-2 { color: #8a3b12; background: none; box-shadow: none; padding: 0; text-align: left; }
+.letter__text { line-height: 32px; }
+@media (prefers-reduced-motion: no-preference) {
+  .letter__paper { animation: carta-sai 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+}
+@keyframes carta-sai {
+  from { transform: translateY(35%) scale(0.55) rotate(-4deg); opacity: 0; }
 }
 
 .letter__from {
@@ -1816,6 +2003,8 @@ ul {
 }
 
 .celebration__burst {
+  width: min(100%, 420px);
+  min-width: 0;
   display: grid;
   justify-items: center;
   gap: 16px;
@@ -1831,21 +2020,31 @@ ul {
 }
 
 .celebration__word {
-  font: 700 64px / 1 var(--font-title);
+  font: 700 clamp(40px, 12vw, 64px) / 1 var(--font-title);
   transform: rotate(-6deg);
   animation: pulsar 0.5s ease-in-out infinite;
 }
 
 /* O Adilson com o peixe erguido ao lado do rosto. */
 .celebration__pose {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+  width: 100%;
+  align-items: center;
+  gap: 12px;
 }
 
+.celebration__pose .portrait { width: 100%; height: auto; aspect-ratio: 1; min-width: 0; }
+.celebration__name { font: 700 24px/1.15 var(--font-title); text-align: center; }
+
 .celebration__fish {
-  transform: rotate(-20deg) translateY(-40px);
+  min-width: 0;
+  padding: 8px;
+  background: var(--paper);
+  border: 2px solid var(--outline);
+  border-radius: 14px;
 }
+.celebration__fish .fish-picture { width: 100%; height: clamp(110px, 34vw, 160px); }
 
 /* Onomatopeia: grande, torta e por cima da cena (abaixo das falas, 25). */
 .impact {
@@ -1922,8 +2121,9 @@ ul {
 /* Um trecho do caminho por episódio, ligados por uma trilha tracejada. */
 .map__episode {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
+  width: 100%;
   padding: 8px 12px;
   border: 3px solid var(--outline);
   border-radius: 12px;
@@ -1950,8 +2150,20 @@ ul {
   font: 700 22px / 1 var(--font-title);
 }
 
+.map__text {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 2px;
+}
+
 .map__title {
   font-weight: 700;
+}
+
+.map__chapter {
+  font-size: 0.85em;
+  opacity: 0.8;
 }
 
 .map__lock {
@@ -1959,10 +2171,34 @@ ul {
   color: var(--accent);
 }
 
-.map__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+/* Cada local liberado é um cartão que viaja; o local atual fica marcado. */
+.map__place {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--outline);
+}
+
+.map__place:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--outline);
+}
+
+.map__place--here {
+  border-color: var(--accent);
+  background: #fff3c4;
+}
+
+.map__here {
+  justify-self: start;
+  margin-top: 2px;
+  padding: 2px 8px;
+  border: 2px solid var(--outline);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.75em;
+  font-weight: 700;
 }
 
 /* ---------- Sala de troféus ---------- */
@@ -2056,7 +2292,7 @@ ul {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: var(--hud-row);
+  bottom: max(16px, var(--safe-bottom));
   z-index: 25; /* acima da cena, abaixo da fileira do HUD (30) e dos avisos por cima da tela */
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2070,6 +2306,7 @@ ul {
   border-width: 4px;
   border-radius: 18px;
   font: 700 28px / 1.1 var(--font-title);
+  font-size: clamp(18px, 6vw, 28px);
   letter-spacing: 1px;
   touch-action: none; /* o dedo encostado não vira rolagem nem zoom */
   --bevel-hi: rgba(255, 255, 255, 0.55);
@@ -2107,8 +2344,8 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: calc(var(--spots-top, 0px) + 8px) var(--gutter) calc(var(--hud-row) + 10px);
-  background: var(--bg);
+  padding: calc(var(--spots-top, 0px) + 8px) var(--gutter) max(16px, var(--safe-bottom));
+  background: transparent;
 }
 
 .spots__cards {
@@ -2118,7 +2355,7 @@ ul {
   min-height: 0;
   display: flex;
   flex-direction: column-reverse; /* o mais raso embaixo, perto do píer */
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
 }
 
@@ -2243,12 +2480,17 @@ ul {
 }
 
 .spots__species {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
   padding: 0;
   list-style: none;
 }
+.spots__progress { font-size: 13px; color: #43516a; }
+.spot-species { min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: 6px 8px; border: 1px dashed #8390a2; border-radius: 8px; background: #eae8e0; }
+.spot-species--caught { border: 1px solid #4b8b5d; background: #e3f2df; color: #174823; }
+.spot-species__name { font-size: 14px; line-height: 1.2; font-weight: 600; }
+.spot-species__status { font-size: 11px; line-height: 1.25; margin-top: 2px; }
 
 .spots__lock {
   display: flex;
@@ -2270,15 +2512,17 @@ ul {
   position: absolute;
   left: var(--gutter);
   right: var(--gutter);
-  bottom: calc(var(--hud-row) + 100px);
+  bottom: calc(max(16px, var(--safe-bottom)) + 100px);
   z-index: 25;
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: flex-end;
 }
 
 .cast-hud__power {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2315,6 +2559,8 @@ ul {
   flex: none;
   padding: 8px 12px;
   line-height: 1.15;
+  min-height: 44px;
+  font-size: 14px;
 }
 
 /* ---------- Barra de captura da briga (pesca-bass BRIGA-01, BRIGA-13) ----------
@@ -2349,7 +2595,7 @@ ul {
 }
 
 .catch-bar__track {
-  width: 56px;
+  width: 68px;
 }
 
 .catch-bar__meter {
@@ -2370,12 +2616,16 @@ ul {
 }
 
 /* O centro do peixe fica na altura dele. */
+/* Só o primeiro quadro da folha (4 quadros lado a lado): altura cheia, cortado à esquerda. */
 .catch-bar__fish {
   position: absolute;
-  left: 8px;
-  width: 40px;
-  height: 28px;
+  left: 2px;
+  width: 64px;
+  height: 30px;
   transform: translateY(50%);
+  object-fit: cover;
+  object-position: left center;
+  image-rendering: pixelated;
 }
 
 .catch-bar__meter-fill {
@@ -2420,8 +2670,378 @@ ul {
 
 /* ---------- Tutorial da pescaria nova (pesca-bass T16) ---------- */
 
-/* A barra de captura começa abaixo do painel e da fala da Jane (--spots-top, medido pela tela de pesca),
-   com lugar para a seta do passo "manter" por cima dela. */
-.catch-bar {
-  top: max(22%, calc(var(--spots-top, 0px) + 72px));
+
+/* TUTOB-05: "Entendi" na dica da Jane; o jogo espera esse toque (ou a ação) para andar. */
+
+
+/* PESCA-17: a carteira encheu; o recado fica junto do valor. */
+.fish-card__wallet { margin: 4px 0; font-weight: 700; color: #1659a8; }
+
+/* Arte do item na loja: pixels grandes num quadro azul. */
+.shop-item__head { display: flex; align-items: center; gap: 12px; }
+.shop-item__art { flex: 0 0 88px; width: 88px; height: 88px; image-rendering: pixelated; background: #12407a; border: 3px solid var(--outline); border-radius: 12px; object-fit: contain; }
+
+/* ---------- Loja do Edvaldo: balcão, um item por vez e o item escolhido embaixo ----------
+   Tudo cabe em telas baixas (iPhone): o desenho encolhe com a altura e nada passa por cima do outro. */
+.shop { gap: 8px; padding: max(10px, env(safe-area-inset-top)) var(--gutter) var(--safe-bottom); background: var(--bg); }
+.shop__header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.shop__header .title-2 { margin: 0; padding: 6px 12px; font-size: clamp(18px, 5.4vw, 24px); white-space: nowrap; }
+.shop .shop__money { display: flex; align-items: center; gap: 6px; margin: 0; padding: 4px 12px; border: 3px solid var(--outline); border-radius: 999px; background: #0b2a55; font: 700 20px / 1.2 var(--font-title); color: var(--accent); white-space: nowrap; }
+.shop__coin { width: 16px; height: 16px; background: var(--accent); box-shadow: inset -3px -3px 0 #d9921f, 0 0 0 2px var(--outline); }
+
+/* O Edvaldo no balcão: retrato e a fala dele num balão creme com rabinho. */
+.shop__clerk { display: flex; align-items: center; gap: 10px; }
+.shop__clerk .portrait { flex: 0 0 clamp(64px, 10dvh, 88px); width: clamp(64px, 10dvh, 88px); height: clamp(64px, 10dvh, 88px); }
+.shop__tip { position: relative; flex: 1; margin: 0; padding: 8px 12px; border: 3px solid var(--outline); border-radius: 14px; background: var(--paper); color: var(--paper-ink); font-size: 16px; line-height: 1.3; }
+.shop__tip::before { content: ''; position: absolute; left: -11px; top: 50%; width: 14px; height: 14px; background: var(--paper); border-left: 3px solid var(--outline); border-bottom: 3px solid var(--outline); transform: translateY(-50%) rotate(45deg); }
+
+.shop__tabs { flex: none; }
+
+/* Um item por vez: o cartão no meio, ◀ e ▶ dos lados. O cartão ocupa o espaço que sobra, sem invadir a ficha. */
+.shop__carousel { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 56px 1fr 56px; align-items: center; gap: 8px; }
+.shop__arrow { min-height: 88px; padding: 0; font-size: 26px; }
+.shop-card { position: relative; display: grid; justify-items: center; align-content: center; gap: 4px; max-height: 100%; min-height: 0; overflow: hidden; padding: 10px 6px; border: 3px solid var(--outline); border-radius: 16px; background: #1b3d6c; color: var(--ink); }
+.shop-card__art { width: auto; height: clamp(56px, 17dvh, 160px); aspect-ratio: 1; image-rendering: pixelated; }
+.shop-card__count { font-size: 15px; opacity: 0.85; }
+
+.shop .shop-item { flex: none; display: grid; gap: 6px; padding: 10px 12px; border: 3px solid var(--outline); border-radius: 16px; background: var(--paper); color: var(--paper-ink); box-shadow: inset 0 0 0 3px var(--accent); }
+.shop-item__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.shop-item__name { margin: 0; font: 700 22px / 1.15 var(--font-title); }
+.shop-item__price { flex: none; margin: 0; padding: 2px 10px; border-radius: 999px; background: #0b2a55; color: var(--accent); font: 700 18px / 1.2 var(--font-title); }
+.shop-item__price--owned { background: #2e6b30; color: #ffffff; }
+.shop-item__price--using { background: var(--accent); color: var(--paper-ink); }
+.shop-item__attracts { margin: 0; font-size: 16px; }
+.shop__actions { flex: none; display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.shop__actions .btn--big { min-height: 60px; }
+
+/* EQUIP-10: item novo na loja. */
+.shop-card__new { position: absolute; top: 8px; right: 8px; padding: 2px 8px; border: 2px solid var(--outline); border-radius: 8px; background: #e0412a; color: #ffffff; font: 700 15px / 1.2 var(--font-title); transform: rotate(6deg); }
+.new-dot { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-left: 6px; border: 2px solid var(--outline); border-radius: 50%; background: #e0412a; color: #ffffff; font: 700 15px / 1 var(--font-title); vertical-align: middle; }
+.hud__shop { position: relative; }
+.hud__shop .new-dot { position: absolute; top: -8px; right: -8px; margin: 0; }
+
+.shop .shop-item { flex: none; display: grid; gap: 6px; padding: 10px 12px; border: 3px solid var(--outline); border-radius: 16px; background: var(--paper); color: var(--paper-ink); box-shadow: inset 0 0 0 3px var(--accent); }
+.shop-item__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.shop-item__name { margin: 0; font: 700 22px / 1.15 var(--font-title); }
+.shop-item__price { margin: 0; font-weight: 700; }
+.shop-item__attracts { margin: 0; font-size: 16px; }
+.shop__actions { flex: none; display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.shop__actions .btn--big { min-height: 64px; }
+
+/* TUTOB-05: a lição do tutorial, no meio da tela, com o jogo parado atrás. */
+.lesson { z-index: 60; justify-content: center; background: rgba(1, 20, 45, 0.78); }
+.lesson__card { display: grid; justify-items: center; gap: 10px; padding: 20px 18px; border: 3px solid var(--outline); border-radius: 18px; background: var(--paper); color: var(--paper-ink); box-shadow: inset 0 0 0 3px var(--accent), 0 6px 0 var(--outline); text-align: center; animation: entrar 0.3s ease-out; }
+.lesson__card .portrait { width: 112px; height: 112px; }
+.lesson__count { margin: 0; font-size: 16px; color: #1659a8; }
+.lesson__title { margin: 0; font: 700 30px / 1.1 var(--font-title); color: #9a4a06; }
+.lesson__text { margin: 0; font-size: 21px; line-height: 1.4; }
+.lesson__ok { width: 100%; margin-top: 6px; }
+
+/* TUTOB-06: "Isso!" depois de um passo cumprido. */
+.coach-praise { position: fixed; top: 30%; left: 50%; z-index: 60; display: flex; align-items: center; gap: 12px; padding: 10px 22px 10px 12px; border: 3px solid var(--outline); border-radius: 18px; background: var(--accent); color: var(--paper-ink); transform: translateX(-50%); animation: entrar 0.25s ease-out; pointer-events: none; }
+.coach-praise .portrait { width: 64px; height: 64px; }
+.coach-praise p { margin: 0; font: 700 36px / 1 var(--font-title); }
+
+/* TUTOB-05: o passo a passo da lição, numerado. */
+.lesson__tips { display: grid; gap: 8px; margin: 0; padding: 10px 12px 10px 34px; border-radius: 12px; background: #eef3fb; text-align: left; font-size: 19px; line-height: 1.35; }
+.lesson__tips li::marker { font-weight: 700; color: #1659a8; }
+
+/* Durante a ação: só um selo pequeno no alto, com o passo e o "?" para rever a lição. */
+.coach-chip { position: absolute; top: 8px; left: 50%; z-index: 22; display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 12px; border: 3px solid var(--outline); border-radius: 999px; background: var(--paper); color: var(--paper-ink); font-size: 15px; white-space: nowrap; transform: translateX(-50%); }
+.coach-chip__help { width: 40px; height: 40px; border: 3px solid var(--outline); border-radius: 50%; background: var(--accent); color: var(--paper-ink); font: 700 22px / 1 var(--font-title); cursor: pointer; }
+
+/* BRIGA-17: "Soltar o peixe", pequeno e longe do SEGURAR; no segundo toque, vermelho. */
+.release-btn { position: absolute; right: var(--gutter); bottom: calc(var(--safe-bottom) + 112px); z-index: 24; min-height: 44px; padding: 6px 12px; font-size: 15px; }
+.release-btn--ask { background: #b3261e; color: #ffffff; }
+
+/* ALBUM-05: cada peixe do álbum abre o manual dele. */
+.album-cell__open { display: grid; justify-items: center; gap: 2px; width: 100%; height: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.album-cell__hint { margin-top: 2px; font-size: 14px; color: var(--accent); }
+.manual { justify-content: center; overflow-y: auto; }
+.manual__card { display: grid; justify-items: center; gap: 6px; text-align: center; }
+.manual__art { width: min(220px, 60vw); }
+.manual__name { margin: 0; font: 700 26px / 1.1 var(--font-title); color: #9a4a06; }
+.manual__missing { margin: 0; font-size: 15px; color: #1659a8; }
+.manual__facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; width: 100%; margin: 6px 0 0; text-align: left; }
+.manual__facts dt { font-weight: 700; color: #1659a8; }
+.manual__facts dd { margin: 0; line-height: 1.3; }
+.manual__spot { display: block; }
+.manual__spot small, .manual__facts small { font-size: 14px; opacity: 0.8; }
+.manual__stars { color: #d9921f; letter-spacing: 2px; }
+.manual__stars-off { color: #c9c2b0; }
+
+/* HIST-12: nomes do jogo em negrito nas falas, num marrom que salta no creme (5,8:1). */
+.dialog-box__text strong, .lesson__text strong, .lesson__tips strong { font-weight: 700; color: #9a4a06; }
+
+/* BRIGA-19: o tamanho do peixe pego dentro da espécie, na ficha. */
+.fish-size { display: inline-flex; align-items: center; gap: 6px; }
+.fish-size__bar { display: inline-flex; gap: 2px; }
+.fish-size__cell { width: 10px; height: 14px; border: 2px solid var(--outline); background: #eef3fb; }
+.fish-size__cell[data-filled='true'] { background: #2e8b3a; }
+
+/* BRIGA-20: a linha, fininha ao lado do medidor: branca, laranja e vermelha piscando perto de arrebentar. */
+.catch-bar__line { position: relative; width: 12px; border: 3px solid var(--outline); border-radius: 6px; background: #1b2f4d; overflow: hidden; }
+.catch-bar__line-fill { position: absolute; left: 0; right: 0; bottom: 0; background: #f2a63b; }
+.catch-bar__line--warn .catch-bar__line-fill { background: #e0412a; }
+@media (prefers-reduced-motion: no-preference) {
+  .catch-bar__line--warn { animation: piscar-linha 0.4s steps(2) infinite; }
+}
+@keyframes piscar-linha { 50% { border-color: #e0412a; } }
+
+/* CAMP-11: o envelope do grande prêmio, com selo de cera e brilhos; o toque abre a aba. */
+.letter--sealed { justify-content: center; align-items: center; gap: 18px; }
+.envelope { position: relative; width: min(300px, 80vw); aspect-ratio: 3 / 2; padding: 0; border: 0; background: none; cursor: pointer; }
+.envelope__body, .envelope__front, .envelope__flap, .envelope__paper { position: absolute; inset: 0; }
+.envelope__body { border: 3px solid var(--outline); border-radius: 8px; background: #e7c98f; }
+.envelope__paper { inset: 10% 8% 20%; border-radius: 4px; background: #fffaf0; box-shadow: 0 0 0 2px #d8cbb0; }
+.envelope__front { border: 3px solid var(--outline); border-radius: 8px; background: #f0d7a4; clip-path: polygon(0 35%, 50% 72%, 100% 35%, 100% 100%, 0 100%); }
+.envelope__flap { border: 3px solid var(--outline); border-radius: 8px; background: #dbb878; clip-path: polygon(0 0, 100% 0, 50% 62%); transform-origin: top; z-index: 2; }
+.envelope__seal { position: absolute; left: 50%; top: 54%; z-index: 3; display: grid; place-items: center; width: 44px; height: 44px; border: 3px solid #6e1010; border-radius: 50%; background: #b3261e; color: #ffd6d6; font: 700 22px / 1 var(--font-title); transform: translate(-50%, -50%); }
+.envelope__sparkle { position: absolute; width: 10px; height: 10px; background: var(--accent); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.envelope__sparkle--a { top: -14px; left: 12%; }
+.envelope__sparkle--b { top: 20%; right: -16px; width: 14px; height: 14px; }
+.envelope__sparkle--c { bottom: -12px; left: 40%; }
+.envelope__hint { margin: 0; color: var(--ink); font-size: 20px; text-align: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .envelope { animation: envelope-chega 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.3), envelope-balanca 2.4s ease-in-out 0.7s infinite; }
+  .envelope__sparkle { animation: brilho 1.2s ease-in-out infinite; }
+  .envelope__sparkle--b { animation-delay: 0.4s; }
+  .envelope__sparkle--c { animation-delay: 0.8s; }
+  .envelope--opening { animation: none; }
+  .envelope--opening .envelope__flap { animation: aba-abre 0.45s ease-in forwards; }
+  .envelope--opening .envelope__seal { animation: selo-sai 0.3s ease-in forwards; }
+  .envelope--opening .envelope__paper { animation: papel-sobe 0.6s ease-out 0.25s forwards; }
+}
+@keyframes envelope-chega { from { transform: translateY(60px) scale(0.4) rotate(-12deg); opacity: 0; } }
+@keyframes envelope-balanca { 50% { transform: rotate(2deg) translateY(-4px); } }
+@keyframes brilho { 50% { transform: scale(0.4); opacity: 0.3; } }
+@keyframes aba-abre { to { transform: rotateX(180deg); z-index: 0; } }
+@keyframes selo-sai { to { transform: translate(-50%, -50%) scale(0); } }
+@keyframes papel-sobe { to { transform: translateY(-55%); } }
+
+/* EQUIP-11: a Loja apagada com a linha na água. */
+.hud__shop:disabled, .hud__objective--shop:disabled { opacity: 0.45; filter: grayscale(0.6); cursor: not-allowed; }
+
+/* HIST-16: quadro animado da cena, em cima da caixa de diálogo, com a mesma borda amarela. A tira de
+   quadros corre em passos; sem movimento, fica o primeiro quadro (ou o último, no "acordando"). */
+.scene-art {
+  position: relative;
+  align-self: center;
+  width: min(100%, 320px, calc(42dvh * 4 / 3));
+  aspect-ratio: 4 / 3;
+  margin: auto 0 10px;
+  border: 3px solid #fecd42;
+  outline: 3px solid #000c22;
+  background: #000c22;
+  overflow: hidden;
+}
+
+.scene-art__defs {
+  position: absolute;
+}
+
+.scene-art__film {
+  position: absolute;
+  inset: 0;
+  background-size: calc(var(--frames) * 100%) 100%;
+  background-position: 0% 0;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+.scene-art__film--once {
+  background-position: 100% 0;
+}
+
+/* A foto da caixa de pesca: papel branco, meio desbotado, torta na mão. */
+.scene-art__photo {
+  position: absolute;
+  right: 6%;
+  bottom: 6%;
+  width: 46%;
+  padding: 4px 4px 12px;
+  background: #fcf6e6;
+  box-shadow: 0 0 0 2px #000c22, 4px 4px 0 rgba(0, 12, 34, 0.45);
+  filter: sepia(0.35) saturate(0.9);
+  image-rendering: pixelated;
+  transform: rotate(-5deg);
+}
+
+/* A tela ondula e clareia: vai para o passado, ou volta dele. */
+.scene-art--vai::after,
+.scene-art--volta::after,
+.scene-art--flash::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #fcf6e6;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scene-art {
+    animation: scene-art-in 0.35s ease-out;
+  }
+
+  .scene-art__film {
+    animation: scene-art-film var(--dur) steps(var(--frames), jump-none) infinite;
+  }
+
+  .scene-art__film--once {
+    animation-iteration-count: 1;
+    animation-fill-mode: both;
+  }
+
+  .scene-art__photo {
+    animation: scene-art-photo 0.7s 0.6s ease-out both;
+  }
+
+  .scene-art--vai::after {
+    animation: scene-art-clareia 2.6s ease-in forwards;
+  }
+
+  .scene-art--volta::after {
+    animation: scene-art-clareia 2.6s ease-out reverse both;
+  }
+
+  .scene-art--flash::after {
+    background: #fff;
+    animation: scene-art-flash 0.5s 0.7s ease-out both;
+  }
+}
+
+@keyframes scene-art-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes scene-art-film {
+  from {
+    background-position: 0% 0;
+  }
+
+  to {
+    background-position: 100% 0;
+  }
+}
+
+@keyframes scene-art-photo {
+  from {
+    opacity: 0;
+    transform: translateY(40%) rotate(4deg) scale(0.8);
+  }
+}
+
+@keyframes scene-art-flash {
+  10% {
+    opacity: 0.95;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes scene-art-clareia {
+  60% {
+    opacity: 0.15;
+  }
+
+  to {
+    opacity: 0.85;
+  }
+}
+
+/* ---------- Créditos (HIST-17) ---------- */
+
+/* Sobem devagar sobre o fundo do mar, com as pontas sumindo no escuro; o "Continuar" pula. */
+.credits {
+  z-index: 70;
+  background: linear-gradient(#071629, #0b2a4a);
+}
+
+.credits__window {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(transparent, #000 12%, #000 88%, transparent);
+}
+
+.credits__roll {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  padding: 24px var(--gutter);
+  color: #fcf6e6;
+  text-align: center;
+}
+
+.credits__title {
+  font: 700 34px / 1 var(--font-title);
+  color: #fecd42;
+}
+
+.credits__portrait {
+  width: 96px;
+  margin: 8px 0;
+  image-rendering: pixelated;
+}
+
+.credits__star {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fecd42;
+}
+
+.credits__section {
+  display: grid;
+  gap: 4px;
+  margin-top: 26px;
+}
+
+.credits__heading {
+  margin-bottom: 4px;
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fecd42;
+}
+
+.credits__closing {
+  margin-top: 30px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .credits__roll {
+    position: absolute;
+    right: 0;
+    left: 0;
+    animation: credits-roll var(--roll-s) linear forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .credits__window {
+    overflow-y: auto;
+  }
+}
+
+@keyframes credits-roll {
+  from {
+    top: 100%;
+    transform: translateY(0);
+  }
+
+  to {
+    top: 0%;
+    transform: translateY(-100%);
+  }
 }
