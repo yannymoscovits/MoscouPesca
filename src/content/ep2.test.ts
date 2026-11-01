@@ -137,12 +137,13 @@ const rich = (): Profile => ({ ...newProfile(), money: 100_000 });
 const times = (n: number, e: GameEvent) => Array.from({ length: n }, () => e);
 
 describe('Episódio 2: roteiro', () => {
-  it('HIST-06, PROG-02: os 7 objetivos de "A Maré do Tempo" seguem a ordem do roteiro', () => {
+  it('HIST-06, PROG-02, HIST-18: os 8 objetivos de "A Maré do Tempo" seguem a ordem do roteiro', () => {
     expect(ep2.chapter.title).toBe('A Maré do Tempo');
     expect(ep2.chapter.objectives.map((o) => o.text)).toEqual([
       'Ensinar a Ninha a pescar: pegar 3 peixes no Rio Jacuípe',
       'Comprar a Vara de Grafite',
       'Pegar um Robalo-peva',
+      'Comprar a Isca de Camarão',
       'Pegar 3 peixes na Ponte da Cetrel',
       'Comprar a Vara Maré Alta',
       'Pegar o Camurupim — na Ponte da Cetrel',
@@ -167,6 +168,7 @@ describe('Episódio 2: roteiro', () => {
       'ep2-edvaldo',
       'ep2-rio',
       'ep2-ponte',
+      'ep2-camarao',
       'ep2-vara-mare',
       'ep2-salto',
       'ep2-prata-da-barra',
@@ -184,6 +186,7 @@ describe('Episódio 2: roteiro', () => {
       ...times(3, fish('tainha')),
       bought('grafite'),
       fish('robalo-peva'),
+      bought('camarao'),
       ...times(2, fish('vermelho')),
       fish('carapeba'),
     ]);

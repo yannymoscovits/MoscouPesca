@@ -45,7 +45,7 @@ const EP1 = episode(1);
 
 function newProfile(): Profile {
   return {
-    version: 1,
+    version: 2,
     money: 0,
     rods: { owned: ['bambu'], equipped: 'bambu' },
     baits: { owned: ['minhoca'], equipped: 'minhoca' },

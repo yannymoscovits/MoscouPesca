@@ -14,7 +14,7 @@ const ITEMS: Item[] = [FIBRA, CARBONO, CARNE];
 
 function profile(money: number): Profile {
   return {
-    version: 1,
+    version: 2,
     money,
     rods: { owned: ['bambu'], equipped: 'bambu' },
     baits: { owned: ['minhoca'], equipped: 'minhoca' },

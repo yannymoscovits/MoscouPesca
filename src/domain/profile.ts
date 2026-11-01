@@ -10,7 +10,7 @@ export const START_LOCATION: LocationId = 'poco-do-magro';
 
 export function newProfile(): Profile {
   return {
-    version: 1,
+    version: 2,
     money: 0,
     rods: { owned: [START_ROD], equipped: START_ROD },
     baits: { owned: [START_BAIT], equipped: START_BAIT },

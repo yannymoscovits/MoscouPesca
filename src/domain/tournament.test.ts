@@ -42,7 +42,7 @@ const caught = (id: string, kg: number): PescaState => ({
 
 function profile(): Profile {
   return {
-    version: 1,
+    version: 2,
     money: 120,
     rods: { owned: ['bambu'], equipped: 'bambu' },
     baits: { owned: ['minhoca'], equipped: 'minhoca' },

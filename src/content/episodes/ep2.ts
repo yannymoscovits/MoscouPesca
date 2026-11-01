@@ -4,6 +4,7 @@
 
 import type {
   Bait,
+  BaitId,
   CharacterId,
   DialogLine,
   EpisodeContent,
@@ -261,6 +262,10 @@ const scenes = [
     ],
   },
   {
+    id: 'ep2-camarao', // cena 5, a fala do Capenga na ponte: depois de comprar a Isca de Camarão
+    lines: [say('capenga', 'normal', 'Aqui é água salgada. Camarão na isca e paciência com a maré.')],
+  },
+  {
     id: 'ep2-vara-mare', // cena 6, ainda no passado
     lines: [
       say('edvaldo-jovem', 'rindo', 'Pra água salgada só a Vara Maré Alta. Preço de família: o de praia.'),
@@ -310,6 +315,7 @@ const had = (id: SpeciesId) => (p: Profile) => p.album[id] !== undefined;
 const caughtAny = (group: Species[]) => (e: GameEvent) => e.type === 'Caught' && group.some((sp) => sp.id === e.species);
 // A compra conta pela vara possuída: comprada antes da hora, cumpre no evento seguinte em vez de travar.
 const owns = (id: RodId) => (_e: GameEvent, p: Profile) => p.rods.owned.includes(id);
+const ownsBait = (id: BaitId) => (_e: GameEvent, p: Profile) => p.baits.owned.includes(id);
 const albumComplete = (_e: GameEvent, p: Profile) => species.every((sp) => p.album[sp.id] !== undefined);
 
 // Sem "se inscrever na Copa": o campeonato libera sozinho depois do último objetivo (CAMP-01).
@@ -324,6 +330,15 @@ const objectives = [
   },
   { id: 'comprar-grafite', text: 'Comprar a Vara de Grafite', done: owns('grafite'), sceneOnDone: 'ep2-rio' },
   { id: 'pegar-robalo-peva', text: 'Pegar um Robalo-peva', done: caught('robalo-peva'), satisfied: had('robalo-peva'), unlocks: ['camarao'], sceneOnDone: 'ep2-ponte' }, // a ponte pede Camarão
+  // HIST-18: a Ponte da Cetrel só abre com a Isca de Camarão (PONTO-08); comprar vira objetivo, para ninguém
+  // ficar sem saber por que a ponte está trancada.
+  {
+    id: 'comprar-camarao',
+    text: 'Comprar a Isca de Camarão',
+    done: ownsBait('camarao'),
+    satisfied: (p) => p.baits.owned.includes('camarao'),
+    sceneOnDone: 'ep2-camarao',
+  },
   {
     id: 'pegar-3-ponte',
     text: 'Pegar 3 peixes na Ponte da Cetrel', // com a Isca de Camarão (cena 5)

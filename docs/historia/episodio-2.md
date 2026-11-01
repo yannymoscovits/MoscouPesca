@@ -65,6 +65,8 @@ Rivais da Copa Jacuípe: **Tininho, Denise e Didi**.
 - **Lavínia** [rindo]: Adilsinho! Viajei no tempo só pra te pirraçar. Pirraça não tem prazo de validade.
 - **Adilson** [bravo]: Até no passado, menina?!
 
+**Objetivo: comprar a Isca de Camarão** (a ponte só abre com ela; a fala do Capenga sobre a água salgada vem depois da compra).
+
 **Objetivo: pegar 3 peixes na Ponte da Cetrel** (com a Isca de Camarão).
 
 ### Cena 6: Vara de maré

@@ -3,13 +3,27 @@
 
 import type { Profile } from '../content/types';
 
-export const CURRENT_VERSION = 1;
+export const CURRENT_VERSION = 2;
 
 /** Converte um salvamento da versão N para a N + 1. */
 export type Migration = (old: unknown) => unknown;
 
-/** Passos da cadeia, pela versão de origem. A v1 é a primeira: o passo 1 → 2 entra aqui quando existir. */
-export const MIGRATIONS: Readonly<Record<number, Migration>> = {};
+/**
+ * v1 → v2 (HIST-18): o Episódio 2 ganhou "Comprar a Isca de Camarão" na posição 3, antes de "Pegar 3 peixes
+ * na Ponte da Cetrel". Quem já estava da ponte em diante anda uma posição, para não voltar um objetivo.
+ */
+const ep2CamaraoObjective: Migration = (old) => {
+  if (!isObj(old)) return old;
+  const story = isObj(old.story) ? old.story : null;
+  const episodes = story && isObj(story.episodes) ? story.episodes : null;
+  const ep2 = episodes && isObj(episodes['2']) ? episodes['2'] : null;
+  const moved = ep2 && isNum(ep2.objectiveIndex) && ep2.objectiveIndex >= 3 ? { ...ep2, objectiveIndex: ep2.objectiveIndex + 1 } : ep2;
+  if (!story || !episodes || !moved || moved === ep2) return { ...old, version: 2 };
+  return { ...old, version: 2, story: { ...story, episodes: { ...episodes, 2: moved } } };
+};
+
+/** Passos da cadeia, pela versão de origem. */
+export const MIGRATIONS: Readonly<Record<number, Migration>> = { 1: ep2CamaraoObjective };
 
 type Obj = Record<string, unknown>;
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Profile } from '../content/types';
 import { newProfile } from './profile';
-import { migrate, parseProfile, type Migration } from './saveSchema';
+import { CURRENT_VERSION, migrate, parseProfile, type Migration } from './saveSchema';
 
 /** Perfil com todos os campos preenchidos, como no meio do Episódio 2. */
 function playedProfile(): Profile {
@@ -72,7 +72,7 @@ describe('salvamento ilegível', () => {
       ['cartas não lista', (p) => (p.messagesUnlocked = 'carta')],
       ['recorde em texto', (p) => (p.album.tilapia.recordKg = '1.5')],
       ['versão vista número', (p) => (p.seenVersion = 1)],
-      ['versão futura', (p) => (p.version = 2)],
+      ['versão futura', (p) => (p.version = 3)],
     ];
     for (const [name, spoil] of wrong) {
       const p = structuredClone(playedProfile());
@@ -120,7 +120,7 @@ describe('migração', () => {
   it('SAVE-09: um salvamento v0 vira v1 mantendo saldo, itens, progresso, troféus e mensagens', () => {
     const p = parseProfile(JSON.stringify(V0), { 0: v0to1 });
     expect(p).not.toBeNull();
-    expect(p!.version).toBe(1);
+    expect(p!.version).toBe(CURRENT_VERSION);
     expect(p!.money).toBe(340);
     expect(p!.rods).toEqual({ owned: ['bambu', 'fibra'], equipped: 'fibra' });
     expect(p!.baits).toEqual({ owned: ['minhoca', 'carne'], equipped: 'carne' });
@@ -133,7 +133,7 @@ describe('migração', () => {
     const older = { version: -1, dinheiro: 340 };
     const toV0: Migration = (o: any) => ({ ...V0, version: 0, saldo: o.dinheiro });
     const p = migrate(older, { [-1]: toV0, 0: v0to1 });
-    expect(p?.version).toBe(1);
+    expect(p?.version).toBe(CURRENT_VERSION);
     expect(p?.money).toBe(340);
     expect(p?.trophies).toEqual(['trofeu-guanambicup']);
   });
@@ -145,6 +145,37 @@ describe('migração', () => {
 
   it('SAVE-08: passo que não avança a versão → null, sem laço infinito', () => {
     expect(migrate(V0, { 0: (o) => o })).toBeNull();
+  });
+});
+
+describe('HIST-18: v1 → v2, o objetivo da Isca de Camarão no Episódio 2', () => {
+  const v1 = (ep2?: { objectiveIndex: number; progress: number; won: boolean }) => {
+    const p = structuredClone(playedProfile()) as any;
+    p.version = 1;
+    if (ep2) p.story.episodes[2] = ep2;
+    else delete p.story.episodes[2];
+    return p;
+  };
+
+  it('quem estava na ponte ou depois anda uma posição, com o progresso igual', () => {
+    for (const [antes, depois] of [[3, 4], [4, 5], [7, 8]]) {
+      const p = migrate(v1({ objectiveIndex: antes, progress: 2, won: false }));
+      expect(p?.version, `posição ${antes}`).toBe(2);
+      expect(p?.story.episodes[2], `posição ${antes}`).toEqual({ objectiveIndex: depois, progress: 2, won: false });
+    }
+  });
+
+  it('quem ainda não chegou na ponte continua onde estava', () => {
+    for (const antes of [0, 1, 2]) {
+      expect(migrate(v1({ objectiveIndex: antes, progress: 1, won: false }))?.story.episodes[2]).toEqual({ objectiveIndex: antes, progress: 1, won: false });
+    }
+  });
+
+  it('quem nem começou o Episódio 2 só muda de versão', () => {
+    const p = migrate(v1());
+    expect(p?.version).toBe(2);
+    expect(p?.story.episodes[2]).toBeUndefined();
+    expect(p?.story.episodes[1]).toEqual(playedProfile().story.episodes[1]);
   });
 });
 

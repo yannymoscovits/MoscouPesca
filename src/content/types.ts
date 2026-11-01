@@ -207,7 +207,7 @@ export interface TournamentRun {
 }
 
 export interface Profile {
-  version: 1;
+  version: 2;
   money: number; // R$, inteiro >= 0
   rods: { owned: RodId[]; equipped: RodId };
   baits: { owned: BaitId[]; equipped: BaitId };
