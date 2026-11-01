@@ -39,7 +39,7 @@ function aboutToWin(ep: EpisodeContent): Partial<Profile> {
 /** O último arremesso (sem peixe), o aviso dele e a classificação da vitória. */
 async function winLastCast(page: Page, spot = 'raso') {
   await manualClock(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   expect(await castNothing(page, 1, spot)).toBe('Result_Nothing');
   await page.getByRole('dialog', { name: 'Resultado do arremesso' }).getByRole('button', { name: 'Continuar' }).click();
 
@@ -138,8 +138,8 @@ test('CAMP-08: vencer de novo um campeonato já vencido não abre a carta outra 
 });
 
 async function openMessages(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await page.getByRole('button', { name: 'Mensagens', exact: true }).click();
   await expect(messages(page)).toBeVisible();
 }

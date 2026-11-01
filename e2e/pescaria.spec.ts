@@ -25,7 +25,7 @@ const result = (page: Page) => page.getByRole('dialog', { name: 'Resultado do ar
 const catchMeter = (page: Page) => page.getByRole('meter', { name: 'Medidor de captura' });
 
 async function play(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
@@ -96,9 +96,9 @@ test('caminho feliz: pesqueiro → Pescar aqui → ARREMESSAR × 2 → isca na �
   // BRIGA-10: a briga pelo jogador típico até o medidor encher; a ficha da v1 e o saldo.
   expect(await autoplay(page)).toBe('Result_Caught');
   const s = await gameState(page);
-  expect(s.profile.money).toBe(s.fishing.value); // PESCA-17
+  expect(s.profile.money).toBe(0); // PESCA-17: o peixe não vira dinheiro
   await expect(page.getByRole('dialog', { name: 'Ficha do peixe' })).toContainText(s.fishing.species.name);
-  await expect(hud(page)).toContainText(money(s.fishing.value));
+  await expect(hud(page)).toContainText(money(0));
 });
 
 test('ISCA-11: o ataque sem PUXAR mostra "Escapou!", o peixe foge e a isca continua na água', async ({ page }) => {
@@ -120,15 +120,15 @@ test('ISCA-11: o ataque sem PUXAR mostra "Escapou!", o peixe foge e a isca conti
   await expect(fishingButton(page, 'recolher')).toBeEnabled();
 });
 
-test('ISCA-12: a isca no Adilson sem peixe mostra "Nada dessa vez" e volta ao arremesso', async ({ page }) => {
+test('ISCA-12: a isca no Adilson sem peixe volta automaticamente ao arremesso com uma dica', async ({ page }) => {
   await openWithProfile(page, veteran());
   await manualClock(page);
   await play(page);
   await chooseSpot(page);
 
   expect(await castNothing(page)).toBe('Result_Nothing');
-  await expect(result(page)).toContainText('Nada dessa vez');
-  await result(page).getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Arremesse perto dos peixes' })).toBeVisible();
+  await expect.poll(async () => (await gameState(page)).fishing.phase).toBe('Aim');
   expect((await gameState(page)).fishing).toEqual({ phase: 'Aim', sinceS: 0 });
   await expect(fishingButton(page, 'arremessar')).toBeEnabled();
 });
@@ -238,8 +238,8 @@ test('PAUSA-01: pausado, a isca, a faixa, o medidor e a janela de fisgada ficam 
   await play(page);
   await chooseSpot(page);
   expect(await castNow(page)).toBe('Lure');
-  const pause = page.getByRole('button', { name: 'Pausar' });
-  const resume = page.getByText('Pausado - toque para continuar');
+  const pause = page.getByRole('button', { name: 'Menu da pescaria' });
+  const resume = page.getByText('Pescaria pausada');
 
   // Isca na água com o relógio de verdade e RECOLHER seguro: pausar congela a isca e os peixes.
   await page.evaluate(() => {

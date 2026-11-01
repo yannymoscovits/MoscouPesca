@@ -27,7 +27,7 @@ const ep1Won = (over: Partial<Profile> = {}): Partial<Profile> => ({
 });
 
 async function openMap(page: Page) {
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await page.getByRole('button', { name: 'Mapa', exact: true }).click();
   await expect(map(page)).toBeVisible();
 }
@@ -36,7 +36,7 @@ test('EPI-03: perfil novo → só o Poço do Magro liberado; Rio Jacuípe e Pont
   page,
 }) => {
   await openWithProfile(page, veteran());
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await openMap(page);
 
   const poco = ep1.locations[0].name;
@@ -58,7 +58,7 @@ test('EPI-04, EPI-08: com o Episódio 1 vencido, os dois locais de Jacuípe est�
 }) => {
   await openWithProfile(page, ep1Won({ baits: { owned: ['minhoca', 'camarao'], equipped: 'camarao' } }));
   await manualClock(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await openMap(page);
 
   for (const loc of [rio, ponte]) await expect(map(page).getByRole('button', { name: loc.name })).toBeEnabled();
@@ -83,13 +83,13 @@ test('EPI-04, EPI-08: com o Episódio 1 vencido, os dois locais de Jacuípe est�
 
 test('EPI-07: reabrir o jogo volta ao último local de pesca', async ({ page }) => {
   await openWithProfile(page, ep1Won());
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await openMap(page);
   await map(page).getByRole('button', { name: ponte.name }).click();
   await expect(hud(page)).toContainText(ponte.name);
 
   await reopen(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(hud(page)).toContainText(ponte.name);
   expect((await gameState(page)).profile.currentLocation).toBe(ponte.id);
 });
@@ -107,7 +107,7 @@ test('viajar pelo Mapa com a cena "ep1-vitoria" pendente não descarta a cena; a
       },
     }),
   );
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   const vitoria = ep1.scenes.find((s) => s.id === 'ep1-vitoria')!.lines;
   await expect(dialog(page)).toContainText(vitoria[0].text);
 
@@ -128,7 +128,7 @@ test('viajar pelo Mapa com a cena "ep1-vitoria" pendente não descarta a cena; a
 
 test('ACES-06, ACES-08: os botões do Mapa têm no mínimo 56 × 56 px e ficam todos na metade de baixo', async ({ page }) => {
   await openWithProfile(page, ep1Won({ unlockedEpisodes: [1, 2, 3] }));
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await openMap(page);
   const { height } = page.viewportSize()!;
   const buttons = await map(page).getByRole('button').all();

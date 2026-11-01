@@ -23,10 +23,10 @@ import { expectContrast } from './contrast';
 // Tela de pesca e HUD (HIST-04, SAVE-03, CAMP-03, TELA-01). A pescaria em si está em pescaria.spec.ts.
 
 const hud = (page: Page) => page.getByRole('group', { name: 'Painel da pescaria' });
-const pauseButton = (page: Page) => page.getByRole('button', { name: 'Pausar' });
+const pauseButton = (page: Page) => page.getByRole('button', { name: 'Menu da pescaria' });
 
 async function play(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
@@ -159,7 +159,7 @@ test('TELA-01: a tela de pesca pede para manter a tela acesa e solta ao sair del
   await play(page);
   await expect.poll(wakeLog).toEqual(['request:screen']);
 
-  await page.getByRole('button', { name: 'Menu' }).click(); // sai da pesca para o menu (T74)
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click(); // sai da pesca para o menu (T74)
   await expect(page.getByRole('region', { name: 'Menu' })).toBeVisible();
   await expect.poll(wakeLog).toEqual(['request:screen', 'release']);
 });
@@ -286,7 +286,7 @@ test('T78, EPI-04: viajar pelo Mapa troca o fundo da cena (data-background e a c
   const seen: number[][] = [];
   for (const loc of [ep1.locations[0], ...ep2.locations]) {
     if (seen.length > 0) {
-      await page.getByRole('button', { name: 'Menu' }).click();
+      await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
       await page.getByRole('button', { name: 'Mapa', exact: true }).click();
       await page.getByRole('region', { name: 'Mapa' }).getByRole('button', { name: loc.name }).click();
     }

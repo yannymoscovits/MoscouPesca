@@ -52,5 +52,5 @@ test('INST-07: com a versão antiga no perfil, a novidade aparece uma vez; reabr
   await openWithProfile(page, { ...veteran(), seenVersion: '0.0.1+antiga' });
   await news(page).getByRole('button', { name: 'OK' }).click();
   await expect(news(page)).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Jogar' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^(Jogar|Continuar)$/ })).toBeVisible();
 });

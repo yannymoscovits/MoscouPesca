@@ -14,6 +14,7 @@ export async function openGame(page: Page) {
 /** Abre o jogo com um salvamento pronto: um perfil novo com as mudanças dadas. */
 export async function openWithProfile(page: Page, patch: Partial<Profile>) {
   await page.goto('/');
+  await page.waitForFunction(() => '__mf' in window);
   await page.evaluate(([key, profile]) => localStorage.setItem(key, JSON.stringify(profile)), [
     CURRENT_KEY,
     { ...newProfile(), ...patch },

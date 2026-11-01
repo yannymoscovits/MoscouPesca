@@ -23,7 +23,7 @@ const celebration = (page: Page) => page.getByRole('dialog', { name: 'Comemoraç
 const fishCard = (page: Page) => page.getByRole('dialog', { name: 'Ficha do peixe' });
 
 async function play(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
@@ -52,6 +52,7 @@ async function expectShortShake(page: Page) {
 }
 
 test('HUMOR-05: peixe pego → o Adilson posa com o peixe e "PEGOU!" antes da ficha', async ({ page }) => {
+  await page.setViewportSize({ width: 308, height: 680 });
   await openWithProfile(page, veteran());
   await manualClock(page);
   await play(page);
@@ -64,6 +65,15 @@ test('HUMOR-05: peixe pego → o Adilson posa com o peixe e "PEGOU!" antes da fi
   await expect(celebration(page).getByRole('img', { name: new RegExp(`^${adilson}`) })).toBeVisible();
   await expect(celebration(page).getByRole('img', { name: species })).toBeVisible();
   await expect(fishCard(page)).toHaveCount(0); // a ficha vem depois
+  const bounds = await celebration(page).evaluate(el => {
+    const card = el.querySelector('.celebration__burst')!.getBoundingClientRect();
+    const fish = el.querySelector('.celebration__fish')!.getBoundingClientRect();
+    return { left: fish.left - card.left, right: card.right - fish.right, bottom: card.bottom - fish.bottom };
+  });
+  expect(bounds.left).toBeGreaterThan(0);
+  expect(bounds.right).toBeGreaterThan(0);
+  expect(bounds.bottom).toBeGreaterThan(0);
+  await page.screenshot({ path: 'test-results/pegou-peixe-inteiro.png', animations: 'disabled' });
 
   await expect(fishCard(page)).toBeVisible();
   await expect(celebration(page)).toHaveCount(0);

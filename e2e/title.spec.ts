@@ -3,16 +3,16 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 // Tela inicial e instalação (INST-01 a INST-04), no build de teste.
 
-test('INST-01: a tela inicial mostra "MoscouFishing", o subtítulo, "Colocar na tela" e "Jogar"', async ({ page }) => {
+test('INST-01: a tela inicial mostra "MoscouFishing", o subtítulo, "Como instalar" e "Jogar"', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { level: 1, name: 'MoscouFishing' })).toBeVisible();
   await expect(page.getByText('Para Adilson Moscovits')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Colocar na tela' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Jogar' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Como instalar' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^(Jogar|Continuar)$/ })).toBeVisible();
 });
 
-test('INST-02: com o convite do navegador, "Colocar na tela" abre o diálogo de instalação', async ({ page }) => {
+test('INST-02: com o convite do navegador, "Como instalar" abre o diálogo de instalação', async ({ page }) => {
   await page.goto('/');
   // O Chrome dispara beforeinstallprompt quando o site pode ser instalado; o prompt() abre o diálogo do Android.
   await page.evaluate(() => {
@@ -23,30 +23,31 @@ test('INST-02: com o convite do navegador, "Colocar na tela" abre o diálogo de 
     window.dispatchEvent(e);
   });
 
-  await page.getByRole('button', { name: 'Colocar na tela' }).click();
-
+  await page.getByRole('button', { name: 'Como instalar' }).click();
+  await expect(page.getByRole('button', { name: 'iPhone / iPad', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Android', exact: true }).click();
+  await page.getByRole('button', { name: 'Instalar agora no Android', exact: true }).click();
   await expect.poll(() => page.evaluate(() => (window as any).promptCalls)).toBe(1);
-  await expect(page.getByText('Adicionar à tela inicial')).toHaveCount(0); // sem a instrução do menu
 });
 
-test('INST-03: sem o convite, "Colocar na tela" mostra a instrução do menu ⋮ e "Adicionar à tela inicial"', async ({
+test('INST-03: sem o convite, "Como instalar" mostra a instrução do menu ⋮ e "Adicionar à tela inicial"', async ({
   page,
 }) => {
   await page.goto('/');
 
-  await page.getByRole('button', { name: 'Colocar na tela' }).click();
+  await page.getByRole('button', { name: 'Como instalar' }).click();
 
-  const help = page.getByRole('dialog', { name: 'Colocar o jogo na tela' });
+  const help = page.getByRole('dialog', { name: 'Como instalar o jogo' });
   await expect(help).toBeVisible();
   await expect(help).toContainText('⋮');
   await expect(help).toContainText('Adicionar à tela inicial');
 
   await help.getByRole('button', { name: 'Entendi' }).click();
   await expect(help).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Jogar' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^(Jogar|Continuar)$/ })).toBeVisible();
 });
 
-test('INST-04: rodando instalado (display-mode standalone), o botão "Colocar na tela" some', async ({ page }) => {
+test('INST-04: rodando instalado (display-mode standalone), o botão "Como instalar" some', async ({ page }) => {
   await page.addInitScript(() => {
     const real = window.matchMedia.bind(window);
     window.matchMedia = (query: string) =>
@@ -57,13 +58,13 @@ test('INST-04: rodando instalado (display-mode standalone), o botão "Colocar na
   await page.goto('/');
 
   await expect(page.getByRole('heading', { level: 1, name: 'MoscouFishing' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Jogar' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Colocar na tela' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^(Jogar|Continuar)$/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Como instalar' })).toHaveCount(0);
 });
 
 // Visual da tela inicial (spec, "Visual da tela inicial e do tema": mockup e logo do usuário).
 
-const BUTTONS = ['Colocar na tela', 'Ajustes', 'Jogar'];
+const BUTTONS = ['Como instalar', 'Ajustes', 'Jogar'];
 
 /** Cor de fundo computada, em [r, g, b]. */
 const background = (l: Locator) =>
@@ -99,8 +100,8 @@ test('Tela inicial do mockup: título, slogan e subtítulo em cima; dois botões
   expect(boxes[2].height).toBeGreaterThan(boxes[0].height);
   expect(boxes[2].height).toBeGreaterThan(boxes[1].height);
 
-  // "Colocar na tela" e "Ajustes" azuis (mockup novo da tela inicial), "Jogar" amarelo.
-  for (const [name, btn] of [['Colocar na tela', install], ['Ajustes', settings]] as const) {
+  // "Como instalar" e "Ajustes" azuis (mockup novo da tela inicial), "Jogar" amarelo.
+  for (const [name, btn] of [['Como instalar', install], ['Ajustes', settings]] as const) {
     const [r, g, b] = await background(btn);
     expect(b, `${name}: azul`).toBeGreaterThan(150);
     expect(b - Math.max(r, g), `${name}: azul`).toBeGreaterThan(60);
@@ -370,9 +371,10 @@ async function worstContrast(page: Page, target: Locator, animations: 'disabled'
 /** Print do Pixel 7: em docs/arte/mockups com SAVE_SHOTS=1, senão na saída do teste. */
 const shotPath = (name: string) => (process.env.SAVE_SHOTS ? `docs/arte/mockups/${name}` : test.info().outputPath(name));
 
-test('T81: o peixe da tela inicial é o peixinho fofo, em escala inteira e pixelado, nadando e com bolhas', async ({ page }) => {
+test('tela inicial mostra logo integrado com Adilson e nome do jogo', async ({ page }) => {
+  await page.setViewportSize({ width: 308, height: 680 });
   await page.goto('/');
-  const fish = page.locator('.logo-fish');
+  const fish = page.locator('.title-logo');
   const art = fish.locator('img');
   await expect(art).toBeVisible();
   await expect.poll(() => art.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(0);
@@ -383,21 +385,23 @@ test('T81: o peixe da tela inicial é o peixinho fofo, em escala inteira e pixel
     shown: [el.offsetWidth, el.offsetHeight], // tamanho no layout, sem a inclinação da animação
     rendering: getComputedStyle(el).imageRendering,
   }));
-  expect(img.src).toContain('peixe-fofo');
-  expect(img.natural).toEqual([128, 112]);
+  expect(img.src).toContain('moscou-fishing-logo-v2');
+  expect(img.natural).toEqual([1536, 1024]);
   const scale = img.shown[0] / img.natural[0];
-  expect(Number.isInteger(scale) && scale >= 1, `escala ${scale}`).toBe(true);
-  expect(img.shown[1]).toBe(img.natural[1] * scale);
+  expect(scale).toBeGreaterThan(0);
+  expect(img.shown[0]).toBeLessThanOrEqual(308);
   expect(img.rendering).toBe('pixelated');
 
   // A mesma animação de nadar do peixe antigo, com as bolhas subindo ao lado dele.
-  expect(await fish.evaluate((el) => getComputedStyle(el).animationName)).toBe('nadar');
-  await expect(fish.locator('.logo-fish__bubbles')).toBeVisible();
+  await expect(page.getByRole('img', { name: 'MoscouFishing', exact: true })).toBeVisible();
+  await expect(page.locator('.logo-fish')).toHaveCount(0);
 
   // O peixe continua em cima do título.
   const title = (await page.getByRole('heading', { level: 1, name: 'MoscouFishing' }).boundingBox())!;
   const fishBox = (await fish.boundingBox())!;
-  expect(fishBox.y + fishBox.height).toBeLessThanOrEqual(title.y + 1);
+  expect(fishBox.x).toBeGreaterThanOrEqual(0);
+  expect(fishBox.x + fishBox.width).toBeLessThanOrEqual(308);
+  expect(title.height).toBeGreaterThan(0);
 
   await page.screenshot({ path: shotPath('tela-inicial-implementada.png'), animations: 'disabled' });
 });

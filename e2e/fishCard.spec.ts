@@ -8,7 +8,7 @@ const fishCard = (page: Page) => page.getByRole('dialog', { name: 'Ficha do peix
 const kg = (n: number) => `${n.toFixed(2).replace('.', ',')} kg`;
 
 async function play(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
@@ -45,7 +45,7 @@ test('ISCA-09: com a vibração desligada, o ataque não vibra', async ({ page }
   expect(after).toEqual([]);
 });
 
-test('PESCA-15, HUMOR-03: a ficha mostra o desenho, a espécie, o peso com 2 casas, o valor em R$ e a descrição', async ({
+test('PESCA-15, HUMOR-03: a ficha mostra o desenho, a espécie, o peso com 2 casas e a descrição, sem valor em R$', async ({
   page,
 }) => {
   await openWithProfile(page, veteran());
@@ -59,7 +59,7 @@ test('PESCA-15, HUMOR-03: a ficha mostra o desenho, a espécie, o peso com 2 cas
   await expect(card.getByRole('img', { name: fishing.species.name })).toBeVisible();
   await expect(card.getByRole('heading', { name: fishing.species.name })).toBeVisible();
   await expect(card).toContainText(kg(fishing.kg));
-  await expect(card).toContainText(`Valor: ${money(fishing.value)}`);
+  await expect(card).not.toContainText('Valor:'); // PESCA-17: peixe não vira dinheiro
   await expect(card).toContainText(fishing.species.description);
 
   await card.getByRole('button', { name: 'Continuar' }).click();
@@ -67,7 +67,7 @@ test('PESCA-15, HUMOR-03: a ficha mostra o desenho, a espécie, o peso com 2 cas
   expect((await gameState(page)).fishing.phase).toBe('Aim'); // de volta ao arremesso, no mesmo ponto
 });
 
-test('Ficha da Piranha Lavínia: mostra "Valor: inestimável" e o saldo recebe o valor normal', async ({ page }) => {
+test('Ficha da Piranha Lavínia: mostra "Valor: inestimável" e o saldo não muda', async ({ page }) => {
   await openWithProfile(page, { ...veteran(), baits: { owned: ['minhoca', 'carne'], equipped: 'carne' } });
   await manualClock(page, 5);
   await play(page);
@@ -85,8 +85,7 @@ test('Ficha da Piranha Lavínia: mostra "Valor: inestimável" e o saldo recebe o
   expect(before).not.toBeNull();
 
   const s = await gameState(page);
-  expect(s.fishing.value).toBeGreaterThan(0);
-  expect(s.profile.money).toBe(before + s.fishing.value);
+  expect(s.profile.money).toBe(before);
   const card = fishCard(page);
   await expect(card).toContainText('Piranha Lavínia');
   await expect(card).toContainText('Valor: inestimável');

@@ -8,8 +8,8 @@ const album = (page: Page) => page.getByRole('region', { name: 'Álbum' });
 const entries = (page: Page) => album(page).getByRole('list', { name: 'Espécies' }).getByRole('listitem');
 
 async function openAlbum(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await page.getByRole('button', { name: 'Álbum', exact: true }).click();
   await expect(album(page)).toBeVisible();
 }

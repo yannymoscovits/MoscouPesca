@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
 import { ep1 } from '../src/content/episodes/ep1';
-import { goals } from '../src/content/goals';
 import type { MedalTier, Profile } from '../src/content/types';
 import { AUTOPLAY_SEED, STEP_S } from '../src/app/testHooks';
 import { pressBar } from '../src/domain/catchBar';
@@ -57,7 +56,7 @@ function seedFor(from: number, to: number): { seed: number; kg: number } {
 
 /** Abre a pesca e escolhe o raso: a mira parada no começo, como `catchWith` começa. */
 async function play(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
   await chooseSpot(page);
 }
@@ -121,10 +120,9 @@ test('MEDAL-02: tilápias de pesos crescentes mostram na ficha a medalha de bron
   await expect(fishCard(page)).not.toContainText('Medalha de');
 });
 
-test('MEDAL-05: a 10ª tilápia mostra "Meta cumprida!" com a recompensa, e o saldo sobe pelo peixe mais a recompensa', async ({
+test('MEDAL-05: a 10ª tilápia mostra "Meta cumprida!", e o saldo não muda', async ({
   page,
 }) => {
-  const reward = goals.reward(1, 10);
   await openWithProfile(page, { ...fishingFree(), money: 50, catchCounts: { tilapia: 9 } });
   await manualClock(page);
   await play(page);
@@ -133,10 +131,11 @@ test('MEDAL-05: a 10ª tilápia mostra "Meta cumprida!" com a recompensa, e o sa
   const s = await gameState(page);
   const card = fishCard(page);
   await expect(card).toContainText('Meta cumprida!');
-  await expect(card).toContainText(`+ ${money(reward)}`);
-  expect(s.profile.money).toBe(50 + s.fishing.value + reward);
+  await expect(card).toContainText('10 peixes desta espécie');
+  await expect(card).not.toContainText('R$');
+  expect(s.profile.money).toBe(50);
   await card.getByRole('button', { name: 'Continuar' }).click();
-  await expect(page.getByRole('group', { name: 'Painel da pescaria' })).toContainText(money(50 + s.fishing.value + reward));
+  await expect(page.getByRole('group', { name: 'Painel da pescaria' })).toContainText(money(50));
 
   // A 11ª não cumpre meta nenhuma.
   await catchSeeded(page, seedFor(TILAPIA.kg.min, TILAPIA.medals.bronze).seed);
@@ -154,7 +153,7 @@ const tenTilapias = (): Partial<Profile> => ({
 
 async function openAlbum(page: Page) {
   await play(page);
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await page.getByRole('button', { name: 'Álbum', exact: true }).click();
   await expect(album(page)).toBeVisible();
 }

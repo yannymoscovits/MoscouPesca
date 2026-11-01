@@ -11,8 +11,8 @@ const item = (page: Page) => shop(page).getByRole('article');
 const hud = (page: Page) => page.getByRole('group', { name: 'Painel da pescaria' });
 
 async function openShop(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await page.getByRole('button', { name: 'Loja', exact: true }).click();
   await expect(shop(page)).toBeVisible();
 }
@@ -130,10 +130,10 @@ test('EQUIP-05: equipar a Vara de Fibra e o Milho muda o equipamento mostrado na
     rods: { owned: ['bambu', 'fibra'], equipped: 'bambu' },
     baits: { owned: ['minhoca', 'milho'], equipped: 'minhoca' },
   });
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(hud(page)).toContainText('Vara de Bambu');
   await expect(hud(page)).toContainText('Minhoca');
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await page.getByRole('button', { name: 'Loja', exact: true }).click();
 
   await showItem(page, 'Varas', 'Vara de Fibra');

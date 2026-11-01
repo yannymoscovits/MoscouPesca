@@ -3,11 +3,11 @@ import { chooseSpot, fishingButton, gameState, hookNow, manualClock, openWithPro
 
 // Pausa, celular deitado e aviso de salvamento (SAVE-01, SAVE-02, ACES-10, edge case do armazenamento cheio).
 
-const PAUSED = 'Pausado - toque para continuar';
+const PAUSED = 'Pescaria pausada';
 const ROTATE = 'Vire o celular em pé para jogar';
 
 async function play(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
@@ -58,11 +58,11 @@ test('SAVE-01, SAVE-02: oculto no meio da briga, nada muda em 3 s; ao voltar, "P
   await expect.poll(async () => (await fight(page)).bar.fishY).not.toBe(frozen.bar.fishY); // retomou
 });
 
-test('SAVE-02: o botão de pausa mostra "Pausado - toque para continuar" e o toque retoma', async ({ page }) => {
+test('SAVE-02: o botão de pausa mostra "Pescaria pausada" e o toque retoma', async ({ page }) => {
   await openWithProfile(page, veteran());
   await play(page);
 
-  await page.getByRole('button', { name: 'Pausar' }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria' }).click();
   await expect(page.getByText(PAUSED)).toBeVisible();
   expect((await gameState(page)).paused).toBe(true);
 

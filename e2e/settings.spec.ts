@@ -5,7 +5,7 @@ import { gameState, openGame, openWithProfile, reopen } from './support';
 
 test('ACES-01: a primeira abertura pergunta "Como você quer pescar hoje?"; a segunda não pergunta', async ({ page }) => {
   await openGame(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
 
   await expect(page.getByRole('heading', { name: 'Como você quer pescar hoje?' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Tranquilo' })).toBeVisible();
@@ -16,7 +16,7 @@ test('ACES-01: a primeira abertura pergunta "Como você quer pescar hoje?"; a se
   expect((await gameState(page)).profile.settings.difficulty).toBe('tranquilo');
 
   await reopen(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Como você quer pescar hoje?' })).toHaveCount(0);
 });
@@ -69,7 +69,7 @@ test('TUTO-09: "Rever tutorial" em Ajustes faz o tutorial começar na próxima p
   await expect(page.getByText('O tutorial começa na próxima pescaria.')).toBeVisible();
 
   await page.getByRole('button', { name: 'Voltar' }).click();
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 
   expect((await gameState(page)).profile.tutorialDone).toBe(false);

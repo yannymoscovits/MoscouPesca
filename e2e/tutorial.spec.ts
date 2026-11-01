@@ -78,7 +78,7 @@ test('TUTOB-01, TUTO-02: jogo novo, seguindo só as falas e as setas da Jane pel
 }) => {
   await openGame(page);
   await manualClock(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await page.getByRole('button', { name: 'Tranquilo' }).click();
 
   // Abertura: cartões e falas, um toque de cada vez; a dica do tutorial espera a cena acabar.
@@ -167,7 +167,7 @@ test('TUTOB-03, TUTOB-04: no tutorial, mesmo no Desafio, a fisgada espera o toqu
 }) => {
   await openWithProfile(page, firstFishing('desafio'));
   await manualClock(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await chooseSpot(page);
   const strike = await page.evaluate(() => {
     const mf = (window as any).__mf;
@@ -202,7 +202,7 @@ test('TUTOB-03, TUTOB-04: no tutorial, mesmo no Desafio, a fisgada espera o toqu
 test('TUTO-07: 10 s sem toque num passo, a fala reaparece e a seta pisca', async ({ page }) => {
   await openWithProfile(page, firstFishing());
   await manualClock(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expectStep(page, 'ponto');
 
   await advance(page, 9.8);

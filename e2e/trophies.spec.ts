@@ -25,8 +25,8 @@ const guanambiWon = (): Partial<Profile> => ({
 });
 
 async function openRoom(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await page.getByRole('button', { name: 'Troféus', exact: true }).click();
   await expect(room(page)).toBeVisible();
 }

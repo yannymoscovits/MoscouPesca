@@ -19,7 +19,7 @@ const carbono = (): Partial<Profile> => ({
 });
 
 async function play(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
@@ -44,9 +44,9 @@ test('ISCA-13: com a isca na água, a Linha solta e a Profundidade da isca em me
   await page.evaluate(() => (window as any).__mf.hold(false));
   await expect(value(page, 'Linha')).toHaveText('24,7 m');
 
-  // ISCA-04: parada, ela afunda 0,3 m por segundo.
+  // ISCA-04: parada, ela afunda 0,9 m por segundo.
   await advance(page, 1);
-  await expect(value(page, 'Profundidade')).toHaveText('0,3 m');
+  await expect(value(page, 'Profundidade')).toHaveText('0,9 m');
   await expect(value(page, 'Linha')).toHaveText('24,7 m');
 });
 
@@ -72,8 +72,8 @@ test('T80, ACES-05, ACES-07: medidores com textos >= 18 px e contraste >= 4,5:1,
   const overlap = (a: Box, b: Box) =>
     a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
   const panel = page.getByRole('group', { name: 'Painel da pescaria' });
-  const pause = page.getByRole('button', { name: 'Pausar', exact: true });
-  const menu = page.getByRole('button', { name: 'Menu', exact: true });
+  const pause = page.getByRole('button', { name: 'Menu da pescaria', exact: true });
+  const menu = page.getByRole('button', { name: 'Recolher painel', exact: false });
 
   async function expectClear(phase: string, others: { name: string; box: Box }[]) {
     const boxes = await gauges(page)

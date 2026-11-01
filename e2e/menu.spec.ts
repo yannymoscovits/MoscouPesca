@@ -20,9 +20,9 @@ const atPonte = () => ({
 });
 
 async function openMenu(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(fishing(page)).toBeVisible();
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await expect(menu(page)).toBeVisible();
 }
 

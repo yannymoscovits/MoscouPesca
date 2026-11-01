@@ -8,7 +8,7 @@ import { castNow, chooseSpot, fishingButton, gameState, hookNow, manualClock, op
 const shotPath = (name: string) => (process.env.SAVE_SHOTS ? `docs/arte/mockups/${name}` : test.info().outputPath(name));
 
 async function play(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(page.getByRole('region', { name: 'Pescaria' })).toBeVisible();
 }
 
@@ -97,7 +97,7 @@ test('T79, SAVE-01: a cena desenha a no máximo 30 quadros por segundo e, pausad
   expect(drawn, 'quadros em 2 s').toBeGreaterThan(20);
   expect(drawn, 'quadros em 2 s').toBeLessThanOrEqual(62);
 
-  await page.getByRole('button', { name: 'Pausar' }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria' }).click();
   await expect(page.getByText('Pausado')).toBeVisible();
   await page.waitForTimeout(200);
   const paused = await frames();
@@ -124,7 +124,7 @@ test('T79, SAVE-01: a cena desenha a no máximo 30 quadros por segundo e, pausad
   const spotDrawn = (await frames()) - atSpot;
   expect(spotDrawn, 'quadros em 1 s no ponto').toBeGreaterThan(10);
   expect(spotDrawn, 'quadros em 1 s no ponto').toBeLessThanOrEqual(31);
-  await page.getByRole('button', { name: 'Pausar' }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria' }).click();
   await page.waitForTimeout(200);
   const pausedAtSpot = await frames();
   await page.waitForTimeout(1000);

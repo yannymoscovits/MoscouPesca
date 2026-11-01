@@ -35,8 +35,8 @@ function readyFor(ep: EpisodeContent, over: Partial<Profile> = {}): Partial<Prof
 }
 
 async function openLobby(page: Page) {
-  await page.getByRole('button', { name: 'Jogar' }).click();
-  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
+  await page.getByRole('button', { name: 'Menu da pescaria', exact: true }).click();
   await page.getByRole('button', { name: 'Campeonato', exact: true }).click();
   await expect(lobby(page)).toBeVisible();
 }
@@ -203,7 +203,7 @@ test('CAMP-05: na vitória, a classificação põe o jogador em 1º e a cena de 
     }),
   );
   await manualClock(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await castNothing(page, 1);
   await page.getByRole('dialog', { name: 'Resultado do arremesso' }).getByRole('button', { name: 'Continuar' }).click();
 

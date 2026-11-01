@@ -25,7 +25,7 @@ test('HIST-01, HUMOR-01: o jogo novo abre com o cartão "JANE: A Que Sempre Teve
 }) => {
   await page.clock.install();
   await openGame(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await page.getByRole('button', { name: 'Tranquilo' }).click();
 
   const card = introCard(page);
@@ -61,7 +61,7 @@ test('HIST-01, HUMOR-01: o jogo novo abre com o cartão "JANE: A Que Sempre Teve
   // Visto uma vez, o cartão não volta depois de reabrir o jogo.
   await page.reload();
   await page.waitForFunction(() => '__mf' in window);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(dialog(page)).toContainText(opening[0].text); // a cena recomeça da primeira fala
   await expect(introCard(page)).toHaveCount(0);
 });
@@ -72,7 +72,7 @@ test('HIST-02, HUMOR-02: cada fala mostra o nome e o retrato do personagem com a
     story: { episodes: {}, scenesSeen: [], pendingScene: null },
     charactersIntroduced: ['jane', 'adilson'],
   });
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
 
   const names = Object.fromEntries(characters.map((c) => [c.id, c.name]));
   const seen = new Set<string>();
@@ -97,7 +97,7 @@ test('HIST-03: a fala só avança com toque; 30 s parado não avança', async ({
     story: { episodes: {}, scenesSeen: [], pendingScene: null },
     charactersIntroduced: ['jane', 'adilson'],
   });
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(dialog(page)).toContainText(opening[0].text);
 
   await page.clock.fastForward('00:30');
@@ -124,7 +124,7 @@ const inJacuipe = (pendingScene: string | null, seen: string[] = []) => ({
 
 test('narração: sem retrato e em itálico ("Jacuípe, muitos anos atrás.")', async ({ page }) => {
   await openWithProfile(page, inJacuipe(null));
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(dialog(page)).toContainText('Jacuípe… quanto tempo, hein?'); // abertura do Episódio 2
 
   for (let i = 0; i < 4; i++) await dialog(page).click();
@@ -143,7 +143,7 @@ test('fala conjunta: retratos do Didi e da Denise lado a lado em "Amamos você m
   page,
 }) => {
   await openWithProfile(page, inJacuipe('ep2-vitoria', ['ep2-abertura', 'ep2-vitoria']));
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(dialog(page)).toContainText('Esse é o meu filho!');
 
   for (let i = 0; i < 3; i++) await dialog(page).click();
@@ -175,7 +175,7 @@ async function openingDialog(page: Page) {
     story: { episodes: {}, scenesSeen: [], pendingScene: null },
     charactersIntroduced: ['jane', 'adilson'],
   });
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await expect(dialog(page)).toContainText(opening[0].text);
 }
 
@@ -206,7 +206,7 @@ const isYellow = ([r, g, b]: number[]) => r > 200 && g > 160 && b < 120;
 /** Print do Pixel 7 para comparar com o mockup: em docs/arte/mockups com SAVE_SHOTS=1, senão na saída do teste. */
 const shotPath = (name: string) => (process.env.SAVE_SHOTS ? `docs/arte/mockups/${name}` : test.info().outputPath(name));
 
-test('T77: o nome de quem fala fica acima do texto, o retrato em cima à esquerda com a expressão e o triângulo pisca', async ({
+test('T77: o retrato fica dentro da caixa, à esquerda, com a expressão; o nome ao lado dele, acima do texto; o triângulo pisca', async ({
   page,
 }) => {
   await openingDialog(page);
@@ -234,15 +234,16 @@ test('T77: o nome de quem fala fica acima do texto, o retrato em cima à esquerd
   const [hr, hg, hb] = rgb(await hint.evaluate((el) => getComputedStyle(el).color));
   expect(hb, 'dica azul').toBeGreaterThan(Math.max(hr, hg) + 40);
 
-  // Retrato em cima, à esquerda, saltando para fora da caixa; o nome embaixo dele e acima do texto.
+  // Retrato dentro da caixa, à esquerda (não cobre o jogo); o nome ao lado dele, no alto, e o texto embaixo do nome.
   const frame = (await box(page).boundingBox())!;
   const portrait = (await dialog(page).getByRole('img').boundingBox())!;
   const name = (await speaker(page).boundingBox())!;
   const body = (await text.boundingBox())!;
-  expect(portrait.y, 'retrato sai por cima da caixa').toBeLessThan(frame.y);
-  expect(portrait.y + portrait.height, 'retrato entra na caixa').toBeGreaterThan(frame.y);
+  expect(portrait.y, 'retrato dentro da caixa, em cima').toBeGreaterThanOrEqual(frame.y);
+  expect(portrait.y + portrait.height, 'retrato dentro da caixa, embaixo').toBeLessThanOrEqual(frame.y + frame.height);
   expect(portrait.x - frame.x, 'retrato à esquerda').toBeLessThan(frame.width / 4);
-  expect(name.y, 'nome embaixo do retrato').toBeGreaterThanOrEqual(portrait.y + portrait.height - 1);
+  expect(name.x, 'nome ao lado do retrato').toBeGreaterThanOrEqual(portrait.x + portrait.width - 1);
+  expect(name.y, 'nome no alto, junto do retrato').toBeLessThan(portrait.y + portrait.height / 2);
   expect(body.y, 'texto embaixo do nome').toBeGreaterThanOrEqual(name.y + name.height - 1);
 
   // Borda amarela grossa na caixa e na moldura do retrato (pixels da tela, no meio de cada borda).
@@ -266,13 +267,13 @@ test('T77: o nome de quem fala fica acima do texto, o retrato em cima à esquerd
 
 test('T77: fala conjunta mostra os dois nomes; narração fica sem nome', async ({ page }) => {
   await openWithProfile(page, inJacuipe('ep2-vitoria', ['ep2-abertura', 'ep2-vitoria']));
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   for (let i = 0; i < 3; i++) await dialog(page).click();
   await expect(dialog(page)).toContainText('Amamos você meu filho, segura firme!');
   await expect(speaker(page)).toHaveText('Didi e Denise');
 
   await openWithProfile(page, inJacuipe(null));
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   for (let i = 0; i < 4; i++) await dialog(page).click();
   await expect(dialog(page)).toContainText('Jacuípe, muitos anos atrás.');
   await expect(speaker(page)).toHaveCount(0);
@@ -294,7 +295,7 @@ const textSizes = (page: Page, scope: string) =>
 
 test('T77, ACES-05, ACES-07: no quadro e no cartão, textos >= 18 px e contraste >= 4,5:1', async ({ page }) => {
   await openGame(page);
-  await page.getByRole('button', { name: 'Jogar' }).click();
+  await page.getByRole('button', { name: /^(Jogar|Continuar)$/ }).click();
   await page.getByRole('button', { name: 'Tranquilo' }).click();
 
   // Cartão de apresentação da Jane.
