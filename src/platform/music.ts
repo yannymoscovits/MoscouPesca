@@ -182,6 +182,10 @@ export function createMusic(): MusicPlayer {
 
   function audio(): AudioContext {
     if (ctx) return ctx;
+    // No iPhone, a chave do silencioso corta o som do Web Audio; pedindo a sessão de reprodução (como um
+    // tocador de música), a trilha toca mesmo com ela ligada (Safari 16.4+; nos outros não existe).
+    const session = (navigator as Navigator & { audioSession?: { type: string } }).audioSession;
+    if (session) session.type = 'playback';
     ctx = new AudioContext();
     master = ctx.createGain();
     master.gain.value = MASTER;
