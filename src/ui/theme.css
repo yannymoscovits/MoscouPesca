@@ -113,6 +113,11 @@ ul {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* Conteúdo maior que o espaço (celular pequeno, lista comprida) começa no topo e rola aqui dentro,
+     em vez de ser cortado em cima ou passar por baixo dos botões. */
+  justify-content: safe center;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   gap: 12px;
   padding: 24px var(--gutter);
   text-align: center;
@@ -1773,8 +1778,17 @@ ul {
 
 /* ---------- Campeonato: lobby e classificação ---------- */
 
+/* A copa usa a tela toda; os botões ficam só no espaço deles, embaixo (ACES-08). Rivais de apelido
+   longo (a Copa Itaparica) ou celular pequeno: o conteúdo rola daqui, sem cortar o nome da copa. */
 .lobby__top {
   gap: 10px;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.lobby > .screen__actions {
+  flex: 0 0 auto;
 }
 
 .lobby__status {
