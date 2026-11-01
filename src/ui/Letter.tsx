@@ -9,9 +9,15 @@ import type { EpisodeContent, Message } from '../content/types';
 import { useNav, useServices } from './context';
 import { Credits } from './Credits';
 
+/** Pedaço mínimo de um parágrafo para começar no pé de uma página; menos que isso vai inteiro para a próxima. */
+export const MIN_WORDS_AT_PAGE_END = 4;
+
 /**
- * Junta os parágrafos em páginas: cada página leva quantos parágrafos couberem (`fits`); um parágrafo
- * que sozinho não cabe é cortado entre palavras.
+ * Junta os parágrafos em páginas, como numa carta de verdade: cada página leva quantos parágrafos
+ * couberem (`fits`) e, quando o próximo não cabe inteiro, o começo dele completa a página e o resto
+ * continua na seguinte. Assim a saudação ("Adilson,") nunca fica sozinha numa página. O corte deixa pelo
+ * menos MIN_WORDS_AT_PAGE_END palavras de cada lado (nada de uma palavra solta no pé ou no alto da
+ * página); parágrafo que não cabe nem numa página vazia é cortado entre palavras.
  */
 export function paginate(paragraphs: string[], fits: (page: string[]) => boolean): string[][] {
   const pages: string[][] = [];
@@ -21,24 +27,32 @@ export function paginate(paragraphs: string[], fits: (page: string[]) => boolean
     page = [];
   };
   for (const paragraph of paragraphs) {
-    if (fits([...page, paragraph])) {
-      page.push(paragraph);
-      continue;
-    }
-    close();
     let words = paragraph.split(' ');
     while (words.length) {
-      // o maior pedaço do parágrafo que cabe numa página (pelo menos uma palavra)
-      let lo = 1;
+      // o maior começo do parágrafo que ainda cabe nesta página (0: nenhuma palavra)
+      let lo = 0;
       let hi = words.length;
       while (lo < hi) {
         const mid = Math.ceil((lo + hi) / 2);
-        if (fits([words.slice(0, mid).join(' ')])) lo = mid;
+        if (fits([...page, words.slice(0, mid).join(' ')])) lo = mid;
         else hi = mid - 1;
       }
-      page = [words.slice(0, lo).join(' ')];
-      words = words.slice(lo);
-      if (words.length) close();
+      if (lo === words.length) {
+        page.push(words.join(' '));
+        break;
+      }
+      if (page.length === 0) {
+        page.push(words.slice(0, Math.max(lo, 1)).join(' ')); // nem a página vazia comporta tudo
+        words = words.slice(Math.max(lo, 1));
+      } else {
+        // o que continua na próxima página também precisa de umas palavras, senão vai tudo para lá
+        const cut = Math.min(lo, words.length - MIN_WORDS_AT_PAGE_END);
+        if (cut >= MIN_WORDS_AT_PAGE_END) {
+          page.push(words.slice(0, cut).join(' '));
+          words = words.slice(cut);
+        }
+      }
+      close();
     }
   }
   close();
