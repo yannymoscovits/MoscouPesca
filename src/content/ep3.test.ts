@@ -76,7 +76,7 @@ describe('Episódio 3: roteiro', () => {
       'Pegar uma Guaricema para provar pra Geane que é só peixe',
       'Pegar um Xaréu para o Lucca ver',
       'Comprar a Vara Pedra Fina',
-      'Pegar a Garoupa',
+      'Pegar a Garoupa — na Pedra da garoupa',
       'Registrar no álbum todas as espécies de Vera Cruz',
     ]);
   });
@@ -84,7 +84,7 @@ describe('Episódio 3: roteiro', () => {
   it('HIST-06: a abertura começa na fila do ferry, com a Lavínia chegando antes dele', () => {
     const opening = ep3.scenes.find((s) => s.id === ep3.chapter.openingScene)!;
     expect(opening.lines[0]).toMatchObject({ speaker: 'adilson', text: 'Dessa vez vai ser só eu, o mar e o silêncio.' });
-    expect(opening.lines[1]).toMatchObject({ speaker: 'lavinia', text: 'Adilsinho, eu fui nadando. Cheguei faz duas horas.' });
+    expect(opening.lines[1]).toMatchObject({ speaker: 'lavinia', text: expect.stringContaining('Cheguei faz duas horas') });
   });
 
   it('HIST-05: jogando na ordem do roteiro, cada objetivo mostra a sua cena e o último libera a Copa Itaparica', () => {

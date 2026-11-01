@@ -16,13 +16,14 @@ import type {
   Rod,
   RodId,
   Scene,
+  SceneArtId,
   Species,
   SpeciesId,
   TournamentDef,
 } from '../types';
 import { withMedals } from '../goals';
 
-const sprite = (id: string) => `src/assets/fish/ep4/${id}.png`;
+const sprite = (id: string) => `src/assets/fish-portraits/${id}.png`;
 
 // O alcance das varas já chega a 10 no Episódio 3: aqui a rara é limitada pela isca nova (só a
 // Isca Cata-vento atrai o Dourado-dos-Ventos) e pela força da vara (a Vara Torre vem antes dele).
@@ -32,10 +33,9 @@ const species = withMedals([
     name: 'Peixe-voador',
     sprite: sprite('peixe-voador'),
     kg: { min: 0.5, max: 3 },
-    pricePerKg: 24,
-    power: 4,
-    stamina: 5,
-    baits: ['minhoca', 'milho'],
+    power: 6,
+    stamina: 7,
+    baits: ['minhoca', 'milho', 'lula'],
     rarity: 10,
     description: 'Abre as asas e sai planando. Tem que pegar no ar!',
     rare: false,
@@ -45,10 +45,9 @@ const species = withMedals([
     name: 'Lambari-rajada',
     sprite: sprite('lambari-rajada'),
     kg: { min: 0.1, max: 0.5 },
-    pricePerKg: 40,
-    power: 2,
-    stamina: 3,
-    baits: ['minhoca', 'camarao'],
+    power: 4,
+    stamina: 5,
+    baits: ['minhoca', 'camarao', 'lula'],
     rarity: 8,
     description: 'Pequeno e rápido como uma rajada. Adora se esconder nas torres.',
     rare: false,
@@ -58,10 +57,9 @@ const species = withMedals([
     name: 'Tilápia-hélice',
     sprite: sprite('tilapia-helice'),
     kg: { min: 0.6, max: 3 },
-    pricePerKg: 22,
-    power: 4,
-    stamina: 6,
-    baits: ['milho', 'camarao'],
+    power: 6,
+    stamina: 8,
+    baits: ['milho', 'camarao', 'lula'],
     rarity: 8,
     description: 'Gira o rabo igual turbina. Dá até tontura.',
     rare: false,
@@ -71,9 +69,8 @@ const species = withMedals([
     name: 'Traíra-pipa',
     sprite: sprite('traira-pipa'),
     kg: { min: 1, max: 7 },
-    pricePerKg: 28,
-    power: 7,
-    stamina: 6,
+    power: 9,
+    stamina: 8,
     baits: ['carne', 'lula'],
     rarity: 5,
     description: 'Brava e voadora: o pior dos dois mundos.',
@@ -84,9 +81,8 @@ const species = withMedals([
     name: 'Pacu-planador',
     sprite: sprite('pacu-planador'),
     kg: { min: 4, max: 14 },
-    pricePerKg: 26,
-    power: 7,
-    stamina: 8,
+    power: 9,
+    stamina: 10,
     baits: ['cata-vento'],
     rarity: 5,
     description: 'Vive de pegar carona no vento. Preguiçoso, mas pesado.',
@@ -97,15 +93,15 @@ const species = withMedals([
     name: 'Dourado-dos-Ventos',
     sprite: sprite('dourado-dos-ventos'),
     kg: { min: 20, max: 45 },
-    pricePerKg: 32,
     power: 10,
     stamina: 10,
     baits: ['cata-vento'],
+    requiresRod: 'torre', // PONTO-09: o lendário só morde com a segunda vara do capítulo
     rarity: 1,
     description: 'Quando bate a cauda, acende as luzes de uma cidade inteira. Nem o GPS acha.',
     rare: true,
   },
-] satisfies Omit<Species, 'medals'>[]);
+] satisfies Omit<Species, 'medals'>[], 4);
 
 // Cena de 180 × 400 px lógicos, com a margem embaixo e a ponta da vara em (90, 370).
 // Da margem para o pé das torres: a beira, o meio do açude e as torres, onde moram os lambaris
@@ -145,36 +141,41 @@ const parqueDosVentos = {
       depthM: 10,
       name: 'Pé das torres',
       minReach: 5,
+      requiresBait: 'cata-vento', // PONTO-10: a última área pede a vara e a isca do capítulo
+      requiresRod: 'helice',
     },
   ],
 } satisfies Location;
 
 const rods = [
-  { id: 'helice', name: 'Vara Hélice', price: 8000, force: 9, reach: 10, episode: 4 },
-  { id: 'torre', name: 'Vara Torre', price: 14000, force: 9, reach: 10, episode: 4 },
+  { id: 'helice', name: 'Vara Hélice', price: 1100, force: 9, reach: 10, episode: 4 },
+  { id: 'torre', name: 'Vara Torre', price: 1600, force: 9, reach: 10, episode: 4 },
 ] satisfies Rod[];
 
 // O roteiro não dá nome à isca nova do episódio; a cata-vento gira no vento como as pás das torres.
-const baits = [{ id: 'cata-vento', name: 'Isca Cata-vento', price: 400, episode: 4 }] satisfies Bait[];
+const baits = [{ id: 'cata-vento', name: 'Isca Cata-vento', price: 330, episode: 4 }] satisfies Bait[];
 
 const say = (speaker: CharacterId, expression: Expression, text: string): DialogLine => ({ speaker, expression, text });
+/** HIST-16: a fala com um quadro animado em cima. */
+const withArt = (line: DialogLine, art: SceneArtId): DialogLine => ({ ...line, art });
 
 const scenes = [
   {
     id: 'ep4-abertura', // cena 1
     lines: [
       say('adilson', 'normal', 'Serviço do Grupo IK hoje: revisar as torres. Mas antes… uma pescariazinha.'),
-      say('marcio', 'chocado', 'Chefe, cuidado com o açude. Com esse vento, os peixes aprenderam a voar.'),
-      say('adilson', 'chocado', 'Tanto tempo mexendo com eólica e nunca vi peixe voando.'),
-      say('marcio', 'rindo', 'Relaxa, chefe. Funcionário 01 resolve tudo. Até peixe voador.'),
+      withArt(say('marcio', 'chocado', 'Chefe, cuidado com o açude. Com esse vento, os peixes aprenderam a voar.'), 'peixes-voadores'),
+      withArt(say('adilson', 'chocado', 'Tanto tempo mexendo com eólica e nunca vi peixe voando.'), 'peixes-voadores'),
+      withArt(say('marcio', 'rindo', 'Relaxa, chefe. Funcionário 01 resolve tudo. Até peixe voador.'), 'peixes-voadores'),
     ],
   },
   {
     id: 'ep4-filial', // cena 2
     lines: [
-      say('edvaldo', 'rindo', 'Abri uma filial no parque, seu Adilson. Preço de eólica: depende do vento.'),
+      say('edvaldo', 'rindo', 'Abri uma filial no parque, Moscou. Preço de eólica: depende do vento.'),
       say('adilson', 'bravo', 'E hoje tá ventando muito, né?'),
       say('edvaldo', 'rindo', 'Muito.'),
+      say('edvaldo', 'normal', 'Leva a Vara Hélice: com esse vento, ela gira a seu favor.'),
     ],
   },
   {
@@ -183,16 +184,18 @@ const scenes = [
       say('higashi', 'normal', 'Adilson, vou botar um GPS em você. Pra saber se tá trabalhando ou pescando.'),
       say('adilson', 'chocado', 'Eu tô… revisando a torre. Daqui de baixo.'),
       say('higashi', 'rindo', 'GPS diz: "você chegou ao seu destino: o açude".'),
+      say('marcio', 'normal', 'Chefe, o Pacu-planador só cai com Isca Cata-vento. O Edvaldo tem na filial!'),
     ],
   },
   {
     id: 'ep4-piranha-pipa', // cenas 4 e 5 juntas: a cena 4 não tem objetivo depois dela
+    laviniaCameo: true,
     lines: [
-      say('lavinia', 'rindo', 'Adilsinho! Olha eu voando! Virei piranha-pipa.'),
-      say('adilson', 'chocado', 'Até aqui em cima, menina?!'),
-      say('lavinia', 'rindo', 'Pirraça também é energia renovável, Adilsinho.'),
-      say('marcio', 'chocado', 'Chefe, entrou peixe na torre 7! Os lambaris tão travando a pá!'),
-      say('adilson', 'rindo', 'Deixa comigo. Isso é serviço pra especialista.'),
+      withArt(say('lavinia', 'rindo', 'Adilsinho! Olha eu voando! Virei piranha-pipa.'), 'piranha-pipa'),
+      withArt(say('adilson', 'chocado', 'Até aqui em cima, menina?!'), 'piranha-pipa'),
+      withArt(say('lavinia', 'rindo', 'Pirraça também é energia renovável, Adilsinho.'), 'piranha-pipa'),
+      withArt(say('marcio', 'chocado', 'Chefe, entrou peixe na torre 7! Os lambaris tão travando a pá!'), 'torre-7'),
+      withArt(say('adilson', 'rindo', 'Deixa comigo. Isso é serviço pra especialista.'), 'torre-7'),
     ],
   },
   {
@@ -203,17 +206,16 @@ const scenes = [
   {
     id: 'ep4-lenda', // cena 7, Márcio e Sr. Higashi: a lenda do parque
     lines: [
-      say(
-        'marcio',
-        'normal',
-        'Dizem que tem um dourado aqui que, quando bate a cauda, gera energia pra uma cidade inteira.',
+      withArt(
+        say('marcio', 'normal', 'Dizem que tem um dourado aqui que, quando bate a cauda, gera energia pra uma cidade inteira.'),
+        'dourado-lenda',
       ),
-      say('higashi', 'chocado', 'Botei GPS nele. O GPS só diz "recalculando rota".'),
+      withArt(say('higashi', 'chocado', 'Botei GPS nele. O GPS só diz "recalculando rota".'), 'dourado-lenda'),
     ],
   },
   {
     id: 'ep4-dourado', // cena 7, a fala do Adilson: depois de pegar o Dourado-dos-Ventos
-    lines: [say('adilson', 'rindo', 'Esse eu quero ligar na rede.')],
+    lines: [withArt(say('adilson', 'rindo', 'Esse eu quero ligar na rede.'), 'dourado-lenda')],
   },
   {
     id: 'ep4-album', // cena 8
@@ -235,6 +237,9 @@ const scenes = [
 ] satisfies Scene[];
 
 const caught = (id: SpeciesId) => (e: GameEvent) => e.type === 'Caught' && e.species === id;
+// HIST-15: peixe pego antes da vez do objetivo (juntando dinheiro para a vara, por exemplo) já vale:
+// quando o objetivo chega, ele se cumpre sozinho e a cena dele aparece.
+const had = (id: SpeciesId) => (p: Profile) => p.album[id] !== undefined;
 const caughtHere = (e: GameEvent) => e.type === 'Caught' && species.some((sp) => sp.id === e.species);
 // A compra conta pela vara possuída: comprada antes da hora, cumpre no evento seguinte em vez de travar.
 const owns = (id: RodId) => (_e: GameEvent, p: Profile) => p.rods.owned.includes(id);
@@ -243,12 +248,19 @@ const albumComplete = (_e: GameEvent, p: Profile) => species.every((sp) => p.alb
 // Sem "se inscrever na Copa": o campeonato libera sozinho depois do último objetivo (CAMP-01).
 const objectives = [
   // "Peixes voadores" são todos os do parque: com esse vento, todos aprenderam a voar (cenas 1 e 8).
-  { id: 'pegar-5-voadores', text: 'Pegar 5 peixes voadores', done: caughtHere, count: 5, sceneOnDone: 'ep4-filial' },
-  { id: 'comprar-helice', text: 'Comprar a Vara Hélice', done: owns('helice'), sceneOnDone: 'ep4-gps' },
+  {
+    id: 'pegar-5-voadores',
+    text: 'Pegar 5 peixes voadores',
+    done: caughtHere,
+    count: 5,
+    unlocks: ['helice'],
+    sceneOnDone: 'ep4-filial',
+  },
+  { id: 'comprar-helice', text: 'Comprar a Vara Hélice', done: owns('helice'), unlocks: ['cata-vento'], sceneOnDone: 'ep4-gps' }, // o Pacu-planador só cai com Cata-vento
   {
     id: 'pegar-pacu',
     text: 'Pegar um Pacu-planador',
-    done: caught('pacu-planador'),
+    done: caught('pacu-planador'), satisfied: had('pacu-planador'),
     sceneOnDone: 'ep4-piranha-pipa',
   },
   {
@@ -256,12 +268,13 @@ const objectives = [
     text: 'Tirar 3 Lambaris-rajada da torre',
     done: caught('lambari-rajada'),
     count: 3,
+    unlocks: ['torre'],
     sceneOnDone: 'ep4-vara-torre',
   },
   { id: 'comprar-torre', text: 'Comprar a Vara Torre', done: owns('torre'), sceneOnDone: 'ep4-lenda' },
   {
     id: 'pegar-dourado',
-    text: 'Pegar o Dourado-dos-Ventos',
+    text: 'Pegar o Dourado-dos-Ventos — no Pé das torres',
     done: caught('dourado-dos-ventos'),
     sceneOnDone: 'ep4-dourado',
   },
@@ -269,6 +282,7 @@ const objectives = [
     id: 'album-completo',
     text: 'Registrar no álbum todas as espécies do Parque dos Ventos',
     done: albumComplete,
+    satisfied: p => albumComplete({ type: 'GameStarted' }, p),
     sceneOnDone: 'ep4-album',
   },
 ] satisfies Objective[];
@@ -278,18 +292,18 @@ const objectives = [
 const copaDosVentos = {
   id: 'copa-dos-ventos',
   name: 'Copa dos Ventos',
-  casts: 8,
+  casts: 5, // copa curta: 5 arremessos, valem os 3 mais pesados
   countBest: 3,
   rivals: [
-    { character: 'marcio', kg: 52, taunt: say('marcio', 'rindo', 'Chefe, eu sou o funcionário 01. Primeiro lugar é comigo.') },
+    { character: 'marcio', kg: 4.3, taunt: say('marcio', 'rindo', 'Chefe, eu sou o funcionário 01. Primeiro lugar é comigo.') },
     {
       character: 'higashi',
-      kg: 56.5,
+      kg: 5.3,
       taunt: say('higashi', 'normal', 'Botei GPS na minha isca. O peixe não tem pra onde fugir.'),
     },
     {
       character: 'edvaldo',
-      kg: 61.2,
+      kg: 6.6,
       taunt: say('edvaldo', 'rindo', 'Se eu ganhar, a vara volta pro estoque pelo preço de eólica.'),
     },
   ],

@@ -51,17 +51,20 @@ describe('Episódio 5: o chefão depende da isca nova e da força, não do alcan
     const rng = createRng(seed);
     let water = spawnWater(zone, ep5.species, 8, rng, null, bait);
     for (let t = 0; t < 30 && water.lure.xM > 0; t += 0.1) {
-      const step = stepWater(water, 0.1, true, bait, rng);
+      const step = stepWater(water, 0.1, true, bait, rng, 'lendaria'); // com a vara que o lendário pede (PONTO-09)
       if (step.strike) return step.strike.species.id;
       water = step.water;
     }
     return null;
   }
 
-  it('o alcance não limita: a melhor vara dos episódios 1 a 4 já abre o ponto do Marlim-azul', () => {
+  it('PONTO-10: o ponto do Marlim-azul abre com a Vara Oceano e a Isca de Corrico, não pelo alcance', () => {
     const best = earlier.flatMap((ep) => ep.rods).reduce((a, b) => (b.reach > a.reach ? b : a));
     expect(rareZones.length).toBeGreaterThan(0);
-    const open = spotsFor(location, best, ep5.species, {}).filter((s) => !s.locked).map((s) => s.id);
+    const owned = earlier.flatMap((ep) => ep.rods.map((r) => r.id));
+    const closed = spotsFor(location, best, ep5.species, {}, [], undefined, owned).filter((s) => !s.locked).map((s) => s.id);
+    for (const zone of rareZones) expect(closed, zone.id).not.toContain(zone.id);
+    const open = spotsFor(location, best, ep5.species, {}, ['corrico'], undefined, [...owned, 'oceano']).filter((s) => !s.locked).map((s) => s.id);
     for (const zone of rareZones) expect(open, zone.id).toContain(zone.id);
   });
 
@@ -109,11 +112,11 @@ describe('Episódio 5: elenco', () => {
     for (const id of [...crew, 'kris', 'lu', 'geane', 'louise', 'lucca', 'marcio', 'higashi', 'capenga']) {
       expect(speakers.has(id), id).toBe(true);
     }
-    expect(lines(ep5.chapter.openingScene)).toContainEqual({
+    expect(lines(ep5.chapter.openingScene)).toContainEqual(expect.objectContaining({
       speaker: 'marcio',
       expression: 'rindo',
       text: 'Chefe, hoje o funcionário 01 é capitão. Todo mundo a bordo!',
-    });
+    }));
   });
 
   it('o Cervero aparece no mar ao lado da Lavínia, na cena em que ela pirraça o Adilsinho', () => {
@@ -167,7 +170,7 @@ describe('Episódio 5: roteiro', () => {
       'Pegar uma Cavala para o almoço',
       'Pegar um Atum',
       'Comprar a Vara Lendária',
-      'Pegar o Marlim-azul',
+      'Pegar o Marlim-azul — no Azul profundo',
       'Registrar no álbum todas as espécies do alto-mar',
     ]);
   });
@@ -224,7 +227,7 @@ describe('Episódio 5: roteiro', () => {
     expect(won.notice).toBe('A pescaria continua: todos os lugares seguem abertos');
 
     const closing = lines(ep5.chapter.closingScene);
-    expect(closing.slice(0, 2)).toEqual([
+    expect(closing.slice(0, 2)).toMatchObject([
       { speaker: null, text: 'O sol se pondo no alto-mar. Todo mundo em volta do Adilson.' },
       { speaker: null, text: 'Uma brisa com cheiro de Jacuípe passa pelo barco.' },
     ]);

@@ -16,13 +16,14 @@ import type {
   Rod,
   RodId,
   Scene,
+  SceneArtId,
   Species,
   SpeciesId,
   TournamentDef,
 } from '../types';
 import { withMedals } from '../goals';
 
-const sprite = (id: string) => `src/assets/fish/ep3/${id}.png`;
+const sprite = (id: string) => `src/assets/fish-portraits/${id}.png`;
 
 const species = withMedals([
   {
@@ -30,9 +31,8 @@ const species = withMedals([
     name: 'Xaréu',
     sprite: sprite('xareu'),
     kg: { min: 3, max: 16 },
-    pricePerKg: 20,
-    power: 8,
-    stamina: 8,
+    power: 9,
+    stamina: 9,
     baits: ['carne', 'lula'],
     rarity: 5,
     description: 'Forte que só. Briga como se fosse final de campeonato.',
@@ -43,9 +43,8 @@ const species = withMedals([
     name: 'Guaricema',
     sprite: sprite('guaricema'),
     kg: { min: 0.2, max: 1.2 },
-    pricePerKg: 18,
-    power: 2,
-    stamina: 3,
+    power: 3,
+    stamina: 4,
     baits: ['minhoca', 'camarao'],
     rarity: 10,
     description: 'Pequena, rápida e fofoqueira: conta tudo pros outros peixes.',
@@ -56,9 +55,8 @@ const species = withMedals([
     name: 'Agulhinha',
     sprite: sprite('agulhinha'),
     kg: { min: 0.2, max: 0.9 },
-    pricePerKg: 15,
-    power: 2,
-    stamina: 2,
+    power: 3,
+    stamina: 3,
     baits: ['milho', 'camarao'],
     rarity: 9,
     description: 'Fininha, nervosa e sempre com pressa.',
@@ -69,9 +67,8 @@ const species = withMedals([
     name: 'Cioba',
     sprite: sprite('cioba'),
     kg: { min: 1, max: 9 },
-    pricePerKg: 32,
-    power: 6,
-    stamina: 6,
+    power: 7,
+    stamina: 7,
     baits: ['camarao', 'lula'],
     rarity: 5,
     description: 'Vermelhinha e chique. Peixe de restaurante.',
@@ -82,9 +79,8 @@ const species = withMedals([
     name: 'Budião',
     sprite: sprite('budiao'),
     kg: { min: 0.5, max: 4 },
-    pricePerKg: 20,
-    power: 4,
-    stamina: 5,
+    power: 5,
+    stamina: 6,
     baits: ['minhoca', 'camarao'],
     rarity: 6,
     description: 'Colorido demais. A Geane jura que é peixe de outro planeta.',
@@ -95,16 +91,16 @@ const species = withMedals([
     name: 'Garoupa',
     sprite: sprite('garoupa'),
     kg: { min: 15, max: 50 },
-    pricePerKg: 30,
     power: 10,
-    stamina: 9,
+    stamina: 10,
     baits: ['lula'],
+    requiresRod: 'pedra-fina', // PONTO-09: o lendário só morde com a segunda vara do capítulo
     rarity: 1,
     description: 'A rainha da pedra. Só aparece pra quem tem paciência.',
     rare: true,
     fightStyle: 'afundador',
   },
-] satisfies Omit<Species, 'medals'>[]);
+] satisfies Omit<Species, 'medals'>[], 3);
 
 // Cena de 180 × 400 px lógicos, com a margem embaixo e a ponta da vara em (90, 370).
 // Com a Maré Alta ou a Vara Baía (alcance 276 px) o jogador chega à baía, mas não à pedra, que
@@ -144,28 +140,33 @@ const veraCruz = {
       depthM: 15,
       name: 'Pedra da garoupa',
       minReach: 5,
+      requiresBait: 'lula', // PONTO-10: a última área pede a vara e a isca do capítulo
+      requiresRod: 'pedra-fina',
     },
   ],
 } satisfies Location;
 
 const rods = [
-  { id: 'baia', name: 'Vara Baía', price: 2600, force: 8, reach: 9, episode: 3 },
-  { id: 'pedra-fina', name: 'Vara Pedra Fina', price: 5000, force: 8, reach: 10, episode: 3 },
+  { id: 'baia', name: 'Vara Baía', price: 900, force: 8, reach: 9, episode: 3 },
+  { id: 'pedra-fina', name: 'Vara Pedra Fina', price: 1250, force: 8, reach: 10, episode: 3 },
 ] satisfies Rod[];
 
 // O roteiro não dá nome à isca nova do episódio; lula é isca clássica de garoupa e cioba.
 const baits = [{ id: 'lula', name: 'Isca de Lula', price: 250, episode: 3 }] satisfies Bait[];
 
 const say = (speaker: CharacterId, expression: Expression, text: string): DialogLine => ({ speaker, expression, text });
+/** HIST-16: a fala com um quadro animado em cima. */
+const withArt = (line: DialogLine, art: SceneArtId): DialogLine => ({ ...line, art });
 
 const scenes = [
   {
     id: 'ep3-abertura', // cenas 1 e 2 juntas: o capítulo tem uma abertura só
+    laviniaCameo: true,
     lines: [
-      say('adilson', 'normal', 'Dessa vez vai ser só eu, o mar e o silêncio.'),
-      say('lavinia', 'rindo', 'Adilsinho, eu fui nadando. Cheguei faz duas horas.'),
-      say('adilson', 'bravo', 'Nem na fila do ferry eu tenho paz!'),
-      say('adilson', 'rindo', 'Agora sim. Paz.'),
+      withArt(say('adilson', 'normal', 'Dessa vez vai ser só eu, o mar e o silêncio.'), 'ferry'),
+      withArt(say('lavinia', 'rindo', 'Adilsinho, eu fui nadando. Cheguei faz duas horas.'), 'ferry'),
+      withArt(say('adilson', 'bravo', 'Nem na fila do ferry eu tenho paz!'), 'ferry'),
+      withArt(say('adilson', 'rindo', 'Agora sim. Paz.'), 'paz'),
     ],
   },
   {
@@ -176,7 +177,8 @@ const scenes = [
       say('adilson', 'bravo', 'Era pra ser uma pescaria em paz…'),
       say('geane', 'bravo', 'Lu, apaga esse cigarro que tá espantando os peixes do Xô!'),
       say('lu', 'rindo', 'Os peixes que lutem, Geane.'),
-      say('edvaldo', 'rindo', 'Abri uma filial na ilha, seu Adilson. Preço de ilha: o triplo. O ferry encarece tudo.'),
+      say('edvaldo', 'rindo', 'Abri uma filial na ilha, Moscou. Preço de ilha: o triplo. O ferry encarece tudo.'),
+      say('edvaldo', 'normal', 'Pra pescar na ilha, leva a Vara Baía. Feita pra água daqui.'),
     ],
   },
   {
@@ -192,24 +194,25 @@ const scenes = [
       say('louise', 'rindo', 'Tio, o Lucca quer ver o senhor pescar!'),
       say('lucca', 'rindo', 'Pega um peixe grandão!'),
       say('adilson', 'rindo', 'Pra você eu pego o maior da ilha.'),
+      say('edvaldo', 'rindo', 'Peixe grande da ilha só cai com Isca de Lula, Moscou. Chegou agora na loja!'),
     ],
   },
   {
     id: 'ep3-xareu', // as falas depois do Xaréu e a cena 7
     lines: [
-      say('lucca', 'chocado', 'Uau! Que peixe grandão!'),
-      say('adilson', 'rindo', 'Esse aqui é do meu xodó.'),
+      withArt(say('lucca', 'chocado', 'Uau! Que peixe grandão!'), 'xareu-lucca'),
+      withArt(say('adilson', 'rindo', 'Esse aqui é do meu xodó.'), 'xareu-lucca'),
       say('edvaldo', 'rindo', 'Pra pedra de Vera Cruz só a Vara Pedra Fina. Preço de família: o de ilha.'),
     ],
   },
   // A cena 8 se divide em duas: o roteiro não tem cena para depois de pegar a Garoupa.
   {
     id: 'ep3-disco-voador', // cena 8, primeira fala: a Geane vê o vulto na pedra
-    lines: [say('geane', 'chocado', 'Xô, isso aí é disco voador de escama! Tira foto e manda pra NASA!')],
+    lines: [withArt(say('geane', 'chocado', 'Xô, isso aí é disco voador de escama! Tira foto e manda pra NASA!'), 'disco-voador')],
   },
   {
     id: 'ep3-garoupa', // cena 8, segunda fala: depois de pegar a Garoupa
-    lines: [say('adilson', 'rindo', 'É uma garoupa, Geane.')],
+    lines: [withArt(say('adilson', 'rindo', 'É uma garoupa, Geane.'), 'disco-voador')],
   },
   {
     id: 'ep3-album', // cena 9
@@ -234,6 +237,9 @@ const scenes = [
 ] satisfies Scene[];
 
 const caught = (id: SpeciesId) => (e: GameEvent) => e.type === 'Caught' && e.species === id;
+// HIST-15: peixe pego antes da vez do objetivo (juntando dinheiro para a vara, por exemplo) já vale:
+// quando o objetivo chega, ele se cumpre sozinho e a cena dele aparece.
+const had = (id: SpeciesId) => (p: Profile) => p.album[id] !== undefined;
 const caughtHere = (e: GameEvent) => e.type === 'Caught' && species.some((sp) => sp.id === e.species);
 // A compra conta pela vara possuída: comprada antes da hora, cumpre no evento seguinte em vez de travar.
 const owns = (id: RodId) => (_e: GameEvent, p: Profile) => p.rods.owned.includes(id);
@@ -241,26 +247,35 @@ const albumComplete = (_e: GameEvent, p: Profile) => species.every((sp) => p.alb
 
 // Sem "se inscrever na Copa": o campeonato libera sozinho depois do último objetivo (CAMP-01).
 const objectives = [
-  { id: 'pegar-5-em-paz', text: 'Pegar 5 peixes em paz', done: caughtHere, count: 5, sceneOnDone: 'ep3-irmas' },
+  {
+    id: 'pegar-5-em-paz',
+    text: 'Pegar 5 peixes em paz',
+    done: caughtHere,
+    count: 5,
+    unlocks: ['baia'],
+    sceneOnDone: 'ep3-irmas',
+  },
   { id: 'comprar-baia', text: 'Comprar a Vara Baía', done: owns('baia'), sceneOnDone: 'ep3-espiao' },
   {
     id: 'pegar-guaricema',
     text: 'Pegar uma Guaricema para provar pra Geane que é só peixe',
-    done: caught('guaricema'),
+    done: caught('guaricema'), satisfied: had('guaricema'),
+    unlocks: ['lula'], // Xaréu e Garoupa pedem Isca de Lula
     sceneOnDone: 'ep3-xodo',
   },
-  { id: 'pegar-xareu', text: 'Pegar um Xaréu para o Lucca ver', done: caught('xareu'), sceneOnDone: 'ep3-xareu' },
+  { id: 'pegar-xareu', text: 'Pegar um Xaréu para o Lucca ver', done: caught('xareu'), satisfied: had('xareu'), unlocks: ['pedra-fina'], sceneOnDone: 'ep3-xareu' },
   {
     id: 'comprar-pedra-fina',
     text: 'Comprar a Vara Pedra Fina',
     done: owns('pedra-fina'),
     sceneOnDone: 'ep3-disco-voador',
   },
-  { id: 'pegar-garoupa', text: 'Pegar a Garoupa', done: caught('garoupa'), sceneOnDone: 'ep3-garoupa' },
+  { id: 'pegar-garoupa', text: 'Pegar a Garoupa — na Pedra da garoupa', done: caught('garoupa'), sceneOnDone: 'ep3-garoupa' },
   {
     id: 'album-completo',
     text: 'Registrar no álbum todas as espécies de Vera Cruz',
     done: albumComplete,
+    satisfied: p => albumComplete({ type: 'GameStarted' }, p),
     sceneOnDone: 'ep3-album',
   },
 ] satisfies Objective[];
@@ -270,18 +285,18 @@ const objectives = [
 const copaItaparica = {
   id: 'copa-itaparica',
   name: 'Copa Itaparica',
-  casts: 8,
+  casts: 5, // copa curta: 5 arremessos, valem os 3 mais pesados
   countBest: 3,
   rivals: [
-    { character: 'lu', kg: 40.2, taunt: say('lu', 'rindo', 'Xô, entre uma reunião e outra eu ganho isso aqui.') },
+    { character: 'lu', kg: 11.2, taunt: say('lu', 'rindo', 'Xô, entre uma reunião e outra eu ganho isso aqui.') },
     {
       character: 'geane',
-      kg: 44.6,
+      kg: 13.8,
       taunt: say('geane', 'bravo', 'Se eu perder vou chorar até o ano que vem. Sou canceriana, Xô.'),
     },
     {
       character: 'louise',
-      kg: 49,
+      kg: 17.2,
       taunt: say('louise', 'rindo', 'Tio, vou ganhar e o Lucca vai torcer pra mim. E se eu perder, eu recorro!'),
     },
   ],

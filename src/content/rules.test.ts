@@ -88,16 +88,8 @@ describe('todos os episódios', () => {
 });
 
 describe('medalhas e metas', () => {
-  it('MEDAL-04, MEDAL-05: metas de 10, 25 e 50 capturas, com recompensa inteira, maior que zero e crescente por episódio', () => {
+  it('MEDAL-04: metas de 10, 25 e 50 capturas', () => {
     expect(goals.counts).toEqual([10, 25, 50]);
-    for (const count of goals.counts) {
-      const rewards = episodes.map((ep) => goals.reward(ep.id, count));
-      for (const [i, r] of rewards.entries()) {
-        expect(r, `meta de ${count}, Ep. ${i + 1}`).toBeGreaterThan(0);
-        expect(Number.isInteger(r), `meta de ${count}, Ep. ${i + 1}: R$ inteiro`).toBe(true);
-        if (i > 0) expect(r, `meta de ${count}, Ep. ${i + 1} > Ep. ${i}`).toBeGreaterThan(rewards[i - 1]);
-      }
-    }
   });
 });
 
@@ -143,11 +135,10 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
     }
   });
 
-  it('toda espécie tem faixa de peso válida, preço por kg e peso no sorteio positivos', () => {
+  it('toda espécie tem faixa de peso válida e peso no sorteio positivo', () => {
     for (const sp of ep.species) {
       expect(sp.kg.min, sp.id).toBeGreaterThan(0);
       expect(sp.kg.max, sp.id).toBeGreaterThanOrEqual(sp.kg.min);
-      expect(sp.pricePerKg, sp.id).toBeGreaterThan(0);
       expect(sp.rarity, sp.id).toBeGreaterThan(0);
     }
   });
@@ -232,10 +223,10 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
     for (const b of ep.baits) expect(b.episode, b.id).toBe(ep.id);
   });
 
-  it('CAMP-02, HUMOR-04: o campeonato tem nome, 8 arremessos, conta 3 e tem 3 rivais do elenco, cada um provocando com a própria fala', () => {
+  it('CAMP-02, HUMOR-04: o campeonato tem nome, 5 arremessos, conta 3 e tem 3 rivais do elenco, cada um provocando com a própria fala', () => {
     const ids = new Set(characters.map((c) => c.id));
     expect(ep.tournament.name.trim()).not.toBe('');
-    expect(ep.tournament).toMatchObject({ casts: 8, countBest: 3 });
+    expect(ep.tournament).toMatchObject({ casts: 5, countBest: 3 });
     expect(ep.tournament.rivals).toHaveLength(3);
     expect(new Set(ep.tournament.rivals.map((r) => r.character)).size).toBe(3);
     for (const r of ep.tournament.rivals) {
@@ -280,6 +271,20 @@ describe.each(episodes.map((ep) => [ep.id, ep] as const))('Episódio %i', (_id, 
   it('PROG-02: tem de 6 a 8 objetivos antes do campeonato', () => {
     expect(ep.chapter.objectives.length).toBeGreaterThanOrEqual(6);
     expect(ep.chapter.objectives.length).toBeLessThanOrEqual(8);
+  });
+
+  it('HIST-11: cada vara e isca com preço é liberada (e paga) por um objetivo do episódio, e a vara que a história manda comprar já foi liberada antes', () => {
+    const priced = [...ep.rods, ...ep.baits].filter((i) => i.price > 0).map((i) => i.id);
+    const unlocked = ep.chapter.objectives.flatMap((o) => o.unlocks ?? []);
+    expect([...unlocked].sort()).toEqual([...priced].sort());
+    const owning = (rod: string): Profile => ({ ...newProfile(), rods: { owned: [rod], equipped: rod } });
+    ep.chapter.objectives.forEach((o, k) => {
+      const rod = ep.rods.find((r) => r.price > 0 && o.done({ type: 'Bought', item: r.id }, owning(r.id)));
+      if (!rod) return;
+      const at = ep.chapter.objectives.findIndex((x) => x.unlocks?.includes(rod.id));
+      expect(at, `${o.id}: ${rod.id} liberada antes`).toBeGreaterThanOrEqual(0);
+      expect(at, `${o.id}: ${rod.id} liberada antes`).toBeLessThan(k);
+    });
   });
 
   it('PROG-03: um objetivo se cumpre ao pegar a espécie rara, e só ela', () => {

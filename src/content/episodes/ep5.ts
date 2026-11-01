@@ -17,13 +17,14 @@ import type {
   Rod,
   RodId,
   Scene,
+  SceneArtId,
   Species,
   SpeciesId,
   TournamentDef,
 } from '../types';
 import { withMedals } from '../goals';
 
-const sprite = (id: string) => `src/assets/fish/ep5/${id}.png`;
+const sprite = (id: string) => `src/assets/fish-portraits/${id}.png`;
 
 // O alcance das varas já chega a 10 no Episódio 3: aqui o chefão é limitado pela isca nova (só a
 // Isca de Corrico atrai o Marlim-azul) e pela força da vara (a Vara Lendária vem antes dele).
@@ -33,7 +34,6 @@ const species = withMedals([
     name: 'Dourado-do-mar',
     sprite: sprite('dourado-do-mar'),
     kg: { min: 3, max: 15 },
-    pricePerKg: 30,
     power: 7,
     stamina: 7,
     baits: ['lula', 'cata-vento'],
@@ -46,10 +46,9 @@ const species = withMedals([
     name: 'Cavala',
     sprite: sprite('cavala'),
     kg: { min: 2, max: 9 },
-    pricePerKg: 26,
     power: 6,
     stamina: 6,
-    baits: ['camarao', 'lula'],
+    baits: ['camarao', 'lula', 'cata-vento'],
     rarity: 9,
     description: 'Rápida, prateada e já tem destino: o almoço de bordo.',
     rare: false,
@@ -59,7 +58,6 @@ const species = withMedals([
     name: 'Atum',
     sprite: sprite('atum'),
     kg: { min: 20, max: 70 },
-    pricePerKg: 30,
     power: 9,
     stamina: 9,
     baits: ['corrico'],
@@ -72,10 +70,9 @@ const species = withMedals([
     name: 'Olho-de-boi',
     sprite: sprite('olho-de-boi'),
     kg: { min: 5, max: 30 },
-    pricePerKg: 28,
     power: 8,
     stamina: 7,
-    baits: ['carne', 'lula'],
+    baits: ['carne', 'lula', 'cata-vento'],
     rarity: 6,
     description: 'Olhão arregalado, igual a Geane vendo E.T.',
     rare: false,
@@ -85,16 +82,16 @@ const species = withMedals([
     name: 'Marlim-azul',
     sprite: sprite('marlim-azul'),
     kg: { min: 100, max: 250 },
-    pricePerKg: 20,
     power: 10,
     stamina: 10,
     baits: ['corrico'],
+    requiresRod: 'lendaria', // PONTO-09: o lendário só morde com a segunda vara do capítulo
     rarity: 1,
     description: 'O chefão do mar. Luta até o fim, e por isso merece voltar pra água.',
     rare: true,
     fightStyle: 'saltador',
   },
-] satisfies Omit<Species, 'medals'>[]);
+] satisfies Omit<Species, 'medals'>[], 5);
 
 // Cena de 180 × 400 px lógicos, vista de cima, com o costado do barco embaixo e a ponta da vara em
 // (90, 370). Do barco para o mar aberto: o costado, o mar aberto e o azul profundo do marlim.
@@ -133,19 +130,23 @@ const altoMar = {
       depthM: 200,
       name: 'Azul profundo',
       minReach: 5,
+      requiresBait: 'corrico', // PONTO-10: a última área pede a vara e a isca do capítulo
+      requiresRod: 'oceano',
     },
   ],
 } satisfies Location;
 
 const rods = [
-  { id: 'oceano', name: 'Vara Oceano', price: 30000, force: 9, reach: 10, episode: 5 },
-  { id: 'lendaria', name: 'Vara Lendária', price: 50000, force: 10, reach: 10, episode: 5 },
+  { id: 'oceano', name: 'Vara Oceano', price: 3750, force: 9, reach: 10, episode: 5 },
+  { id: 'lendaria', name: 'Vara Lendária', price: 8750, force: 10, reach: 10, episode: 5 },
 ] satisfies Rod[];
 
 // O roteiro não dá nome à isca nova do episódio; o corrico é a isca clássica de atum e marlim.
-const baits = [{ id: 'corrico', name: 'Isca de Corrico', price: 1200, episode: 5 }] satisfies Bait[];
+const baits = [{ id: 'corrico', name: 'Isca de Corrico', price: 1670, episode: 5 }] satisfies Bait[];
 
 const say = (speaker: CharacterId, expression: Expression, text: string): DialogLine => ({ speaker, expression, text });
+/** HIST-16: a fala com um quadro animado em cima. */
+const withArt = (line: DialogLine, art: SceneArtId): DialogLine => ({ ...line, art });
 /** Narração do roteiro (as linhas em itálico): sem retrato. */
 const narrate = (text: string): DialogLine => ({ speaker: null, text });
 
@@ -153,21 +154,22 @@ const scenes = [
   {
     id: 'ep5-abertura', // cena 1
     lines: [
-      narrate('Alto-mar da Bahia. O barco sai cedinho, lotado.'),
-      say('marcio', 'rindo', 'Chefe, hoje o funcionário 01 é capitão. Todo mundo a bordo!'),
-      say('jane', 'rindo', 'A família inteira num barco só. O que pode dar errado?'),
-      say('higashi', 'normal', 'Botei GPS no barco. Rota: a grande final. Ninha, você não devia estar trabalhando?'),
-      say('ninha-adulta', 'rindo', 'Tô trabalhando, Sr. Higashi. Tô testando o jogo.'),
-      say('angela', 'rindo', 'Seu Adilson, trouxe protetor solar pra família inteira. Ruiva no alto-mar não brinca.'),
-      say('adilson', 'chocado', 'Vocês vieram todos?'),
-      say('ninha-adulta', 'rindo', 'Pai, é a Copa Adilson Moscovits. A gente não ia perder.'),
+      withArt(narrate('Alto-mar da Bahia. O barco sai cedinho, lotado.'), 'barco'),
+      withArt(say('marcio', 'rindo', 'Chefe, hoje o funcionário 01 é capitão. Todo mundo a bordo!'), 'barco'),
+      withArt(say('jane', 'rindo', 'A família inteira num barco só. O que pode dar errado?'), 'barco'),
+      withArt(say('higashi', 'normal', 'Botei GPS no barco. Rota: a grande final. Ninha, você não devia estar trabalhando?'), 'barco'),
+      withArt(say('ninha-adulta', 'rindo', 'Tô trabalhando, Sr. Higashi. Tô testando o jogo.'), 'barco'),
+      withArt(say('angela', 'rindo', 'Seu Adilson, trouxe protetor solar pra família inteira. Ruiva no alto-mar não brinca.'), 'barco'),
+      withArt(say('adilson', 'chocado', 'Vocês vieram todos?'), 'barco'),
+      withArt(say('ninha-adulta', 'rindo', 'Pai, é a Copa Adilson Moscovits. A gente não ia perder.'), 'barco'),
     ],
   },
   {
     id: 'ep5-filial', // cena 2
     lines: [
-      say('edvaldo', 'rindo', 'Filial flutuante, seu Adilson. Preço de alto-mar: o maior de todos.'),
+      say('edvaldo', 'rindo', 'Filial flutuante, Moscou. Preço de alto-mar: o maior de todos.'),
       say('adilson', 'bravo', 'Até no meio do mar, Edvaldo?!'),
+      say('edvaldo', 'normal', 'Leva a Vara Oceano, que aguenta peixe de alto-mar.'),
     ],
   },
   {
@@ -180,12 +182,14 @@ const scenes = [
   },
   {
     id: 'ep5-piranha', // cena 4: a Lavínia no mar aberto, com o Cervero ao lado
+    laviniaCameo: true,
     lines: [
-      say('lavinia', 'rindo', 'Adilsinho! Mar aberto é o meu parquinho.'),
+      say('lavinia', 'rindo', 'Adilsinho! Mar aberto é o meu parquinho. Veio atrás de peixe grande ou de uma desculpa maior pra contar em casa?'),
       say('adilson', 'bravo', 'Você não cansa, né?'),
       say('lavinia', 'rindo', 'De te pirraçar? Nunca, Adilsinho. E hoje eu trouxe reforço: meu namorado!'),
       say('ruan', 'rindo', 'Prazer, seu Adilson. Pode deixar que eu fico de olho: um olho no peixe e outro no gato.'),
       say('adilson', 'chocado', 'Mais um pra me pirraçar no mar…'),
+      say('edvaldo', 'normal', 'Atum só cai com Isca de Corrico, Moscou. Tem aqui na filial flutuante.'),
     ],
   },
   {
@@ -195,28 +199,29 @@ const scenes = [
       say('geane', 'chocado', 'Xô, olha o céu! Aquela nuvem tem formato de disco voador!'),
       say('louise', 'rindo', 'Tio, o Lucca trouxe até boné de pescador.'),
       say('lucca', 'rindo', 'Pega o peixe gigante!'),
+      say('edvaldo', 'rindo', 'Pro maior de todos, só a Vara Lendária. Preço de família: o de alto-mar.'),
     ],
   },
   {
     id: 'ep5-chefao', // cena 6
     lines: [
-      say('capenga', 'normal', 'Vim de Jacuípe só pra ver, seu Adilson. Aqui mora o marlim-azul. O maior de todos.'),
-      say('marcio', 'chocado', 'Chefe, olha o tamanho dessa sombra!'),
-      say('jane', 'normal', 'Esse é teimoso que nem você, pegador.'),
-      say('ninha-adulta', 'normal', 'Pai, esse vai puxar forte. Não solta!'),
-      say('lavinia', 'normal', 'Vai, Adilsinho. Hoje eu torço por você.'),
-      say('ruan', 'rindo', 'Tô de olho na sombra dele, seu Adilson. Num dos olhos, pelo menos.'),
-      say('geane', 'chocado', 'Xô, não desiste!'),
-      say('ricardo', 'rindo', 'Tum-tum-ta! Força!'),
+      withArt(say('capenga', 'normal', 'Vim de Jacuípe só pra ver, seu Adilson. Aqui mora o marlim-azul. O maior de todos.'), 'sombra-marlim'),
+      withArt(say('marcio', 'chocado', 'Chefe, olha o tamanho dessa sombra!'), 'sombra-marlim'),
+      withArt(say('jane', 'normal', 'Esse é teimoso que nem você, pegador.'), 'sombra-marlim'),
+      withArt(say('ninha-adulta', 'normal', 'Pai, esse vai puxar forte. Não solta!'), 'sombra-marlim'),
+      withArt(say('lavinia', 'normal', 'Vai, Adilsinho. Hoje eu torço por você.'), 'sombra-marlim'),
+      withArt(say('ruan', 'rindo', 'Tô de olho na sombra dele, seu Adilson. Num dos olhos, pelo menos.'), 'sombra-marlim'),
+      withArt(say('geane', 'chocado', 'Xô, não desiste!'), 'sombra-marlim'),
+      withArt(say('ricardo', 'rindo', 'Tum-tum-ta! Força!'), 'sombra-marlim'),
     ],
   },
   {
     id: 'ep5-marlim-solto', // cena 7: o Adilson solta o marlim de volta pro mar
     lines: [
       say('adilson', 'rindo', 'Peguei! Vocês viram? Peguei!'),
-      narrate('O Adilson solta o marlim de volta pro mar.'),
-      say('jane', 'chocado', 'Soltou?!'),
-      say('adilson', 'normal', 'Quem luta assim merece continuar nadando.'),
+      withArt(narrate('O Adilson solta o marlim de volta pro mar.'), 'marlim-solto'),
+      withArt(say('jane', 'chocado', 'Soltou?!'), 'marlim-solto'),
+      withArt(say('adilson', 'normal', 'Quem luta assim merece continuar nadando.'), 'marlim-solto'),
     ],
   },
   {
@@ -228,27 +233,27 @@ const scenes = [
     // vem junto, e o aviso "A pescaria continua: todos os lugares seguem abertos" fecha a história.
     id: 'ep5-final',
     lines: [
-      narrate('O sol se pondo no alto-mar. Todo mundo em volta do Adilson.'),
-      narrate('Uma brisa com cheiro de Jacuípe passa pelo barco.'),
-      say('ninha-adulta', 'normal', 'Pai, sentiu essa brisa? Lembrei do vô Didi dizendo "esse é o meu filho".'),
-      say('adilson', 'rindo', 'E da mãe gritando JUNIORRRR lá de longe…'),
-      say('jane', 'rindo', 'E do Tininho deixando tudo arrumado pra gente. Eles iam ficar orgulhosos.'),
-      say('jane', 'normal', 'Tantos anos te aturando, pegador… e eu faria tudo de novo. A gente acredita em você.'),
-      say('ninha-adulta', 'normal', 'Pai, segura firme. A próxima pescaria é nossa, e eu tô aqui pra ela.'),
-      say('angela', 'normal', 'Seu Adilson, o senhor é família. E família a gente não solta.'),
-      say('lavinia', 'normal', 'Adilsinho, sem pirraça agora: a gente te ama muito. Não desiste.'),
-      say('ruan', 'normal', 'Seu Adilson, tô de olho na sua melhora. Com os dois olhos.'),
-      say('lu', 'normal', 'Xô, cancelei todas as reuniões. Hoje eu só torço por você.'),
-      say('geane', 'chocado', 'Xô, eu chorei, claro. Mas de esperança. Até os E.T. tão torcendo.'),
-      say('louise', 'normal', 'Tio, você é o meu herói. Ponto final, sem recurso.'),
-      say('lucca', 'rindo', 'Volta logo pra pescar comigo!'),
-      say('edvaldo', 'rindo', 'A partir de hoje, pra você, desconto de verdade. Volta logo pra loja.'),
-      say('ricardo', 'rindo', 'Já compus o samba da sua melhora. Tum-tum-ta!'),
-      say('bem', 'rindo', 'Tô guardando uma gelada pra comemorar com você. Sem álcool, a Kris mandou.'),
-      say('kris', 'normal', 'Remédio na hora, líquido controlado e coração forte. Tá tudo no prendrive. A gente tá aqui.'),
-      say('marcio', 'normal', 'Chefe, o funcionário 01 segura as pontas até o senhor voltar.'),
-      say('higashi', 'rindo', 'O GPS diz: destino, melhora. Chegada prevista: logo.'),
-      say('adilson', 'rindo', 'Vocês são a melhor pescaria da minha vida.'),
+      withArt(narrate('O sol se pondo no alto-mar. Todo mundo em volta do Adilson.'), 'por-do-sol'),
+      withArt(narrate('Uma brisa com cheiro de Jacuípe passa pelo barco.'), 'por-do-sol'),
+      withArt(say('ninha-adulta', 'normal', 'Pai, sentiu essa brisa? Lembrei do vô Didi dizendo "esse é o meu filho".'), 'por-do-sol'),
+      withArt(say('adilson', 'rindo', 'E da mãe gritando JUNIORRRR lá de longe…'), 'por-do-sol'),
+      withArt(say('jane', 'rindo', 'E do Tininho deixando tudo arrumado pra gente. Eles iam ficar orgulhosos.'), 'por-do-sol'),
+      withArt(say('jane', 'normal', 'Tantos anos te aturando, pegador… e eu faria tudo de novo. A gente acredita em você.'), 'por-do-sol'),
+      withArt(say('ninha-adulta', 'normal', 'Pai, segura firme. A próxima pescaria é nossa, e eu tô aqui pra ela.'), 'por-do-sol'),
+      withArt(say('angela', 'normal', 'Seu Adilson, o senhor é família. E família a gente não solta.'), 'por-do-sol'),
+      withArt(say('lavinia', 'normal', 'Adilsinho, sem pirraça agora: a gente te ama muito. Não desiste.'), 'por-do-sol'),
+      withArt(say('ruan', 'normal', 'Seu Adilson, tô de olho na sua melhora. Com os dois olhos.'), 'por-do-sol'),
+      withArt(say('lu', 'normal', 'Xô, cancelei todas as reuniões. Hoje eu só torço por você.'), 'por-do-sol'),
+      withArt(say('geane', 'chocado', 'Xô, eu chorei, claro. Mas de esperança. Até os E.T. tão torcendo.'), 'por-do-sol'),
+      withArt(say('louise', 'normal', 'Tio, você é o meu herói. Ponto final, sem recurso.'), 'por-do-sol'),
+      withArt(say('lucca', 'rindo', 'Volta logo pra pescar comigo!'), 'por-do-sol'),
+      withArt(say('edvaldo', 'rindo', 'A partir de hoje, pra você, desconto de verdade. Volta logo pra loja.'), 'por-do-sol'),
+      withArt(say('ricardo', 'rindo', 'Já compus o samba da sua melhora. Tum-tum-ta!'), 'por-do-sol'),
+      withArt(say('bem', 'rindo', 'Tô guardando uma gelada pra comemorar com você. Sem álcool, a Kris mandou.'), 'por-do-sol'),
+      withArt(say('kris', 'normal', 'Remédio na hora, líquido controlado e coração forte. Tá tudo no prendrive. A gente tá aqui.'), 'por-do-sol'),
+      withArt(say('marcio', 'normal', 'Chefe, o funcionário 01 segura as pontas até o senhor voltar.'), 'por-do-sol'),
+      withArt(say('higashi', 'rindo', 'O GPS diz: destino, melhora. Chegada prevista: logo.'), 'por-do-sol'),
+      withArt(say('adilson', 'rindo', 'Vocês são a melhor pescaria da minha vida.'), 'por-do-sol'),
     ],
   },
   {
@@ -258,6 +263,9 @@ const scenes = [
 ] satisfies Scene[];
 
 const caught = (id: SpeciesId) => (e: GameEvent) => e.type === 'Caught' && e.species === id;
+// HIST-15: peixe pego antes da vez do objetivo (juntando dinheiro para a vara, por exemplo) já vale:
+// quando o objetivo chega, ele se cumpre sozinho e a cena dele aparece.
+const had = (id: SpeciesId) => (p: Profile) => p.album[id] !== undefined;
 const caughtHere = (e: GameEvent) => e.type === 'Caught' && species.some((sp) => sp.id === e.species);
 // A compra conta pela vara possuída: comprada antes da hora, cumpre no evento seguinte em vez de travar.
 const owns = (id: RodId) => (_e: GameEvent, p: Profile) => p.rods.owned.includes(id);
@@ -265,16 +273,24 @@ const albumComplete = (_e: GameEvent, p: Profile) => species.every((sp) => p.alb
 
 // Sem "se inscrever na Copa": o campeonato libera sozinho depois do último objetivo (CAMP-01).
 const objectives = [
-  { id: 'pegar-5-alto-mar', text: 'Pegar 5 peixes de alto-mar', done: caughtHere, count: 5, sceneOnDone: 'ep5-filial' },
+  {
+    id: 'pegar-5-alto-mar',
+    text: 'Pegar 5 peixes de alto-mar',
+    done: caughtHere,
+    count: 5,
+    unlocks: ['oceano'],
+    sceneOnDone: 'ep5-filial',
+  },
   { id: 'comprar-oceano', text: 'Comprar a Vara Oceano', done: owns('oceano'), sceneOnDone: 'ep5-almoco' },
-  { id: 'pegar-cavala', text: 'Pegar uma Cavala para o almoço', done: caught('cavala'), sceneOnDone: 'ep5-piranha' },
-  { id: 'pegar-atum', text: 'Pegar um Atum', done: caught('atum'), sceneOnDone: 'ep5-irmas' },
+  { id: 'pegar-cavala', text: 'Pegar uma Cavala para o almoço', done: caught('cavala'), satisfied: had('cavala'), unlocks: ['corrico'], sceneOnDone: 'ep5-piranha' }, // o Atum só cai com Corrico
+  { id: 'pegar-atum', text: 'Pegar um Atum', done: caught('atum'), satisfied: had('atum'), unlocks: ['lendaria'], sceneOnDone: 'ep5-irmas' },
   { id: 'comprar-lendaria', text: 'Comprar a Vara Lendária', done: owns('lendaria'), sceneOnDone: 'ep5-chefao' },
-  { id: 'pegar-marlim', text: 'Pegar o Marlim-azul', done: caught('marlim-azul'), sceneOnDone: 'ep5-marlim-solto' },
+  { id: 'pegar-marlim', text: 'Pegar o Marlim-azul — no Azul profundo', done: caught('marlim-azul'), sceneOnDone: 'ep5-marlim-solto' },
   {
     id: 'album-completo',
     text: 'Registrar no álbum todas as espécies do alto-mar',
     done: albumComplete,
+    satisfied: p => albumComplete({ type: 'GameStarted' }, p),
     sceneOnDone: 'ep5-album',
   },
 ] satisfies Objective[];
@@ -284,18 +300,18 @@ const objectives = [
 const copaAdilsonMoscovits = {
   id: 'copa-adilson-moscovits',
   name: 'Copa Adilson Moscovits',
-  casts: 8,
+  casts: 5, // copa curta: 5 arremessos, valem os 3 mais pesados
   countBest: 3,
   rivals: [
-    { character: 'jane', kg: 110, taunt: say('jane', 'bravo', 'Na final eu não deixo barato, pegador.') },
+    { character: 'jane', kg: 44.7, taunt: say('jane', 'bravo', 'Na final eu não deixo barato, pegador.') },
     {
       character: 'lavinia',
-      kg: 118.5,
+      kg: 55.0,
       taunt: say('lavinia', 'rindo', 'Adilsinho, essa eu ganho de verdade. Sem pirraça. Mentira, com pirraça.'),
     },
     {
       character: 'ninha-adulta',
-      kg: 126.4,
+      kg: 68.8,
       taunt: say('ninha-adulta', 'rindo', 'Pai, aprendi com o melhor. Se prepara.'),
     },
   ],

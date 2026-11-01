@@ -27,16 +27,18 @@ export interface Species {
   name: string;
   sprite: string;
   kg: { min: number; max: number };
-  pricePerKg: number;
   power: number; // força na briga
   stamina: number; // fôlego
   baits: BaitId[]; // iscas que aceita
+  requiresRod?: RodId; // PONTO-09: só morde com esta vara equipada (o lendário pede a segunda vara do capítulo)
   rarity: number; // peso no sorteio da zona
   description: string; // texto engraçado da ficha (HUMOR-03)
   rare: boolean; // espécie rara do local (PROG-03)
   valueLabel?: string; // texto da ficha no lugar do R$ (ex.: "inestimável" na Piranha Lavínia); o saldo recebe o valor normal
   medals: MedalLimits; // kg mínimos de cada medalha (MEDAL-01)
+  episode?: EpisodeId; // episódio da espécie: cada um deixa a briga mais dura (BRIGA-15); sem campo, o 1
   fightStyle?: FightStyle; // jeito na barra de captura; sem campo, vale o padrão pela força (BRIGA-06)
+  fightTuning?: { zoneScale: number; retargetScale: number; fillScale: number };
 }
 
 /** Jeito do peixe na briga: destinos perto, longe ou na metade de baixo da barra (BRIGA-06). */
@@ -48,10 +50,9 @@ export type MedalLimits = Record<MedalTier, number>;
 /** Meta de quantidade cumprida: espécie e contagem, ex.: "tilapia:10" (medals.goalId). */
 export type GoalId = string;
 
-/** Metas de quantidade por espécie (MEDAL-04) e a recompensa em R$ de cada uma (MEDAL-05). */
+/** Metas de quantidade por espécie (MEDAL-04): conquista, sem dinheiro (MEDAL-05). */
 export interface GoalDef {
   counts: number[]; // 10, 25 e 50
-  reward: (episode: EpisodeId, count: number) => number;
 }
 
 // Força e alcance de 1 a 10.
@@ -80,6 +81,8 @@ export interface Zone {
   depthM: number; // profundidade da zona, em metros
   name: string; // nome do ponto no pesqueiro (PONTO-01)
   minReach: number; // alcance mínimo da vara para pescar no ponto (PONTO-03)
+  requiresBait?: BaitId; // PONTO-08: o ponto só abre com essa isca comprada
+  requiresRod?: RodId; // PONTO-10: e com essa vara comprada (a última área do local pede vara e isca)
 }
 
 export type Expression = 'normal' | 'rindo' | 'bravo' | 'chocado';
@@ -91,15 +94,41 @@ export interface Character {
   portraits: Record<Expression, string>;
 }
 
+/** HIST-16: quadros animados que ilustram uma fala (src/ui/SceneArt.tsx). */
+export type SceneArtId =
+  | 'vara-de-bambu'
+  | 'lenda-pirarucu'
+  | 'foto-pirarucu'
+  | 'trofeu'
+  | 'foto'
+  | 'beira'
+  | 'mare-do-tempo'
+  | 'dormindo'
+  | 'acordando'
+  | 'ferry'
+  | 'paz'
+  | 'xareu-lucca'
+  | 'disco-voador'
+  | 'peixes-voadores'
+  | 'piranha-pipa'
+  | 'torre-7'
+  | 'dourado-lenda'
+  | 'barco'
+  | 'sombra-marlim'
+  | 'marlim-solto'
+  | 'por-do-sol';
+
 export interface DialogLine {
   speaker: CharacterId | CharacterId[] | null; // null = narração; lista = fala conjunta
   text: string;
   expression?: Expression; // padrão: 'normal'
+  art?: SceneArtId; // HIST-16: quadro animado em cima da caixa, enquanto a fala está na tela
 }
 
 export interface Scene {
   id: SceneId;
   lines: DialogLine[];
+  laviniaCameo?: boolean; // aparição da piranha, uma cena por capítulo; não é uma nova captura
 }
 
 export type GameEvent =
@@ -112,9 +141,11 @@ export interface Objective {
   id: string;
   text: string;
   done: (e: GameEvent, p: Profile) => boolean; // p já com o efeito do evento (compra, álbum)
+  satisfied?: (p: Profile) => boolean; // objetivo já cumprido pelo estado salvo, sem exigir novo evento
   // SPEC_DEVIATION: campo `count` não existe no design.
   // Reason: "pegar 3 peixes" precisa contar eventos e mostrar "1 de 3" (TUTO-08, T40).
   count?: number; // quantos eventos com `done` verdadeiro cumprem o objetivo; padrão 1
+  unlocks?: ItemId[]; // itens que a loja passa a vender ao cumprir o objetivo (HIST-11)
   sceneOnDone: SceneId;
 }
 
@@ -135,7 +166,7 @@ export interface Location {
 export interface TournamentDef {
   id: TournamentId;
   name: string; // "GuanambiCup"
-  casts: 8;
+  casts: 5;
   countBest: 3;
   rivals: { character: CharacterId; kg: number; taunt: DialogLine }[];
   trophy: TrophyId;
@@ -200,4 +231,5 @@ export interface Profile {
   catchCounts: Partial<Record<SpeciesId, number>>; // MEDAL-04
   goalsDone: GoalId[]; // MEDAL-05
   seenVersion: string;
+  shopSeen?: ItemId[]; // itens que o jogador já viu na loja; os outros, à venda, ganham o "!" (EQUIP-10)
 }

@@ -42,11 +42,10 @@ describe('Episódio 1: local e espécies', () => {
     }
   });
 
-  it('toda espécie tem faixa de peso válida, preço por kg e peso no sorteio positivos', () => {
+  it('toda espécie tem faixa de peso válida e peso no sorteio positivo', () => {
     for (const sp of ep1.species) {
       expect(sp.kg.min, sp.id).toBeGreaterThan(0);
       expect(sp.kg.max, sp.id).toBeGreaterThanOrEqual(sp.kg.min);
-      expect(sp.pricePerKg, sp.id).toBeGreaterThan(0);
       expect(sp.rarity, sp.id).toBeGreaterThan(0);
     }
   });
@@ -141,11 +140,11 @@ describe('Episódio 1: roteiro', () => {
   it('HIST-06: os objetivos de "Tirando a Ferrugem" seguem a ordem do roteiro', () => {
     expect(ep1.chapter.title).toBe('Tirando a Ferrugem');
     expect(ep1.chapter.objectives.map((o) => o.text)).toEqual([
-      'Pegar 3 peixes',
+      'Pegar o primeiro peixe',
       'Comprar a Vara de Fibra',
-      'Pegar a Piranha Lavínia',
+      'Pegar a Piranha Lavínia — Beira do píer ou Pedral, com Isca de Carne',
       'Comprar a Vara de Carbono',
-      'Pegar o Pirarucu Lendário',
+      'Pegar o Pirarucu Lendário — no Fundão',
       'Registrar no álbum todas as espécies do Poço do Magro',
     ]);
   });
@@ -166,8 +165,8 @@ describe('Episódio 1: roteiro', () => {
     ]);
     expect(scenes).toEqual([
       'ep1-abertura',
-      'ep1-piranha',
       'ep1-loja',
+      'ep1-piranha',
       'ep1-piranha-fisgada',
       'ep1-lenda',
       'ep1-pegou-lenda',
@@ -200,12 +199,12 @@ describe('Episódio 1: roteiro', () => {
       fish('tilapia'),
       fish('piau'),
     ]);
-    expect(scenes).toEqual(['ep1-piranha', 'ep1-loja']);
-    expect(currentObjective(p.story, ep1)?.text).toBe('Pegar a Piranha Lavínia');
+    expect(scenes).toEqual(['ep1-loja', 'ep1-piranha']);
+    expect(currentObjective(p.story, ep1)?.text).toBe('Pegar a Piranha Lavínia — Beira do píer ou Pedral, com Isca de Carne');
   });
 
-  it('TUTOB-01: as falas da Jane existem para os 9 passos do tutorial da pescaria nova e para o peixe pego', () => {
-    expect(Object.keys(tutorial)).toEqual(['ponto', 'direcao', 'forca', 'recolher', 'atrair', 'fisgar', 'subir', 'descer', 'manter', 'done']);
+  it('TUTOB-01: as falas da Jane existem para os 7 passos do tutorial da pescaria nova e para o peixe pego', () => {
+    expect(Object.keys(tutorial)).toEqual(['ponto', 'direcao', 'forca', 'recolher', 'atrair', 'fisgar', 'briga', 'done']);
 
     for (const line of Object.values(tutorial)) {
       expect(line.speaker).toBe('jane');
@@ -218,8 +217,8 @@ describe('Episódio 1: roteiro', () => {
 const PENDING = '{{' + 'PENDENTE}}';
 
 describe('Episódio 1: GuanambiCup e carta', () => {
-  it('CAMP-02: a GuanambiCup tem 8 arremessos e conta os 3 peixes mais pesados', () => {
-    expect(ep1.tournament).toMatchObject({ name: 'GuanambiCup', casts: 8, countBest: 3 });
+  it('CAMP-02: a GuanambiCup tem 5 arremessos e conta os 3 peixes mais pesados', () => {
+    expect(ep1.tournament).toMatchObject({ name: 'GuanambiCup', casts: 5, countBest: 3 });
   });
 
   it('CAMP-02, HUMOR-04: os 3 rivais, Ricardo, Bem e Kris, existem em characters.ts, têm placar e provocam com a própria fala', () => {

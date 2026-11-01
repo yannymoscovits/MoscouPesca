@@ -16,13 +16,14 @@ import type {
   Rod,
   RodId,
   Scene,
+  SceneArtId,
   Species,
   SpeciesId,
   TournamentDef,
 } from '../types';
 import { withMedals } from '../goals';
 
-const sprite = (id: string) => `src/assets/fish/ep2/${id}.png`;
+const sprite = (id: string) => `src/assets/fish-portraits/${id}.png`;
 
 // Tilápia e Traíra têm IDs próprios: o álbum e os objetivos do Jacuípe contam separado do Poço do Magro.
 const rioSpecies = withMedals([
@@ -31,7 +32,6 @@ const rioSpecies = withMedals([
     name: 'Tilápia',
     sprite: sprite('tilapia-jacuipe'),
     kg: { min: 0.4, max: 2.2 },
-    pricePerKg: 10,
     power: 2,
     stamina: 3,
     baits: ['minhoca', 'milho'],
@@ -44,7 +44,6 @@ const rioSpecies = withMedals([
     name: 'Traíra',
     sprite: sprite('traira-jacuipe'),
     kg: { min: 0.6, max: 4 },
-    pricePerKg: 12,
     power: 5,
     stamina: 4,
     baits: ['minhoca', 'carne'],
@@ -58,7 +57,6 @@ const rioSpecies = withMedals([
     name: 'Tainha',
     sprite: sprite('tainha'),
     kg: { min: 0.5, max: 3 },
-    pricePerKg: 14,
     power: 4,
     stamina: 6,
     baits: ['milho', 'camarao'],
@@ -71,7 +69,6 @@ const rioSpecies = withMedals([
     name: 'Robalo-peva',
     sprite: sprite('robalo-peva'),
     kg: { min: 0.8, max: 4 },
-    pricePerKg: 20,
     power: 6,
     stamina: 5,
     baits: ['carne', 'camarao'],
@@ -84,7 +81,6 @@ const rioSpecies = withMedals([
     name: 'Carapeba',
     sprite: sprite('carapeba'),
     kg: { min: 0.3, max: 1.5 },
-    pricePerKg: 16,
     power: 3,
     stamina: 4,
     baits: ['minhoca', 'camarao'],
@@ -92,7 +88,7 @@ const rioSpecies = withMedals([
     description: 'Prateada, educada e difícil de convencer.',
     rare: false,
   },
-] satisfies Omit<Species, 'medals'>[]);
+] satisfies Omit<Species, 'medals'>[], 2);
 
 const ponteSpecies = withMedals([
   {
@@ -100,7 +96,6 @@ const ponteSpecies = withMedals([
     name: 'Robalo-flecha',
     sprite: sprite('robalo-flecha'),
     kg: { min: 2, max: 14 },
-    pricePerKg: 22,
     power: 8,
     stamina: 7,
     baits: ['carne', 'camarao'],
@@ -114,7 +109,6 @@ const ponteSpecies = withMedals([
     name: 'Pescada-amarela',
     sprite: sprite('pescada-amarela'),
     kg: { min: 2, max: 12 },
-    pricePerKg: 18,
     power: 6,
     stamina: 6,
     baits: ['camarao'],
@@ -127,7 +121,6 @@ const ponteSpecies = withMedals([
     name: 'Vermelho',
     sprite: sprite('vermelho'),
     kg: { min: 1, max: 6 },
-    pricePerKg: 25,
     power: 5,
     stamina: 5,
     baits: ['carne', 'camarao'],
@@ -140,7 +133,6 @@ const ponteSpecies = withMedals([
     name: 'Baiacu',
     sprite: sprite('baiacu'),
     kg: { min: 0.3, max: 2 },
-    pricePerKg: 6,
     power: 3,
     stamina: 2,
     baits: ['minhoca', 'camarao'],
@@ -153,15 +145,15 @@ const ponteSpecies = withMedals([
     name: 'Camurupim',
     sprite: sprite('camurupim'),
     kg: { min: 25, max: 60 },
-    pricePerKg: 16,
     power: 10,
     stamina: 10,
     baits: ['camarao'],
+    requiresRod: 'mare-alta', // PONTO-09: o lendário só morde com a segunda vara do capítulo
     rarity: 1,
     description: 'O prata da Barra: salta alto e briga por muito tempo.',
     rare: true,
   },
-] satisfies Omit<Species, 'medals'>[]);
+] satisfies Omit<Species, 'medals'>[], 2);
 
 const species = [...rioSpecies, ...ponteSpecies] satisfies Species[];
 
@@ -180,14 +172,14 @@ const rioJacuipe = {
   name: 'Rio Jacuípe',
   background: 'src/assets/scene/rio-jacuipe.png',
   zones: [
-    // "Robalo-peva gosta de beirada de mangue. Joga rente, sem medo." (cena 4)
-    // Alcance mínimo pela profundidade: o mangue é o raso, a beira o meio e a correnteza o fundo.
+    // Alcance mínimo pela profundidade: o mangue é o raso, a beira o meio; a Ponte da Cetrel é o terceiro
+    // ponto, de água salgada, e só abre com a Isca de Camarão (PONTO-08).
     {
       id: 'mangue',
       polygon: rect(0, 130, 45, 360),
       species: ['robalo-peva', 'traira-jacuipe', 'carapeba'],
       depthM: 1,
-      name: 'Beirada do mangue',
+      name: 'Rio Jacuípe',
       minReach: 0,
     },
     {
@@ -195,58 +187,29 @@ const rioJacuipe = {
       polygon: rect(45, 250, 180, 360),
       species: ['tilapia-jacuipe', 'carapeba', 'tainha'],
       depthM: 1.5,
-      name: 'Beira dos coqueiros',
+      name: 'Rio Sonrisal',
       minReach: 3,
     },
     {
-      id: 'correnteza',
+      id: 'ponte',
       polygon: rect(45, 130, 180, 250),
-      species: ['tainha', 'tilapia-jacuipe', 'traira-jacuipe', 'robalo-peva'],
-      depthM: 3,
-      name: 'Correnteza',
+      species: ['baiacu', 'vermelho', 'robalo-flecha', 'pescada-amarela', 'camurupim'],
+      depthM: 6,
+      name: 'Ponte da Cetrel',
       minReach: 5,
+      requiresBait: 'camarao',
+      requiresRod: 'grafite', // PONTO-10: a última área pede a vara e a isca do capítulo
     },
   ],
 } satisfies Location;
 
-const ponteDaCetrel = {
-  id: 'ponte-da-cetrel',
-  name: 'Ponte da Cetrel',
-  background: 'src/assets/scene/ponte-da-cetrel.png',
-  zones: [
-    {
-      id: 'pedras',
-      polygon: rect(0, 250, 180, 360),
-      species: ['baiacu', 'vermelho', 'robalo-flecha'],
-      depthM: 2,
-      name: 'Pedras da ponte',
-      minReach: 0,
-    },
-    {
-      id: 'pilares',
-      polygon: rect(0, 115, 180, 250),
-      species: ['robalo-flecha', 'pescada-amarela', 'vermelho', 'baiacu'],
-      depthM: 6,
-      name: 'Pé dos pilares',
-      minReach: 3,
-    },
-    {
-      id: 'canal',
-      polygon: rect(0, 0, 180, 115),
-      species: ['camurupim', 'pescada-amarela', 'robalo-flecha'],
-      depthM: 12,
-      name: 'Canal da maré',
-      minReach: 5,
-    },
-  ],
-} satisfies Location;
 
 const rods = [
-  { id: 'grafite', name: 'Vara de Grafite', price: 800, force: 7, reach: 8, episode: 2 },
-  { id: 'mare-alta', name: 'Vara Maré Alta', price: 1800, force: 8, reach: 9, episode: 2 },
+  { id: 'grafite', name: 'Vara de Grafite', price: 500, force: 7, reach: 8, episode: 2 },
+  { id: 'mare-alta', name: 'Vara Maré Alta', price: 900, force: 8, reach: 9, episode: 2 },
 ] satisfies Rod[];
 
-const baits = [{ id: 'camarao', name: 'Isca de Camarão', price: 120, episode: 2 }] satisfies Bait[];
+const baits = [{ id: 'camarao', name: 'Isca de Camarão', price: 170, episode: 2 }] satisfies Bait[];
 
 const say = (speaker: CharacterId | CharacterId[], expression: Expression, text: string): DialogLine => ({
   speaker,
@@ -255,6 +218,8 @@ const say = (speaker: CharacterId | CharacterId[], expression: Expression, text:
 });
 /** Narração do roteiro (as linhas em itálico): sem retrato. */
 const narrate = (text: string): DialogLine => ({ speaker: null, text });
+/** HIST-16: a fala com um quadro animado em cima. */
+const withArt = (line: DialogLine, art: SceneArtId): DialogLine => ({ ...line, art });
 
 const scenes = [
   {
@@ -263,10 +228,10 @@ const scenes = [
     id: 'ep2-abertura',
     lines: [
       say('jane', 'normal', 'Jacuípe… quanto tempo, hein?'),
-      say('adilson', 'normal', 'Olha essa foto que tava na caixa de pesca… eu e a Ninha na Ponte da Cetrel.'),
-      say('jane', 'rindo', 'E você já se achando pegador naquela época.'),
-      say('capenga', 'normal', 'A maré de Jacuípe devolve tudo, seu Adilson. Até o tempo.'),
-      narrate('Jacuípe, muitos anos atrás.'),
+      withArt(say('adilson', 'normal', 'Olha essa foto que tava na caixa de pesca… eu e a Ninha na Ponte da Cetrel.'), 'foto'),
+      withArt(say('jane', 'rindo', 'E você já se achando pegador naquela época.'), 'foto'),
+      withArt(say('capenga', 'normal', 'A maré de Jacuípe devolve tudo, seu Adilson. Até o tempo.'), 'beira'),
+      withArt(narrate('Jacuípe, muitos anos atrás.'), 'mare-do-tempo'),
       say('tininho', 'rindo', 'Casa arrumada, rede armada, isca no isopor. Pode chegar, Adilson!'),
       say('didi', 'rindo', 'Junior! Chegou na hora. Antes de pescar, eu fiz uma feijoada maravilhosa.'),
       say('adilson', 'chocado', 'Pai?!'),
@@ -277,25 +242,31 @@ const scenes = [
   {
     id: 'ep2-edvaldo', // cena 3
     lines: [
-      say('edvaldo-jovem', 'rindo', 'Preço de praia, Adilson. Já era o dobro naquela época.'),
+      say('edvaldo-jovem', 'rindo', 'Preço de praia, Moscou. Já era o dobro naquela época.'),
       say('adilson', 'chocado', 'Edvaldo… com cabelo preto?!'),
+      say('edvaldo-jovem', 'normal', 'Com essa vara aí você não ensina nem peixe a nadar. Leva a Vara de Grafite.'),
     ],
   },
   {
     id: 'ep2-rio', // cena 4
-    lines: [say('capenga', 'normal', 'Robalo-peva gosta de beirada de mangue. Joga rente, sem medo.')],
+    lines: [say('capenga', 'normal', 'Robalo-peva fica no Rio Jacuípe, rente ao mangue. Joga rente, sem medo.')],
   },
   {
     id: 'ep2-ponte', // cena 5
+    laviniaCameo: true,
     lines: [
-      say('capenga', 'normal', 'Aqui é água salgada. Camarão na isca e paciência com a maré.'),
+      say('capenga', 'normal', 'Leva Isca de Carne que ele gosta. E paciência com a maré.'),
       say('lavinia', 'rindo', 'Adilsinho! Viajei no tempo só pra te pirraçar. Pirraça não tem prazo de validade.'),
       say('adilson', 'bravo', 'Até no passado, menina?!'),
+      say('capenga', 'normal', 'Na ponte a água é salgada: lá só Camarão na isca. O Edvaldo acabou de receber.'),
     ],
   },
   {
     id: 'ep2-vara-mare', // cena 6, ainda no passado
-    lines: [say('edvaldo-jovem', 'rindo', 'Pra água salgada só a Vara Maré Alta. Preço de família: o de praia.')],
+    lines: [
+      say('edvaldo-jovem', 'rindo', 'Pra água salgada só a Vara Maré Alta. Preço de família: o de praia.'),
+      say('edvaldo-jovem', 'normal', 'E o Camurupim nem olha pra isca de quem não tem a Maré Alta.'),
+    ],
   },
   // A cena 7 se divide em duas: o roteiro não tem cena para depois de pegar o Camurupim.
   {
@@ -322,8 +293,8 @@ const scenes = [
       say(['didi', 'denise'], 'normal', 'Amamos você meu filho, segura firme!'),
       say('ninha', 'normal', 'Pai, a gente volta aqui de novo?'),
       say('adilson', 'rindo', 'Sempre que a maré deixar.'),
-      narrate('Presente.'),
-      say('jane', 'rindo', 'Cochilou aqui na beira do rio, foi? Tava sorrindo dormindo.'),
+      withArt(narrate('Presente.'), 'dormindo'),
+      withArt(say('jane', 'rindo', 'Cochilou aqui na beira do rio, foi? Tava sorrindo dormindo.'), 'acordando'),
     ],
   },
   {
@@ -333,6 +304,9 @@ const scenes = [
 ] satisfies Scene[];
 
 const caught = (id: SpeciesId) => (e: GameEvent) => e.type === 'Caught' && e.species === id;
+// HIST-15: peixe pego antes da vez do objetivo (juntando dinheiro para a vara, por exemplo) já vale:
+// quando o objetivo chega, ele se cumpre sozinho e a cena dele aparece.
+const had = (id: SpeciesId) => (p: Profile) => p.album[id] !== undefined;
 /** Captura de qualquer espécie do grupo: separa os peixes do Rio dos da Ponte. */
 const caughtAny = (group: Species[]) => (e: GameEvent) => e.type === 'Caught' && group.some((sp) => sp.id === e.species);
 // A compra conta pela vara possuída: comprada antes da hora, cumpre no evento seguinte em vez de travar.
@@ -343,26 +317,29 @@ const albumComplete = (_e: GameEvent, p: Profile) => species.every((sp) => p.alb
 const objectives = [
   {
     id: 'ensinar-ninha',
-    text: 'Ensinar a Ninha a pescar: pegar 5 peixes no Rio Jacuípe',
+    text: 'Ensinar a Ninha a pescar: pegar 3 peixes no Rio Jacuípe',
     done: caughtAny(rioSpecies),
-    count: 5,
+    count: 3,
+    unlocks: ['grafite'],
     sceneOnDone: 'ep2-edvaldo',
   },
   { id: 'comprar-grafite', text: 'Comprar a Vara de Grafite', done: owns('grafite'), sceneOnDone: 'ep2-rio' },
-  { id: 'pegar-robalo-peva', text: 'Pegar um Robalo-peva', done: caught('robalo-peva'), sceneOnDone: 'ep2-ponte' },
+  { id: 'pegar-robalo-peva', text: 'Pegar um Robalo-peva', done: caught('robalo-peva'), satisfied: had('robalo-peva'), unlocks: ['camarao'], sceneOnDone: 'ep2-ponte' }, // a ponte pede Camarão
   {
     id: 'pegar-3-ponte',
     text: 'Pegar 3 peixes na Ponte da Cetrel', // com a Isca de Camarão (cena 5)
     done: caughtAny(ponteSpecies),
     count: 3,
+    unlocks: ['mare-alta'],
     sceneOnDone: 'ep2-vara-mare',
   },
   { id: 'comprar-mare-alta', text: 'Comprar a Vara Maré Alta', done: owns('mare-alta'), sceneOnDone: 'ep2-salto' },
-  { id: 'pegar-camurupim', text: 'Pegar o Camurupim', done: caught('camurupim'), sceneOnDone: 'ep2-prata-da-barra' },
+  { id: 'pegar-camurupim', text: 'Pegar o Camurupim — na Ponte da Cetrel', done: caught('camurupim'), sceneOnDone: 'ep2-prata-da-barra' },
   {
     id: 'album-completo',
     text: 'Registrar no álbum todas as espécies de Jacuípe',
     done: albumComplete,
+    satisfied: p => albumComplete({ type: 'GameStarted' }, p),
     sceneOnDone: 'ep2-album',
   },
 ] satisfies Objective[];
@@ -372,17 +349,17 @@ const objectives = [
 const copaJacuipe = {
   id: 'copa-jacuipe',
   name: 'Copa Jacuípe',
-  casts: 8,
+  casts: 5, // copa curta: 5 arremessos, valem os 3 mais pesados
   countBest: 3,
   rivals: [
     {
       character: 'tininho',
-      kg: 24.8,
+      kg: 6.1,
       taunt: say('tininho', 'rindo', 'Arrumei tudo pra vocês: casa, café e rede. Mas a Copa eu não arrumo pra ninguém.'),
     },
     {
       character: 'denise',
-      kg: 29.5,
+      kg: 7.5,
       taunt: say(
         'denise',
         'bravo',
@@ -391,7 +368,7 @@ const copaJacuipe = {
     },
     {
       character: 'didi',
-      kg: 33.2,
+      kg: 9.4,
       taunt: say(
         'didi',
         'rindo',
@@ -422,7 +399,7 @@ const letter = {
 
 export const ep2 = {
   id: 2,
-  locations: [rioJacuipe, ponteDaCetrel],
+  locations: [rioJacuipe],
   species,
   rods,
   baits,

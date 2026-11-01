@@ -1,6 +1,6 @@
 // Elenco compartilhado pelos episódios: nome, apelido do cartão de apresentação (HUMOR-01)
 // e um retrato por expressão (HUMOR-02). Fonte: docs/historia/episodio-1.md e os episódios seguintes.
-// Os retratos ainda não existem; sem eles, a interface desenha formas coloridas.
+// Todo o elenco tem retrato normal integrado; expressões sem arte própria usam esse retrato.
 
 import type { Character, CharacterId, DialogLine, Expression } from './types';
 

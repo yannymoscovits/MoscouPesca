@@ -48,17 +48,20 @@ describe('Episódio 4: a rara depende da isca nova e da força, não do alcance'
     const rng = createRng(seed);
     let water = spawnWater(zone, ep4.species, 8, rng, null, bait);
     for (let t = 0; t < 30 && water.lure.xM > 0; t += 0.1) {
-      const step = stepWater(water, 0.1, true, bait, rng);
+      const step = stepWater(water, 0.1, true, bait, rng, 'torre'); // com a vara que o lendário pede (PONTO-09)
       if (step.strike) return step.strike.species.id;
       water = step.water;
     }
     return null;
   }
 
-  it('o alcance não limita: a melhor vara dos episódios 1 a 3 já abre o ponto do Dourado-dos-Ventos', () => {
+  it('PONTO-10: o ponto do Dourado-dos-Ventos abre com a Vara Hélice e a Isca Cata-vento, não pelo alcance', () => {
     const best = earlier.flatMap((ep) => ep.rods).reduce((a, b) => (b.reach > a.reach ? b : a));
     expect(rareZones.length).toBeGreaterThan(0);
-    const open = spotsFor(location, best, ep4.species, {}).filter((s) => !s.locked).map((s) => s.id);
+    const owned = earlier.flatMap((ep) => ep.rods.map((r) => r.id));
+    const closed = spotsFor(location, best, ep4.species, {}, [], undefined, owned).filter((s) => !s.locked).map((s) => s.id);
+    for (const zone of rareZones) expect(closed, zone.id).not.toContain(zone.id);
+    const open = spotsFor(location, best, ep4.species, {}, ['cata-vento'], undefined, [...owned, 'helice']).filter((s) => !s.locked).map((s) => s.id);
     for (const zone of rareZones) expect(open, zone.id).toContain(zone.id);
   });
 
@@ -134,7 +137,7 @@ describe('Episódio 4: roteiro', () => {
       'Pegar um Pacu-planador',
       'Tirar 3 Lambaris-rajada da torre',
       'Comprar a Vara Torre',
-      'Pegar o Dourado-dos-Ventos',
+      'Pegar o Dourado-dos-Ventos — no Pé das torres',
       'Registrar no álbum todas as espécies do Parque dos Ventos',
     ]);
   });
