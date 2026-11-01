@@ -252,8 +252,7 @@ const scenes = [
     lines: [say('capenga', 'normal', 'Robalo-peva fica no Rio Jacuípe, rente ao mangue. Joga rente, sem medo.')],
   },
   {
-    id: 'ep2-ponte', // cena 5
-    laviniaCameo: true,
+    id: 'ep2-ponte', // cena 5: a Lavínia viajou no tempo e aparece com o rosto, não como a piranha
     lines: [
       say('capenga', 'normal', 'Leva Isca de Carne que ele gosta. E paciência com a maré.'),
       say('lavinia', 'rindo', 'Adilsinho! Viajei no tempo só pra te pirraçar. Pirraça não tem prazo de validade.'),

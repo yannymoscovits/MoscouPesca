@@ -6,7 +6,14 @@ import { onEvent } from '../domain/story';
 import type { GameEvent } from './types';
 
 describe('aparição narrativa da Piranha Lavínia', () => {
-  for (const ep of episodes.filter(ep => ep.id > 1)) {
+  it('capítulo 2: ela viaja no tempo e aparece com o rosto, não como a piranha', () => {
+    const ep2 = episodes.find(ep => ep.id === 2)!;
+    expect(ep2.scenes.filter(scene => scene.laviniaCameo)).toHaveLength(0);
+    const ponte = ep2.scenes.find(scene => scene.id === 'ep2-ponte')!;
+    expect(ponte.lines.some(line => speakersOf(line).includes('lavinia') && line.text.includes('Viajei no tempo'))).toBe(true);
+  });
+
+  for (const ep of episodes.filter(ep => ep.id > 2)) {
     it(`capítulo ${ep.id}: uma cena com a piranha, sem recaptura nem repetição`, () => {
       const cameos = ep.scenes.filter(scene => scene.laviniaCameo);
       expect(cameos).toHaveLength(1);
@@ -20,7 +27,7 @@ describe('aparição narrativa da Piranha Lavínia', () => {
       if (scene.id !== ep.chapter.openingScene) profile.story.scenesSeen = [ep.chapter.openingScene];
       const event: GameEvent = scene.id === ep.chapter.openingScene
         ? { type: 'GameStarted' }
-        : { type: 'Caught', species: ({ 2: 'robalo-peva', 4: 'pacu-planador', 5: 'cavala' } as Record<number, string>)[ep.id], kg: 1 };
+        : { type: 'Caught', species: ({ 4: 'pacu-planador', 5: 'cavala' } as Record<number, string>)[ep.id], kg: 1 };
       const first = onEvent(profile, event, ep);
       expect(first.sceneToShow).toBe(scene.id);
       const restored = JSON.parse(JSON.stringify({ ...profile, story: first.progress }));
