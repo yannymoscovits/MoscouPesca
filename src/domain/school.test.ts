@@ -5,6 +5,7 @@ import { ep1 } from '../content/episodes/ep1';
 import { startBar } from './catchBar';
 import { rulesFor, startPesca, tick, type PescaContext, type PescaState } from './pesca';
 import { createRng } from './rng';
+import { stepWater } from './lure';
 import {
   afterCast,
   fishAt,
@@ -41,6 +42,15 @@ function emptySpot(s: School) {
 }
 
 describe('startSchool', () => {
+  it('reencontrar Lavínia não depende do sorteio ao voltar aos pontos dela', () => {
+    for (let seed = 0; seed < 20; seed++) {
+      for (const spot of POCO.zones) {
+        const s = startSchool(spot, ep1.species, REACH_M, createRng(seed));
+        expect(s.fish.some(f => f.species.id === 'piranha-lavinia')).toBe(spot.species.includes('piranha-lavinia'));
+      }
+    }
+  });
+
   it('forma 6 peixes do ponto, no cone da mira, entre 35% e 95% do alcance da vara', () => {
     const s = school();
     expect(s.fish).toHaveLength(6);
@@ -83,6 +93,30 @@ describe('fishAt', () => {
 });
 
 describe('fishNear e schoolWater', () => {
+  it('recolher encontra um peixe perto do pescador mesmo com a queda longe dele', () => {
+    const s = school();
+    const near = { ...s.fish[0], species: ep1.species.find(f => f.baits.includes('minhoca'))!, homeX: 0, homeY: 3, depthM: 0.3, swayM: 0 };
+    const water = schoolWater({ ...s, fish: [near] }, 0, 10, RASO, createRng(1));
+    expect(water.fish[0].mode).toBe('nadando');
+    expect(water.lure.xM - water.fish[0].xM).toBe(7);
+    let current = water;
+    let encountered = false;
+    for (let t = 0; t < 9; t += 0.1) {
+      const next = stepWater(current, 0.1, true, 'minhoca', createRng(2));
+      current = next.water;
+      if (current.fish[0].mode === 'seguindo' || next.strike) { encountered = true; break; }
+    }
+    expect(encountered).toBe(true);
+    expect(current.lure.xM).toBeLessThan(8);
+  });
+
+  it('qualquer direção e distância conserva o cardume inteiro', () => {
+    const s = school();
+    for (const angle of [-45, 0, 45]) for (const distance of [1, 5, REACH_M]) {
+      expect(schoolWater(s, angle, distance, RASO, createRng(1)).fish).toHaveLength(s.fish.length);
+    }
+  });
+
   it('isca em cima de um peixe: ele entra na água, ligado ao cardume', () => {
     const s = school();
     const f = s.fish[2];
@@ -98,10 +132,12 @@ describe('fishNear e schoolWater', () => {
     expect(w.lure).toEqual({ xM: distanceM, depthM: 0 });
   });
 
-  it('isca a mais de 3 m de todos os peixes: água vazia', () => {
+  it('isca longe das sombras mantém peixes perto e longe na água', () => {
     const s = school();
     const { angleDeg, distanceM } = emptySpot(s);
-    expect(schoolWater(s, angleDeg, distanceM, RASO, createRng(1)).fish).toEqual([]);
+    const water = schoolWater(s, angleDeg, distanceM, RASO, createRng(1));
+    expect(water.fish.map(f => f.schoolId)).toEqual(s.fish.map(f => f.id));
+    expect(new Set(water.fish.map(f => Math.round(f.xM))).size).toBeGreaterThan(1);
   });
 });
 
@@ -122,10 +158,12 @@ describe('a pescaria com cardume', () => {
     sinceS: 0.79,
   });
 
-  it('a isca cai longe das sombras: nada dessa vez, na hora', () => {
+  it('a isca cai longe das sombras: começa o recolhimento com a água povoada', () => {
     const s = school();
     const { angleDeg, distanceM } = emptySpot(s);
-    expect(tick(flying(angleDeg, distanceM), 0.02, { holding: false }, ctx(s)).phase).toBe('Result_Nothing');
+    const next = tick(flying(angleDeg, distanceM), 0.02, { holding: false }, ctx(s));
+    expect(next.phase).toBe('Lure');
+    if (next.phase === 'Lure') expect(next.water.fish).toHaveLength(s.fish.length);
   });
 
   it('a isca cai em cima de um peixe: a água começa com ele', () => {
@@ -148,6 +186,20 @@ describe('a pescaria com cardume', () => {
 });
 
 describe('afterCast e stepSchool', () => {
+  it('Lavínia só pode ser capturada uma vez, sem voltar na reposição', () => {
+    const lavinia = ep1.species.find(f => f.id === 'piranha-lavinia')!;
+    const initial = school();
+    let current = { ...initial, fish: initial.fish.map((f, i) => i === 0 ? { ...f, species: lavinia } : f) };
+      const target = current.fish.find(f => f.species.id === lavinia.id)!;
+      expect(target).toBeDefined();
+      current = afterCast(current, fight(current, target.id), { phase: 'Result_Caught', species: lavinia, kg: 0.8, value: 0 });
+      expect(current.fish.some(f => f.id === target.id)).toBe(false);
+      current = stepSchool(current, 200, RASO, ep1.species);
+      expect(current.fish).toHaveLength(6);
+      expect(current.fish.some(f => f.species.id === lavinia.id)).toBe(false);
+      expect(current.returning?.some(f => f.id === lavinia.id)).toBe(false);
+  });
+
   /** A briga com o peixe `schoolId` do cardume na linha. */
   function fight(s: School, schoolId: number): Extract<PescaState, { phase: 'Fight' }> {
     const f = s.fish.find((g) => g.id === schoolId)!;
@@ -165,7 +217,7 @@ describe('afterCast e stepSchool', () => {
   it('o peixe pego sai do cardume; o que fugiu fica', () => {
     const s = school();
     const target = s.fish[1].id;
-    const caught: PescaState = { phase: 'Result_Caught', species: s.fish[1].species, kg: 1, value: 1 };
+    const caught: PescaState = { phase: 'Result_Caught', species: s.fish[1].species, kg: 1, value: 0 };
     expect(afterCast(s, fight(s, target), caught).fish.map((f) => f.id)).not.toContain(target);
     expect(afterCast(s, fight(s, target), caught).fish).toHaveLength(5);
     expect(afterCast(s, fight(s, target), { phase: 'Result_Escaped' })).toBe(s);

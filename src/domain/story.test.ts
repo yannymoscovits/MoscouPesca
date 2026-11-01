@@ -5,7 +5,7 @@ import { currentObjective, isTournamentUnlocked, onEvent } from './story';
 const caught = (species: string, kg = 1): GameEvent => ({ type: 'Caught', species, kg });
 
 const EP1_OBJECTIVES: Objective[] = [
-  { id: 'pegar-3', text: 'Pegar 3 peixes', done: (e) => e.type === 'Caught', count: 3, sceneOnDone: 'cena-piranha' },
+  { id: 'pegar-3', text: 'Pegar 3 peixes', done: (e) => e.type === 'Caught', count: 3, unlocks: ['fibra'], sceneOnDone: 'cena-piranha' },
   {
     id: 'comprar-fibra',
     text: 'Comprar a Vara de Fibra',
@@ -25,13 +25,13 @@ function episode(id: EpisodeId, objectives: Objective[] = EP1_OBJECTIVES): Episo
     id,
     locations: [{ id: `local-${id}`, name: `Local ${id}`, background: '', zones: [] }],
     species: [],
-    rods: [],
+    rods: [{ id: 'fibra', name: 'Vara de Fibra', price: 1500, force: 3, reach: 5, episode: id }],
     baits: [],
     chapter: { title: `Capítulo ${id}`, openingScene: `ep${id}-abertura`, objectives, closingScene: `ep${id}-encerramento` },
     tournament: {
       id: `copa-${id}`,
       name: `Copa ${id}`,
-      casts: 8,
+      casts: 5,
       countBest: 3,
       rivals: [],
       trophy: `trofeu-${id}`,
@@ -129,6 +129,15 @@ describe('objetivos', () => {
     step = apply(p, caught('lavinia', 0.8));
     expect(step.out.sceneToShow).toBe('cena-album');
     expect(currentObjective(step.p.story, EP1)).toBeNull();
+  });
+
+  it('HIST-11: o objetivo cumprido libera itens na loja, mas não manda dinheiro nem aviso', () => {
+    let step = apply(newProfile(), caught('tilapia'));
+    step = apply(step.p, caught('traira'));
+    step = apply(step.p, caught('lambari'));
+    expect(step.out.sceneToShow).toBe('cena-piranha');
+    expect(step.out.notice).toBeUndefined();
+    expect(step.p.money).toBe(0);
   });
 
   it('HIST-05: o objetivo é avaliado com o perfil do jogador (álbum incompleto não cumpre)', () => {

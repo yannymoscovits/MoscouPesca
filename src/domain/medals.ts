@@ -1,7 +1,7 @@
 // Medalhas por peso e metas de quantidade por espécie (design.md, "Domain: medals").
 // Bronze, prata e ouro vêm dos limites da espécie (MEDAL-01); as metas, do GoalDef do conteúdo (MEDAL-04).
 
-import type { EpisodeId, GoalDef, GoalId, MedalTier, Profile, Species, SpeciesId } from '../content/types';
+import type { GoalDef, GoalId, MedalTier, Profile, Species, SpeciesId } from '../content/types';
 
 export const TIERS: MedalTier[] = ['bronze', 'prata', 'ouro'];
 
@@ -9,36 +9,31 @@ export const TIERS: MedalTier[] = ['bronze', 'prata', 'ouro'];
 export const goalId = (species: SpeciesId, count: number): GoalId => `${species}:${count}`;
 
 export interface CatchOutcome {
-  profile: Profile; // com medalhas, contagem, metas e a recompensa já no saldo
+  profile: Profile; // com medalhas, contagem e metas; o saldo não muda (MEDAL-05)
   medals: MedalTier[]; // medalhas novas deste peixe, de bronze para ouro (MEDAL-02)
   goalsDone: GoalId[]; // metas cumpridas agora (MEDAL-05)
-  reward: number; // R$ das metas cumpridas agora
 }
 
-// SPEC_DEVIATION: recebe também o episódio da espécie.
-// Reason: GoalDef.reward(episode, count) cresce por episódio, e a espécie não diz de que episódio é.
 /**
  * Conta a captura: concede as medalhas que o peso alcança e o jogador ainda não tem (MEDAL-02, MEDAL-03)
- * e cumpre, uma vez só, as metas que a contagem alcança, somando a recompensa ao saldo (MEDAL-05).
+ * e cumpre, uma vez só, as metas que a contagem alcança (MEDAL-05).
  */
-export function onCatch(p: Profile, species: Species, kg: number, goals: GoalDef, episode: EpisodeId): CatchOutcome {
+export function onCatch(p: Profile, species: Species, kg: number, goals: GoalDef, countForGoals = true): CatchOutcome {
   const id = species.id;
   const owned = p.medals[id] ?? [];
   const medals = TIERS.filter((tier) => kg >= species.medals[tier] && !owned.includes(tier));
 
-  const count = (p.catchCounts[id] ?? 0) + 1;
-  const reached = [...goals.counts].sort((a, b) => a - b).filter((c) => count >= c && !p.goalsDone.includes(goalId(id, c)));
+  const count = (p.catchCounts[id] ?? 0) + (countForGoals ? 1 : 0);
+  const reached = countForGoals ? [...goals.counts].sort((a, b) => a - b).filter((c) => count >= c && !p.goalsDone.includes(goalId(id, c))) : [];
   const goalsDone = reached.map((c) => goalId(id, c));
-  const reward = reached.reduce((sum, c) => sum + goals.reward(episode, c), 0);
 
   const profile: Profile = {
     ...p,
-    money: p.money + reward,
     medals: medals.length > 0 ? { ...p.medals, [id]: TIERS.filter((t) => owned.includes(t) || medals.includes(t)) } : p.medals,
     catchCounts: { ...p.catchCounts, [id]: count },
     goalsDone: goalsDone.length > 0 ? [...p.goalsDone, ...goalsDone] : p.goalsDone,
   };
-  return { profile, medals, goalsDone, reward };
+  return { profile, medals, goalsDone };
 }
 
 /** MEDAL-06: medalhas da espécie, quantas já foram pegas e a próxima meta (null quando todas passaram). */

@@ -22,7 +22,7 @@ function episode(id: EpisodeId): Episode {
     ],
     baits: [{ id: `isca-${id}`, name: 'Isca', price: 50 * id, episode: id }],
     chapter: { title: '', openingScene: `ep${id}-abertura`, objectives: [], closingScene: `ep${id}-fim` },
-    tournament: { id: `copa-${id}`, name: '', casts: 8, countBest: 3, rivals: [], trophy: `t${id}`, message: `m${id}` },
+    tournament: { id: `copa-${id}`, name: '', casts: 5, countBest: 3, rivals: [], trophy: `t${id}`, message: `m${id}` },
     letter: { id: `m${id}`, from: '', text: '' },
   };
 }

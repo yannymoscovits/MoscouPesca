@@ -47,7 +47,6 @@ function testEpisode(rods: Rod[] = [BAMBU]): Episode {
         name: 'Peixe',
         sprite: '',
         kg: { min: 1, max: 3 },
-        pricePerKg: 10,
         power: 3,
         stamina: 3,
         baits: ['minhoca'],
@@ -63,14 +62,21 @@ function testEpisode(rods: Rod[] = [BAMBU]): Episode {
       title: 'Teste',
       openingScene: 'abertura',
       objectives: [
-        { id: 'pegar-3', text: 'Pegar 3 peixes', done: (e) => e.type === 'Caught', count: 3, sceneOnDone: 'cena-3' },
+        {
+          id: 'pegar-3',
+          text: 'Pegar 3 peixes',
+          done: (e) => e.type === 'Caught',
+          count: 3,
+          unlocks: ['vara-boa'], // paga o preço da Vara Boa, se ela estiver no episódio
+          sceneOnDone: 'cena-3',
+        },
       ],
       closingScene: 'vitoria',
     },
     tournament: {
       id: 'copa-teste',
       name: 'Copa Teste',
-      casts: 8,
+      casts: 5,
       countBest: 3,
       rivals: [{ character: 'ricardo', kg: 0.1, taunt: { speaker: 'ricardo', text: 'Bora!' } }],
       trophy: 'trofeu-teste',
@@ -97,7 +103,7 @@ describe('jogador típico simulado', () => {
     // Com o cardume, um arremesso pode cair longe das sombras: o que conta são as 3 capturas.
     expect(free.filter((c) => c.outcome === 'Result_Caught')).toHaveLength(3);
     expect(free[free.length - 1].outcome).toBe('Result_Caught');
-    expect(r.casts.filter((c) => c.tournament)).toHaveLength(8);
+    expect(r.casts.filter((c) => c.tournament)).toHaveLength(5);
     expect(r.tournamentAttempts).toBe(1);
     expect(r.won).toBe(true);
     expect(r.profile.trophies).toEqual(['trofeu-teste']);
@@ -117,10 +123,8 @@ describe('jogador típico simulado', () => {
     // Linha do tempo esperada, refeita a partir dos arremessos simulados (PROG-04).
     const expected: Achievement[] = [];
     let seconds = 0;
-    let money = 0;
     let record: number | undefined;
     let freeCatches = 0;
-    let itemReached = false;
     for (const c of r.casts) {
       seconds += c.seconds;
       if (c.outcome !== 'Result_Caught') continue;
@@ -128,10 +132,9 @@ describe('jogador típico simulado', () => {
       if (record === undefined) expected.push({ atMinute, kind: 'especie', id: 'peixe' });
       else if (c.kg! > record) expected.push({ atMinute, kind: 'recorde', id: 'peixe' });
       record = Math.max(record ?? 0, c.kg!);
-      if (!c.tournament && ++freeCatches === 3) expected.push({ atMinute, kind: 'objetivo', id: 'pegar-3' });
-      money += c.value!;
-      if (!itemReached && money >= VARA_BOA.price) {
-        itemReached = true;
+      if (!c.tournament && ++freeCatches === 3) {
+        // O peixe não dá dinheiro: o objetivo cumprido paga a Vara Boa, e ela fica ao alcance ali (HIST-11).
+        expected.push({ atMinute, kind: 'objetivo', id: 'pegar-3' });
         expected.push({ atMinute, kind: 'item', id: 'vara-boa' });
       }
     }
@@ -144,11 +147,11 @@ describe('jogador típico simulado', () => {
     expect(new Set(r.achievements.map((a) => a.kind))).toEqual(new Set(['objetivo', 'item', 'especie', 'recorde']));
   });
 
-  it('T86, PROG-04: medalhas e metas entram na linha do tempo no minuto da captura que as conquista, com a recompensa no saldo', () => {
+  it('T86, PROG-04: medalhas e metas entram na linha do tempo no minuto da captura que as conquista, sem dinheiro', () => {
     const base = testEpisode();
     const limits = { bronze: 1.5, prata: 2, ouro: 2.5 };
     const ep: Episode = { ...base, species: [{ ...base.species[0], medals: limits }] };
-    const goals: GoalDef = { counts: [2, 5, 9], reward: (_ep, count) => count * 10 };
+    const goals: GoalDef = { counts: [2, 5, 9] };
     const r = simulateEpisode(ep, newProfile(), 3, { goals });
 
     // Linha do tempo esperada, refeita a partir dos arremessos: cada medalha na primeira captura que
@@ -157,7 +160,6 @@ describe('jogador típico simulado', () => {
     const owned = new Set<string>();
     let seconds = 0;
     let caught = 0;
-    let money = 0;
     for (const c of r.casts) {
       seconds += c.seconds;
       if (c.outcome !== 'Result_Caught') continue;
@@ -168,14 +170,12 @@ describe('jogador típico simulado', () => {
           expected.push({ atMinute, kind: 'medalha', id: `peixe:${tier}` });
         }
       }
-      caught++;
-      for (const count of goals.counts) {
-        if (caught === count) {
-          expected.push({ atMinute, kind: 'meta', id: goalId('peixe', count) });
-          money += count * 10;
+      if (!c.tournament) {
+        caught++;
+        for (const count of goals.counts) {
+          if (caught === count) expected.push({ atMinute, kind: 'meta', id: goalId('peixe', count) });
         }
       }
-      money += c.value!;
     }
 
     const normalize = (xs: Achievement[]) =>
@@ -185,8 +185,9 @@ describe('jogador típico simulado', () => {
     const awards = r.achievements.filter((a) => a.kind === 'medalha' || a.kind === 'meta');
     expect(normalize(awards)).toEqual(normalize(expected));
     expect(new Set(awards.map((a) => a.kind))).toEqual(new Set(['medalha', 'meta']));
-    expect(r.profile.money).toBe(money); // só a Vara de Bambu: nenhuma compra
-    expect(r.profile.goalsDone).toEqual(goals.counts.map((c) => goalId('peixe', c)));
+    expect(r.profile.money).toBe(0); // só a Vara de Bambu no episódio: o objetivo não libera nada e não paga
+    expect(r.profile.goalsDone).toEqual(goals.counts.filter(c => c <= caught).map(c => goalId('peixe', c)));
+    expect(r.profile.catchCounts.peixe).toBe(caught);
 
     // Mesma semente, mesmo resultado.
     expect(simulateEpisode(ep, newProfile(), 3, { goals })).toEqual(r);
@@ -213,7 +214,7 @@ function twoSpotEpisode(rods: Rod[]): Episode {
   const base = testEpisode(rods);
   const raso = base.locations[0].zones[0];
   const fundo = { ...raso, id: 'fundo', name: 'Fundão', minReach: 5, depthM: 4, species: ['dourado'] };
-  const dourado = { ...base.species[0], id: 'dourado', name: 'Dourado', kg: { min: 4, max: 6 }, pricePerKg: 30 };
+  const dourado = { ...base.species[0], id: 'dourado', name: 'Dourado', kg: { min: 4, max: 6 } };
   return {
     ...base,
     locations: [{ ...base.locations[0], zones: [raso, fundo] }],

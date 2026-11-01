@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { FightStyle, Rod, Species } from '../content/types';
 import { barOutcome, barRulesFor, fightStyleOf, fishInside, pressBar, startBar, stepBar, type BarRules, type CatchBar } from './catchBar';
 import { createRng, type Rng } from './rng';
+import { ep1 } from '../content/episodes/ep1';
 
 function fish(power: number, stamina = 5, fightStyle?: FightStyle): Species {
   return {
@@ -9,7 +10,6 @@ function fish(power: number, stamina = 5, fightStyle?: FightStyle): Species {
     name: 'Peixe',
     sprite: '',
     kg: { min: 1, max: 2 },
-    pricePerKg: 1,
     power,
     stamina,
     baits: ['minhoca'],
@@ -28,6 +28,45 @@ function rod(force: number): Rod {
 const DESAFIO = barRulesFor('desafio');
 const TRANQUILO = barRulesFor('tranquilo');
 const DT = 1 / 60;
+
+describe('Pirarucu Lendário', () => {
+  const sp = ep1.species.find(sp => sp.id === 'pirarucu-lendario')!;
+  const carbon = ep1.rods.find(rod => rod.id === 'carbono')!;
+  it('tem faixa menor e muda de profundidade mais rápido', () => {
+    const baseline = { ...sp, fightTuning: undefined };
+    const harder = startBar(sp, carbon, TRANQUILO, createRng(7));
+    const normal = startBar(baseline, carbon, TRANQUILO, createRng(7));
+    expect(harder.style).toBe('afundador');
+    expect(harder.zoneH).toBeLessThan(normal.zoneH);
+    expect(harder.retargetInS).toBeLessThan(normal.retargetInS);
+  });
+  it('precisa de mais tempo com o peixe dentro da faixa para completar a captura', () => {
+    const rng = (): Rng => ({ next: () => 0, range: min => min, pick: items => items[0].item });
+    const normal = startBar({ ...sp, fightTuning: undefined }, carbon, TRANQUILO, rng());
+    const harder = startBar(sp, carbon, TRANQUILO, rng());
+    const oldGain = stepBar(normal, 1, false, TRANQUILO, rng()).meter - normal.meter;
+    const newGain = stepBar(harder, 1, false, TRANQUILO, rng()).meter - harder.meter;
+    expect(newGain).toBeGreaterThan(0);
+    expect(newGain).toBeLessThan(oldGain);
+  });
+  it.each(['tranquilo', 'desafio'] as const)('continua capturável com Carbono no %s', difficulty => {
+    const rules = barRulesFor(difficulty);
+    let caught = 0;
+    for (let seed = 1; seed <= 20; seed++) {
+      const rng = createRng(seed);
+      let b = startBar(sp, carbon, rules, rng);
+      let held = false;
+      for (let t = 0; t < 180 && barOutcome(b, rules) === null; t += DT) {
+        const hold = b.fishY > b.zoneY + b.zoneH / 2 + b.zoneV * 0.2;
+        if (hold && !held) b = pressBar(b);
+        held = hold;
+        b = stepBar(b, DT, hold, rules, rng);
+      }
+      if (barOutcome(b, rules) === 'pegou') caught++;
+    }
+    expect(caught).toBeGreaterThan(0);
+  });
+});
 
 /** Roda `seconds` com o botão seguro ou solto; o medidor fica preso em 50% para a briga não acabar. */
 function run(b: CatchBar, seconds: number, holding: boolean, rules: BarRules, rng: Rng): CatchBar {

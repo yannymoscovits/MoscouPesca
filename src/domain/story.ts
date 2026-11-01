@@ -28,6 +28,12 @@ function show(p: StoryProgress, scene: SceneId): StoryProgress {
   return { ...p, scenesSeen: [...p.scenesSeen, scene] };
 }
 
+/** HIST-05: passa ao objetivo seguinte e mostra a cena; os itens que ele libera aparecem na loja (HIST-11). */
+function complete(p: StoryProgress, ep: Episode, st: EpisodeStory, objective: Objective): StoryOutcome {
+  const next = { ...st, objectiveIndex: st.objectiveIndex + 1, progress: 0 };
+  return { progress: show(withEpisode(p, ep, next), objective.sceneOnDone), sceneToShow: objective.sceneOnDone };
+}
+
 /** HIST-04: objetivo atual do episódio; null quando todos foram cumpridos. */
 export function currentObjective(p: StoryProgress, ep: Episode): Objective | null {
   return ep.chapter.objectives[episodeStory(p, ep).objectiveIndex] ?? null;
@@ -51,8 +57,10 @@ export function onEvent(profile: Profile, e: GameEvent, ep: Episode): StoryOutco
 
   if (e.type === 'GameStarted') {
     const scene = ep.chapter.openingScene;
-    if (story.scenesSeen.includes(scene)) return { progress: story };
-    return { progress: show(withEpisode(story, ep, st), scene), sceneToShow: scene };
+    if (!story.scenesSeen.includes(scene)) return { progress: show(withEpisode(story, ep, st), scene), sceneToShow: scene };
+    const objective = currentObjective(story, ep);
+    if (!objective?.satisfied?.(profile)) return { progress: story };
+    return complete(story, ep, st, objective);
   }
 
   if (e.type === 'TournamentWon') {
@@ -67,6 +75,5 @@ export function onEvent(profile: Profile, e: GameEvent, ep: Episode): StoryOutco
   if (!objective || !objective.done(e, profile)) return { progress: story };
   const progress = st.progress + 1;
   if (progress < (objective.count ?? 1)) return { progress: withEpisode(story, ep, { ...st, progress }) };
-  const next = { ...st, objectiveIndex: st.objectiveIndex + 1, progress: 0 };
-  return { progress: show(withEpisode(story, ep, next), objective.sceneOnDone), sceneToShow: objective.sceneOnDone }; // HIST-05
+  return complete(story, ep, st, objective);
 }

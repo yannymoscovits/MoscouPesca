@@ -6,7 +6,7 @@ import { applyVictory, recordCast, score, standings, start } from './tournament'
 const DEF: TournamentDef = {
   id: 'guanambicup',
   name: 'GuanambiCup',
-  casts: 8,
+  casts: 5,
   countBest: 3,
   rivals: [
     { character: 'ricardo', kg: 5, taunt: { speaker: 'ricardo', text: 'Bongô!' } },
@@ -23,7 +23,6 @@ function species(id: string): Species {
     name: id,
     sprite: '',
     kg: { min: 0.1, max: 10 },
-    pricePerKg: 10,
     power: 3,
     stamina: 3,
     baits: ['minhoca'],
@@ -38,7 +37,7 @@ const caught = (id: string, kg: number): PescaState => ({
   phase: 'Result_Caught',
   species: species(id),
   kg,
-  value: Math.round(kg * 10),
+  value: 0,
 });
 
 function profile(): Profile {
@@ -92,8 +91,8 @@ describe('pontuação', () => {
 });
 
 describe('arremessos', () => {
-  it('Formato do torneio: começa com 8 arremessos e nenhum peixe', () => {
-    expect(start(DEF)).toEqual({ id: 'guanambicup', castsLeft: 8, catches: [] });
+  it('Formato do torneio: começa com 5 arremessos e nenhum peixe', () => {
+    expect(start(DEF)).toEqual({ id: 'guanambicup', castsLeft: 5, catches: [] });
   });
 
   it('SAVE-06: só um resultado gasta arremesso; estados antes do resultado (briga interrompida) não gastam', () => {
@@ -101,11 +100,11 @@ describe('arremessos', () => {
     // Só a fase importa para o torneio: os outros campos da briga e da isca ficam de fora.
     const before = ['Aim', 'Power', 'Flying', 'Lure', 'Strike', 'Fight'].map((phase) => ({ phase }) as PescaState);
     for (const s of before) {
-      expect(recordCast(run, s)).toEqual({ id: 'guanambicup', castsLeft: 8, catches: [] });
+      expect(recordCast(run, s)).toEqual({ id: 'guanambicup', castsLeft: 5, catches: [] });
     }
 
     const afterCatch = recordCast(run, caught('tilapia', 1.2));
-    expect(afterCatch.castsLeft).toBe(7);
+    expect(afterCatch.castsLeft).toBe(4);
     expect(afterCatch.catches).toEqual([{ species: 'tilapia', kg: 1.2 }]);
   });
 
@@ -114,23 +113,23 @@ describe('arremessos', () => {
     for (const phase of ['Result_Escaped', 'Result_Nothing'] as const) {
       run = recordCast(run, { phase });
     }
-    expect(run.castsLeft).toBe(6);
+    expect(run.castsLeft).toBe(3);
 
     expect(run.catches).toEqual([]);
   });
 
-  it('Formato do torneio: depois do 8º arremesso, nenhum resultado conta', () => {
+  it('Formato do torneio: depois do 5º arremesso, nenhum resultado conta', () => {
     let run = start(DEF);
-    for (let i = 0; i < 8; i++) run = recordCast(run, caught('tilapia', 1));
+    for (let i = 0; i < 5; i++) run = recordCast(run, caught('tilapia', 1));
     const extra = recordCast(run, caught('traira', 9));
     expect(extra.castsLeft).toBe(0);
-    expect(extra.catches).toHaveLength(8);
+    expect(extra.catches).toHaveLength(5);
     expect(score(extra)).toBe(3);
   });
 });
 
 describe('classificação', () => {
-  it('CAMP-05: depois do 8º arremesso, ordena o jogador e os 3 rivais pela pontuação', () => {
+  it('CAMP-05: depois do 5º arremesso, ordena o jogador e os 3 rivais pela pontuação', () => {
     let run = start(DEF);
     for (const [id, kg] of FIVE_FISH) run = recordCast(run, caught(id, kg));
     for (let i = 0; i < 3; i++) run = recordCast(run, { phase: 'Result_Escaped' });
@@ -167,12 +166,12 @@ describe('vitória e derrota', () => {
 
   it('CAMP-09: depois de uma derrota, start de novo zera a rodada, sem custo e quantas vezes quiser', () => {
     let lost = start(DEF);
-    for (let i = 0; i < 8; i++) lost = recordCast(lost, caught('lambari', 0.3));
+    for (let i = 0; i < 5; i++) lost = recordCast(lost, caught('lambari', 0.3));
     expect(standings(lost, DEF)[0].isPlayer).toBe(false);
 
     // start não recebe o perfil: recomeçar não mexe no saldo.
     for (let attempt = 0; attempt < 20; attempt++) {
-      expect(start(DEF)).toEqual({ id: 'guanambicup', castsLeft: 8, catches: [] });
+      expect(start(DEF)).toEqual({ id: 'guanambicup', castsLeft: 5, catches: [] });
     }
   });
 });

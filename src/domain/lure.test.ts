@@ -9,7 +9,6 @@ function species(id: string, baits: BaitId[], rarity = 1): Species {
     name: id,
     sprite: '',
     kg: { min: 1, max: 2 },
-    pricePerKg: 1,
     power: 3,
     stamina: 3,
     baits,
@@ -97,9 +96,9 @@ describe('stepWater: a isca', () => {
     expect(w.lure).toEqual({ xM: 0, depthM: 0 });
   });
 
-  it('ISCA-04: parada, a isca afunda 0,3 m/s', () => {
-    const w = step(water([], { xM: 10, depthM: 0 }), 2, false);
-    expect(w.lure.depthM).toBeCloseTo(0.6, 9);
+  it('ISCA-04: parada, a isca afunda 0,9 m/s', () => {
+    const w = step(water([], { xM: 10, depthM: 0 }), 1, false);
+    expect(w.lure.depthM).toBeCloseTo(0.9, 9);
     expect(w.lure.xM).toBe(10);
   });
 

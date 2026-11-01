@@ -39,9 +39,9 @@ function playTutorial(seed: number) {
       sinceTwitch = 0;
     } else if (t.step === 'fisgar') {
       s = press(s, 'puxar', c);
-    } else if (t.step === 'recolher' || t.step === 'subir') {
+    } else if (t.step === 'recolher') {
       holding = true;
-    } else if (t.step === 'manter' && s.phase === 'Fight') {
+    } else if (t.step === 'briga' && s.phase === 'Fight') {
       holding = s.bar.fishY > s.bar.zoneY + s.bar.zoneH / 2;
     }
     update();
@@ -53,7 +53,7 @@ function playTutorial(seed: number) {
 
 describe('início', () => {
   it('TUTOB-01: o tutorial começa no passo de escolher o ponto, sem aviso', () => {
-    expect(start()).toEqual({ step: 'ponto', idleS: 0, nudge: false });
+    expect(start()).toEqual({ step: 'ponto', idleS: 0, nudge: false, reading: false, praiseS: 0 });
   });
 });
 
@@ -79,7 +79,7 @@ describe('passos', () => {
   });
 
   it('TUTOB-01: arremesso sem peixe volta ao passo de travar a direção; sair do ponto volta a escolher o ponto', () => {
-    let t: TutorialPescaState = { step: 'recolher', idleS: 0, nudge: false };
+    let t: TutorialPescaState = { step: 'recolher', idleS: 0, nudge: false, reading: false, praiseS: 0 };
     t = onPesca(t, { phase: 'Result_Nothing' }, true);
     expect(t.step).toBe('direcao');
     t = onPesca(t, startPesca(), false);
@@ -95,7 +95,7 @@ describe('passos', () => {
       fishId: 1,
       bar: { ...bar, zoneY, zoneV },
     });
-    let t: TutorialPescaState = { step: 'fisgar', idleS: 0, nudge: false };
+    let t: TutorialPescaState = { step: 'fisgar', idleS: 0, nudge: false, reading: false, praiseS: 0 };
     t = onPesca(t, fight(0, 0.03), true); // quique no fundo, sem segurar
     expect(t.step).toBe('subir');
     t = onPesca(t, fight(0.05, 0.4), true);
@@ -137,7 +137,7 @@ describe('regras do tutorial', () => {
   });
 
   it('as regras folgadas valem só enquanto o tutorial está ativo', () => {
-    const done: TutorialPescaState = { step: 'done', idleS: 0, nudge: false };
+    const done: TutorialPescaState = { step: 'done', idleS: 0, nudge: false, reading: false, praiseS: 0 };
     expect(rules(done, 'desafio')).toEqual(rulesFor('desafio'));
     expect(rules(done, 'tranquilo')).toEqual(rulesFor('tranquilo'));
     expect(onPesca(done, startPesca(), false)).toBe(done);

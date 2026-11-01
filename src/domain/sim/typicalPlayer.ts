@@ -8,6 +8,7 @@
 // atrasado. Ele compra a melhor vara que o saldo permite e entra no campeonato assim que ele libera.
 // O tempo conta mira, força, voo, isca, briga e ficha do peixe; ler falas e cenas fica de fora.
 
+import { fishValue } from '../value';
 import type {
   BaitId,
   Difficulty,
@@ -42,7 +43,7 @@ import { buy, canBuy, equip, type Item } from '../shop';
 import { spotsFor } from '../spots';
 import { currentObjective, isTournamentUnlocked, onEvent } from '../story';
 import { applyVictory, recordCast, standings, start as startTournament } from '../tournament';
-import { isUnlocked, onChampionshipWon, shopItems, travel } from '../world';
+import { credit, isUnlocked, onChampionshipWon, shopItems, travel, walletCap } from '../world';
 
 /** Segundos para ler a ficha do peixe. */
 export const CARD_S = 3;
@@ -81,7 +82,7 @@ export interface SimCast {
   tournament: boolean;
   species?: SpeciesId;
   kg?: number;
-  value?: number;
+  value?: number; // R$ que entrou na carteira
 }
 
 export interface SimOptions {
@@ -90,7 +91,7 @@ export interface SimOptions {
   goals?: GoalDef; // metas de quantidade (src/content/goals.ts); sem elas, nenhuma meta conta
 }
 
-const NO_GOALS: GoalDef = { counts: [], reward: () => 0 };
+const NO_GOALS: GoalDef = { counts: [] };
 
 // SPEC_DEVIATION: o design devolve só minutos, conquistas e tentativas e não tem opções.
 // Reason: `casts` permite conferir que o tempo total é a soma dos arremessos; `won` separa a vitória
@@ -331,7 +332,7 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
     const rod = rodOf(p.rods.equipped);
     const out: Plan[] = [];
     for (const location of ep.locations) {
-      for (const { zone, locked } of spotsFor(location, rod, ep.species, p.album)) {
+      for (const { zone, locked } of spotsFor(location, rod, ep.species, p.album, p.baits.owned, undefined, p.rods.owned)) {
         if (locked) continue;
         for (const bait of baits) {
           const takers = ep.species.filter((sp) => zone.species.includes(sp.id) && sp.baits.includes(bait));
@@ -362,7 +363,7 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
     const plan = best(plans([...p.baits.owned, ...buyable.map((b) => b.id)]), (pl) => [
       share(pl, goal),
       share(pl, fresh),
-      expected(pl, (sp) => avgKg(sp) * sp.pricePerKg),
+      expected(pl, (sp) => fishValue(sp, avgKg(sp))),
     ]);
     const bait = buyable.find((b) => b.id === plan.bait);
     if (bait) purchase(bait);
@@ -410,7 +411,7 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
     return { result: s, seconds: t };
   }
 
-  /** Soma o tempo do arremesso e aplica o peixe: R$ (PESCA-17), álbum e recorde, medalhas e metas, e a história. */
+  /** Soma o tempo do arremesso e aplica o peixe: álbum e recorde, medalhas e metas, e a história (o peixe não dá R$). */
   function land(result: PescaResult, castSeconds: number, tournament: boolean) {
     seconds += castSeconds;
     if (result.phase !== 'Result_Caught') {
@@ -418,13 +419,14 @@ export function simulateEpisode(ep: Episode, start: Profile, seed: number, opts:
       return;
     }
     const { species, kg, value } = result;
-    casts.push({ seconds: castSeconds, outcome: result.phase, tournament, species: species.id, kg, value });
+    const credited = tournament ? 0 : credit(p, value, walletCap(p, catalog, ep)); // PESCA-17: até o limite da carteira
+    casts.push({ seconds: castSeconds, outcome: result.phase, tournament, species: species.id, kg, value: credited });
     const isNew = p.album[species.id] === undefined;
     const { album, isNewRecord } = record(p.album, species.id, kg);
-    p = { ...p, money: p.money + value, album };
+    p = { ...p, money: p.money + credited, album };
     if (isNew) note('especie', species.id);
     else if (isNewRecord) note('recorde', species.id);
-    const won = onCatch(p, species, kg, goals, ep.id); // o mesmo do jogo (MEDAL-02 a MEDAL-05)
+    const won = onCatch(p, species, kg, goals, !tournament); // a copa não conta para as metas
     p = won.profile;
     for (const tier of won.medals) note('medalha', `${species.id}:${tier}`);
     for (const id of won.goalsDone) note('meta', id);

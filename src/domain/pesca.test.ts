@@ -206,14 +206,13 @@ describe('briga', () => {
     return { phase: 'Fight', gear: GEAR, water: water([fishAt({ mode: 'seguindo', attackInS: 0, species: sp })]), fishId: 1, bar };
   };
 
-  it('BRIGA-10: medidor cheio mostra a ficha do peixe da v1: peso sorteado na faixa, com 2 casas, e valor em R$', () => {
+  it('BRIGA-10: medidor cheio mostra a ficha do peixe da v1: peso sorteado na faixa, com 2 casas', () => {
     const s = run(fight('desafio', { meter: 0.99, fishY: 0.1 }), 0.5, STILL, ctx('desafio', 5));
     if (s.phase !== 'Result_Caught') throw new Error(s.phase);
     expect(s.species).toBe(TILAPIA);
     expect(s.kg).toBeGreaterThanOrEqual(TILAPIA.kg.min);
     expect(s.kg).toBeLessThanOrEqual(TILAPIA.kg.max);
     expect(Math.round(s.kg * 100) / 100).toBe(s.kg);
-    expect(s.value).toBe(Math.round(s.kg * TILAPIA.pricePerKg));
   });
 
   it('BRIGA-02: segurar SEGURAR sobe a faixa', () => {

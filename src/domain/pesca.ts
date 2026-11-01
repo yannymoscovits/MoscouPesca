@@ -1,6 +1,7 @@
 // Máquina de estados de um arremesso da pescaria nova, da mira ao resultado (design.md da
 // pesca-bass, "pesca"). TypeScript puro: o tempo chega por `dt` e o sorteio por `ctx.rng`.
 
+import { fishValue } from './value';
 import type { BaitId, Difficulty, Rod, Species, Zone } from '../content/types';
 import { aimAngleDeg, castDistanceM, powerAt } from './castAim';
 import { barOutcome, barRulesFor, startBar, stepBar, type BarRules, type CatchBar } from './catchBar';
@@ -43,7 +44,7 @@ export type PescaState =
   | { phase: 'Strike'; gear: Gear; water: Water; fishId: number; sinceS: number }
   | { phase: 'Fight'; gear: Gear; water: Water; fishId: number; bar: CatchBar }
   | { phase: 'Result_Caught'; species: Species; kg: number; value: number } // dados da ficha (PESCA-15)
-  | { phase: 'Result_Escaped' } // BRIGA-11
+  | { phase: 'Result_Escaped'; released?: boolean; snapped?: boolean } // BRIGA-11; released: soltou (BRIGA-17); snapped: a linha arrebentou (BRIGA-20)
   | { phase: 'Result_Nothing' }; // ISCA-12
 
 export function startPesca(): PescaState {
@@ -54,11 +55,9 @@ export function rulesFor(d: Difficulty): PescaRules {
   return { sweepS: AIM_SWEEP_S[d], hookWindowS: HOOK_WINDOW_S[d], followWithinS: null, bar: barRulesFor(d) };
 }
 
-/** Peixe na mão: peso sorteado na faixa da espécie, com 2 casas, e valor em R$ inteiros. */
-export function caught(sp: Species, rng: Rng): Extract<PescaState, { phase: 'Result_Caught' }> {
-  const drawn = Math.round(rng.range(sp.kg.min, sp.kg.max) * 100) / 100; // PESCA-16
-  const kg = Math.min(Math.max(drawn, sp.kg.min), sp.kg.max);
-  return { phase: 'Result_Caught', species: sp, kg, value: Math.round(kg * sp.pricePerKg) }; // PESCA-17
+/** Peixe na mão, com o peso sorteado no começo da briga (BRIGA-16) e o valor em R$ inteiros (PESCA-17). */
+export function caught(bar: CatchBar): Extract<PescaState, { phase: 'Result_Caught' }> {
+  return { phase: 'Result_Caught', species: bar.species, kg: bar.kg, value: fishValue(bar.species, bar.kg) };
 }
 
 /** ARREMESSAR trava a seta e depois arremessa; PUXAR dá o tranco ou fisga. Fora disso, nada muda (BOTAO-03). */
@@ -75,7 +74,7 @@ export function press(s: PescaState, b: PescaButton, ctx: PescaContext): PescaSt
   if (s.phase === 'Lure') return { ...s, water: twitch(s.water) }; // ISCA-03
   if (s.phase === 'Strike') {
     const fish = s.water.fish.find((f) => f.id === s.fishId)!;
-    const bar = startBar(fish.species, s.gear.rod, rules.bar, ctx.rng); // ISCA-10, BRIGA-01
+    const bar = startBar(fish.species, s.gear.rod, rules.bar, ctx.rng, fish.size); // ISCA-10, BRIGA-01, BRIGA-19
     return { phase: 'Fight', gear: s.gear, water: s.water, fishId: s.fishId, bar };
   }
   return s;
@@ -101,7 +100,7 @@ export function tick(s: PescaState, dt: number, input: { holding: boolean }, ctx
       return { phase: 'Lure', gear: s.gear, water, notice: null };
     }
     case 'Lure': {
-      const { water, strike } = stepWater(s.water, dt, input.holding, s.gear.bait, rng); // segurar = RECOLHER
+      const { water, strike } = stepWater(s.water, dt, input.holding, s.gear.bait, rng, s.gear.rod.id); // segurar = RECOLHER
       if (strike) return { phase: 'Strike', gear: s.gear, water, fishId: strike.id, sinceS: 0 }; // ISCA-08
       if (water.lure.xM <= 0) return { phase: 'Result_Nothing' }; // ISCA-12
       const notice = s.notice && { ...s.notice, sinceS: s.notice.sinceS + dt };
@@ -118,8 +117,9 @@ export function tick(s: PescaState, dt: number, input: { holding: boolean }, ctx
     case 'Fight': {
       const bar = stepBar(s.bar, dt, input.holding, rules.bar, rng); // segurar = SEGURAR
       const outcome = barOutcome(bar, rules.bar);
-      if (outcome === 'pegou') return caught(bar.species, rng); // BRIGA-10
+      if (outcome === 'pegou') return caught(bar); // BRIGA-10
       if (outcome === 'fugiu') return { phase: 'Result_Escaped' }; // BRIGA-11
+      if (outcome === 'arrebentou') return { phase: 'Result_Escaped', snapped: true }; // BRIGA-20
       return { ...s, bar };
     }
     default:
