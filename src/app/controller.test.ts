@@ -7,7 +7,6 @@ import type { PescaState } from '../domain/pesca';
 import { newProfile } from '../domain/profile';
 import { createRng, type Rng } from '../domain/rng';
 import { sightOf, typicalPlayer } from '../domain/sim/typicalPlayer';
-import { goals } from '../content/goals';
 import { goalId } from '../domain/medals';
 import { createSaveService, CURRENT_KEY, type SaveOutcome, type SaveService } from '../platform/save';
 import { bootGame, createController } from './controller';
@@ -125,27 +124,25 @@ function memoryStorage() {
 }
 
 describe('pesca', () => {
-  it('PESCA-17: a ficha exibida soma Math.round(kg × preço/kg) ao saldo uma vez só', () => {
+  it('PESCA-17: o peixe pego não mexe no saldo', () => {
     const g = setup(played({ money: 10 }), { species: 'tilapia' });
 
-    const card = g.catchFish();
-    const credited = 10 + Math.round(card.kg * card.species.pricePerKg);
-    expect(g.state().profile.money).toBe(credited);
+    g.catchFish();
+    expect(g.state().profile.money).toBe(10);
 
     for (let i = 0; i < 20; i++) g.controller.tick(0.1); // a ficha continua aberta
-    expect(g.state().profile.money).toBe(credited);
+    expect(g.state().profile.money).toBe(10);
   });
 
-  it('PESCA-17: fechar a ficha volta a mirar no mesmo ponto sem creditar de novo', () => {
+  it('PESCA-17: fechar a ficha volta a mirar no mesmo ponto, com o saldo igual', () => {
     const g = setup(played({ money: 10 }), { species: 'tilapia' });
     g.catchFish();
-    const money = g.state().profile.money;
 
     g.controller.dismissResult();
 
     expect(g.state().fishing).toEqual({ phase: 'Aim', sinceS: 0 });
     expect(g.state().spot).toBe('raso');
-    expect(g.state().profile.money).toBe(money);
+    expect(g.state().profile.money).toBe(10);
   });
 
   it('ISCA-12: resultado sem peixe também volta ao arremesso ao fechar, pronto para arremessar', () => {
@@ -182,6 +179,44 @@ describe('pesca', () => {
 });
 
 describe('pesqueiro e botões', () => {
+  it('Lavínia registrada não reaparece ao trocar de ponto ou carregar o perfil', () => {
+    const profile = played({
+      rods: { owned: ['bambu', 'fibra'], equipped: 'fibra' },
+      album: { 'piranha-lavinia': { recordKg: 0.8 } },
+    });
+    for (const g of [setup(profile, { species: 'piranha-lavinia' }), setup(profile, { species: 'piranha-lavinia' })]) {
+      for (const spot of ['raso', 'meio']) {
+        g.controller.chooseSpot(spot);
+        expect(g.state().school!.fish.some(f => f.species.id === 'piranha-lavinia')).toBe(false);
+        g.controller.tick(60);
+        expect(g.state().school!.fish.some(f => f.species.id === 'piranha-lavinia')).toBe(false);
+        g.controller.leaveSpot();
+      }
+    }
+  });
+  it('HIST-13: o lendário sai do cardume já montado quando é pego e quando a copa começa', () => {
+    const objective = ep1.chapter.objectives.findIndex((o) => o.id === 'pegar-pirarucu');
+    const hunting = played({
+      rods: { owned: ['bambu', 'fibra', 'carbono'], equipped: 'carbono' },
+      baits: { owned: ['minhoca', 'carne'], equipped: 'carne' },
+      story: { ...played().story, episodes: { 1: { objectiveIndex: objective, progress: 0, won: false } } },
+    });
+    const hasLegend = (g: ReturnType<typeof setup>) => g.state().school!.fish.some((f) => f.species.id === 'pirarucu-lendario');
+
+    const caught = setup(hunting);
+    caught.controller.chooseSpot('fundo');
+    expect(hasLegend(caught)).toBe(true);
+    caught.store.update((s) => ({ ...s, profile: { ...s.profile, album: { 'pirarucu-lendario': { recordKg: 90 } } } }));
+    caught.controller.tick(60);
+    expect(hasLegend(caught)).toBe(false);
+
+    const cup = setup(hunting);
+    cup.controller.chooseSpot('fundo');
+    cup.store.update((s) => ({ ...s, profile: { ...s.profile, tournament: { id: ep1.tournament.id, castsLeft: 5, catches: [] } } }));
+    cup.controller.tick(60);
+    expect(hasLegend(cup)).toBe(false);
+  });
+
   it('PONTO-03: ponto com cadeado (Fundão pede alcance 5, a Vara de Bambu tem 2) não abre o arremesso', () => {
     const g = setup(played());
     g.controller.chooseSpot('fundo');
@@ -327,25 +362,24 @@ describe('medalhas e metas', () => {
     expect(g.state().profile.medals.tilapia).toEqual(['bronze', 'prata', 'ouro']);
   });
 
-  it('MEDAL-04, MEDAL-05: a 10ª tilápia cumpre a meta de 10, soma a recompensa ao saldo uma vez só e gera o aviso', () => {
+  it('MEDAL-04, MEDAL-05: a 10ª tilápia cumpre a meta de 10 uma vez só e gera o aviso, sem dinheiro', () => {
     const g = setup(played({ money: 100, catchCounts: { tilapia: 9 } }), { species: 'tilapia' });
-    const reward = goals.reward(1, 10);
 
-    const card = g.catchFish();
+    g.catchFish();
     expect(g.state().profile.catchCounts.tilapia).toBe(10);
     expect(g.state().profile.goalsDone).toEqual([goalId('tilapia', 10)]);
-    expect(g.state().awards).toMatchObject({ goals: [10], reward });
-    expect(g.state().profile.money).toBe(100 + card.value + reward);
-    expect(g.lastSaved().money).toBe(100 + card.value + reward);
+    expect(g.state().awards).toMatchObject({ goals: [10] });
+    expect(g.state().profile.money).toBe(100);
+    expect(g.lastSaved().goalsDone).toEqual([goalId('tilapia', 10)]);
 
     g.controller.dismissResult();
-    const second = g.catchFish(); // 11ª: nenhuma meta nova
-    expect(g.state().awards).toMatchObject({ goals: [], reward: 0 });
-    expect(g.state().profile.money).toBe(100 + card.value + reward + second.value);
+    g.catchFish(); // 11ª: nenhuma meta nova
+    expect(g.state().awards).toMatchObject({ goals: [] });
+    expect(g.state().profile.money).toBe(100);
     expect(g.state().profile.goalsDone).toEqual([goalId('tilapia', 10)]);
   });
 
-  it('MEDAL-05: a meta de uma espécie do Episódio 2 paga a recompensa do Episódio 2', () => {
+  it('MEDAL-05: a meta de uma espécie do Episódio 2 conta igual', () => {
     const p = played({
       unlockedEpisodes: [1, 2],
       currentLocation: 'rio-jacuipe',
@@ -355,7 +389,7 @@ describe('medalhas e metas', () => {
     });
     const g = setup(p, { species: 'tilapia-jacuipe' });
     g.catchFish('beira'); // a beira do rio
-    expect(g.state().awards).toMatchObject({ goals: [10], reward: goals.reward(2, 10) });
+    expect(g.state().awards).toMatchObject({ goals: [10] });
   });
 
   it('MEDAL-07: medalhas, contagens e metas sobrevivem a salvar e recarregar', () => {
@@ -405,11 +439,11 @@ describe('medalhas e metas', () => {
 });
 
 describe('SAVE-04: salva depois de cada peixe, compra, objetivo e arremesso de torneio', () => {
-  it('peixe → salva o saldo e o álbum com o peixe', () => {
+  it('peixe → salva o álbum com o peixe', () => {
     const g = setup(played({ money: 10 }), { species: 'tilapia' });
     const card = g.catchFish();
 
-    expect(g.lastSaved().money).toBe(10 + Math.round(card.kg * card.species.pricePerKg));
+    expect(g.lastSaved().money).toBe(10);
     expect(g.lastSaved().album.tilapia).toEqual({ recordKg: card.kg });
   });
 
@@ -421,12 +455,15 @@ describe('SAVE-04: salva depois de cada peixe, compra, objetivo e arremesso de t
     expect(g.lastSaved().money).toBe(100 - 30);
   });
 
-  it('objetivo → salva o objetivo seguinte e a cena dele', () => {
-    const g = setup(played({ story: { episodes: { 1: { objectiveIndex: 0, progress: 2, won: false } }, scenesSeen: ['ep1-abertura'], pendingScene: null } }));
+  it('objetivo → salva o objetivo seguinte, a cena dele e o que ele pagou (HIST-11)', () => {
+    const g = setup(played({ money: 10, story: { episodes: { 1: { objectiveIndex: 0, progress: 2, won: false } }, scenesSeen: ['ep1-abertura'], pendingScene: null } }));
     g.catchFish();
 
+    const paid = ep1.rods.find((r) => r.id === 'fibra')!.price; // o objetivo libera a Vara de Fibra e paga o preço dela
     expect(g.lastSaved().story.episodes[1]).toEqual({ objectiveIndex: 1, progress: 0, won: false });
-    expect(g.lastSaved().story.pendingScene).toBe('ep1-piranha');
+    expect(g.lastSaved().story.pendingScene).toBe('ep1-loja');
+    expect(g.lastSaved().money).toBe(10 + paid);
+    expect(g.state().notice).toBe(`A família mandou R$ ${paid.toLocaleString('pt-BR')} para a loja!`);
   });
 
   it('arremesso de torneio → salva o arremesso gasto', () => {
@@ -549,7 +586,7 @@ describe('história', () => {
     g.controller.buy('fibra');
 
     expect(g.state().profile.story.episodes[1]?.objectiveIndex).toBe(2);
-    expect(g.state().profile.story.pendingScene).toBe('ep1-loja');
+    expect(g.state().profile.story.pendingScene).toBe('ep1-piranha');
   });
 
   it('HIST-05: o peixe já está no álbum quando a história confere o álbum completo', () => {
@@ -565,16 +602,48 @@ describe('história', () => {
     expect(g.state().profile.story.episodes[1]?.objectiveIndex).toBe(6);
     expect(g.state().profile.story.pendingScene).toBe('ep1-album');
   });
+
+  it('recupera objetivo do álbum já cumprido depois da cena anterior e salva o avanço', () => {
+    const p = played();
+    const g = setup({ ...p,
+      album: Object.fromEntries(ep1.species.map(sp => [sp.id, { recordKg: sp.kg.min }])),
+      story: { ...p.story, episodes: { 1: { objectiveIndex: 5, progress: 0, won: false } }, pendingScene: 'ep1-pegou-lenda' },
+    });
+    g.controller.openFishing();
+    expect(g.state().profile.story.pendingScene).toBe('ep1-pegou-lenda');
+    const previous = ep1.scenes.find(scene => scene.id === 'ep1-pegou-lenda')!;
+    for (const _line of previous.lines) g.controller.advanceDialog();
+    expect(g.state().profile.story.pendingScene).toBe('ep1-album');
+    expect(g.state().profile.story.episodes[1]?.objectiveIndex).toBe(6);
+    expect(g.lastSaved().story.episodes[1]?.objectiveIndex).toBe(6);
+  });
 });
 
 describe('torneio', () => {
+  it.each([8, 1])('captura com %i arremesso(s) restantes não gera dinheiro nem conta para as metas', castsLeft => {
+    const g = setup(tournamentReady({
+      money: 100, catchCounts: { tilapia: 9 },
+      tournament: { id: 'guanambicup', castsLeft, catches: [] },
+    }), { species: 'tilapia', share: 1 });
+    const caught = g.catchFish();
+    expect(g.state().profile.money).toBe(100);
+    expect(g.lastSaved().money).toBe(100);
+    expect(g.state().profile.catchCounts.tilapia).toBe(9);
+    expect(g.state().profile.goalsDone).not.toContain(goalId('tilapia', 10));
+    expect(g.state().awards).toMatchObject({ goals: [] });
+    expect(g.state().profile.album.tilapia?.recordKg).toBe(caught.kg);
+    expect(g.state().profile.medals.tilapia).toEqual(['bronze', 'prata', 'ouro']);
+    expect(g.state().catchIsTournament).toBe(true);
+    if (castsLeft === 1) expect(g.state().profile.tournament).toBeNull();
+    else expect(g.state().profile.tournament?.catches[0].kg).toBe(caught.kg);
+  });
   it('vitória: troféu, carta, Episódio 2 liberado, cena de encerramento e aviso', () => {
     const g = setup(
       tournamentReady({
         rods: { owned: ['bambu', 'carbono'], equipped: 'carbono' },
-        baits: { owned: ['minhoca', 'carne'], equipped: 'carne' },
+        baits: { owned: ['minhoca', 'milho'], equipped: 'milho' },
       }),
-      { species: 'pirarucu-lendario' },
+      { species: 'tambaqui', share: 1 },
     );
     g.controller.enterTournament();
 
@@ -760,5 +829,32 @@ describe('viagem com cena pendente (T62)', () => {
     const lines = ep1.scenes.find((s) => s.id === 'ep1-vitoria')!.lines.length;
     for (let i = 0; i < lines; i++) g.controller.advanceDialog();
     expect(g.state().profile.story.pendingScene).toBeNull();
+  });
+});
+
+describe('SAVE-13: novo jogo', () => {
+  it('apaga o progresso e salva o perfil novo, guardando dificuldade, vibração e a novidade vista', () => {
+    const g = setup(
+      played({
+        money: 640,
+        settings: { difficulty: 'desafio', vibration: false },
+        seenVersion: '1.4.0',
+        rods: { owned: ['bambu', 'fibra'], equipped: 'fibra' },
+        album: { tilapia: { recordKg: 1.2 } },
+        trophies: ['trofeu-guanambicup'],
+        story: { episodes: { 1: { objectiveIndex: 3, progress: 0, won: false } }, scenesSeen: ['ep1-abertura'], pendingScene: null },
+      }),
+      { species: 'tilapia' },
+    );
+    g.catchFish(); // com o pesqueiro escolhido e a ficha aberta
+
+    g.controller.newGame();
+
+    const fresh = { ...newProfile(), settings: { difficulty: 'desafio' as const, vibration: false }, seenVersion: '1.4.0' };
+    expect(g.state().profile).toEqual(fresh);
+    expect(g.lastSaved()).toEqual(fresh);
+    expect(g.state().spot).toBeNull();
+    expect(g.state().fishing.phase).toBe('Aim');
+    expect(g.state().awards).toBeNull();
   });
 });

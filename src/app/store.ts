@@ -28,8 +28,9 @@ export interface GameState {
   dialogLine: number;
   /** A ficha em exibição é recorde da espécie (ALBUM-02). */
   newRecord: boolean;
-  /** Medalhas novas, metas cumpridas (contagens) e a recompensa delas na ficha em exibição (MEDAL-02, MEDAL-05). */
-  awards: { medals: MedalTier[]; goals: number[]; reward: number } | null;
+  catchIsTournament: boolean;
+  /** Medalhas novas, metas cumpridas (contagens) e o R$ que entrou na carteira, na ficha em exibição. */
+  awards: { medals: MedalTier[]; goals: number[]; credited: number; walletFull?: boolean } | null; // walletFull: nada mais para comprar no capítulo
   /** "Episódio N liberado!" ou o aviso final, depois da cena (HIST-08, HIST-10). */
   notice: string | null;
   /** Classificação do torneio que acabou de terminar (CAMP-05, CAMP-09). */
@@ -49,6 +50,7 @@ export function initialState(profile: Profile): GameState {
     paused: false,
     dialogLine: 0,
     newRecord: false,
+    catchIsTournament: false,
     awards: null,
     notice: null,
     tournamentResult: null,

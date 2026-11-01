@@ -1,3 +1,4 @@
+import { createMusic } from './platform/music';
 import '@fontsource/pixelify-sans/latin-400.css';
 import '@fontsource/pixelify-sans/latin-700.css';
 import './ui/theme.css';
@@ -28,6 +29,6 @@ if (import.meta.env.MODE === 'e2e') {
 }
 
 render(
-  <App store={game.store} services={{ controller: game.controller, install, browser, episodes, update }} />,
+  <App store={game.store} services={{ controller: game.controller, install, browser, episodes, update, music: createMusic() }} />,
   document.getElementById('app')!,
 );
