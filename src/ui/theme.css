@@ -1689,11 +1689,14 @@ ul {
   filter: brightness(0);
 }
 
-/* O álbum usa a tela toda para a grade; só os botões ficam embaixo (ACES-08). */
+/* O álbum usa a tela toda para a grade; só os botões ficam embaixo (ACES-08). Página com muitas
+   espécies (o Rio Jacuípe tem 10) ou celular pequeno: a grade rola aqui dentro, nunca por baixo dos botões. */
 .album__top {
   justify-content: flex-start;
   gap: 8px;
-  padding-bottom: 0;
+  padding-bottom: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .album__actions {
@@ -1719,7 +1722,7 @@ ul {
   display: grid;
   justify-items: center;
   gap: 2px;
-  padding: 6px 4px;
+  padding: 4px;
   border: 3px solid var(--outline);
   border-radius: 10px;
   background: var(--paper);
@@ -1747,11 +1750,6 @@ ul {
   height: 20px;
 }
 
-/* "10 de 25" rumo à próxima meta. */
-.album-cell__goal {
-  font-size: var(--text-min);
-  font-weight: 700;
-}
 
 .album-cell--missing {
   background: var(--bg-raised);
@@ -1765,6 +1763,12 @@ ul {
 
 .album-cell__record {
   font-size: var(--text-min);
+  font-weight: 700;
+}
+
+/* O cartão abre o manual do peixe (ALBUM-05): a setinha no nome mostra que dá para tocar. */
+.album-cell__more {
+  color: var(--accent);
 }
 
 /* ---------- Campeonato: lobby e classificação ---------- */
@@ -2756,7 +2760,6 @@ ul {
 
 /* ALBUM-05: cada peixe do álbum abre o manual dele. */
 .album-cell__open { display: grid; justify-items: center; gap: 2px; width: 100%; height: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-.album-cell__hint { margin-top: 2px; font-size: 14px; color: var(--accent); }
 .manual { justify-content: center; overflow-y: auto; }
 .manual__card { display: grid; justify-items: center; gap: 6px; text-align: center; }
 .manual__art { width: min(220px, 60vw); }

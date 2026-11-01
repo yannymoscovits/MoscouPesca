@@ -27,7 +27,7 @@ test('ALBUM-03: depois de pegar uma tilápia, ela aparece com o recorde e as out
 
   const tilapia = entries(page).filter({ hasText: 'Tilápia' });
   await expect(tilapia).toHaveCount(1);
-  await expect(tilapia).toContainText('Recorde: 1,23 kg');
+  await expect(tilapia).toContainText('1,23 kg');
   await expect(tilapia.getByRole('img', { name: 'Tilápia' })).toBeVisible();
 
   const missing = entries(page).filter({ hasText: '???' });

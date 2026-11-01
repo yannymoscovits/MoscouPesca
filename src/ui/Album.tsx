@@ -51,10 +51,15 @@ export function Album() {
                     <FishPicture species={sp} silhouette={!entry} />
                     {entry && <Medals profile={profile} species={sp} />}
                   </div>
-                  <p class="album-cell__name">{entry ? sp.name : '???'}</p>
-                  {entry && <p class="album-cell__record">Recorde: {formatKg(entry.recordKg)}</p>}
-                  {entry && <GoalCount profile={profile} species={sp} />}
-                  <span class="album-cell__hint">Como pegar ▸</span>
+                  <p class="album-cell__name">
+                    {entry ? sp.name : '???'} <span class="album-cell__more" aria-hidden="true">▸</span>
+                  </p>
+                  {/* Recorde e meta numa linha só, para a página caber; o resto está no manual (o toque). */}
+                  {entry && (
+                    <p class="album-cell__record">
+                      {formatKg(entry.recordKg)} · {goalText(profile, sp)}
+                    </p>
+                  )}
                 </button>
               </li>
             );
@@ -162,7 +167,7 @@ function Medals({ profile, species }: { profile: Profile; species: Species }) {
 }
 
 /** MEDAL-06: "10 de 25" rumo à próxima meta; depois da última, só quantos já pegou. */
-function GoalCount({ profile, species }: { profile: Profile; species: Species }) {
+function goalText(profile: Profile, species: Species): string {
   const { count, next } = progress(profile, species.id, goals);
-  return <p class="album-cell__goal">{next === null ? `${count} peixes` : `${count} de ${next}`}</p>;
+  return next === null ? `${count} peixes` : `${count} de ${next}`;
 }
