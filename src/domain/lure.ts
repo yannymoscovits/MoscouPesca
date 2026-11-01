@@ -10,6 +10,7 @@ import {
   FISH_BOTTOM_GAP_M,
   FISH_CRUISE_MPS,
   FISH_FLEE_MPS,
+  FISH_FLEE_S,
   FISH_FOLLOW_GAP_M,
   FISH_FOLLOW_MPS,
   FISH_MIN_X_M,
@@ -53,6 +54,8 @@ export interface FishAgent {
   lookS?: number; // segundos olhando a isca de perto antes de ir embora
   retryS?: number; // segundos até voltar a reparar na isca
   tries?: number; // PONTO-07: quantas vezes ele já desconfiou neste arremesso
+  fleeS?: number; // ISCA-16: quanto ainda falta da fuga (recusou ou fugiu); depois volta a nadar à toa
+  refusedBait?: boolean; // ISCA-16: já recusou esta isca neste arremesso; não volta para recusar de novo
 }
 
 export interface Lure {
@@ -159,8 +162,22 @@ function swim(f: FishAgent, h: number, lure: Lure): FishAgent {
       const k = d > 0 ? Math.min(d, FISH_FOLLOW_MPS * h) / d : 0;
       return { ...f, xM: f.xM + dx * k, depthM: f.depthM + dy * k, dir: lure.xM < f.xM ? -1 : 1 };
     }
-    default:
-      return { ...f, xM: f.xM + f.dir * FISH_FLEE_MPS * h };
+    default: {
+      // ISCA-16: recusou ou fugiu: dispara para longe por um tempo e volta a nadar à toa, em volta do meio
+      // do caminho entre onde parou e a isca. Sem isso, todos acabavam encostados nas bordas da água.
+      const fleeS = (f.fleeS ?? FISH_FLEE_S) - h;
+      const xM = Math.max(FISH_MIN_X_M, f.xM + f.dir * FISH_FLEE_MPS * h);
+      if (fleeS > 0) return { ...f, fleeS, xM };
+      return {
+        ...f,
+        mode: 'nadando',
+        fleeS: undefined,
+        xM,
+        homeXM: (xM + lure.xM) / 2,
+        dir: -f.dir as 1 | -1,
+        refusedBait: f.refusedBait || f.mode === 'recusou',
+      };
+    }
   }
 }
 
@@ -205,7 +222,7 @@ function substep(
   fish = fish.map((f) => {
     // PONTO-12: quem já olhou a isca volta a pensar nela onde ela estiver (no fundo de 200 m a isca
     // afunda mais rápido do que o peixe nada atrás dela).
-    if (f.mode !== 'nadando') return f;
+    if (f.mode !== 'nadando' || f.refusedBait) return f;
     if (!f.tries && Math.hypot(f.xM - lure.xM, f.depthM - lure.depthM) > INTEREST_RADIUS_M) return f;
     // ISCA-06: só quem não come essa isca recusa ("não gostou"). PONTO-07: quem come, mas não se
     // interessou desta vez (ou pede outra vara), só não bica: continua nadando, sem balão.

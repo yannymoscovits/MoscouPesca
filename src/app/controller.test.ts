@@ -846,7 +846,8 @@ describe('SAVE-13: novo jogo', () => {
       }),
       { species: 'tilapia' },
     );
-    g.catchFish(); // com o pesqueiro escolhido e a ficha aberta
+    g.at('raso');
+    g.castNow(); // no meio da pescaria: pesqueiro escolhido e a isca na água
 
     g.controller.newGame();
 

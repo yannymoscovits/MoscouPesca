@@ -111,6 +111,8 @@ export const ATTACK_MIN_S = 0.5;
 export const FISH_CRUISE_MPS = 0.4;
 export const FISH_FOLLOW_MPS = 2;
 export const FISH_FLEE_MPS = 2.5;
+/** ISCA-16: quanto dura a fuga de quem recusou a isca ou fugiu do ataque; depois ele volta a nadar à toa. */
+export const FISH_FLEE_S = 1.6;
 /** Quem segue fica esta distância atrás da isca. */
 export const FISH_FOLLOW_GAP_M = 0.4;
 /** Os peixes nascem até esta distância (para os dois lados) do ponto onde a isca caiu... */
@@ -127,18 +129,19 @@ export const FISH_BOTTOM_GAP_M = 0.2;
 export const SCHOOL_MAX = 6;
 /** Abaixo do máximo, chega um peixe novo a cada tanto (s): o ponto nunca esvazia de vez. */
 export const SCHOOL_REFILL_S = 12;
-/** Os peixes ficam no cone da mira, entre 35% e 95% do alcance da vara. */
+/** Os peixes ficam no cone da mira, entre 55% e 95% do alcance da vara: do meio da água para o fundo. */
 export const SCHOOL_HALF_ARC_DEG = 38;
-export const SCHOOL_NEAR_SHARE = 0.35;
+export const SCHOOL_NEAR_SHARE = 0.55;
 export const SCHOOL_FAR_SHARE = 0.95;
 /**
  * Faixas de distância (fração do alcance) por onde o cardume se espalha, um peixe por vez em cada:
- * sempre há peixe perto, no meio e longe, e de um lado e do outro (pedido do usuário).
+ * sempre há peixe no meio, mais longe e no fundo, e de um lado e do outro (pedido do usuário). Ninguém
+ * fica colado na beira (PONTO-14).
  */
 export const SCHOOL_BANDS = [
-  { min: 0.35, max: 0.55 },
-  { min: 0.55, max: 0.75 },
-  { min: 0.75, max: 0.95 },
+  { min: 0.55, max: 0.68 },
+  { min: 0.68, max: 0.82 },
+  { min: 0.82, max: 0.95 },
 ];
 /** Vaivém de cada peixe: meia distância (m) e velocidade (rad/s; uma volta em 12 a 25 s). */
 export const SCHOOL_SWAY_M = { min: 0.8, max: 2 };

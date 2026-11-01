@@ -59,17 +59,17 @@ describe('startSchool', () => {
       const angle = (Math.atan2(f.homeX, f.homeY) * 180) / Math.PI;
       expect(Math.abs(angle)).toBeLessThanOrEqual(38 + 1e-9);
       const dist = Math.hypot(f.homeX, f.homeY);
-      expect(dist).toBeGreaterThanOrEqual(0.35 * REACH_M - 1e-9);
+      expect(dist).toBeGreaterThanOrEqual(0.55 * REACH_M - 1e-9); // PONTO-14: do meio da água para o fundo
       expect(dist).toBeLessThanOrEqual(0.95 * REACH_M + 1e-9);
     }
   });
 
-  it('espalha: 2 peixes perto, 2 no meio e 2 longe, e 3 de cada lado', () => {
+  it('PONTO-14: espalha do meio para o fundo: 2 no meio, 2 longe e 2 no fundo, e 3 de cada lado', () => {
     const s = school();
     const share = (f: (typeof s.fish)[number]) => Math.hypot(f.homeX, f.homeY) / REACH_M;
-    expect(s.fish.filter((f) => share(f) < 0.55)).toHaveLength(2);
-    expect(s.fish.filter((f) => share(f) >= 0.55 && share(f) < 0.75)).toHaveLength(2);
-    expect(s.fish.filter((f) => share(f) >= 0.75)).toHaveLength(2);
+    expect(s.fish.filter((f) => share(f) < 0.68)).toHaveLength(2);
+    expect(s.fish.filter((f) => share(f) >= 0.68 && share(f) < 0.82)).toHaveLength(2);
+    expect(s.fish.filter((f) => share(f) >= 0.82)).toHaveLength(2);
     expect(s.fish.filter((f) => f.homeX < 0)).toHaveLength(3);
     expect(s.fish.filter((f) => f.homeX > 0)).toHaveLength(3);
   });
