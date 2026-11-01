@@ -6,6 +6,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
 
 export default defineConfig({
+  // GitHub Pages serve o jogo em /<repositório>/ (scripts/deploy-pages.ts); no resto, na raiz.
+  base: process.env.BASE_PATH ?? '/',
   // INST-07: cada build é uma versão nova; a novidade aparece uma vez depois de atualizar.
   define: { __APP_VERSION__: JSON.stringify(`${pkg.version}+${new Date().toISOString()}`) },
   plugins: [
@@ -17,8 +19,8 @@ export default defineConfig({
         name: 'MoscouFishing',
         short_name: 'MoscouFishing',
         lang: 'pt-BR',
-        start_url: '/',
-        scope: '/',
+        start_url: './',
+        scope: './',
         display: 'fullscreen',
         orientation: 'portrait',
         background_color: '#1b5e8c',
@@ -35,7 +37,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,webp,woff2,webmanifest}'],
+        // MUS-01: as músicas também, para tocar sem internet.
+        globPatterns: ['**/*.{js,css,html,png,svg,webp,woff2,webmanifest,mid}'],
       },
     }),
   ],

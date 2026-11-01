@@ -12,7 +12,8 @@
     "test:e2e": "playwright test --pass-with-no-tests",
     "check:content": "tsx scripts/check-content.ts",
     "check:size": "tsx scripts/check-size.ts",
-    "release": "npm run check:content && npm run build && npm run check:size"
+    "release": "npm run check:content && npm run build && npm run check:size",
+    "deploy:pages": "tsx scripts/deploy-pages.ts"
   },
   "dependencies": {
     "@fontsource/pixelify-sans": "^5.3.0",
