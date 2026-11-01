@@ -32,7 +32,7 @@ Rivais da Copa dos Ventos: **Márcio, Sr. Higashi e Edvaldo**.
 
 ### Cena 2: A filial dos ventos
 
-- **Edvaldo** [rindo]: Abri uma filial no parque, seu Adilson. Preço de eólica: depende do vento.
+- **Edvaldo** [rindo]: Abri uma filial no parque, Moscou. Preço de eólica: depende do vento.
 - **Adilson** [bravo]: E hoje tá ventando muito, né?
 - **Edvaldo** [rindo]: Muito.
 

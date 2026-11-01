@@ -45,7 +45,7 @@ Didi, Denise e Tininho aparecem só como lembrança leve, nas falas de quem est�
 
 ### Cena 2: A filial flutuante
 
-- **Edvaldo** [rindo]: Filial flutuante, seu Adilson. Preço de alto-mar: o maior de todos.
+- **Edvaldo** [rindo]: Filial flutuante, Moscou. Preço de alto-mar: o maior de todos.
 - **Adilson** [bravo]: Até no meio do mar, Edvaldo?!
 
 **Objetivo: comprar a Vara Oceano.**

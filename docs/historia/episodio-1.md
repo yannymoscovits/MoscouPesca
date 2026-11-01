@@ -50,7 +50,7 @@
 
 ### Cena 4: A loja do Edvaldo
 
-- **Edvaldo** [rindo]: Essa vara de bambu é do tempo de Cabral, seu Adilson.
+- **Edvaldo** [rindo]: Essa vara de bambu é do tempo de Cabral, Moscou.
 - **Edvaldo** [normal]: Pra você eu faço preço de família: o mesmo de todo mundo.
 - **Edvaldo** [normal]: Ah, e se quiser pegar aquela piranha atrevida, tenho Isca de Carne aqui.
 
@@ -66,7 +66,7 @@
 
 ### Cena 6: A lenda do pirarucu
 
-- **Edvaldo** [normal]: Carbono! Agora sim, seu Adilson. Com essa dá pra tentar o bicho.
+- **Edvaldo** [normal]: Carbono! Agora sim, Moscou. Com essa dá pra tentar o bicho.
 - **Adilson** [chocado]: Que bicho?
 - **Edvaldo** [rindo]: O Pirarucu Lendário. Dizem que saiu um de 90 quilos pelo sangradouro de Ceraíma, e que o primo dele mora aqui no Poço do Magro.
 - **Lavínia** [rindo]: Esse aí nem eu encaro, Adilsinho. Boa sorte!

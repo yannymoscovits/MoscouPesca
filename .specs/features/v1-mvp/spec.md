@@ -75,7 +75,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | Nome do campeonato do Episódio 1 | "GuanambiCup" | Escolhido pelo usuário. O nome do Adilson continua no subtítulo do jogo e na grande final "Copa Adilson Moscovits", a final do Episódio 5 | y |
 | Moeda | "R$" fictício | Familiar para ele; não é dinheiro real | n |
 | Mira do arremesso | Tocar no ponto da água; a isca vai até lá, limitada pelo alcance da vara | Um toque, sem barra de força que exige timing | n |
-| Formato do torneio | 8 arremessos, sem cronômetro; vale a soma dos 3 peixes mais pesados | Sem pressão de tempo; dá para pausar quando a enfermagem chegar | n |
+| Formato do torneio | 5 arremessos (eram 8; o usuário pediu em 31/10/2026), sem cronômetro; vale a soma dos 3 peixes mais pesados | Sem pressão de tempo; dá para pausar quando a enfermagem chegar | n |
 | Empate no campeonato | O Adilson fica à frente do rival com a mesma pontuação | Decidido na implementação (T15); a spec não definia | n |
 | Interpretações das telas (T34 a T40) | A pergunta de dificuldade aparece no primeiro toque em "Jogar" (a tela inicial abre antes); "FISGAR!" ocupa a metade de baixo = inteiro abaixo do meio, com pelo menos 1/4 da altura e 80% da largura, acima da linha Pausar/Menu; "repetir a instrução" (TUTO-07) = o balão reaparece e a seta pisca; a primeira captura de uma espécie também mostra "Novo recorde!"; uma cena da história espera a ficha do peixe fechar | Pontos que a spec não fixava | y |
 | Vitória e atualização (T44, T45) | Na primeira vitória: carta → cena de encerramento → aviso "Episódio N liberado!"; vitórias repetidas não reabrem a carta. A versão do jogo é a do `package.json` mais a data do build, então cada publicação mostra "Novidade" uma vez | Decidido na implementação | n |
@@ -146,7 +146,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 14. WHILE o modo Tranquilo está ativo the jogo SHALL limitar a tensão a 99, sem arrebentar a linha. `PESCA-14`
 15. WHEN a distância do peixe chega a 0 THEN o jogo SHALL mostrar a ficha do peixe com desenho, espécie, peso em kg com 2 casas decimais e valor em R$. `PESCA-15`
 16. The jogo SHALL sortear o peso de cada peixe dentro da faixa de peso da espécie. `PESCA-16`
-17. WHEN a ficha do peixe é exibida THEN o jogo SHALL somar o valor do peixe ao saldo do jogador. `PESCA-17`
+17. WHEN a ficha do peixe da pescaria livre é exibida THEN o jogo SHALL somar o valor do peixe ao saldo até o limite da carteira. O valor acompanha a dificuldade da briga (força, fôlego e jeito: o saltador é o mais difícil), de 80% a 120% pelo peso dentro da faixa da espécie, e o lendário vale o dobro. O limite da carteira é o preço dos itens que a loja já vende e o jogador não tem, mais o do próximo item que a história do episódio vai liberar (sem nada mais para comprar no capítulo, a primeira compra do capítulo seguinte; no último, sem limite); o que passar não entra, e a ficha avisa. No campeonato o peixe vale só o peso. `PESCA-17`
 
 **Independent Test**: Numa represa com vara e isca iniciais: tocar na água, esperar a mordida, fisgar, segurar e soltar conforme a cor da barra até ver a ficha do peixe e o saldo aumentar.
 
@@ -210,7 +210,14 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 7. IF algum texto do arquivo de conteúdo contém o marcador `{{PENDENTE}}` THEN o build de publicação SHALL falhar e listar cada marcador encontrado. `HIST-07`
 8. WHEN o jogador vence pela primeira vez o campeonato de um episódio de 1 a 4 THEN o jogo SHALL mostrar a cena de encerramento do episódio e o aviso "Episódio N liberado!", com N = episódio seguinte. `HIST-08`
 9. WHEN o jogador pesca pela primeira vez no local de um episódio liberado THEN o jogo SHALL mostrar antes a cena de abertura daquele episódio. `HIST-09`
+15. WHEN chega a vez de um objetivo de pegar uma espécie que o jogador já pegou THEN o objetivo SHALL se cumprir sozinho, com a cena dele (o peixe pego antes, juntando dinheiro, já vale). `HIST-15`
+14. WHEN o jogador fecha o aviso "Episódio N liberado!" THEN o jogo SHALL levar para o primeiro lugar do episódio N, onde a abertura dele começa. `HIST-14`
+16. WHEN uma fala do roteiro pede um quadro animado THEN o jogo SHALL mostrar o quadro em cima da caixa de diálogo enquanto a fala está na tela. No Episódio 1: a Jane entregando a vara de bambu torta, a sombra do Pirarucu Lendário na barragem sob a lua, o Adilson erguendo o pirarucu com o flash do celular da Jane e o troféu da GuanambiCup. No Episódio 2: o Adilson olhando a foto da caixa de pesca (a foto dele com a Ninha na ponte sobe por cima), ele na beira do mar com as ondas, a tela ondulando e clareando na ida ao passado ("Jacuípe, muitos anos atrás."), ele dormindo na rede com a tela ondulando na volta ("Presente.") e ele acordando, sorrindo e se espreguiçando na fala da Jane. No Episódio 3: a fila do ferry com a Lavínia na água, o "Agora sim. Paz." na praia, o Lucca vendo o xaréu e a garoupa "disco voador". No Episódio 4: os peixes voando entre as torres, a piranha-pipa, os lambaris na pá da torre 7 e a lenda do Dourado-dos-Ventos. No Episódio 5: o barco lotado saindo cedinho, a sombra do marlim, o Adilson soltando o marlim (toca uma vez e fica com o marlim livre) e o pôr do sol com a família em volta dele no encerramento. Sem movimento para quem pede menos movimento. `HIST-16`
+17. WHEN o jogo termina (a carta e a cena final do EpisÃ³dio 5 passaram) THEN os crÃ©ditos SHALL subir devagar antes do aviso final: a dedicatÃ³ria ao Adilson, quem fez o jogo, o elenco com o apelido de cada um, os lugares, a saudade de Didi, Denise e Tininho e o fecho; "Continuar" pula a qualquer momento. `HIST-17`
+13. WHEN o jogador pega a Piranha Lavínia ou um peixe lendário THEN esse peixe SHALL deixar de aparecer nos pontos (é de uma vez só; segue no álbum). O lendário só aparece enquanto o objetivo dele está ativo e nunca na copa. `HIST-13`
+12. The jogo SHALL mostrar em negrito, nas falas e nas lições do tutorial, os nomes do jogo que dizem o que fazer: peixes, varas, iscas, pontos, locais e botões. `HIST-12`
 10. WHEN o jogador vence a Copa Adilson Moscovits pela primeira vez THEN o jogo SHALL mostrar o encerramento final da história e o aviso "A pescaria continua: todos os lugares seguem abertos". `HIST-10`
+11. WHEN o jogador cumpre um objetivo THEN a loja SHALL passar a vender os itens que ele libera. Cada item é liberado quando a história precisa dele (a vara antes do objetivo de comprá-la, a isca antes do peixe que só cai com ela); antes disso ele não aparece na loja. `HIST-11`
 
 **Independent Test**: Num jogo novo: ver a abertura, avançar as falas tocando, cumprir os objetivos em ordem até o torneio ser liberado.
 
@@ -244,7 +251,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 **Acceptance Criteria**:
 1. WHILE o último objetivo de um episódio não foi cumprido the jogo SHALL mostrar o campeonato do episódio como bloqueado, com o objetivo que falta. `CAMP-01`
 2. WHEN o jogador entra num campeonato THEN o jogo SHALL mostrar o nome do campeonato do episódio (no Episódio 1, "GuanambiCup"; no 5, "Copa Adilson Moscovits"), as regras e os 3 rivais. `CAMP-02`
-3. WHILE o torneio está em andamento the jogo SHALL mostrar quantos dos 8 arremessos restam e a pontuação parcial. `CAMP-03`
+3. WHILE o torneio está em andamento the jogo SHALL mostrar quantos dos 5 arremessos restam e a pontuação parcial. `CAMP-03`
 4. The jogo SHALL calcular a pontuação do torneio como a soma dos pesos dos 3 peixes mais pesados pegos nele. `CAMP-04`
 5. WHEN o 8º arremesso do torneio termina THEN o jogo SHALL mostrar a classificação final com o jogador e os 3 rivais. `CAMP-05`
 6. WHEN o jogador termina um campeonato em 1º lugar pela primeira vez THEN o jogo SHALL mostrar a carta da família daquele campeonato, com o remetente e o texto. `CAMP-06`
@@ -252,8 +259,9 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 8. IF o jogador vence de novo um campeonato que já tinha vencido THEN o jogo SHALL manter um único troféu e uma única carta daquele campeonato. `CAMP-08`
 9. IF o jogador não termina em 1º lugar THEN o jogo SHALL mostrar a colocação e o botão "Tentar de novo", sem custo e sem limite de tentativas. `CAMP-09`
 10. The jogo SHALL deixar toda mensagem desbloqueada disponível para reler na tela "Mensagens" do menu. `CAMP-10`
+- WHEN a carta do campeonato aparece THEN o jogo SHALL mostrar primeiro um envelope com selo e brilhos; o toque abre a aba e a carta sai de dentro dele, num papel de caderno (pauta e margem). Sem animação para quem pede menos movimento. `CAMP-11`
 
-**Independent Test**: Com os objetivos do Episódio 1 concluídos: jogar os 8 arremessos, ver a classificação; ao vencer, ler a carta, ver o troféu no perfil e reabrir a carta pelo menu.
+**Independent Test**: Com os objetivos do Episódio 1 concluídos: jogar os 5 arremessos, ver a classificação; ao vencer, ler a carta, ver o troféu no perfil e reabrir a carta pelo menu.
 
 ---
 
@@ -305,7 +313,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 2. WHEN o jogador pega um peixe que alcança o peso de uma medalha que ele ainda não tem THEN o jogo SHALL conceder essa medalha e mostrar na ficha "Medalha de <bronze/prata/ouro>!". `MEDAL-02`
 3. IF o jogador pega um peixe que alcança uma medalha que ele já tem THEN o jogo SHALL não conceder a medalha de novo. `MEDAL-03`
 4. The jogo SHALL ter metas de quantidade para cada espécie: pegar 10, 25 e 50 peixes dela. `MEDAL-04`
-5. WHEN o jogador cumpre uma meta pela primeira vez THEN o jogo SHALL somar ao saldo a recompensa em R$ definida no conteúdo e mostrar "Meta cumprida!". `MEDAL-05`
+5. WHEN o jogador cumpre uma meta pela primeira vez THEN o jogo SHALL mostrar "Meta cumprida!", sem mexer no saldo. `MEDAL-05`
 6. The jogo SHALL mostrar no álbum, para cada espécie pega, as medalhas conquistadas e a contagem rumo à próxima meta. `MEDAL-06`
 7. The jogo SHALL salvar medalhas, contagens e metas cumpridas no perfil, junto com o resto do progresso. `MEDAL-07`
 
@@ -330,6 +338,16 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 8. IF nenhum salvamento pode ser lido THEN o jogo SHALL começar um jogo novo e guardar uma cópia do dado ilegível. `SAVE-08`
 9. WHEN uma versão nova do jogo abre um salvamento de versão anterior THEN o jogo SHALL convertê-lo mantendo saldo, itens, progresso, troféus e mensagens. `SAVE-09`
 10. WHEN o jogo é aberto pela primeira vez THEN o jogo SHALL pedir ao navegador armazenamento persistente. `SAVE-10`
+11. WHILE o jogo salvo tem progresso (tutorial feito ou alguma cena vista) the tela inicial SHALL mostrar "Continuar" no lugar de "Jogar", com o capítulo e o objetivo atual. `SAVE-11`
+12. WHEN o jogador toca em "Novo jogo" THEN o jogo SHALL pedir confirmação; "Cancelar" mantém o jogo salvo. `SAVE-12`
+13. WHEN o jogador confirma o novo jogo THEN o jogo SHALL apagar o progresso, manter dificuldade e vibração, salvar e começar pela abertura do Episódio 1. `SAVE-13`
+
+### Música
+
+1. WHILE o jogo está fora da pesca the jogo SHALL tocar a música do menu; na pesca, a do episódio do local, com som de Game Boy (pulso na melodia, onda triangular no baixo, ruído na bateria). As músicas são os MIDI que o usuário põe em `musicas/` (menu.mid, ep1.mid a ep5.mid), fora do git; sem o arquivo, a tela fica em silêncio. `MUS-01`
+2. The jogo SHALL repetir a música em loop. `MUS-02`
+3. WHEN o jogo pausa ou vai para segundo plano THEN a música SHALL parar junto; nos Ajustes, "Música: ligada/desligada" fica guardado no celular. `MUS-03`
+
 
 **Independent Test**: Pegar um peixe, fechar o app pelo gerenciador do Android, reabrir e conferir saldo e progresso; repetir fechando no meio de uma briga de torneio.
 
@@ -367,6 +385,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 1. WHEN o jogador pega uma espécie pela primeira vez THEN o jogo SHALL registrá-la no álbum com o peso. `ALBUM-01`
 2. WHEN o jogador pega um peixe mais pesado que o recorde da espécie THEN o jogo SHALL atualizar o recorde e mostrar "Novo recorde!" na ficha. `ALBUM-02`
 3. The jogo SHALL mostrar no álbum as espécies ainda não pegas como silhueta com o nome "???". `ALBUM-03`
+- WHEN o jogador toca num peixe do álbum THEN o jogo SHALL abrir o manual dele: onde achar (ponto, local e alcance pedido), as iscas que ele morde, a primeira vara que dá conta dele, a dificuldade da briga (1 a 5 estrelas e o jeito) e a faixa de peso. Peixe ainda não pego aparece em silhueta, mas o manual ensina a pegar. `ALBUM-05`
 
 **Independent Test**: Pegar duas tilápias de pesos diferentes e conferir no álbum o recorde e a silhueta das espécies que faltam.
 
@@ -496,6 +515,7 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | HIST-07 | P1: História dos 5 episódios | T4 | Implementing |
 | HIST-08 | P1: História dos 5 episódios | T16, T44 | Implementing |
 | HIST-09 | P1: História dos 5 episódios | T16 | Implementing |
+| HIST-11 | P1: História dos 5 episódios | - | Implementing |
 | HIST-10 | P1: História dos 5 episódios | T16, T44 | Implementing |
 | HUMOR-01 | P1: Pegada cômica nos personagens | T22, T39 | Implementing |
 | HUMOR-02 | P1: Pegada cômica nos personagens | T22, T39 | Implementing |
@@ -544,6 +564,9 @@ Every ambiguity is resolved or recorded here - nothing is left silently unclear.
 | SAVE-08 | P1: Pausa e progresso salvo | T19, T25 | Implementing |
 | SAVE-09 | P1: Pausa e progresso salvo | T19 | Implementing |
 | SAVE-10 | P1: Pausa e progresso salvo | T25 | Implementing |
+| SAVE-11 | P1: Pausa e progresso salvo | - | Implementing |
+| SAVE-12 | P1: Pausa e progresso salvo | - | Implementing |
+| SAVE-13 | P1: Pausa e progresso salvo | - | Implementing |
 | ACES-01 | P1: Conforto e acessibilidade | T35 | Implementing |
 | ACES-02 | P1: Conforto e acessibilidade | T18, T35 | Implementing |
 | ACES-03 | P1: Conforto e acessibilidade | T10 | Implementing |

@@ -48,7 +48,7 @@ Rivais da Copa Jacuípe: **Tininho, Denise e Didi**.
 
 ### Cena 3: O Edvaldo de cabelo preto
 
-- **Edvaldo** [rindo]: Preço de praia, Adilson. Já era o dobro naquela época.
+- **Edvaldo** [rindo]: Preço de praia, Moscou. Já era o dobro naquela época.
 - **Adilson** [chocado]: Edvaldo… com cabelo preto?!
 
 **Objetivo: comprar a Vara de Grafite.**

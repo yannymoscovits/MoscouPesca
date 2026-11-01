@@ -145,7 +145,7 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 9. WHILE o centro do peixe está fora da faixa verde the jogo SHALL esvaziar o medidor a 12% por segundo no Desafio e 6% por segundo no Tranquilo. `BRIGA-09`
 10. WHEN o medidor chega a 100% THEN o jogo SHALL mostrar a ficha do peixe da v1 (PESCA-15 a PESCA-17). `BRIGA-10`
 11. IF o medidor chega a 0% no modo Desafio THEN o jogo SHALL soltar o peixe, mostrar "O peixe fugiu!" e voltar à tela de arremesso. `BRIGA-11`
-12. WHILE o modo Tranquilo está ativo the jogo SHALL manter o medidor em no mínimo 10%, deixar a faixa 40% mais alta, o peixe 40% mais lento e o intervalo entre destinos 50% maior. `BRIGA-12`
+12. WHILE o modo Tranquilo está ativo the jogo SHALL manter o medidor em no mínimo 10%, deixar a faixa 15% mais alta, o peixe 40% mais lento e o intervalo entre destinos 50% maior. `BRIGA-12`
 13. WHILE a briga acontece the jogo SHALL mostrar o peixe fisgado se debatendo na vista debaixo d'água, com a linha esticada até a vara. `BRIGA-13`
 
 **Independent Test**: No Desafio, fisgar um tambaqui, segurar e soltar SEGURAR para manter o peixe na faixa até o medidor encher e ver a ficha; numa segunda briga, não tocar em nada e ver "O peixe fugiu!"; no Tranquilo, não tocar em nada e ver o medidor parar em 10%.
@@ -206,6 +206,25 @@ O usuário achou a pescaria atual horrível: o Adilson toca na água, espera e t
 - WHEN a isca chega ao fundo THEN o jogo SHALL mantê-la no fundo até RECOLHER ou PUXAR. `ISCA-15`
 - IF a isca cai na água com o arremesso mais fraco (força 0) THEN o jogo SHALL colocá-la a 30% do alcance máximo da vara. `ARREM-07`
 - IF o jogador solta SEGURAR com a faixa no topo THEN o jogo SHALL deixar a faixa cair a partir do repouso. `BRIGA-14`
+- WHEN o tutorial chega a um passo novo THEN o jogo SHALL parar (mira, força, isca, peixe e barra) e mostrar no meio da tela a lição da Jane, com "Passo N de 7", o título, a fala e o passo a passo numerado, até a pessoa tocar em "Entendi". Durante a ação, a tela fica limpa: só a seta no botão certo e um selo com o passo e um "?" que mostra a lição de novo. A briga é uma lição só. `TUTOB-05`
+- WHEN a pessoa cumpre um passo do tutorial THEN o jogo SHALL mostrar "Isso!" por 1,4 s antes da lição seguinte. `TUTOB-06`
+- WHILE o tutorial está ativo the seta da mira e a barra de força SHALL andar 60% mais devagar, e na briga a faixa verde fica 30% maior e o peixe 40% mais lento que no Tranquilo. `TUTOB-07`
+- WHEN o jogador toca em "Soltar o peixe" duas vezes (o primeiro toque pergunta) com o peixe fisgado THEN o jogo SHALL soltar o peixe e mostrar "Você soltou o peixe"; no campeonato, o arremesso conta como gasto. Fora do tutorial. `BRIGA-17`
+- The jogo SHALL tirar a dificuldade da briga do quanto o peixe se mexe na barra: pulos e trocas de destino crescem com a força (força 1, 68% do normal; 5, o normal; 10, 140%). O afundador mergulha para o fundo e, em 25% das trocas, arranca para cima, mais alto quanto mais forte. `BRIGA-18`
+- The jogo SHALL mostrar no cardume todas as espécies do ponto (as que faltam chegam primeiro na reposição). O peixe que aceita a isca se interessa por ela com chance pela raridade: 50% no mais raro, até 95% no comum; quem não se interessa chega perto, olha a isca por 1,5 s com o balão "só olhou..." (ou "vara fraca pra mim" quando pede outra vara) e fica rondando a isca; 3 s depois volta a reparar nela no mesmo arremesso, com 20% a mais de chance a cada vez que desconfiou. O balão "não come essa isca" fica para quem não come a isca. `PONTO-07`
+- The jogo SHALL dar a cada peixe do cardume um tamanho dentro da faixa de peso da espécie: a sombra e o desenho embaixo d'água vão de 80% (o mais leve) a 125% (o mais pesado) e o peso da ficha (e do campeonato) é o desse peixe; assim dá para mirar no maior. A ficha mostra o tamanho dele na espécie: Pequeno, Médio, Grande ou Gigante!, com 5 quadradinhos. `BRIGA-19`
+- WHILE o peixe está fora da faixa verde the tensão da linha SHALL subir (mais rápido com peixe forte e grande, mais devagar com vara forte; no Tranquilo, na metade) e, com o peixe dentro da faixa, cair; acima de 75% a barra da linha fica vermelha e o celular vibra; em 100% a linha arrebenta, o peixe vai embora e aparece "A linha arrebentou!". No tutorial, não arrebenta. `BRIGA-20`
+- The jogo SHALL deixar mais difícil o peixe mais pesado, pelo peso de verdade comparado com o típico do episódio (fator ((1 + kg) / (1 + típico)) ^ 0,2 na velocidade e no enchimento): no campeonato, o peixe pesado vale mais e dá mais trabalho. `BRIGA-21`
+- WHILE a isca está no ar, na água ou o peixe está fisgado the botão Loja SHALL ficar apagado. `EQUIP-11`
+- WHEN o jogador toca em PUXAR THEN a isca SHALL subir 10% da altura da água na tela, igual em todo cenário (a subida em metros acompanha a profundidade do ponto), e ir 0,6 m para a frente. `ISCA-13`
+- WHERE um ponto pede uma isca (a Ponte da Cetrel, terceiro ponto do Rio Jacuípe, pede a Isca de Camarão) the pesqueiro SHALL mostrar o ponto com cadeado e "Precisa da Isca de Camarão" até ela ser comprada. `PONTO-08`
+- The última área de cada local (Fundão, Ponte da Cetrel, Pedra da garoupa, Pé das torres, Azul profundo) SHALL ficar com cadeado e "Precisa da Vara X e da Isca Y" até o jogador ter as duas: Carbono e Carne, Grafite e Camarão, Pedra Fina e Lula, Hélice e Cata-vento, Oceano e Corrico. `PONTO-10`
+- The isca com que o jogador chega a um capítulo (a do capítulo anterior) SHALL servir para a maioria dos peixes comuns do capítulo novo: no Parque dos Ventos o Peixe-voador, a Tilápia-hélice e o Lambari-rajada comem Lula; no alto-mar a Cavala e o Olho-de-boi comem Cata-vento. `PONTO-11`
+- WHEN um peixe olhou a isca e não quis THEN ele SHALL continuar rondando a isca, inclusive descendo atrás dela até o fundo, para voltar a reparar nela e ter a chance maior da próxima vez. `PONTO-12`
+- The objetivo de cada lendário SHALL dizer a área onde ele mora: "Pegar o Marlim-azul — no Azul profundo" (e o mesmo para o Pirarucu, o Camurupim, a Garoupa e o Dourado-dos-Ventos). `PONTO-13`
+- WHILE a briga acontece the peixe fisgado SHALL aparecer, na vista debaixo d'água, cada vez mais perto da margem e da superfície conforme o medidor enche (do ponto da fisgada até 1,5 m do Adilson), e voltar a se afastar quando o medidor esvazia. `BRIGA-22`
+- The jogo SHALL deixar a briga mais dura a cada episódio: depois do 1º, cada episódio deixa o peixe 5% mais rápido e o medidor 3% mais lento de encher, para as varas mais fortes não tirarem a dificuldade. `BRIGA-15`
+- WHEN o peixe é fisgado THEN o jogo SHALL sortear o peso dele antes da briga; o mais pesado da faixa da espécie briga até 10% mais forte (mais rápido e medidor mais lento) e o mais leve até 10% mais fraco, e a ficha mostra esse mesmo peso. `BRIGA-16`
 
 ---
 

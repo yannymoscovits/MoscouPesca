@@ -48,7 +48,7 @@ Rivais da Copa Itaparica: **Lu, Geane e Louise** (com o Lucca torcendo).
 
 ### Cena 4: A filial da ilha
 
-- **Edvaldo** [rindo]: Abri uma filial na ilha, seu Adilson. Preço de ilha: o triplo. O ferry encarece tudo.
+- **Edvaldo** [rindo]: Abri uma filial na ilha, Moscou. Preço de ilha: o triplo. O ferry encarece tudo.
 
 **Objetivo: comprar a Vara Baía.**
 

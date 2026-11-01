@@ -31,9 +31,9 @@ Lembra de Jacuípe? Eu pequena, descalça, com cabelo de moleca, segurando uma v
 
 Foi ali que eu aprendi a pescar. E foi ali que eu aprendi que, do seu lado, até voltar sem peixe nenhum era um dia bom.
 
-O Tininho deixava tudo pronto pra gente, a vó Denise gritava "JUNIORRRR" lá de longe e o vô Didi andava com a chinela na mão e camisa do Bahia. Quando eu penso em Jacuípe, penso em todo mundo, rindo.
+Tio Tininho deixava tudo pronto pra gente, a vó Denise gritava "JUNIORRRR" lá de longe e o vô Didi andava com a chinela na mão e camisa do Bahia. Quando eu penso em Jacuípe, penso em todo mundo, rindo.
 
-Agora, sobre esse troféu: campeão da Copa Jacuípe, hein? Já tô vendo você contando pra todo mundo que é o maior pegador do Nordeste. De peixe, pai. Só de peixe (a mãe mandou avisar).
+Agora, sobre esse troféu: campeão da Copa Jacuípe, hein? Já tô vendo você contando pra todo mundo que é o maior pegador do Nordeste. De peixe, pai. Só de peixe (Jane mandou avisar).
 
 A Lavínia disse que deixou você ganhar de novo. Eu disse que não acredito. Ela disse que eu tô de complô com você. Tô mesmo.
 
