@@ -8,7 +8,12 @@ interface BeforeInstallPromptEvent extends Event {
 
 type InstallWindow = Pick<EventTarget, 'addEventListener'> & {
   matchMedia?: (query: string) => { matches: boolean };
+  navigator?: { userAgent: string; standalone?: boolean };
 };
+
+export function isAppleMobile(nav: Pick<Navigator, 'userAgent' | 'maxTouchPoints'> = navigator): boolean {
+  return /iPhone|iPad|iPod/i.test(nav.userAgent) || (/Macintosh/i.test(nav.userAgent) && nav.maxTouchPoints > 1);
+}
 
 export interface InstallApi {
   /** INST-02: o navegador ofereceu instalação; falso leva à instrução do menu ⋮ (INST-03). */
@@ -44,7 +49,7 @@ export function createInstall(win: InstallWindow = window): InstallApi {
     isStandalone() {
       // O manifest pede display "fullscreen"; instalado, o Chrome casa essa media query, não a "standalone".
       const mode = (m: string) => win.matchMedia?.(`(display-mode: ${m})`).matches ?? false;
-      return mode('standalone') || mode('fullscreen');
+      return win.navigator?.standalone === true || mode('standalone') || mode('fullscreen');
     },
   };
 }
